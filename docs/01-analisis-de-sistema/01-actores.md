@@ -1,148 +1,73 @@
-﻿# Actores del Sistema
+﻿$actores = @'
+# Actores
 
-Este documento identifica los actores que interactúan con MayoristaPro B2B, sus responsabilidades y sus interacciones principales con la plataforma.
-
----
-
-## 1. Proveedor Mayorista
-
-**Descripción:**
-Empresa que vende productos al por mayor. Puede estar ubicada en Lima, Ayacucho u otras regiones del Perú.
-
-**Ejemplos:**
-- Distribuidoras mayoristas (Stanford, Tai Loy, Artesco)
-- Importadores directos
-- Fabricantes
-- Mayoristas regionales
-
-**Responsabilidades en la plataforma:**
-- Registrarse y pasar por verificación de RUC.
-- Publicar productos con precios diferenciados por volumen.
-- Definir cantidades mínimas de compra y stock disponible.
-- Responder solicitudes de cotización.
-- Gestionar pedidos y despachos.
-- Actualizar disponibilidad y precios.
-
-**Interacciones principales:**
-- Publicar producto
-- Responder cotización
-- Confirmar pedido
-- Registrar despacho
-- Consultar reportes de ventas
+| Actor | ¿Qué necesita realizar? |
+|---|---|
+| Proveedor mayorista | Registrarse con RUC, publicar productos con precios por volumen, responder cotizaciones, gestionar pedidos y despachos, consultar ventas y evaluaciones. |
+| Comprador empresarial | Registrarse con RUC, buscar productos y proveedores, solicitar cotizaciones, comparar ofertas, confirmar pedidos, pagar y hacer seguimiento de entregas. |
+| Administrador | Gestionar usuarios, verificar proveedores, supervisar operaciones, gestionar incidencias, consultar reportes y dashboards. |
+| SUNAT / PSE | Validar RUC de empresas y emitir comprobantes electrónicos (facturas y boletas). |
+| Pasarela de pago | Procesar pagos de compradores a proveedores mediante tarjeta. |
+| Servicio de IA | Generar recomendaciones de proveedores según precio, disponibilidad, ubicación e historial. |
+| Servicio de notificaciones | Enviar alertas por email y WhatsApp sobre cotizaciones, pedidos, pagos y entregas. |
+| Servicio de mapas | Proporcionar geolocalización de proveedores y cálculo de distancias para el flete. |
 
 ---
 
-## 2. Comprador Empresarial
+## Clasificación de actores
 
-**Descripción:**
-Negocio que compra productos al por mayor para revender o usar como insumo. No es consumidor final.
+Los actores se dividen en dos grupos:
 
-**Ejemplos:**
-- Bodegas
-- Librerías
-- Minimarkets
-- Restaurantes
-- Ferreterías
+- **Actores humanos:** Proveedor mayorista, Comprador empresarial, Administrador.
+- **Sistemas externos:** SUNAT/PSE, Pasarela de pago, Servicio de IA, Servicio de notificaciones, Servicio de mapas.
 
-**Responsabilidades en la plataforma:**
-- Registrarse y validar RUC.
-- Buscar productos y proveedores.
-- Solicitar cotizaciones a uno o varios proveedores.
-- Comparar ofertas (precio, tiempo, reputación).
-- Confirmar pedidos y realizar pagos.
-- Hacer seguimiento de entregas.
-- Evaluar proveedores.
-
-**Interacciones principales:**
-- Buscar producto
-- Solicitar cotización
-- Comparar cotizaciones
-- Confirmar pedido
-- Realizar pago
-- Confirmar recepción
-- Evaluar proveedor
+Los actores humanos interactúan directamente con la plataforma mediante la interfaz web. Los sistemas externos se integran mediante APIs REST y webhooks.
 
 ---
 
-## 3. Administrador de Plataforma
+## Detalle de actores humanos
 
-**Descripción:**
-Responsable de la operación y supervisión de MayoristaPro.
+### Proveedor mayorista
 
-**Responsabilidades en la plataforma:**
-- Gestionar usuarios, proveedores y compradores.
-- Verificar y aprobar proveedores.
-- Supervisar operaciones comerciales.
-- Gestionar incidencias y reclamos.
-- Consultar reportes y dashboards.
-- Configurar categorías y parámetros del sistema.
+Empresa dedicada a la venta al por mayor, ubicada en Lima, Ayacucho u otras regiones del país. Su objetivo es ampliar su alcance comercial y recibir cotizaciones de compradores empresariales sin necesidad de una fuerza de ventas presencial.
 
-**Interacciones principales:**
-- Aprobar proveedor
-- Gestionar incidencia
-- Consultar dashboard
-- Generar reporte
-- Supervisar operaciones
+Ejemplos: distribuidoras mayoristas, importadores directos, fabricantes, mayoristas regionales.
 
----
+### Comprador empresarial
 
-## 4. Sistema Externo: SUNAT / PSE
+Negocio que adquiere productos al por mayor para revenderlos o utilizarlos como insumo. No es consumidor final.
 
-**Descripción:**
-Servicio externo que valida RUC y emite comprobantes electrónicos.
+Ejemplos: bodegas, librerías, minimarkets, restaurantes, ferreterías.
 
-**Interacciones:**
-- Validación de RUC de proveedores y compradores.
-- Emisión de facturas y boletas electrónicas.
-- Envío de CDR (Constancia de Recepción).
+Su objetivo es encontrar proveedores confiables, comparar precios y abastecerse de forma rápida y segura.
+
+### Administrador
+
+Responsable de la operación, supervisión y gestión de la plataforma. Verifica proveedores, resuelve incidencias y monitorea los indicadores del sistema.
 
 ---
 
-## 5. Sistema Externo: Pasarela de Pagos
+## Detalle de sistemas externos
 
-**Descripción:**
-Servicio externo que procesa pagos de compradores a proveedores.
+### SUNAT / PSE
 
-**Interacciones:**
-- Procesamiento de pagos con tarjeta.
-- Notificación de pago exitoso/fallido vía webhook.
-- Reembolsos cuando corresponda.
+Servicio externo que permite validar el RUC de las empresas registradas y emitir comprobantes electrónicos (facturas y boletas) cumpliendo con la normativa tributaria peruana. Se integra mediante un Proveedor de Servicios Electrónicos (PSE) como NubeFacT o Alanube.
 
----
+### Pasarela de pago
 
-## 6. Sistema Externo: Servicio de IA
+Servicio externo encargado de procesar los pagos de los compradores. La plataforma no almacena fondos ni datos de tarjetas. Se integra con Niubiz o Mercado Pago mediante API REST y webhooks.
 
-**Descripción:**
-Servicio que genera recomendaciones de proveedores según criterios comerciales.
+### Servicio de IA
 
-**Interacciones:**
-- Análisis de necesidades del comprador.
-- Evaluación de proveedores por precio, disponibilidad, ubicación e historial.
-- Generación de recomendaciones ordenadas.
+Servicio que genera recomendaciones de proveedores según precio, disponibilidad, ubicación e historial de cumplimiento. En v1 se implementa como módulo interno con motor de reglas (Scikit-learn); en v2 se prevé integración con API externa de IA.
 
----
+### Servicio de notificaciones
 
-## 7. Sistema Externo: Servicio de Notificaciones
+Servicio que envía alertas a los usuarios por email y WhatsApp sobre eventos relevantes: nuevas cotizaciones, pedidos confirmados, pagos procesados, despachos y entregas.
 
-**Descripción:**
-Servicio que envía alertas por email y WhatsApp.
+### Servicio de mapas
 
-**Interacciones:**
-- Notificar cotización recibida.
-- Notificar pedido confirmado.
-- Notificar pago procesado.
-- Notificar despacho y entrega.
+Servicio que proporciona geolocalización de proveedores y cálculo de distancias para estimar el costo y tiempo del flete. Se utiliza OpenStreetMap con MapLibre para evitar costos de licencia.
+'@
 
----
-
-## Resumen de actores
-
-| Actor | Tipo | Interacción principal |
-|---|---|---|
-| Proveedor mayorista | Humano | Publica productos, responde cotizaciones |
-| Comprador empresarial | Humano | Busca, cotiza, compra |
-| Administrador | Humano | Supervisa y gestiona |
-| SUNAT / PSE | Sistema externo | Valida RUC, emite comprobantes |
-| Pasarela de pagos | Sistema externo | Procesa pagos |
-| Servicio de IA | Sistema externo | Genera recomendaciones |
-| Servicio de notificaciones | Sistema externo | Envía alertas |
+Set-Content -Path "docs\01-analisis-de-sistema\01-actores.md" -Value $actores -Encoding UTF8
