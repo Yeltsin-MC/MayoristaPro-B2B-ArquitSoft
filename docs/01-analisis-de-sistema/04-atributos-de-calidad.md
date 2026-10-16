@@ -1,4 +1,4 @@
-﻿# Atributos de calidad
+# Atributos de calidad
 
 | ID | Atributo de calidad | Escenario de calidad |
 |---|---|---|
@@ -7,7 +7,7 @@
 | AC03 | Escalabilidad | El sistema debe soportar un incremento de usuarios y solicitudes mediante escalabilidad horizontal, sin afectar significativamente su funcionamiento. |
 | AC04 | Seguridad | Los datos de usuarios, cuentas, cotizaciones y operaciones comerciales deben estar protegidos frente a accesos no autorizados. |
 | AC05 | Mantenibilidad | El sistema debe estar organizado en capas (Clean Architecture) para permitir cambios y correcciones sin afectar otras funcionalidades. |
-| AC06 | Concurrencia | El sistema debe garantizar la integridad del stock cuando múltiples compradores confirmen pedidos simultáneamente, evitando sobreventa. |
+| AC06 | Concurrencia | El sistema debe garantizar la integridad del stock cuando múltiples compradores confirmen pedidos simultáneamente, evitando sobreventa. |V
 | AC07 | Confiabilidad | El sistema debe garantizar la integridad transaccional de pedidos y pagos mediante operaciones ACID. |
 | AC08 | Auditabilidad | El sistema debe registrar las operaciones relevantes (cotizaciones, pedidos, pagos, cambios de estado) para fines de auditoría y trazabilidad. |
 | AC09 | Interoperabilidad | El sistema debe integrarse con servicios externos (SUNAT/PSE, pasarela de pagos, servicio de IA, notificaciones) mediante APIs REST. |
