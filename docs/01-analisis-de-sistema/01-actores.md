@@ -1,5 +1,4 @@
-﻿$actores = @'
-# Actores
+﻿# Actores
 
 | Actor | ¿Qué necesita realizar? |
 |---|---|
@@ -59,7 +58,7 @@ Servicio externo encargado de procesar los pagos de los compradores. La platafor
 
 ### Servicio de IA
 
-Servicio que genera recomendaciones de proveedores según precio, disponibilidad, ubicación e historial de cumplimiento. En v1 se implementa como módulo interno con motor de reglas (Scikit-learn); en v2 se prevé integración con API externa de IA.
+Servicio que genera recomendaciones de proveedores según precio, disponibilidad, ubicación e historial de cumplimiento. En v1 se implementa como módulo interno del backend (NestJS) con motor de reglas basado en Scikit-learn ejecutado como proceso Python; en v2 se prevé integración con API externa de IA.
 
 ### Servicio de notificaciones
 
@@ -68,6 +67,3 @@ Servicio que envía alertas a los usuarios por email y WhatsApp sobre eventos re
 ### Servicio de mapas
 
 Servicio que proporciona geolocalización de proveedores y cálculo de distancias para estimar el costo y tiempo del flete. Se utiliza OpenStreetMap con MapLibre para evitar costos de licencia.
-'@
-
-Set-Content -Path "docs\01-analisis-de-sistema\01-actores.md" -Value $actores -Encoding UTF8
