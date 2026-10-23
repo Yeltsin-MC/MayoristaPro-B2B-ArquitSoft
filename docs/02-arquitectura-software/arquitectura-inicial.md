@@ -1,128 +1,66 @@
 # Arquitectura inicial
 
-Vista general de la arquitectura de MayoristaPro B2B, un marketplace que conecta proveedores mayoristas con compradores empresariales de Ayacucho.
+MayoristaPro es un marketplace B2B que conecta proveedores mayoristas con negocios compradores de Ayacucho. Esta vista presenta el diseño propuesto; el despliegue y su capacidad se validarán durante la implementación.
 
----
-
-## Estilo arquitectónico
-
-MayoristaPro se diseña bajo un estilo de **Monolito Modular con Clean Architecture**, organizado en capas con responsabilidades claramente definidas.
-
-| Capa | Responsabilidad |
-|---|---|
-| Presentación | Aplicación web responsive (Angular) que interactúa con los usuarios. |
-| Aplicación | Casos de uso y coordinación de operaciones comerciales. |
-| Dominio | Reglas de negocio (cotizaciones, pedidos, stock, pagos). |
-| Infraestructura | Persistencia, caché, colas y servicios externos. |
-
----
-
-## Vista general del sistema
+## Vista general
 
 ```mermaid
-graph TB
-    subgraph Usuarios
-        P[Proveedor mayorista]
-        C[Comprador empresarial]
-        A[Administrador]
+flowchart TB
+    USU["Proveedor, comprador empresarial y administrador"]
+    subgraph MP["MayoristaPro"]
+        WEB["Aplicación web Angular"]
+        API["API NestJS: monolito modular"]
+        IA["Recomendación: proceso Python y FastAPI"]
+        PG[("PostgreSQL")]
+        RD[("Redis")]
     end
-
-    subgraph MayoristaPro
-        WEB[Frontend Web\nAngular]
-        API[Backend API\nNestJS]
-        IA[Módulo IA\nPython + Scikit-learn]
-    end
-
-    subgraph Datos
-        PG[(PostgreSQL)]
-        RD[(Redis)]
-    end
-
-    subgraph Servicios externos
-        PSE[SUNAT / PSE]
-        PAY[Pasarela de pagos]
-        NOT[Notificaciones]
-        MAP[Mapas]
-    end
-
-    P --> WEB
-    C --> WEB
-    A --> WEB
-    WEB --> API
-    API --> IA
+    EXT["Pagos, PSE, consulta de RUC, notificaciones y mapas"]
+    S3["Amazon S3: archivos"]
+    SQS["Amazon SQS: tareas pendientes"]
+    W["Worker: facturación y notificaciones"]
+    USU --> WEB
+    WEB -->|HTTPS y JSON| API
     API --> PG
     API --> RD
-    API --> PSE
-    API --> PAY
-    API --> NOT
-    API --> MAP
+    API -->|HTTP interno| IA
+    IA -->|Lectura limitada para recomendar| PG
+    API --> EXT
+    API --> S3
+    API -->|Publicación con reintentos| SQS
+    SQS -->|Consumo de mensajes| W
+    W --> EXT
+    W -->|Estado de tareas| PG
 ```
 
----
+Las flechas representan comunicación en ejecución, no dependencias entre clases. La publicación de tareas parte de un registro persistente para poder recuperarlas si falla el envío a la cola.
 
-## Módulos del sistema
+## Responsabilidad de cada parte
 
-El backend se organiza en 11 módulos de negocio, cada uno con sus propias capas internas (Dominio, Aplicación, Infraestructura, Presentación):
-
-| Módulo | Responsabilidad principal |
+| Parte | Responsabilidad |
 |---|---|
-| Usuarios | Registro, autenticación y gestión de cuentas. |
-| Proveedores | Verificación y perfil comercial de proveedores. |
-| Productos | Publicación, búsqueda y catálogo de productos con precios por volumen. |
-| Cotizaciones | Solicitud, respuesta y comparación de cotizaciones entre proveedores. |
-| Pedidos | Confirmación, seguimiento y gestión de estados del pedido. |
-| Pagos | Integración con pasarela y registro de transacciones. |
-| Entregas | Registro de despacho y confirmación de recepción. |
-| Incidencias | Registro y seguimiento de reclamos y disputas. |
-| Reportes | Dashboards e indicadores para proveedores y administración. |
-| IA | Recomendación de proveedores según precio, disponibilidad e historial. |
-| Administración | Gestión general de la plataforma y supervisión. |
+| Angular | Interfaz de proveedores, compradores y administradores; consume la API. |
+| NestJS | Autoriza operaciones, ejecuta casos de uso y coordina los módulos comerciales. |
+| PostgreSQL | Conserva empresas, productos, cotizaciones, pedidos, pagos y auditoría. Es la fuente de verdad del stock. |
+| Redis | Caché y estado temporal compartido; no decide si existe stock para confirmar un pedido. |
+| Proceso Python | Ordena proveedores mediante reglas explicables; su falla no bloquea la búsqueda. |
+| SQS y worker | Procesan tareas posteriores con reintentos y control de duplicados. |
+| S3 | Almacena imágenes y documentos con permisos según su uso. |
 
----
+## Organización del backend
 
-## Decisiones arquitectónicas clave
+El estilo es **monolito modular**: los módulos comerciales se despliegan juntos. Dentro de cada módulo se aplica **Clean Architecture**: Presentación, Aplicación, Dominio e Infraestructura. El proceso Python es un componente auxiliar separado.
 
-| Decisión | Justificación |
-|---|---|
-| Monolito Modular | Consistencia transaccional, equipo pequeño, sin complejidad operativa de microservicios. |
-| Clean Architecture | Aislar las reglas de negocio de los detalles tecnológicos (framework, BD, servicios externos). |
-| PostgreSQL + Redis | ACID para pedidos/pagos; caché para búsquedas y sesiones en picos de concurrencia. |
-| Amazon SQS | Desacoplar tareas secundarias (notificaciones, facturación) del flujo principal. |
-| API-First | Frontend Angular y futuras apps móviles consumen los mismos servicios REST. |
+Los módulos y sus responsabilidades se detallan en [Componentes arquitectónicos](componentes-arquitectonicos.md). Las dependencias internas se explican en [Enfoque arquitectónico](enfoque-arquitectonico.md).
 
----
+## Despliegue propuesto
 
-## Infraestructura de despliegue
+| Recurso | Uso previsto | Condición |
+|---|---|---|
+| Cloudflare | DNS, distribución y protección perimetral. | Funciones sujetas al plan disponible. |
+| Hosting web | Publicación de los archivos de Angular. | Ubicación y configuración por definir en el despliegue AWS. |
+| EC2 y ALB | Ejecutar NestJS y distribuir solicitudes entre instancias cuando se evalúe el escalamiento. | Cantidad y tamaño según pruebas y presupuesto. |
+| RDS PostgreSQL | Persistencia transaccional. | Respaldos y restauración deben probarse. |
+| Redis | Caché compartida entre instancias. | Hosting administrado o propio según recursos disponibles. |
+| S3, SQS y CloudWatch | Archivos, cola y monitoreo. | Verificar acceso y límites de la cuenta educativa. |
 
-```mermaid
-graph TB
-    CF[Cloudflare CDN + WAF]
-    ALB[AWS ALB\nBalanceador de carga]
-    EC1[EC2 Instancia 1\nBackend NestJS]
-    EC2[EC2 Instancia 2\nBackend NestJS]
-    EC3[EC2 Instancia 3\nBackend NestJS]
-    RDS[(AWS RDS\nPostgreSQL)]
-    ELC[(ElastiCache\nRedis)]
-    SQS[Amazon SQS]
-    S3[Amazon S3]
-    CW[CloudWatch\nMonitoreo]
-
-    CF --> ALB
-    ALB --> EC1
-    ALB --> EC2
-    ALB --> EC3
-    EC1 --> RDS
-    EC2 --> RDS
-    EC3 --> RDS
-    EC1 --> ELC
-    EC2 --> ELC
-    EC3 --> ELC
-    EC1 --> SQS
-    EC2 --> SQS
-    EC3 --> SQS
-    EC1 --> S3
-    CW --> EC1
-    CW --> EC2
-    CW --> EC3
-    CW --> RDS
-```
+**Objetivo de evaluación:** hasta 2,000 usuarios concurrentes según los escenarios de calidad. Este diseño no demuestra esa capacidad ni presupone que tres instancias serán suficientes.
