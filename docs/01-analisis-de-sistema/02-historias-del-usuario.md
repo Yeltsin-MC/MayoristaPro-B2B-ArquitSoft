@@ -1,4 +1,4 @@
-﻿# Historias de Usuario
+# Historias de Usuario
 
 | ID | Historia de usuario | Prioridad |
 |---|---|---|
@@ -28,138 +28,34 @@
 | HU-24 | Como administrador, quiero consultar y dar seguimiento a las incidencias, para resolver conflictos entre compradores y proveedores. | Media |
 | HU-25 | Como administrador, quiero visualizar indicadores clave en un dashboard, para supervisar la operación de la plataforma. | Media |
 
----
+## Criterios de aceptación resumidos
 
-## Criterios de aceptación
+Estos criterios describen el comportamiento esperado; su implementación y verificación corresponden a los siguientes sprints. La prioridad orienta el trabajo y no significa que la funcionalidad ya esté construida.
 
-### Módulo de usuarios
-
-**HU-01 — Registro de proveedor**
-- El sistema valida el RUC contra SUNAT.
-- El proveedor ingresa razón social, dirección y datos de contacto.
-- El registro queda en estado "Pendiente de verificación".
-
-**HU-02 — Registro de comprador**
-- El sistema valida el RUC contra SUNAT.
-- El comprador ingresa razón social, dirección y datos de contacto.
-- El registro queda activo tras validación exitosa.
-
-**HU-03 — Autenticación**
-- El sistema valida credenciales.
-- Se genera token JWT con expiración.
-- Se redirige al panel según el rol.
-
-**HU-04 — Verificación de proveedor**
-- El administrador revisa RUC, datos comerciales y documentos.
-- Puede aprobar, rechazar o solicitar información adicional.
-- El proveedor recibe notificación del resultado.
-
-### Módulo de productos
-
-**HU-05 — Publicación de producto**
-- Se ingresan todos los campos obligatorios.
-- Se pueden subir hasta 5 imágenes.
-- El producto queda en estado "Disponible".
-
-**HU-06 — Precios por volumen**
-- Se definen múltiples rangos de cantidad y precio.
-- El sistema aplica el precio según la cantidad solicitada.
-
-**HU-07 — Actualización de productos**
-- El proveedor edita cualquier campo de sus productos.
-- Los cambios se reflejan inmediatamente en el catálogo.
-
-**HU-08 — Carga masiva**
-- El sistema proporciona plantilla CSV.
-- Se validan los datos antes de cargar.
-- Se muestra reporte de productos cargados y errores.
-
-### Módulo de búsqueda y comparación
-
-**HU-09 — Búsqueda de productos**
-- Búsqueda por texto libre con tolerancia a errores tipográficos.
-- Filtros por categoría, rango de precio y ubicación.
-
-**HU-10 — Comparación de proveedores**
-- Se pueden seleccionar hasta 5 proveedores.
-- Se muestra precio, disponibilidad, tiempo de entrega y reputación.
-
-### Módulo de cotizaciones
-
-**HU-11 — Solicitud de cotización**
-- Se puede solicitar a múltiples proveedores simultáneamente.
-- Se especifica producto, cantidad y condiciones requeridas.
-
-**HU-12 — Respuesta a cotización**
-- El proveedor ingresa precio final, stock y tiempo de entrega.
-- El comprador recibe notificación de la respuesta.
-
-**HU-13 — Comparación de cotizaciones**
-- Se muestran todas las cotizaciones en vista comparativa.
-- Se ordenan por precio, tiempo o reputación.
-
-### Módulo de IA
-
-**HU-14 — Recomendación de proveedores**
-- El sistema considera precio, disponibilidad, ubicación e historial.
-- Las recomendaciones se ordenan por relevancia.
-- Se muestra la justificación de cada recomendación.
-
-### Módulo de pedidos
-
-**HU-15 — Confirmación de pedido**
-- El sistema valida stock antes de confirmar.
-- Se aplica control de concurrencia para evitar sobreventa.
-
-**HU-16 — Seguimiento de pedido**
-- Estados: Pendiente, Confirmado, En preparación, Despachado, Entregado, Cancelado.
-- Se notifica al comprador en cada cambio de estado.
-
-**HU-17 — Gestión de pedidos del proveedor**
-- El proveedor ve pedidos pendientes, en preparación y despachados.
-- Puede actualizar el estado y registrar despacho.
-
-### Módulo de pagos
-
-**HU-18 — Pago de pedido**
-- El pago se procesa en pasarela externa.
-- La plataforma no almacena datos de tarjetas.
-- Se recibe confirmación vía webhook.
-
-**HU-19 — Emisión de comprobante electrónico**
-- El sistema se integra con PSE externo.
-- Se emite factura o boleta según tipo de comprador.
-- Se almacena el XML y el CDR.
-
-### Módulo de entregas
-
-**HU-20 — Registro de despacho**
-- Se registra transportista, número de guía y fecha estimada.
-- El comprador recibe notificación.
-
-**HU-21 — Confirmación de recepción**
-- El comprador confirma recepción conforme.
-- Puede reportar incidencia si el producto no cumple.
-
-### Módulo de reputación
-
-**HU-22 — Evaluación de proveedor**
-- Se evalúa con puntuación (1-5) y comentario.
-- La evaluación se refleja en el perfil del proveedor.
-
-### Módulo de incidencias
-
-**HU-23 — Registro de incidencia**
-- Se especifica tipo, descripción y pedido asociado.
-- Se adjuntan evidencias.
-
-**HU-24 — Gestión de incidencias**
-- El administrador ve todas las incidencias abiertas.
-- Puede cambiar estado, agregar comentarios y resolver.
-
-### Módulo de reportes
-
-**HU-25 — Dashboard administrativo**
-- Indicadores: pedidos, ventas, proveedores activos, incidencias.
-- Filtros por período.
-- Exportación a PDF/Excel.
+| Historia | Resultado esperado |
+|---|---|
+| HU-01 | RUC y datos comerciales válidos; proveedor pendiente de verificación. |
+| HU-02 | Registro de la empresa compradora con RUC y datos de contacto. |
+| HU-03 | Credenciales válidas y acceso según rol y empresa. |
+| HU-04 | El administrador aprueba, rechaza o solicita información adicional. |
+| HU-05 | Solo un proveedor autorizado publica productos propios con los campos obligatorios. |
+| HU-06 | Rangos de cantidad sin superposición y precio aplicable al volumen solicitado. |
+| HU-07 | Solo el proveedor propietario modifica el producto; los pedidos conservan el precio aceptado. |
+| HU-08 | Validación del archivo y reporte de registros aceptados y errores. |
+| HU-09 | Resultados filtrables por nombre, categoría, precio y proveedor. |
+| HU-10 | Comparación de hasta cinco proveedores con precio, disponibilidad y condiciones. |
+| HU-11 | Solicitud con productos, cantidades y proveedores destinatarios. |
+| HU-12 | Cada proveedor responde con sus precios por ítem y condiciones de entrega. |
+| HU-13 | El comprador compara respuestas y acepta una oferta vigente. |
+| HU-14 | Lista ordenada con criterios explicables; consulta manual disponible si falla la recomendación. |
+| HU-15 | Pedido de un comprador y un proveedor; validación del mínimo de compra, precio y stock dentro de la operación transaccional. |
+| HU-16 | Consulta de estados: pendiente, confirmado, en preparación, despachado, entregado y cancelado. |
+| HU-17 | El proveedor solo gestiona pedidos en los que participa y transiciones permitidas. |
+| HU-18 | Pago externo confirmado mediante notificación verificada o consulta; duplicados no generan otro cobro o actualización. |
+| HU-19 | Solicitud al PSE y registro del estado, XML y CDR cuando estén disponibles. |
+| HU-20 | Registro de transportista, guía y fecha estimada para un pedido propio. |
+| HU-21 | Solo el comprador del pedido confirma la recepción o registra una incidencia. |
+| HU-22 | Puntuación de 1 a 5 y comentario vinculados a un pedido recibido. |
+| HU-23 | Incidencia con tipo, descripción y pedido relacionado; evidencias cuando corresponda. |
+| HU-24 | Seguimiento administrativo con estado y registro de actuaciones. |
+| HU-25 | Indicadores de pedidos, ventas, proveedores e incidencias filtrados por período. |

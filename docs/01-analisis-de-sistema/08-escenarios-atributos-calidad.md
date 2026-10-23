@@ -1,118 +1,101 @@
-﻿# Escenarios de atributos de calidad del Marketplace
+# Escenarios de atributos de calidad
 
-## EQ-01. Rendimiento: búsqueda y confirmación de pedidos
+Son pruebas propuestas para comprobar el diseño. **Estado de todos los escenarios: pendiente de implementación y validación.** Las metas dependen del entorno y no representan capacidad demostrada.
 
-| Elemento | Descripción |
-|---|---|
-| **Atributo de calidad** | Rendimiento |
-| **Fuente** | Comprador empresarial |
-| **Estímulo** | El comprador busca productos, solicita cotizaciones o confirma un pedido. |
-| **Condición** | El sistema opera con datos representativos y alta concurrencia (campaña escolar o navideña). |
-| **Respuesta esperada** | El sistema muestra resultados de búsqueda, cotizaciones o confirmación de pedido sin errores inesperados. |
-| **Medida** | El 95 % de las consultas responde en 500 ms o menos, con menos del 1 % de errores técnicos, durante una prueba con 2,000 usuarios simultáneos. |
-| **Verificación** | Ejecutar pruebas de carga con k6 contra el entorno de staging (3 instancias EC2 + RDS + Redis) y registrar tiempos de respuesta p50/p95/p99, tasa de errores y usuarios concurrentes activos. |
-| **Decisiones que la soportan** | ADR-003 (Redis), ADR-008 (SQS async), ADR-009 (escalabilidad horizontal). |
-
----
-
-## EQ-02. Disponibilidad: continuidad durante campañas comerciales
+## EQ-01. Rendimiento
 
 | Elemento | Descripción |
 |---|---|
-| **Atributo de calidad** | Disponibilidad |
-| **Fuente** | Proveedor mayorista / Comprador empresarial |
-| **Estímulo** | El usuario intenta operar durante una campaña comercial (escolar, navideña, cierre de mes) o cuando falla un componente. |
-| **Condición** | El sistema está desplegado en AWS con monitoreo activo (CloudWatch) y múltiples instancias backend detrás del ALB. |
-| **Respuesta esperada** | El sistema mantiene disponibles las operaciones críticas (login, búsqueda, pedidos, pagos) y comunica errores de forma controlada cuando un servicio externo no responde. |
-| **Medida** | Disponibilidad mensual de 99.5 % para operaciones críticas; RTO de 4 horas y RPO de 1 hora. Operaciones críticas: autenticación, búsqueda de productos, cotizaciones, confirmación de pedido y pago. |
-| **Verificación** | Revisar los registros de Amazon CloudWatch y calcular períodos de disponibilidad e interrupción. Simular falla de una instancia EC2 y medir tiempo de reconexión del ALB. |
-| **Decisiones que la soportan** | ADR-009 (múltiples instancias + ALB), ADR-015 (AWS con CloudWatch). |
+| Atributo | AC01 |
+| Fuente | Comprador empresarial. |
+| Estímulo | Busca productos, consulta cotizaciones o registra un pedido pendiente. |
+| Condición | Datos representativos y una mezcla documentada de operaciones, con hasta 2,000 usuarios concurrentes. |
+| Respuesta esperada | Responder sin errores técnicos inesperados; medir por separado las llamadas que esperan servicios externos. |
+| Medida propuesta | Meta p95 ≤ 500 ms y menos de 1% de errores técnicos para endpoints locales definidos. Los rechazos de negocio esperados se contabilizan aparte. |
+| Verificación | k6: registrar endpoints, duración, datos, infraestructura, p50/p95/p99, solicitudes por segundo y errores. |
+| Decisiones relacionadas | ADR-003, ADR-008, ADR-009 |
 
----
-
-## EQ-03. Escalabilidad: aumento de usuarios concurrentes
+## EQ-02. Disponibilidad
 
 | Elemento | Descripción |
 |---|---|
-| **Atributo de calidad** | Escalabilidad |
-| **Fuente** | Incremento de solicitudes de compradores y proveedores |
-| **Estímulo** | Aumenta la cantidad de usuarios que utilizan MayoristaPro simultáneamente. |
-| **Condición** | Se realiza una prueba con datos representativos, configuración de 3 instancias EC2, Redis y PostgreSQL. |
-| **Respuesta esperada** | El sistema soporta el aumento de usuarios sin superar los límites acordados de tiempo de respuesta y errores. |
-| **Medida** | Soportar hasta 2,000 usuarios simultáneos con el 95 % de las respuestas por debajo de 500 ms y menos del 1 % de errores técnicos. El sistema puede agregar instancias backend sin rediseño (sin estado en memoria local). |
-| **Verificación** | Aumentar progresivamente la carga con k6 (500 → 1,000 → 2,000 VUs) y comparar tiempos de respuesta, errores y uso de CPU/memoria por instancia. |
-| **Decisiones que la soportan** | ADR-001 (monolito modular sin estado), ADR-003 (sesiones en Redis), ADR-009 (ALB + múltiples instancias). |
+| Atributo | AC02 |
+| Fuente | Usuario de la plataforma o componente que presenta una falla. |
+| Estímulo | Intenta operar durante una campaña comercial o se interrumpe una instancia del backend. |
+| Condición | Despliegue AWS con monitoreo y estrategia de copias de seguridad y restauración documentados. |
+| Respuesta esperada | Mantener las operaciones disponibles y recuperar el servicio y los datos según las metas. |
+| Medida propuesta | Meta mensual 99.5%; RTO ≤ 4 horas y RPO ≤ 1 hora. Definir endpoints críticos y tratamiento de dependencias externas. |
+| Verificación | Monitorear autenticación, catálogo, cotizaciones, pedidos y registro de pagos; simular fallas y restaurar una copia. |
+| Decisiones relacionadas | ADR-009, ADR-015 |
 
----
-
-## EQ-04. Seguridad: acceso a operaciones protegidas
+## EQ-03. Escalabilidad
 
 | Elemento | Descripción |
 |---|---|
-| **Atributo de calidad** | Seguridad |
-| **Fuente** | Usuario sin sesión, con credenciales inválidas o sin permisos suficientes |
-| **Estímulo** | El usuario intenta acceder a una función protegida o realizar una operación no autorizada. |
-| **Condición** | Se realizan pruebas sobre las funciones protegidas de MayoristaPro con los tres roles definidos: Proveedor, Comprador y Administrador. |
-| **Respuesta esperada** | El sistema rechaza la operación, no ejecuta el cambio solicitado y no expone información sensible (sin stack traces, sin datos de otros tenants). |
-| **Medida** | Rechazar el 100 % de los intentos no autorizados en los siguientes escenarios: (1) token ausente o inválido, (2) token expirado, (3) rol incorrecto para la operación, (4) acceso a datos de otro tenant. |
-| **Verificación** | Ejecutar pruebas de acceso con herramientas como Postman/Newman o Jest, revisar respuestas HTTP (401/403) y comprobar que ninguna respuesta incluya datos sensibles de otros usuarios o tenants. |
-| **Decisiones que la soportan** | ADR-012 (multi-tenancy con tenant_id), ADR-013 (JWT + roles). |
+| Atributo | AC03 |
+| Fuente | Compradores y proveedores que incrementan la demanda. |
+| Estímulo | Aumenta la cantidad de usuarios y solicitudes simultáneas. |
+| Condición | Prueba repetible con configuración y conjunto de datos registrados. |
+| Respuesta esperada | Agregar instancias y atender el incremento dentro de las metas definidas. |
+| Medida propuesta | Evaluar 500 → 1,000 → 2,000 usuarios virtuales, conservando las metas de EQ-01 para la misma mezcla de operaciones. |
+| Verificación | Comparar latencia, errores, CPU, memoria y conexiones de PostgreSQL; registrar número de instancias y límites del generador de carga. |
+| Decisiones relacionadas | ADR-001, ADR-003, ADR-009 |
 
----
-
-## EQ-05. Mantenibilidad: cambios sin afectar otras funciones
+## EQ-04. Seguridad
 
 | Elemento | Descripción |
 |---|---|
-| **Atributo de calidad** | Mantenibilidad |
-| **Fuente** | Equipo de desarrollo |
-| **Estímulo** | Se modifica una regla de negocio (ej.: porcentaje de comisión) o se necesita sustituir el proveedor de pagos (Niubiz → Mercado Pago) o el servicio de IA. |
-| **Condición** | El sistema está organizado en capas (Clean Architecture) con interfaces (puertos) que desacoplan el dominio de la infraestructura. |
-| **Respuesta esperada** | El cambio se concentra en el módulo responsable (capa de infraestructura o dominio según corresponda) sin afectar módulos no relacionados. |
-| **Medida** | Al sustituir el adaptador de pagos (ej.: de `NiubizPaymentAdapter` a `MercadoPagoPaymentAdapter`), los tests del módulo de Pagos y los tests de regresión de los módulos de Pedidos y Cotizaciones deben aprobarse sin modificaciones adicionales. Las dependencias entre módulos deben respetar la regla de Clean Architecture: ningún archivo de `dominio/` debe importar desde `infraestructura/`. |
-| **Verificación** | Revisar los imports de `dominio/` con análisis estático (ESLint con reglas de dependencias), ejecutar tests del módulo modificado y los de regresión definidos. |
-| **Decisiones que la soportan** | ADR-002 (Clean Architecture), ADR-004 (adaptador de pagos), ADR-014 (adaptadores externos). |
+| Atributo | AC04 |
+| Fuente | Usuario sin sesión, con credenciales inválidas o sin permisos suficientes. |
+| Estímulo | Intenta ejecutar una operación para la que no tiene autorización. |
+| Condición | Pruebas con comprador, proveedor y administrador de distintas empresas. |
+| Respuesta esperada | Rechazar accesos indebidos y permitir operaciones compartidas solo a las partes autorizadas. |
+| Medida propuesta | Rechazar todos los casos no autorizados del conjunto de pruebas: token inválido/expirado, rol incorrecto y acceso a información privada ajena. |
+| Verificación | Probar también accesos válidos al catálogo y al pedido compartido; revisar respuestas y ausencia de datos sensibles. |
+| Decisiones relacionadas | ADR-012, ADR-013 |
 
----
-
-## EQ-06. Concurrencia: integridad del stock ante pedidos simultáneos
+## EQ-05. Mantenibilidad
 
 | Elemento | Descripción |
 |---|---|
-| **Atributo de calidad** | Concurrencia |
-| **Fuente** | Múltiples compradores empresariales |
-| **Estímulo** | Varios compradores confirman pedidos simultáneamente sobre el mismo producto con stock limitado. |
-| **Condición** | El sistema opera con datos representativos y procesa las confirmaciones en paralelo desde múltiples instancias backend conectadas al mismo PostgreSQL. |
-| **Respuesta esperada** | El sistema acepta únicamente los pedidos que pueden cubrirse con el stock disponible, rechaza los restantes y no genera sobreventa ni stock negativo. |
-| **Medida** | Con 500 compradores intentando adquirir un producto con 100 unidades disponibles, el sistema debe aceptar exactamente 100 pedidos y rechazar los 400 restantes, sin sobreventa ni stock negativo. La prueba se ejecuta en un entorno con al menos 2 instancias backend activas para validar el aislamiento transaccional. |
-| **Verificación** | Ejecutar prueba de concurrencia con k6 simulando 500 confirmaciones simultáneas (`POST /api/v1/orders`) sobre el mismo `productoId` con `stock = 100`. Validar: (a) `SELECT count(*) FROM pedidos WHERE producto_id = X AND estado = 'confirmado'` = 100, (b) `SELECT stock FROM productos WHERE id = X` = 0, (c) 0 pedidos con stock negativo. |
-| **Decisiones que la soportan** | ADR-005 (PostgreSQL ACID + SELECT FOR UPDATE), ADR-009 (múltiples instancias). |
+| Atributo | AC05 |
+| Fuente | Equipo de desarrollo. |
+| Estímulo | Sustituye el adaptador de pagos por otro que cumple el mismo contrato. |
+| Condición | Módulos con interfaces y pruebas del comportamiento esperado. |
+| Respuesta esperada | Concentrar el cambio en el adaptador y su configuración. |
+| Medida propuesta | Pruebas de Pagos y regresión de Pedidos aprobadas; dominio sin imports de NestJS, infraestructura o SDK externos. |
+| Verificación | Revisar dependencias y ejecutar pruebas acordadas; un cambio del contrato requiere evaluar sus consumidores. |
+| Decisiones relacionadas | ADR-002, ADR-004, ADR-014 |
 
----
-
-## EQ-07. Interoperabilidad: integración con servicios externos
+## EQ-06. Concurrencia
 
 | Elemento | Descripción |
 |---|---|
-| **Atributo de calidad** | Interoperabilidad |
-| **Fuente** | Servicios externos (SUNAT/PSE, pasarela de pagos, IA, notificaciones) |
-| **Estímulo** | El sistema debe emitir un comprobante electrónico, procesar un pago o generar una recomendación con IA. |
-| **Condición** | Los servicios externos están disponibles en modo sandbox y responden dentro de los tiempos acordados. |
-| **Respuesta esperada** | El sistema se comunica correctamente con el servicio externo mediante su adaptador, procesa la respuesta y actualiza el estado correspondiente en la plataforma. Si el servicio externo no responde, el módulo de IA activa el fallback y los demás servicios registran el error para reintento. |
-| **Medida** | El 100 % de las integraciones críticas (PSE, pasarela de pagos, IA, notificaciones) debe responder exitosamente en modo sandbox. Tiempo de respuesta aceptable por integración: PSE ≤ 3 s, pasarela ≤ 2 s, IA ≤ 1 s, notificaciones ≤ 2 s. El fallback de IA debe activarse en menos de 500 ms cuando el servicio no responde. |
-| **Verificación** | Ejecutar tests de integración con Jest (o Postman/Newman) contra los sandboxes de cada servicio. Para el fallback de IA: simular timeout del servicio y verificar que el sistema responde con resultados del motor de reglas local en menos de 500 ms. |
-| **Decisiones que la soportan** | ADR-004 (adaptador pagos), ADR-007 (IA con fallback), ADR-010 (PSE externo), ADR-014 (adaptadores externos). |
+| Atributo | AC06, AC07 |
+| Fuente | 500 compradores empresariales distintos. |
+| Estímulo | Intentan reservar simultáneamente una unidad del mismo producto. |
+| Condición | 100 unidades iniciales; cantidad mínima de una unidad, sin reservas previas, sin cancelaciones, al menos dos instancias backend y pagos simulados aprobados. |
+| Respuesta esperada | Aceptar solo reservas cubiertas por stock y rechazar las restantes por falta de existencias. |
+| Medida propuesta | 100 pedidos/reservas aceptados, 400 rechazos esperados por stock y stock final 0, sin reservas huérfanas ni duplicados. |
+| Verificación | k6 y consulta de pedidos unida a pedido_items para contar el producto probado; contrastar unidades reservadas y stock. Simular fallas y reintentos en pruebas adicionales de recuperación. |
+| Decisiones relacionadas | ADR-005, ADR-009 |
 
----
+## EQ-07. Interoperabilidad
 
-## Resumen de escenarios
+| Elemento | Descripción |
+|---|---|
+| Atributo | AC09 |
+| Fuente | Caso de uso que requiere un servicio de pago, facturación, recomendación o notificación. |
+| Estímulo | Solicita la operación al servicio integrado, que puede responder, fallar o superar el tiempo de espera. |
+| Condición | Sandboxes disponibles y fallas simuladas para validar timeouts y respuestas duplicadas. |
+| Respuesta esperada | Registrar estados y fallos; no duplicar efectos. Ante incertidumbre del pago, consultar/reconciliar antes de repetir el cobro o liberar la reserva. |
+| Medida propuesta | Metas de respuesta del proveedor: PSE ≤ 3 s, pago ≤ 2 s y notificaciones ≤ 2 s. Recomendación: timeout de 1 s y fallback en ≤ 500 ms adicionales. |
+| Verificación | Probar éxito, rechazo, timeout y duplicados por integración. Para IA, comprobar respuesta degradada en ≤ 1.5 s bajo las condiciones de prueba y mantener la comparación manual. |
+| Decisiones relacionadas | ADR-004, ADR-007, ADR-010, ADR-014 |
 
-| Código | Atributo de calidad | Qué se busca comprobar | ADRs relacionados |
-|---|---|---|---|
-| EQ-01 | Rendimiento | Que MayoristaPro responda en ≤ 500 ms para el p95 con 2,000 usuarios concurrentes. | ADR-003, ADR-008, ADR-009 |
-| EQ-02 | Disponibilidad | Que las operaciones críticas estén disponibles ≥ 99.5 % mensual con RTO ≤ 4 h / RPO ≤ 1 h. | ADR-009, ADR-015 |
-| EQ-03 | Escalabilidad | Que el sistema soporte hasta 2,000 usuarios simultáneos sin rediseño. | ADR-001, ADR-003, ADR-009 |
-| EQ-04 | Seguridad | Que las operaciones protegidas rechacen el 100 % de intentos no autorizados. | ADR-012, ADR-013 |
-| EQ-05 | Mantenibilidad | Que sustituir un adaptador no rompa módulos no relacionados. | ADR-002, ADR-004, ADR-014 |
-| EQ-06 | Concurrencia | Que el stock sea íntegro ante 500 confirmaciones simultáneas sobre 100 unidades. | ADR-005, ADR-009 |
-| EQ-07 | Interoperabilidad | Que las 4 integraciones críticas funcionen en sandbox con tiempos definidos. | ADR-004, ADR-007, ADR-010, ADR-014 |
+## Lectura de las medidas
+
+- **p95 de 500 ms:** al menos el 95% de las solicitudes medidas debe completarse en ese tiempo.
+- **Usuarios concurrentes:** usuarios virtuales activos con recorridos y pausas definidos; no equivalen a 2,000 solicitudes por segundo.
+- **RTO:** tiempo objetivo de recuperación del servicio. **RPO:** pérdida máxima de datos expresada en tiempo.
+- **Fallback:** alternativa disponible si falla la recomendación; no garantiza resolver fallas de pagos o facturación.
