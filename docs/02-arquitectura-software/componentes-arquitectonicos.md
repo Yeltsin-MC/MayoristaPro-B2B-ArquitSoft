@@ -20,6 +20,35 @@ Esta vista identifica responsabilidades del backend. Los módulos son divisiones
 
 Facturación y notificaciones son capacidades de integración consumidas mediante puertos y adaptadores. Su ejecución asíncrona se encarga a workers; no agrega once servicios independientes al despliegue.
 
+## Primera versión: MVP
+
+El **Producto Mínimo Viable (MVP)** es una primera versión funcional que permite completar y evaluar el flujo principal de compra mayorista. La tabla anterior representa el alcance general del proyecto; no implica implementar todas las capacidades de cada módulo en la primera entrega de software.
+
+**Estado:** propuesta de priorización pendiente de validación con la docente. No modifica los identificadores ni elimina los requisitos documentados. MVP y Sprint 02 no son equivalentes: su implementación puede distribuirse en varios sprints.
+
+| Módulo o capacidad | Alcance propuesto para el MVP | Ampliación posterior |
+|---|---|---|
+| Usuarios | Registro, autenticación, empresa y permisos básicos. | Administración avanzada de cuentas. |
+| Proveedores y Administración | Perfil comercial, revisión y aprobación básica del proveedor. | Supervisión integral y gestión avanzada de reputación. |
+| Productos | Publicación manual, consulta, precios por volumen, mínimos y stock. | Carga masiva y búsqueda avanzada. |
+| Cotizaciones | Solicitud, respuesta por proveedor, comparación y aceptación de una oferta. | Opciones adicionales de negociación. |
+| Pedidos | Creación desde oferta aceptada, reserva transaccional y consulta de estados. | Flujos comerciales adicionales. |
+| Pagos | Una pasarela en sandbox, intento persistido y confirmación verificada, con protección frente a duplicados. | Operación en producción y más medios de pago. |
+| Entregas | Registro básico de despacho y confirmación de recepción. | Integraciones logísticas y seguimiento avanzado. |
+| IA | Recomendación acotada y explicable con alternativa ante falla. El método debe validarse frente a la exigencia académica. | Modelo entrenado o API externa según datos y evaluación. |
+| Reportes e Incidencias | Se mantienen como alcance documentado, fuera del núcleo inicial propuesto. | Dashboards, reportes y seguimiento completo de reclamos. |
+| Facturación y notificaciones | Integraciones previstas, con etapa de entrega por acordar según la rúbrica. | Automatización mediante PSE y canales externos. |
+
+### Condiciones académicas y criterio de aceptación
+
+- El MVP contempla despliegue real en **AWS** y evaluación progresiva con **k6 hasta 2,000 usuarios concurrentes**. Son objetivos por comprobar, no capacidad demostrada.
+- La puntuación por reglas es un punto de partida; si el requisito de IA exige un modelo entrenado u otra técnica, deberá incorporarse al alcance acordado antes de darlo por cumplido.
+- No se posponen requisitos obligatorios de la rúbrica sin acordarlo con la docente. La prioridad del MVP no elimina el alcance general documentado.
+- Recorrido a demostrar: una empresa compradora se registra, consulta productos de un proveedor verificado, solicita y acepta una cotización, crea un pedido sin sobreventa, completa un pago sandbox y consulta su despacho y recepción.
+- La demostración incluye accesos autorizados, rechazo por stock insuficiente y recuperación ante fallas de pago o recomendación. Los escenarios de calidad detallan las pruebas previstas.
+
+La primera funcionalidad del Sprint 02 será la base de ese recorrido: identidad empresarial, catálogo y pedido con reserva. Las siguientes entregas completarán el MVP acordado.
+
 ## Componentes dentro de cada módulo
 
 | Capa | Contenido | Ejemplo en Pedidos |
