@@ -19,6 +19,8 @@ Definen cómo debe comportarse MayoristaPro. Las cifras son metas de diseño pen
 
 Las siguientes herramientas y evidencias se proponen para la implementación. Las metas se comprobarán sobre el software construido; no se consideran resultados del Sprint 01.
 
+El [plan de medición](09-plan-de-medicion-calidad.md) concreta endpoints, carga y duración con **k6**, datos de prueba, criterios de aprobación, monitoreo en CloudWatch y evidencias. En Sprint 01 se documenta el procedimiento; su validación sobre el sistema completo se ejecutará después del despliegue del software implementado.
+
 | ID | Herramienta o medio | Procedimiento y evidencia |
 |---|---|---|
 | AC01 | k6 | Ejecutar consultas contra la URL desplegada y registrar p95, solicitudes por segundo y porcentaje de errores. Comparar con la meta por endpoint. |
@@ -30,7 +32,7 @@ Las siguientes herramientas y evidencias se proponen para la implementación. La
 | AC07 | Jest, sandbox de pagos y PostgreSQL | Simular fallo, timeout, reintentos y eventos duplicados. Verificar rollback local, una sola aplicación de cada efecto y reconciliación sin pedidos o reservas huérfanos. |
 | AC08 | Consultas de audit_log y registros en CloudWatch | Ejecutar operaciones conocidas y contrastarlas con sus registros de actor, fecha, entidad y cambio. Comprobar que no se registran secretos. |
 | AC09 | Pruebas HTTP automatizadas y sandboxes disponibles | Probar respuestas válidas, rechazo, timeout y duplicados por integración. Registrar tiempos, estados y activación del fallback de IA según EQ-07. |
-| AC10 | Sesiones de tareas con usuarios representativos, cronómetro y ficha de observación | Pedir que busquen un producto, soliciten una cotización y consulten un pedido. Registrar finalización, tiempos, errores y dificultades en móvil y computadora. Muestra y umbrales pendientes de acordar. |
+| AC10 | Sesiones de tareas con usuarios representativos, cronómetro y ficha de observación | Evaluación formativa propuesta con 5 compradores y 3 proveedores, tareas por rol en móvil y computadora. Registrar finalización sin ayuda, tiempos y errores. Muestra y umbrales iniciales detallados en el plan, pendientes de validación con la docente. |
 
 ## Momento de ejecución
 

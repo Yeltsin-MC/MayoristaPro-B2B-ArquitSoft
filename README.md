@@ -37,7 +37,27 @@ Los negocios compradores de Ayacucho necesitan encontrar proveedores mayoristas,
 
 El proyecto surgió como AyniCompra y fue reformulado a **MayoristaPro B2B**. El diseño vigente corresponde a comercialización entre empresas.
 
+## Alcance de la primera versión — MVP
+
+La primera versión de MayoristaPro se plantea como un producto mínimo viable (MVP), centrado en catálogo, cotizaciones y pedidos con control de stock. Este alcance permitirá completar el proceso desde la búsqueda de productos hasta la atención del pedido. Las demás funcionalidades se incorporarán en entregas posteriores, según el tiempo disponible y los requisitos del curso.
+
+| Núcleo propuesto para el MVP | Evolución posterior o alcance por confirmar |
+|---|---|
+| Registro, inicio de sesión y permisos por empresa. | Administración avanzada de cuentas y reputación. |
+| Perfil y verificación manual del proveedor; catálogo y stock. | Consulta automática de RUC, mapas y carga masiva. |
+| Solicitud a un proveedor, respuesta y aceptación de cotización. | Comparación automática entre varios proveedores y negociación avanzada. |
+| Pedido desde oferta aceptada, reserva transaccional y estados básicos de atención. | Seguimiento logístico avanzado, reclamos y reportes completos. |
+| Consulta del pedido por comprador y proveedor autorizados. | IA, facturación PSE y notificaciones externas, según exigencia académica. |
+
+**Pagos:** se acordará con la docente si el MVP requiere una pasarela en sandbox o permite registro manual verificado por un responsable autorizado. El registro manual no se presentará como cobro integrado ni permitirá al comprador confirmar su propio pago. Si se exige la pasarela, se priorizará una sola integración y se ajustará el resto del alcance.
+
+La base tecnológica propuesta para el núcleo es **Angular + NestJS + PostgreSQL**. Redis, Python, SQS y workers se incorporarán cuando el alcance acordado o las pruebas justifiquen su necesidad. No se afirma que esta base ya cumpla las metas de carga. AWS y los 2,000 usuarios concurrentes se mantienen como objetivos académicos pendientes de evaluación; una exigencia obligatoria no se elimina mediante esta priorización.
+
+El MVP puede abarcar varios sprints; **Sprint 01 entrega el diseño y Sprint 02 inicia la implementación**. El tiempo y costo aún deben estimarse con las semanas, horas disponibles y servicios seleccionados. El detalle está en la [priorización de módulos del MVP](docs/02-arquitectura-software/componentes-arquitectonicos.md#primera-versión-mvp).
+
 ## Arquitectura propuesta
+
+Las siguientes decisiones describen la arquitectura general prevista. Su incorporación a la primera implementación se ajustará al MVP validado; los [diagramas C4](docs/04-modelo-c4/Nivel1-Diagrama-de-Contexto.md) muestran esa visión general, no una lista de componentes obligatorios desde la primera entrega.
 
 | Decisión | Aplicación |
 |---|---|
@@ -82,7 +102,7 @@ El recorrido comienza con el problema y los usuarios, continúa con las decision
 | Bloque | Documentos |
 |---|---|
 | Usuarios y requisitos | [Actores](docs/01-analisis-de-sistema/01-actores.md) · [Historias](docs/01-analisis-de-sistema/02-historias-del-usuario.md) · [Requisitos y trazabilidad](docs/01-analisis-de-sistema/03-requisitos-funcionales.md) |
-| Calidad y límites | [Atributos de calidad](docs/01-analisis-de-sistema/04-atributos-de-calidad.md) · [Restricciones](docs/01-analisis-de-sistema/05-restricciones.md) · [Escenarios de evaluación](docs/01-analisis-de-sistema/08-escenarios-atributos-calidad.md) |
+| Calidad y límites | [Atributos de calidad](docs/01-analisis-de-sistema/04-atributos-de-calidad.md) · [Restricciones](docs/01-analisis-de-sistema/05-restricciones.md) · [Escenarios de evaluación](docs/01-analisis-de-sistema/08-escenarios-atributos-calidad.md) · [Plan de medición y herramientas](docs/01-analisis-de-sistema/09-plan-de-medicion-calidad.md) |
 | Decisiones | [Drivers](docs/01-analisis-de-sistema/06-driver-arquitectonicos.md) · [Decisiones arquitectónicas](docs/01-analisis-de-sistema/07-decisiones-arquitectonicas.md) |
 | Arquitectura | [Vista inicial](docs/02-arquitectura-software/arquitectura-inicial.md) · [Componentes](docs/02-arquitectura-software/componentes-arquitectonicos.md) · [Estilo](docs/02-arquitectura-software/estilo-arquitectonico.md) · [Enfoque Clean Architecture](docs/02-arquitectura-software/enfoque-arquitectonico.md) · [Recomendación](docs/02-arquitectura-software/modulo-ia-decision.md) |
 | Diseño de software | [Diseño interno](docs/03-diseno-de-software/diseno-interno/diseno-interno-de-modulos.md) · [Patrones](docs/03-diseno-de-software/diseno-interno/patrones-de-diseno.md) · [Principios](docs/03-diseno-de-software/diseno-interno/principios-de-diseno.md) |

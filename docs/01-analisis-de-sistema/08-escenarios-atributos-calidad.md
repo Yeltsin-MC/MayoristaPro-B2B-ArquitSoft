@@ -2,6 +2,8 @@
 
 Son pruebas propuestas para comprobar el diseño. **Estado de todos los escenarios: pendiente de implementación y validación.** Las metas dependen del entorno y no representan capacidad demostrada.
 
+El [plan de medición de calidad](09-plan-de-medicion-calidad.md) detalla herramientas, datos, duración, carga, criterios de aprobación y evidencias para ejecutar estos escenarios después del despliegue.
+
 ## EQ-01. Rendimiento
 
 | Elemento | Descripción |
@@ -92,6 +94,32 @@ Son pruebas propuestas para comprobar el diseño. **Estado de todos los escenari
 | Medida propuesta | Metas de respuesta del proveedor: PSE ≤ 3 s, pago ≤ 2 s y notificaciones ≤ 2 s. Recomendación: timeout de 1 s y fallback en ≤ 500 ms adicionales. |
 | Verificación | Probar éxito, rechazo, timeout y duplicados por integración. Para IA, comprobar respuesta degradada en ≤ 1.5 s bajo las condiciones de prueba y mantener la comparación manual. |
 | Decisiones relacionadas | ADR-004, ADR-007, ADR-010, ADR-014 |
+
+## EQ-08. Auditabilidad
+
+| Elemento | Descripción |
+|---|---|
+| Atributo | AC08 |
+| Fuente | Comprador, proveedor o administrador autenticado. |
+| Estímulo | Ejecuta operaciones auditables sobre pedidos y proveedores. |
+| Condición | 20 operaciones preparadas con actor, entidad y cambio esperado conocidos. |
+| Respuesta esperada | Conservar trazabilidad de cada operación sin registrar secretos. |
+| Medida propuesta | 20 de 20 operaciones con actor, fecha, entidad y cambio identificables; sin tokens, contraseñas ni datos de tarjeta en los registros revisados. |
+| Verificación | Contrastar la lista de operaciones con consultas de audit_log y registros de CloudWatch; guardar matriz y evidencia por ejecución. |
+| Decisiones relacionadas | ADR-012, ADR-013, ADR-015 |
+
+## EQ-09. Usabilidad
+
+| Elemento | Descripción |
+|---|---|
+| Atributo | AC10 |
+| Fuente | 5 compradores y 3 proveedores representativos; muestra formativa propuesta. |
+| Estímulo | Realiza tareas de compra o gestión correspondientes a su rol. |
+| Condición | Entorno desplegado con datos preparados, móvil y computadora; sin ayuda del moderador. |
+| Respuesta esperada | Completar la tarea correctamente y comprender las acciones y estados mostrados. |
+| Medida propuesta | Por tarea y dispositivo: al menos 4 de 5 compradores y 3 de 3 proveedores completan sin ayuda y sin errores críticos, dentro de los tiempos por tarea del plan. Umbrales pendientes de validación con la docente. |
+| Verificación | Cronómetro y ficha por participante, tarea y dispositivo; registrar tiempos, finalización, errores y dificultades. No extrapolar representatividad estadística. |
+| Decisiones relacionadas | ADR-002; organización de presentación separada de reglas comerciales. |
 
 ## Lectura de las medidas
 
