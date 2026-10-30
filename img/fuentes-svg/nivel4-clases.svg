@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1510" viewBox="0 0 1900 1510" font-family="Segoe UI,Arial,sans-serif" role="img" aria-labelledby="title desc">
+<title id="title">[Diagrama de código] MayoristaPro — Pedidos</title><desc id="desc">Modelo C4 · Nivel 4 · UML de clases · Diseño propuesto; firmas por completar en Sprint 02</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10" fill="#64748B"/></marker>
+<marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L9 5 L0 10" fill="none" stroke="#475569" stroke-width="1.4"/></marker>
+<marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="white" stroke="#475569"/></marker>
+<marker id="diamond" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="14" markerHeight="9" orient="auto"><path d="M1 5 L8 1 L15 5 L8 9 Z" fill="#475569"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="36" y="40" font-size="24" fill="#1E293B" font-weight="700" text-anchor="start">[Diagrama de código] MayoristaPro — Pedidos</text>
+<text x="36" y="69" font-size="16" fill="#64748B" font-weight="400" text-anchor="start">Modelo C4 · Nivel 4 · UML de clases · Diseño propuesto; firmas por completar en Sprint 02</text>
+<text x="1864" y="40" font-size="14" fill="#64748B" font-weight="400" text-anchor="end">Diseño propuesto · v1.0</text>
+<rect x="35" y="100" width="270" height="1220" rx="0" fill="#EDF3FC" stroke="#2F5FA7" stroke-width="1.5" stroke-dasharray="9 6"/>
+<text x="170.0" y="130" font-size="17" fill="#2F5FA7" font-weight="700" text-anchor="middle">PRESENTACIÓN</text>
+<rect x="325" y="100" width="440" height="1220" rx="0" fill="#F0F8F2" stroke="#2F7D4F" stroke-width="1.5" stroke-dasharray="9 6"/>
+<text x="545.0" y="130" font-size="17" fill="#2F7D4F" font-weight="700" text-anchor="middle">APLICACIÓN</text>
+<rect x="785" y="100" width="560" height="1220" rx="0" fill="#FEF8EE" stroke="#B7791F" stroke-width="1.5" stroke-dasharray="9 6"/>
+<text x="1065.0" y="130" font-size="17" fill="#B7791F" font-weight="700" text-anchor="middle">DOMINIO</text>
+<rect x="1365" y="100" width="500" height="1220" rx="0" fill="#F6F1FC" stroke="#6D4AA8" stroke-width="1.5" stroke-dasharray="9 6"/>
+<text x="1615.0" y="130" font-size="17" fill="#6D4AA8" font-weight="700" text-anchor="middle">INFRAESTRUCTURA</text>
+<rect x="50" y="185" width="240" height="92" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="170.0" y="207" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">OrderController</text>
+<path d="M50,219 L290,219" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M50,243 L290,243" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="60" y="266" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ crear()</text>
+<rect x="345" y="185" width="400" height="92" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="545.0" y="207" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">CrearPedidoUseCase</text>
+<path d="M345,219 L745,219" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M345,243 L745,243" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="355" y="266" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ ejecutar()</text>
+<rect x="345" y="365" width="400" height="92" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="545.0" y="387" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">ConfirmarPagoPedidoUseCase</text>
+<path d="M345,399 L745,399" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M345,423 L745,423" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="355" y="446" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ ejecutar()</text>
+<rect x="810" y="175" width="510" height="252" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="1065.0" y="194" font-size="13" fill="#64748B" font-weight="400" text-anchor="middle">«entity»</text>
+<text x="1065.0" y="215" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">Pedido</text>
+<path d="M810,227 L1320,227" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="820" y="250" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ id</text>
+<text x="820" y="272" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ compradorEmpresaId</text>
+<text x="820" y="294" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ proveedorId</text>
+<text x="820" y="316" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">- estado</text>
+<path d="M810,327 L1320,327" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="820" y="350" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ crear()</text>
+<text x="820" y="372" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ confirmarPagoVerificado()</text>
+<text x="820" y="394" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ solicitarCancelacion()</text>
+<text x="820" y="416" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ marcarDespachado()</text>
+<rect x="810" y="520" width="510" height="146" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="1065.0" y="542" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">ItemPedido</text>
+<path d="M810,554 L1320,554" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="820" y="577" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ productoId</text>
+<text x="820" y="599" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ cantidad</text>
+<text x="820" y="621" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ precioUnitario</text>
+<path d="M810,632 L1320,632" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="820" y="655" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ subtotal()</text>
+<rect x="810" y="745" width="510" height="132" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="1065.0" y="764" font-size="13" fill="#64748B" font-weight="400" text-anchor="middle">«interface»</text>
+<text x="1065.0" y="785" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">OrderRepository</text>
+<path d="M810,797 L1320,797" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M810,821 L1320,821" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="820" y="844" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ guardar()</text>
+<text x="820" y="866" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ buscarPorId()</text>
+<rect x="345" y="650" width="400" height="132" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="545.0" y="669" font-size="13" fill="#64748B" font-weight="400" text-anchor="middle">«interface»</text>
+<text x="545.0" y="690" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">StockPort</text>
+<path d="M345,702 L745,702" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M345,726 L745,726" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="355" y="749" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ reservar()</text>
+<text x="355" y="771" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ liberarUnaVez()</text>
+<rect x="345" y="870" width="400" height="110" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="545.0" y="889" font-size="13" fill="#64748B" font-weight="400" text-anchor="middle">«interface»</text>
+<text x="545.0" y="910" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">CotizacionesPort</text>
+<path d="M345,922 L745,922" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M345,946 L745,946" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="355" y="969" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ obtenerOfertaAceptada()</text>
+<rect x="345" y="1130" width="400" height="110" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="545.0" y="1149" font-size="13" fill="#64748B" font-weight="400" text-anchor="middle">«interface»</text>
+<text x="545.0" y="1170" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">UnidadTrabajoPort</text>
+<path d="M345,1182 L745,1182" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M345,1206 L745,1206" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="355" y="1229" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ ejecutar()</text>
+<rect x="1390" y="745" width="450" height="114" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="1615.0" y="767" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">PostgresOrderRepository</text>
+<path d="M1390,779 L1840,779" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M1390,803 L1840,803" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="1400" y="826" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ guardar()</text>
+<text x="1400" y="848" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ buscarPorId()</text>
+<rect x="1390" y="1130" width="450" height="92" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<text x="1615.0" y="1152" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">PostgresUnidadTrabajo</text>
+<path d="M1390,1164 L1840,1164" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M1390,1188 L1840,1188" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<text x="1400" y="1211" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ ejecutar()</text>
+<path d="M290,230 L345,230" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M745,215 L810,215" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="777" y="201" font-size="12" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">«crea»</text>
+<path d="M1065,427 L1065,520" fill="none" stroke="#64748B" stroke-width="1.6" marker-start="url(#diamond)"/>
+<text x="1140" y="490" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">1     1..*</text>
+<path d="M745,245 L775,245 L775,805 L810,805" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M745,260 L755,260 L755,710 L745,710" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M745,275 L765,275 L765,930 L745,930" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M345,250 L335,250 L335,1085 L460,1085 L460,1130" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M745,405 L780,405 L780,825 L810,825" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M545,457 L545,650" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M345,405 L330,405 L330,1100 L390,1100 L390,1130" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#open)"/>
+<path d="M1390,805 L1320,805" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#triangle)"/>
+<path d="M1390,1190 L1350,1190 L1350,1290 L545,1290 L545,1240" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#triangle)"/>
+<rect x="60" y="650" width="225" height="220" rx="0" fill="#FFFBEA" stroke="#B7A54A" stroke-width="1.5"/>
+<text x="72" y="675" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start">Puertos de aplicación:</text>
+<text x="72" y="696" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start">StockPort, CotizacionesPort</text>
+<text x="72" y="717" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start">y UnidadTrabajoPort.</text>
+<text x="72" y="738" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start"></text>
+<text x="72" y="759" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start">Coordinan otros módulos</text>
+<text x="72" y="780" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start">y el límite transaccional.</text>
+<text x="72" y="801" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start"></text>
+<text x="72" y="822" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start">Los adaptadores comparten</text>
+<text x="72" y="843" font-size="14" fill="#1E293B" font-weight="400" text-anchor="start">la transacción del pedido.</text>
+<rect x="1390" y="200" width="450" height="190" rx="0" fill="#FFFBEA" stroke="#B7A54A" stroke-width="1.5"/>
+<text x="1405" y="228" font-size="16" fill="#1E293B" font-weight="700" text-anchor="start">Regla de dependencia</text>
+<text x="1405" y="253" font-size="16" fill="#1E293B" font-weight="400" text-anchor="start">La infraestructura implementa interfaces.</text>
+<text x="1405" y="278" font-size="16" fill="#1E293B" font-weight="400" text-anchor="start">El dominio no importa NestJS ni PostgreSQL.</text>
+<text x="1405" y="303" font-size="16" fill="#1E293B" font-weight="400" text-anchor="start"></text>
+<text x="1405" y="328" font-size="16" fill="#1E293B" font-weight="400" text-anchor="start">La llamada a la pasarela ocurre fuera</text>
+<text x="1405" y="353" font-size="16" fill="#1E293B" font-weight="400" text-anchor="start">de la transacción de pedido y reserva.</text>
+<rect x="35" y="1360" width="1830" height="105" rx="0" fill="white" stroke="#B8BDC5" stroke-width="1.5"/>
+<text x="55" y="1388" font-size="16" fill="#1E293B" font-weight="700" text-anchor="start">Notación UML</text>
+<text x="55" y="1416" font-size="16" fill="#1E293B" font-weight="400" text-anchor="start">Flecha abierta: asociación · Discontinua: dependencia · Triángulo hueco: realización · Rombo relleno: composición</text>
+<text x="55" y="1442" font-size="15" fill="#64748B" font-weight="400" text-anchor="start">Alcance: clases principales de Pedidos. Las interfaces de coordinación pertenecen a Aplicación; OrderRepository pertenece a Dominio.</text>
+</svg>

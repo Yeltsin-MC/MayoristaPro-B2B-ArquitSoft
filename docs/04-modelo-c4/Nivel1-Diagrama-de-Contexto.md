@@ -2,18 +2,9 @@
 
 **Pregunta:** ¿quién usa MayoristaPro y con qué sistemas se relaciona? La plataforma se muestra como una sola caja; no se detallan frameworks ni bases de datos.
 
-```mermaid
-flowchart TB
-    P["Proveedor mayorista"] -->|Publica ofertas y gestiona pedidos| MP["MayoristaPro: marketplace B2B de Ayacucho"]
-    C["Comprador empresarial"] -->|Busca, cotiza y compra| MP
-    A["Administrador"] -->|Verifica y supervisa| MP
-    MP -->|Inicia y consulta pagos| PAY["Pasarela de pago"]
-    PAY -->|Comunica resultados| MP
-    MP -->|Consulta datos empresariales| RUC["Servicio de consulta de RUC"]
-    MP -->|Solicita comprobantes| PSE["PSE de facturación"]
-    MP -->|Solicita avisos| NOT["Proveedor de notificaciones"]
-    MP -->|Presenta ubicaciones| MAP["Proveedor de mapas"]
-```
+![Diagrama de contexto de MayoristaPro](../../img/nivel1-contexto.png)
+
+**Fuente editable:** [nivel1-contexto.svg](../../img/fuentes-svg/nivel1-contexto.svg).
 
 | Participante | Responsabilidad |
 |---|---|

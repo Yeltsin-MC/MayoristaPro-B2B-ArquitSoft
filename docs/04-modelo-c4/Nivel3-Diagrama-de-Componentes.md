@@ -2,26 +2,9 @@
 
 **Pregunta:** ¿cómo se divide el backend por dentro? Esta vista abre la API NestJS del nivel 2; no representa servicios independientes.
 
-```mermaid
-flowchart TB
-    WEB["Aplicación Angular"] --> API["Controladores HTTP"]
-    subgraph BACK["API NestJS: monolito modular"]
-        API --> U["Usuarios y autorización"]
-        API --> PRO["Proveedores"]
-        API --> CAT["Productos"]
-        API --> COT["Cotizaciones"]
-        API --> PED["Pedidos"]
-        API --> PAG["Pagos"]
-        API --> APO["Entregas, Incidencias, Reportes y Administración"]
-        API --> REC["Coordinador de recomendaciones"]
-        PED -->|Oferta aceptada| COT
-        PED -->|Reserva| CAT
-        PED -->|Inicio o consulta| PAG
-        PAG -->|Resultado por contrato| PED
-    end
-    PAG --> PAY["Pasarela externa"]
-    REC --> IA["Proceso Python"]
-```
+![Diagrama de componentes de la API MayoristaPro](../../img/nivel3-componentes.png)
+
+**Fuente editable:** [nivel3-componentes.svg](../../img/fuentes-svg/nivel3-componentes.svg).
 
 Las flechas representan colaboración en ejecución. El retorno de un resultado de pago no obliga a imports circulares: los contratos y su conexión se definen en la composición.
 

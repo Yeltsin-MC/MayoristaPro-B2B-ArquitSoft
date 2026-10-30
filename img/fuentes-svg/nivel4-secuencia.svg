@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1650" viewBox="0 0 2000 1650" font-family="Segoe UI,Arial,sans-serif" role="img" aria-labelledby="title desc">
+<title id="title">[Diagrama de secuencia] Crear pedido e iniciar pago</title><desc id="desc">Modelo C4 · Nivel 4 · UML · Pedido y reserva atómicos; pasarela fuera de la transacción SQL</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10" fill="#64748B"/></marker>
+<marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L9 5 L0 10" fill="none" stroke="#475569" stroke-width="1.4"/></marker>
+<marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="white" stroke="#475569"/></marker>
+<marker id="diamond" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="14" markerHeight="9" orient="auto"><path d="M1 5 L8 1 L15 5 L8 9 Z" fill="#475569"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="36" y="40" font-size="24" fill="#1E293B" font-weight="700" text-anchor="start">[Diagrama de secuencia] Crear pedido e iniciar pago</text>
+<text x="36" y="69" font-size="16" fill="#64748B" font-weight="400" text-anchor="start">Modelo C4 · Nivel 4 · UML · Pedido y reserva atómicos; pasarela fuera de la transacción SQL</text>
+<text x="1964" y="40" font-size="14" fill="#64748B" font-weight="400" text-anchor="end">Diseño propuesto · v1.0</text>
+<rect x="15" y="120" width="270" height="80" rx="5" fill="#EDF3FC" stroke="#64748B" stroke-width="1.5"/>
+<text x="150" y="152" font-size="18" fill="#1E293B" font-weight="700" text-anchor="middle">Comprador</text>
+<text x="150" y="179" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle">Cliente web</text>
+<path d="M150,200 L150,1465" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="330" y="120" width="270" height="80" rx="5" fill="#EDF8F0" stroke="#64748B" stroke-width="1.5"/>
+<text x="465" y="152" font-size="18" fill="#1E293B" font-weight="700" text-anchor="middle">CrearPedido</text>
+<text x="465" y="179" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle">Caso de uso</text>
+<path d="M465,200 L465,1465" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="655" y="120" width="270" height="80" rx="5" fill="#F4EFFA" stroke="#64748B" stroke-width="1.5"/>
+<text x="790" y="152" font-size="18" fill="#1E293B" font-weight="700" text-anchor="middle">Unidad de trabajo</text>
+<text x="790" y="179" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle">Y adaptadores</text>
+<path d="M790,200 L790,1465" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="975" y="120" width="270" height="80" rx="5" fill="#EEF4FC" stroke="#64748B" stroke-width="1.5"/>
+<text x="1110" y="152" font-size="18" fill="#1E293B" font-weight="700" text-anchor="middle">PostgreSQL</text>
+<text x="1110" y="179" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle">Persistencia</text>
+<path d="M1110,200 L1110,1465" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="1295" y="120" width="270" height="80" rx="5" fill="#EDF8F0" stroke="#64748B" stroke-width="1.5"/>
+<text x="1430" y="152" font-size="18" fill="#1E293B" font-weight="700" text-anchor="middle">Módulo Pagos</text>
+<text x="1430" y="179" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle">API pública</text>
+<path d="M1430,200 L1430,1465" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5"/>
+<rect x="1675" y="120" width="270" height="80" rx="5" fill="#F2F3F5" stroke="#64748B" stroke-width="1.5"/>
+<text x="1810" y="152" font-size="18" fill="#1E293B" font-weight="700" text-anchor="middle">Pasarela</text>
+<text x="1810" y="179" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle">Sistema externo</text>
+<path d="M1810,200 L1810,1465" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5"/>
+<path d="M150,250 L465,250" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="307.5" y="240" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">1. Oferta aceptada e identidad autenticada</text>
+<path d="M465,295 L535,295 L535,333 L465,333" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="635" y="310" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">2. Autorizar y comprobar idempotencia</text>
+<path d="M465,385 L790,385" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="627.5" y="375" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">3. Crear pedido y reserva atómicos</text>
+<path d="M790,440 L1110,440" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="950.0" y="430" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">4. BEGIN; revalidar y bloquear productos</text>
+<rect x="25" y="480" width="1940" height="900" rx="0" fill="none" stroke="#475569" stroke-width="1.5"/>
+<rect x="25" y="480" width="65" height="28" rx="0" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<text x="38" y="500" font-size="16" fill="#1E293B" font-weight="700" text-anchor="start">alt</text>
+<text x="105" y="505" font-size="16" fill="#1E293B" font-weight="700" text-anchor="start">[Stock y condiciones válidos]</text>
+<path d="M790,560 L1110,560" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="950.0" y="550" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">5. Guardar pedido, ítems y reserva</text>
+<path d="M790,610 L1110,610" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="950.0" y="600" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">6. COMMIT</text>
+<path d="M465,670 L150,670" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="307.5" y="660" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">7. Pedido pendiente y vencimiento</text>
+<path d="M150,740 L1430,740" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="790.0" y="730" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">8. Iniciar pago del pedido</text>
+<path d="M1430,805 L1110,805" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1270.0" y="795" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">9. Persistir intento y referencia</text>
+<path d="M1430,865 L1810,865" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1620.0" y="855" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">10. Solicitar pago [HTTPS]</text>
+<path d="M1810,925 L1430,925" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="1620.0" y="915" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">11. Resultado verificable o pendiente</text>
+<path d="M1430,985 L1110,985" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1270.0" y="975" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">12. Guardar estado del intento</text>
+<rect x="420" y="1025" width="1505" height="135" rx="0" fill="#FFFBEA" stroke="#B7A54A" stroke-width="1.5"/>
+<text x="440" y="1052" font-size="16" fill="#1E293B" font-weight="700" text-anchor="start">Solo ante un resultado definitivo y verificado:</text>
+<path d="M1430,1095 L790,1095" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1110.0" y="1085" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">13. Aplicar resultado al pedido por contrato</text>
+<path d="M790,1140 L1110,1140" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="950.0" y="1130" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">14. Cambio de pedido, reserva y outbox atómicos</text>
+<path d="M25,1200 L1965,1200" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text x="45" y="1230" font-size="16" fill="#1E293B" font-weight="700" text-anchor="start">[Stock insuficiente o conflicto]</text>
+<path d="M790,1280 L1110,1280" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="950.0" y="1270" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">ROLLBACK</text>
+<path d="M465,1340 L150,1340" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#open)"/>
+<text x="307.5" y="1330" font-size="14" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">Rechazo controlado; no se inicia pago</text>
+<rect x="35" y="1500" width="1930" height="110" rx="0" fill="#FFFBEA" stroke="#B7A54A" stroke-width="1.5"/>
+<text x="55" y="1530" font-size="17" fill="#1E293B" font-weight="400" text-anchor="start">Resultado pendiente: no confirma ni cancela el pedido. Pagos consulta la pasarela hasta resolver la incertidumbre.</text>
+<text x="55" y="1558" font-size="16" fill="#1E293B" font-weight="400" text-anchor="start">Un rechazo definitivo libera la reserva una sola vez; una confirmación tardía exige reconciliación.</text>
+<text x="55" y="1585" font-size="15" fill="#64748B" font-weight="400" text-anchor="start">Reintentos persistidos permiten recuperarse entre el registro del intento y la actualización del pedido. Flecha discontinua: respuesta.</text>
+</svg>

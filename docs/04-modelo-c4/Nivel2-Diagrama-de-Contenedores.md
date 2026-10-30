@@ -2,37 +2,9 @@
 
 **Pregunta:** ¿qué aplicaciones y almacenes forman MayoristaPro? En C4, contenedor significa una aplicación o almacén de datos; no equivale necesariamente a Docker.
 
-```mermaid
-flowchart TB
-    U["Usuarios empresariales y administrador"]
-    subgraph MP["MayoristaPro"]
-        WEB["Aplicación web: Angular"]
-        API["API: NestJS, monolito modular"]
-        IA["Recomendación: Python y FastAPI"]
-        PG[("PostgreSQL: datos comerciales y outbox")]
-        RD[("Redis: caché y estado temporal")]
-        S3["S3: imágenes y documentos"]
-        Q["SQS: mensajes"]
-        W["Worker y publicador de tareas"]
-    end
-    PAY["Pasarela"]
-    EXT["PSE, consulta RUC, notificaciones y mapas"]
-    U --> WEB
-    WEB -->|HTTPS JSON| API
-    API -->|SQL| PG
-    API --> RD
-    API --> S3
-    API -->|HTTP privado| IA
-    IA -->|Lectura autorizada| PG
-    API -->|HTTPS| PAY
-    PAY -->|Notificación verificada| API
-    API --> EXT
-    W -->|Lee eventos pendientes| PG
-    W -->|Publica mensajes| Q
-    Q -->|Entrega a consumidores| W
-    W -->|Ejecuta tarea| EXT
-    W -->|Registra resultado| PG
-```
+![Diagrama de contenedores de MayoristaPro](../../img/nivel2-contenedores.png)
+
+**Fuente editable:** [nivel2-contenedores.svg](../../img/fuentes-svg/nivel2-contenedores.svg).
 
 El worker representa procesos auxiliares del mismo código base; publicador y consumidores pueden ejecutarse por separado. SQS entrega mensajes; el consumidor debe reconocer duplicados.
 

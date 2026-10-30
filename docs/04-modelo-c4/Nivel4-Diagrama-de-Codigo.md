@@ -4,97 +4,17 @@
 
 ## Diagrama de clases
 
-```mermaid
-classDiagram
-    class Pedido {
-        +id
-        +compradorEmpresaId
-        +proveedorId
-        -estado
-        +crear()
-        +confirmarPagoVerificado()
-        +solicitarCancelacion()
-        +marcarDespachado()
-    }
-    class ItemPedido {
-        +productoId
-        +cantidad
-        +precioUnitario
-        +subtotal()
-    }
-    class OrderRepository {
-        <<interface>>
-        +guardar()
-        +buscarPorId()
-    }
-    class UnidadTrabajoPort {
-        <<interface>>
-        +ejecutar()
-    }
-    class StockPort {
-        <<interface>>
-        +reservar()
-        +liberarUnaVez()
-    }
-    class CotizacionesPort {
-        <<interface>>
-        +obtenerOfertaAceptada()
-    }
-    class CrearPedidoUseCase {
-        +ejecutar()
-    }
-    class ConfirmarPagoPedidoUseCase {
-        +ejecutar()
-    }
-    class PostgresOrderRepository
-    class PostgresUnidadTrabajo
-    class OrderController
-    Pedido "1" *-- "1..*" ItemPedido
-    CrearPedidoUseCase --> OrderRepository
-    CrearPedidoUseCase --> UnidadTrabajoPort
-    CrearPedidoUseCase --> StockPort
-    CrearPedidoUseCase --> CotizacionesPort
-    CrearPedidoUseCase ..> Pedido
-    ConfirmarPagoPedidoUseCase --> OrderRepository
-    ConfirmarPagoPedidoUseCase --> UnidadTrabajoPort
-    ConfirmarPagoPedidoUseCase --> StockPort
-    OrderController --> CrearPedidoUseCase
-    PostgresOrderRepository ..|> OrderRepository
-    PostgresUnidadTrabajo ..|> UnidadTrabajoPort
-```
+![Diagrama UML de clases del m?dulo Pedidos](../../img/nivel4-clases.png)
+
+**Fuente editable:** [nivel4-clases.svg](../../img/fuentes-svg/nivel4-clases.svg).
 
 Composición: un Pedido contiene sus ítems. Realización: el repositorio PostgreSQL implementa una interfaz. Las firmas se completarán en Sprint 02; no se presupone que ejecutar varias operaciones por separado forme una transacción.
 
 ## Secuencia principal
 
-```mermaid
-sequenceDiagram
-    participant C as Comprador
-    participant UC as CrearPedido
-    participant TX as Unidad de trabajo y adaptadores
-    participant PG as PostgreSQL
-    participant P as Modulo Pagos
-    participant EXT as Pasarela
-    C->>UC: Oferta aceptada e identidad autenticada
-    UC->>UC: Autorizar y comprobar idempotencia
-    UC->>TX: Crear pedido y reserva de forma atomica
-    TX->>PG: BEGIN, revalidar y bloquear productos
-    alt Stock y condiciones validos
-        TX->>PG: Guardar pedido, items y reserva
-        TX->>PG: COMMIT
-        UC-->>C: Pedido pendiente y vencimiento
-        C->>P: Iniciar pago del pedido
-        P->>PG: Persistir intento y referencia
-        P->>EXT: Solicitar pago fuera de transaccion SQL
-        EXT-->>P: Confirmacion verificable o resultado pendiente
-        P->>PG: Guardar estado del intento
-        P->>TX: Aplicar resultado verificado al pedido
-        TX->>PG: Cambio de pedido, reserva y outbox atomicos
-    else Stock insuficiente o conflicto
-        TX->>PG: ROLLBACK
-        UC-->>C: Rechazo controlado sin iniciar pago
-    end
-```
+![Diagrama UML de secuencia de creaci?n de pedido y pago](../../img/nivel4-secuencia.png)
+
+**Fuente editable:** [nivel4-secuencia.svg](../../img/fuentes-svg/nivel4-secuencia.svg).
 
 El resultado pendiente no confirma ni cancela el pedido. Pagos consulta la pasarela hasta resolver la incertidumbre; solo un resultado definitivo autoriza la transición correspondiente. Los pasos de intento y pedido requieren una política de reintentos persistida para recuperarse si el proceso se interrumpe entre ellos.
 
