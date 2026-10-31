@@ -14,7 +14,7 @@ Las flechas representan colaboración en ejecución. El retorno de un resultado 
 |---|---|
 | Usuarios | Identidad, empresa y permisos. |
 | Proveedores | Perfil, verificación y evaluaciones comerciales. |
-| Productos | Catálogo, precios por volumen y reservas de stock. |
+| Productos | Carga masiva, catálogo público, presentaciones, mínimos, múltiplos, precios por volumen y reservas de stock. |
 | Cotizaciones | Solicitudes, destinatarios y respuestas con precios propios. |
 | Pedidos | Partes, condiciones históricas, ítems y estados. |
 | Pagos | Intentos, referencias, eventos y reconciliación externa. |

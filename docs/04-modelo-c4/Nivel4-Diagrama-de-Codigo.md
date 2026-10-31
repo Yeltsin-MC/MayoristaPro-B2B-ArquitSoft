@@ -4,7 +4,7 @@
 
 ## Diagrama de clases
 
-![Diagrama UML de clases del m?dulo Pedidos](../../img/nivel4-clases.png)
+![Diagrama UML de clases del módulo Pedidos](../../img/nivel4-clases.png)
 
 **Fuente editable:** [nivel4-clases.svg](../../img/fuentes-svg/nivel4-clases.svg).
 
@@ -12,7 +12,7 @@ Composición: un Pedido contiene sus ítems. Realización: el repositorio Postgr
 
 ## Secuencia principal
 
-![Diagrama UML de secuencia de creaci?n de pedido y pago](../../img/nivel4-secuencia.png)
+![Diagrama UML de secuencia de creación de pedido y pago](../../img/nivel4-secuencia.png)
 
 **Fuente editable:** [nivel4-secuencia.svg](../../img/fuentes-svg/nivel4-secuencia.svg).
 
@@ -24,7 +24,7 @@ El resultado pendiente no confirma ni cancela el pedido. Pagos consulta la pasar
 |---|---|
 | RN-01 | Cada pedido tiene una empresa compradora, un usuario responsable y un proveedor. |
 | RN-02 | El pedido contiene al menos un ítem del mismo proveedor. |
-| RN-03 | Las cantidades son positivas y cumplen los mínimos de compra. |
+| RN-03 | Las cantidades usan la presentación ofertada, son positivas, alcanzan el mínimo y respetan el múltiplo; la transacción revalida esas condiciones. |
 | RN-04 | El total se obtiene de cantidades y precios aceptados, con una política explícita de moneda y redondeo. |
 | RN-05 | Solo se inicia un nuevo pago de un pedido pendiente y con reserva vigente; una confirmación tardía se reconcilia. |
 | RN-06 | No se cancela directamente un pedido despachado o entregado. La cancelación de uno pagado requiere resolver el reembolso. |

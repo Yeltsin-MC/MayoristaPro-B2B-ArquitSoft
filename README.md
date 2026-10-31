@@ -20,7 +20,7 @@ Los negocios compradores de Ayacucho necesitan encontrar proveedores mayoristas,
 
 | Participante | Qué podrá realizar |
 |---|---|
-| Proveedor mayorista | Publicar productos, definir mínimos y precios por volumen, responder cotizaciones y gestionar despachos. |
+| Proveedor mayorista | Importar el catálogo por bloques, mantener productos y definir mínimos y precios por volumen, responder cotizaciones y gestionar despachos. |
 | Comprador empresarial | Buscar y comparar proveedores, solicitar cotizaciones, realizar pedidos y consultar entregas. |
 | Administrador | Verificar proveedores, supervisar operaciones y dar seguimiento a incidencias. |
 
@@ -38,6 +38,8 @@ Los negocios compradores de Ayacucho necesitan encontrar proveedores mayoristas,
 El proyecto surgió como AyniCompra y fue reformulado a **MayoristaPro B2B**. El diseño vigente corresponde a comercialización entre empresas.
 
 ## Alcance de la primera versión — MVP
+
+La carga masiva CSV/Excel es obligatoria para el MVP; la edición individual sirve para mantenimiento. Al ingresar, el catálogo mostrará tarjetas de ofertas con proveedor, precio por presentación y condiciones mayoristas. [Detalle de catálogo, precios y referencias B2B](docs/03-diseno-de-software/reglas-comerciales-mayoristas.md).
 
 La primera versión de MayoristaPro se plantea como un producto mínimo viable (MVP), centrado en catálogo, cotizaciones y pedidos con control de stock. Este alcance permitirá completar el proceso desde la búsqueda de productos hasta la atención del pedido. Las demás funcionalidades se incorporarán en entregas posteriores, según el tiempo disponible y los requisitos del curso.
 
@@ -122,7 +124,8 @@ MayoristaPro-B2B-ArquitSoft/
 │   │   ├── 05-restricciones.md
 │   │   ├── 06-driver-arquitectonicos.md
 │   │   ├── 07-decisiones-arquitectonicas.md
-│   │   └── 08-escenarios-atributos-calidad.md
+│   │   ├── 08-escenarios-atributos-calidad.md
+│   │   └── 09-plan-de-medicion-calidad.md
 │   ├── 02-arquitectura-software/
 │   │   ├── arquitectura-inicial.md
 │   │   ├── componentes-arquitectonicos.md
@@ -135,14 +138,22 @@ MayoristaPro-B2B-ArquitSoft/
 │   │   │   ├── patrones-de-diseno.md
 │   │   │   └── principios-de-diseno.md
 │   │   ├── contratos-api-rest.md
-│   │   └── esquema-base-de-datos.md
+│   │   ├── esquema-base-de-datos.md
+│   │   └── reglas-comerciales-mayoristas.md
 │   └── 04-modelo-c4/
 │       ├── Nivel1-Diagrama-de-Contexto.md
 │       ├── Nivel2-Diagrama-de-Contenedores.md
 │       ├── Nivel3-Diagrama-de-Componentes.md
 │       └── Nivel4-Diagrama-de-Codigo.md
 ├── img/
-│   └── .gitkeep
+│   ├── *.png                  Diagramas para la documentación
+│   ├── fuentes-svg/          Fuentes SVG y generadores
+│   └── recursos-arquitectura/ Iconos y licencias
+├── presentaciones/
+│   ├── MayoristaPro-Sprint-01-tecnologias.pptx
+│   ├── fuentes/              Generadores de la presentación
+│   ├── recursos/             Escudo, logos y licencias
+│   └── README.md
 ├── .gitignore
 └── README.md
 ```

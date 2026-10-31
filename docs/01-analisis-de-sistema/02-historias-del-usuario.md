@@ -42,7 +42,7 @@ Estos criterios describen el comportamiento esperado; su implementación y verif
 | HU-06 | Rangos de cantidad sin superposición y precio aplicable al volumen solicitado. |
 | HU-07 | Solo el proveedor propietario modifica el producto; los pedidos conservan el precio aceptado. |
 | HU-08 | Vista previa por SKU propio, errores por fila y confirmación transaccional de un lote válido sin duplicados. |
-| HU-09 | Resultados filtrables por nombre, categoría, precio y proveedor. |
+| HU-09 | Catálogo visible al ingresar, sin sesión, con filtros, proveedor, precio por presentación, mínimo y disponibilidad; cotizar requiere cuenta empresarial. |
 | HU-10 | Comparación de hasta cinco proveedores con precio, disponibilidad y condiciones. |
 | HU-11 | Solicitud con productos, cantidades y proveedores destinatarios. |
 | HU-12 | Cada proveedor responde con sus precios por ítem y condiciones de entrega. |

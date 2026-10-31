@@ -36,13 +36,15 @@ El **Producto Mínimo Viable (MVP)** es una primera versión funcional que permi
 
 **Estado:** propuesta de priorización pendiente de validación con la docente. No modifica los identificadores ni elimina los requisitos documentados. MVP y Sprint 02 no son equivalentes: su implementación puede distribuirse en varios sprints.
 
+La carga masiva y el catálogo visible al ingresar son condiciones del núcleo inicial. La priorización pendiente de otras integraciones no los convierte en mejoras opcionales. El detalle de tarjetas y precios está en [operación mayorista](../03-diseno-de-software/reglas-comerciales-mayoristas.md).
+
 **Objetivo del núcleo inicial:** que un comprador encuentre productos, solicite una cotización a un proveedor, acepte su oferta y genere un pedido con stock reservado; el proveedor podrá consultar y atender ese pedido. Se propone este límite para reducir el trabajo de integraciones y operación, conservando el proceso que aporta valor al negocio. No constituye todavía una estimación de tiempo ni costo aprobada.
 
 | Módulo o capacidad | Alcance propuesto para el MVP | Ampliación posterior |
 |---|---|---|
 | Usuarios | Registro, autenticación, empresa y permisos básicos. | Administración avanzada de cuentas. |
 | Proveedores y Administración | Perfil comercial, revisión y aprobación básica del proveedor. | Supervisión integral y gestión avanzada de reputación. |
-| Productos | Carga masiva CSV/Excel con validación y vista previa; edición individual, presentaciones, mínimos, múltiplos, precios y stock. | Lotes de mayor tamaño y búsqueda avanzada. |
+| Productos | Carga masiva CSV/Excel obligatoria, con validación y vista previa; catálogo visible al ingresar, tarjetas por oferta y proveedor; edición individual, presentaciones, mínimos, múltiplos, precios y stock. | Lotes de mayor tamaño y búsqueda avanzada. |
 | Cotizaciones | Solicitud a un proveedor, respuesta y aceptación de una oferta vigente. | Comparación automática entre múltiples proveedores y negociación avanzada. |
 | Pedidos | Creación desde oferta aceptada, reserva transaccional y consulta de estados. | Flujos comerciales adicionales. |
 | Pagos | Modalidad pendiente de acuerdo: una pasarela sandbox si la rúbrica la exige; registro manual autorizado si la docente lo permite. No se considera una integración implementada por registrar un pago manual. | Cobros reales, más medios de pago y reembolsos automatizados. |

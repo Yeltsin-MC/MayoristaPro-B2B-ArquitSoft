@@ -39,11 +39,12 @@ Lectura de perfiles publicados; verificación solo administrador.
 
 ### products
 
-Lectura del catálogo publicado; escritura solo proveedor propietario verificado.
+Lectura pública del catálogo publicado desde la página de inicio; escritura solo proveedor propietario verificado. `GET /products` devuelve ofertas por proveedor, con imagen disponible, presentación, unidades por presentación, precio publicado PEN, indicador de IGV, rangos de cantidad, mínimo, múltiplo y disponibilidad. No devuelve cotizaciones privadas ni precios negociados. `GET /products/:id` permite abrir el detalle de una oferta publicada dentro de MayoristaPro; cotizar y comprar requiere autenticación empresarial.
 
 | Método y ruta |
 |---|
 | `GET /products` |
+| `GET /products/:id` |
 | `POST /products` |
 | `PATCH /products/:id` |
 | `DELETE /products/:id` |

@@ -104,7 +104,9 @@ La recuperación de la recomendación se medirá simulando un timeout de 1 s y c
 | Rol | Tareas | Tiempo objetivo por tarea |
 |---|---|---|
 | Comprador | Buscar un producto, solicitar una cotización y consultar un pedido preparado. | ≤ 2 min, ≤ 4 min y ≤ 2 min, respectivamente. |
-| Proveedor | Publicar un producto, responder una cotización y registrar un despacho permitido. | ≤ 4 min, ≤ 4 min y ≤ 2 min, respectivamente. |
+| Proveedor | Importar un lote CSV/XLSX de 10 productos válidos mediante vista previa y confirmación, responder una cotización y registrar un despacho permitido. | ≤ 6 min, ≤ 4 min y ≤ 2 min, respectivamente. |
+
+Se añadirá un caso de importación con un SKU duplicado y una cantidad inválida: el proveedor debe localizar los errores, corregirlos y confirmar sin efectos parciales ni duplicados. La integridad del lote se verificará con pruebas de API y SQL. La edición individual se evaluará como mantenimiento, sin sustituir la importación.
 
 Son **umbrales iniciales propuestos para validar con la docente**, no resultados ni una muestra estadísticamente representativa. Se alternará el dispositivo inicial y se usarán datos equivalentes para reducir el aprendizaje entre intentos. Para cada tarea, rol y dispositivo se informará el número exacto de participantes que la completó sin ayuda, el tiempo individual, errores y observaciones.
 

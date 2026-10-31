@@ -43,7 +43,9 @@ Todas las tablas usan id UUID y fechas de creación; las modificables agregan fe
 | tenants | nombre, ruc único, tipo, estado | Cada empresa es un tenant. |
 | usuarios | tenant_id, email único, password_hash, rol, estado | Usuario empresarial asociado a su empresa. Cuenta administrativa de plataforma con tenant nulo y permisos explícitos. |
 | proveedores | tenant_id único, estado_verificacion, dirección, ciudad | Perfil de empresa, no extensión exclusiva de un usuario; varios usuarios autorizados pueden operarlo. |
-| productos | tenant_id, proveedor_id, nombre, descripción, categoría, precio_base, moneda, cantidad_minima_compra, stock, unidad, estado | Stock disponible no negativo; producto y proveedor pertenecen a la misma empresa. |
+| productos | tenant_id, proveedor_id, sku, nombre, descripción, categoría, precio_base, moneda, precio_incluye_igv, cantidad_minima_compra, multiplo_compra, unidades_por_presentacion, stock, unidad, estado | Stock disponible no negativo; producto y proveedor pertenecen a la misma empresa. |
+| importaciones_catalogo | proveedor_id, responsable_id, estado, idempotency_key, vence_at, resumen | Lote propio, vista previa vigente y confirmación única. |
+| importacion_filas | importacion_id, numero_fila, sku, datos_validados, errores | Filas preparadas; un lote con errores no publica cambios parciales. |
 | precios_volumen | producto_id, cantidad_minima, cantidad_maxima opcional, precio_unitario | Cantidades positivas; máximo mayor o igual al mínimo; rangos sin solapamientos. |
 | cotizaciones | tenant_id del comprador, comprador_id del usuario, estado | Solicitud privada con destinatarios explícitos. |
 | cotizacion_items | cotizacion_id, descripción solicitada, unidad, cantidad, producto_referencia_id opcional | No almacena el precio que ofrecen todos los proveedores. |
@@ -51,7 +53,7 @@ Todas las tablas usan id UUID y fechas de creación; las modificables agregan fe
 | cotizacion_respuestas | destinatario_id único, estado, moneda, precio_total, vigente_hasta, condiciones_entrega, dias_entrega | Oferta completa de un proveedor; solo una respuesta aceptada por solicitud en v1. |
 | cotizacion_respuesta_items | respuesta_id, solicitud_item_id, producto_id, cantidad, precio_unitario, subtotal | Precio por ítem de cada oferta; producto del proveedor que responde. |
 | pedidos | tenant_id del comprador, comprador_id, proveedor_id obligatorio, cotizacion_respuesta_id opcional único, total, moneda, estado, idempotency_key, request_hash | Un comprador y un proveedor; snapshot de condiciones y entrega aceptadas. En el recorrido v1 la respuesta de cotización es obligatoria. |
-| pedido_items | pedido_id, producto_id, descripción y unidad históricas, cantidad, precio_unitario, subtotal | Conserva cantidades y precios aceptados; todos los productos corresponden al proveedor del pedido. |
+| pedido_items | pedido_id, producto_id, descripción, unidad, unidades_por_presentacion, minimo y multiplo históricos, cantidad, precio_unitario, subtotal | Conserva cantidades y precios aceptados; todos los productos corresponden al proveedor del pedido. |
 | reservas_stock | pedido_id, producto_id, cantidad, estado, vence_at | Par pedido/producto único. Activa, consumida o liberada. |
 | pagos | pedido_id, monto, moneda, pasarela, estado, idempotency_key, referencia_externa, autorización opcional | Una fila por intento; el pedido puede tener varios intentos, pero no cobros duplicados. |
 | pago_eventos | pago_id, pasarela, evento_externo_id, estado_procesamiento | Identificador externo único por pasarela para no repetir eventos. |

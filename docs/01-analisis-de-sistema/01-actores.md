@@ -6,7 +6,7 @@ MayoristaPro conecta empresas proveedoras con negocios compradores de Ayacucho. 
 
 | Actor | Responsabilidad | Ejemplo |
 |---|---|---|
-| Proveedor mayorista | Publicar productos, definir precios por volumen, responder cotizaciones y gestionar pedidos y despachos. | Distribuidora de Lima o mayorista de Ayacucho. |
+| Proveedor mayorista | Importar el catálogo por bloques, mantener productos y definir precios por volumen, responder cotizaciones y gestionar pedidos y despachos. | Distribuidora de Lima o mayorista de Ayacucho. |
 | Comprador empresarial | Buscar y comparar proveedores, solicitar cotizaciones, realizar pedidos y consultar entregas. | Bodega, librería o minimarket de Ayacucho. |
 | Administrador | Verificar proveedores, supervisar operaciones y dar seguimiento a incidencias. | Responsable de la plataforma. |
 

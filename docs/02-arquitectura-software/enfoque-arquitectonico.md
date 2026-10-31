@@ -63,7 +63,7 @@ Los demás módulos siguen el mismo criterio. Angular mantiene sus funcionalidad
 
 | Paso | Responsable | Motivo |
 |---|---|---|
-| Recibir productos y cantidades. | Controlador | Traducir HTTP a una entrada del caso de uso. |
+| Recibir el identificador de la oferta aceptada. | Controlador | Traducir HTTP a una entrada del caso de uso. |
 | Comprobar identidad y participación en la compra. | Aplicación | Evitar operaciones de empresas no autorizadas. |
 | Validar cantidades, mínimos y estados. | Dominio | Concentrar las reglas comerciales. |
 | Obtener precios confiables y reservar stock junto al pedido. | Aplicación mediante puertos; Infraestructura ejecuta la transacción. | Evitar confiar en precios enviados por el cliente y prevenir sobreventa. |

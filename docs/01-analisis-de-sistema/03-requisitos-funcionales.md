@@ -12,7 +12,7 @@
 | RF-08 | El sistema debe permitir al proveedor definir precios diferenciados por rango de cantidad. | Productos | Alta |
 | RF-09 | El sistema debe permitir al proveedor actualizar precios, stock y características de sus productos. | Productos | Alta |
 | RF-10 | El sistema debe permitir al proveedor cargar su catálogo por bloques mediante CSV/Excel, revisar errores y confirmar un lote válido sin duplicados. | Productos | Alta |
-| RF-11 | El sistema debe permitir buscar productos por nombre, categoría, rango de precio y proveedor. | Búsqueda | Alta |
+| RF-11 | El sistema debe mostrar un catálogo público de productos al ingresar y permitir buscar por nombre, categoría, rango de precio y proveedor, mostrando precio por presentación y condiciones mayoristas; cotizar y comprar requiere autenticación empresarial. | Búsqueda | Alta |
 | RF-12 | El sistema debe permitir comparar hasta 5 proveedores para un mismo producto. | Búsqueda | Alta |
 | RF-13 | El sistema debe permitir al comprador solicitar cotización a uno o varios proveedores. | Cotizaciones | Alta |
 | RF-14 | El sistema debe permitir al proveedor responder cotizaciones con precio, disponibilidad y condiciones de entrega. | Cotizaciones | Alta |

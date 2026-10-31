@@ -1,6 +1,6 @@
 # Operación mayorista: catálogo, mínimos y recomendaciones
 
-Diseño propuesto para la implementación. La carga masiva forma parte del núcleo inicial. Los valores de los ejemplos son ilustrativos; los mínimos comerciales se definirán por oferta y presentación, no mediante una cifra universal para todos los productos.
+Diseño propuesto para la implementación. La carga masiva es un requisito obligatorio del MVP de MayoristaPro, conforme a la observación de la docente. El proveedor debe poder incorporar su catálogo mediante archivos, sin registrar cada producto manualmente. Un catálogo que supere el límite por archivo podrá dividirse en varios lotes; “carga masiva” no significa un archivo de tamaño ilimitado. Los valores de los ejemplos son ilustrativos; los mínimos comerciales se definirán por oferta y presentación, no mediante una cifra universal para todos los productos.
 
 ## 1. Carga del catálogo por bloques
 
@@ -8,7 +8,7 @@ El proveedor descarga una plantilla CSV o Excel, completa sus productos, carga e
 
 | Etapa | Comportamiento esperado |
 |---|---|
-| Preparación | Plantilla con SKU, nombre, categoría, presentación, unidades por presentación, precio por presentación, moneda, mínimo de compra, múltiplo de compra y stock disponible en presentaciones. |
+| Preparación | Plantilla con SKU, nombre, categoría, presentación, unidades por presentación, precio por presentación, moneda, indicador de IGV, mínimo de compra, múltiplo de compra y stock disponible en presentaciones. |
 | Validación | Comprobar proveedor autorizado, formato, campos obligatorios, SKU repetidos, cantidades enteras positivas, moneda y coherencia de precios y mínimos. Mostrar errores por fila y columna. |
 | Vista previa | Informar cuántos productos son nuevos, cuáles actualizarían SKU propios y qué errores impiden confirmar. El proveedor revisa los cambios. |
 | Confirmación | Aplicar un lote válido de forma transaccional y registrar su responsable. Si hay filas inválidas, se rechaza la confirmación completa hasta corregirlas. |
@@ -39,6 +39,20 @@ Se validarán mínimo, múltiplo y stock al responder la cotización, aceptar la
 
 ## 3. Tarjetas comerciales y recomendaciones
 
+### Catálogo al ingresar
+
+La página de inicio mostrará productos publicados de proveedores verificados, buscador y categorías, sin exigir iniciar sesión para explorar. Solicitar cotización, acceder a condiciones privadas y crear pedidos requiere una cuenta empresarial autenticada. No se mostrarán cotizaciones, contactos privados ni precios negociados de otras empresas.
+
+En el MVP, cada tarjeta corresponde a una oferta de un proveedor: imagen, nombre del producto, presentación, nombre del proveedor, ubicación, precio publicado, mínimo, múltiplo y disponibilidad. Al abrirla se accede al detalle de la oferta dentro de MayoristaPro. El catálogo inicial puede ordenar por fecha de publicación; una sección recomendada solo se habilita cuando exista un criterio calculado y explicado.
+
+### Precio y comparación de ofertas
+
+El precio visible procede del catálogo registrado por el proveedor; no se obtiene automáticamente de tiendas externas. Se muestra en PEN y por presentación (por ejemplo, S/ 48 por caja de 12), con indicación de si incluye IGV y de que el envío se cotiza aparte. Si existen rangos por volumen, se indica “desde” junto a la cantidad necesaria para ese precio y se calcula el importe correspondiente a la cantidad seleccionada. La cotización aceptada conserva el precio final y las condiciones acordadas.
+
+Si se incorpora después una tarjeta que agrupe varios proveedores, solo reunirá ofertas del mismo producto identificado y con presentaciones comparables. El SKU es propio de cada proveedor y no demuestra equivalencia entre empresas. El precio “desde” será el menor precio publicado entre ofertas vigentes elegibles para la cantidad consultada, mostrando el proveedor de origen; no implica mejor reputación ni menor costo total con transporte. Si no hay cantidad seleccionada, cada oferta mostrará su propio mínimo y rango, sin un precio agregado engañoso.
+
+El ejemplo recordado de enlaces a Falabella u Oechsle se toma como referencia de navegación, sin afirmar que esas empresas formen parte del proyecto. El MVP no incluye redirección para comprar en tiendas externas ni extracción automática de sus precios: mantiene el recorrido catálogo → cotización → pedido en MayoristaPro. La agrupación automática por producto común queda para una ampliación que requerirá definir su identificación y contrato de datos.
+
 El catálogo presentará tarjetas con información suficiente para decidir si solicitar una cotización:
 
 | Información visible | Ejemplo ilustrativo |
@@ -55,6 +69,13 @@ La sección **Proveedores recomendados** mostrará ofertas elegibles para el pro
 El distintivo “Recomendado” debe indicar su motivo. No significa automáticamente “mejor proveedor” ni “IA entrenada”. Si todavía no se implementa recomendación, la interfaz ofrece filtros y orden por precio con ese nombre. Si falla Python, la alternativa conserva los mismos filtros de elegibilidad y se identifica como orden por precio. La validación definitiva de stock siempre ocurre al crear el pedido.
 
 La página mostrada por la docente queda pendiente de identificar. Este diseño recoge las observaciones recordadas, sin atribuirle funcionalidades no verificadas a un sitio concreto.
+
+## Referencias de plataformas
+
+- [Alibaba: herramientas de productos](https://seller.alibaba.com/pages/producttools/index.html): carga masiva de publicaciones desde Excel. Se toma como referencia para plantilla, carga y administración de un catálogo.
+- [Deltron: inscripción de distribuidores](https://www.deltron.com.pe/xtranet/distribuidores/inscripcion.html): catálogo y condiciones comerciales para distribuidores, incluidos precios según volumen. Sirve como referencia del usuario empresarial; no implica replicar sus reglas de acceso.
+
+Estas referencias sustentan decisiones concretas y no identifican la página mostrada por la docente. La venta B2B describe una relación comercial entre empresas; en MayoristaPro, la carga masiva se exige además como condición específica del MVP.
 
 ## 4. Responsabilidades arquitectónicas
 

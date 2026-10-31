@@ -1,7 +1,7 @@
 ﻿param([string]$OutputPath, [string]$PreviewDir)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if (-not $OutputPath) { $OutputPath = Join-Path $repoRoot 'presentaciones/MayoristaPro-Sprint-01.pptx' }
+if (-not $OutputPath) { $OutputPath = Join-Path $repoRoot 'presentaciones/MayoristaPro-Sprint-01-tecnologias.pptx' }
 if (-not $PreviewDir) { $PreviewDir = Join-Path $env:TEMP 'mayoristapro-ppt-preview' }
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $OutputPath),$PreviewDir | Out-Null
 
@@ -111,7 +111,7 @@ $null=Text $s 'Contar con información organizada para decidir la compra y dar s
 $s=NewSlide 'Actores y funciones principales' 'Distinguir personas de sistemas externos. El proveedor es una empresa que puede tener varios usuarios autorizados. Comprador y proveedor comparten acceso a su pedido, pero no a información privada de otras empresas. El administrador verifica y supervisa.' 'docs/01-analisis-de-sistema/01-actores.md'
 $null=Table $s @('Actor','Funciones principales') @(
     @('Comprador empresarial','Consulta catálogo, solicita cotizaciones y realiza pedidos.'),
-    @('Proveedor mayorista','Publica productos, responde ofertas y atiende pedidos.'),
+    @('Proveedor mayorista','Importa catálogos CSV/Excel, responde cotizaciones y atiende pedidos.'),
     @('Administrador','Verifica proveedores y supervisa las operaciones.')
 ) 42 120 876 310 23 @(255,621)
 $null=Text $s 'El acceso depende de la empresa, el rol y la participación en cada operación' 42 453 876 44 19 $muted
@@ -121,10 +121,20 @@ $null=Text $s 'El acceso depende de la empresa, el rol y la participación en ca
 # 05. MVP
 $s=NewSlide 'Alcance de la primera versión' 'MVP significa producto mínimo viable. El núcleo propuesto conserva el proceso de compra y reduce integraciones iniciales. La modalidad de pagos y la inclusión de IA deben validarse con la docente según la rúbrica. La primera versión puede abarcar varios sprints. No prometer fecha o costo sin estimar horas y recursos.'
 $null=Text $s 'MVP propuesto' 42 115 420 40 27 $blue $true
-$null=Text $s "Registro y permisos por empresa`r`rCatálogo y verificación manual`r`rCotización a un proveedor`r`rPedido y reserva de stock`r`rAtención y estados básicos" 42 174 415 270 22 $ink
+$null=Text $s "Registro y permisos por empresa`r`rCatálogo por CSV/Excel y verificación`r`rCotización a un proveedor`r`rPedido y reserva de stock`r`rAtención y estados básicos" 42 174 415 270 22 $ink
 $null=Text $s 'Entregas posteriores' 520 115 398 40 27 $teal $true
 $null=Text $s "Recomendaciones de proveedores`r`rFacturación y avisos externos`r`rReportes y reclamos avanzados`r`rMapas y automatizaciones" 520 174 398 240 22 $ink
 $null=Text $s 'Pagos e IA: alcance sujeto a los requisitos del curso y validación docente' 42 463 876 35 18 $muted
+
+# Catálogo mayorista
+$s=NewSlide 'Catálogo y ofertas al ingresar' 'El catálogo público muestra ofertas registradas por proveedores verificados. Cada tarjeta del MVP corresponde a un proveedor y una presentación. No se extraen precios de tiendas externas. El precio desde debe indicar el volumen al que aplica; el pedido conserva la cotización aceptada. Un comparador que agrupe varias tiendas requeriría identificar productos equivalentes y no forma parte del núcleo inicial. Solicitar cotización requiere cuenta empresarial.' 'docs/03-diseno-de-software/reglas-comerciales-mayoristas.md'
+$null=Table $s @('Elemento','Comportamiento propuesto') @(
+    @('Inicio público','Productos, imágenes, categorías y buscador antes de iniciar sesión.'),
+    @('Oferta visible','Proveedor, precio por presentación, mínimo, múltiplo y disponibilidad.'),
+    @('Precio publicado','Lo registra el proveedor. Si dice desde, indica el volumen necesario.'),
+    @('Detalle y cotización','El clic abre la oferta en MayoristaPro; cotizar requiere cuenta empresarial.')
+) 42 115 876 325 21 @(210,666)
+$null=Text $s 'Ejemplo: caja de 12 cuadernos a S/ 48; mínimo 2 cajas = S/ 96, envío aparte' 42 463 876 38 18 $blue $true
 
 # 14. Metas
 $s=NewSlide 'Atributos de calidad prioritarios' 'Todas las cifras son metas propuestas, no resultados. p95 significa que al menos 95% de solicitudes medidas cumple el límite. Los dos mil usuarios son usuarios virtuales activos con pausas, no dos mil solicitudes por segundo. La disponibilidad requiere observación mensual. Para seguridad, la aprobación se limita a la matriz de casos ejecutada.' 'docs/01-analisis-de-sistema/04-atributos-de-calidad.md; docs/01-analisis-de-sistema/08-escenarios-atributos-calidad.md'
@@ -141,7 +151,7 @@ $null=Text $s 'Metas pendientes de validación sobre el software implementado' 4
 $s=NewSlide 'Medición después del despliegue' 'Describir el procedimiento y las herramientas. k6 se ejecuta separado del backend. El perfil propone mesetas de cinco minutos en 500, mil y dos mil usuarios, con subidas de dos minutos y pausas de dos segundos. Se evalúa por endpoint y meseta, separando calentamiento. CloudWatch correlaciona recursos y latencia. La prueba de stock usa quinientos compradores distintos, una creación por comprador y cien unidades iniciales. Las respuestas de negocio esperadas se contabilizan aparte de los errores técnicos. Disponibilidad se observa un mes. Guardar versión, configuración, scripts, métricas y consultas. Los casos de desarrollo comienzan antes del despliegue.' 'docs/01-analisis-de-sistema/09-plan-de-medicion-calidad.md'
 $null=Table $s @('Prueba','Cómo se realizará','Evidencia') @(
     @('Carga con k6',"500, 1,000 y 2,000 usuarios.`rMesetas de 5 min y pausas de 2 s.",'p95 y errores por endpoint y etapa.'),
-    @('Stock concurrente',"500 compradores y 100 unidades.`rUna unidad por intento.",'100 aceptados, 400 rechazos y stock 0.'),
+    @('Stock concurrente',"500 compradores y 100 cajas.`rUna caja de 12 artículos por intento.",'100 aceptados, 400 rechazos y stock 0.'),
     @('Infraestructura','Correlacionar carga con CPU, memoria instrumentada y conexiones.','Métricas y registros en CloudWatch.'),
     @('Disponibilidad','Sondas cada minuto durante un mes.','Historial, incidentes y cobertura.')
 ) 42 113 876 330 19 @(190,405,281)

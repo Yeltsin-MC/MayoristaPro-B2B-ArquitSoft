@@ -10,19 +10,19 @@ $null=Text $s 'Selección de historias de prioridad alta del alcance general' 42
 $s=NewSlide 'Historias de usuario: proveedor y administrador' 'El proveedor publica su oferta y responde solicitudes. El administrador verifica proveedores antes de que operen. Se conservan las historias del alcance general. Las condiciones exactas y los criterios de aceptación se encuentran en la documentación del repositorio.' 'docs/01-analisis-de-sistema/02-historias-del-usuario.md'
 $null=Table $s @('ID','Historia de usuario') @(
     @('HU-04','Como administrador, quiero verificar y aprobar proveedores antes de que operen, para garantizar la confianza en la plataforma.'),
-    @('HU-05','Como proveedor, quiero publicar productos con nombre, descripción, categoría, precio, stock e imágenes, para ofrecerlos a compradores empresariales.'),
+    @('HU-08','Como proveedor, quiero cargar mi catálogo por bloques mediante CSV/Excel, revisar errores y confirmar una vista previa, para evitar registrar cada producto manualmente.'),
     @('HU-12','Como proveedor, quiero responder cotizaciones indicando precio, disponibilidad y condiciones, para ofrecer mis productos.')
 ) 42 115 876 342 22 @(112,764)
 $null=Text $s 'Selección de historias de prioridad alta del alcance general' 42 474 876 28 18 $muted
 
 $s=NewSlide 'Requisitos funcionales del proceso de compra' 'Los requisitos describen el comportamiento esperado del sistema. Esta tabla resume el contenido, conservando los identificadores originales. RF-13 y RF-14 concretan la solicitud y respuesta de cotización. RF-18 y RF-19 conectan la oferta aceptada con el pedido y la validación de stock. Presentar las metas de rendimiento aparte, como atributos de calidad.' 'docs/01-analisis-de-sistema/03-requisitos-funcionales.md'
 $null=Table $s @('ID','Comportamiento esperado') @(
-    @('RF-07','Publicar productos con precio, mínimo de compra, stock e imágenes.'),
-    @('RF-11','Buscar productos por nombre, categoría, precio y proveedor.'),
+    @('RF-07 / RF-10','Importar el catálogo CSV/Excel con validación, vista previa y confirmación; definir presentación, mínimos y múltiplos.'),
+    @('RF-11','Mostrar el catálogo al ingresar y filtrar por producto, categoría, precio y proveedor.'),
     @('RF-13 / RF-14','Solicitar cotizaciones y responder con precios y condiciones.'),
     @('RF-15 / RF-18','Aceptar una oferta y generar el pedido correspondiente.'),
-    @('RF-19 / RF-21','Validar stock con control de concurrencia y consultar pedidos.')
-) 42 115 876 342 21 @(185,691)
+    @('RF-19 / RF-21','Validar cantidades mayoristas y stock concurrente; consultar pedidos.')
+) 42 115 876 330 19 @(185,691)
 $null=Text $s 'Resumen de requisitos documentados. Implementación por etapas' 42 474 876 28 18 $muted
 
 $s=NewSlide 'Requisitos de acceso e integraciones' 'Distinguir alcance general y primera implementación. La autenticación y los permisos pertenecen al núcleo propuesto. Los requisitos de pago, facturación e IA permanecen en la visión documentada, pero su inclusión en el MVP debe validarse con la docente. El registro manual de un pago no cumple por sí solo el requisito de integración con una pasarela.' 'docs/01-analisis-de-sistema/03-requisitos-funcionales.md; README.md'
@@ -32,7 +32,7 @@ $null=Table $s @('ID','Comportamiento esperado') @(
     @('RF-22 / RF-24','Integrar una pasarela y registrar los estados del pago.'),
     @('RF-25','Integrar un PSE para emitir comprobantes electrónicos.'),
     @('RF-16 / RF-17','Recomendar proveedores y mantener la consulta ante fallas.')
-) 42 115 876 342 21 @(185,691)
+) 42 115 876 330 19 @(185,691)
 $null=Text $s 'Pagos, facturación e IA: priorización sujeta al alcance académico acordado' 42 474 876 28 17 $muted
 
 function AddDriversSlide {
