@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="1390" viewBox="0 0 1840 1390" font-family="Segoe UI,Arial,sans-serif" role="img" aria-labelledby="title desc">
+<title id="title">MayoristaPro B2B — Estilo arquitectónico</title><desc id="desc">Cliente-servidor con backend monolítico modular · Colaboración en ejecución</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10" fill="#64748B"/></marker>
+<marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L9 5 L0 10" fill="none" stroke="#475569" stroke-width="1.4"/></marker>
+<marker id="triangle" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="white" stroke="#475569"/></marker>
+<marker id="diamond" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="14" markerHeight="9" orient="auto"><path d="M1 5 L8 1 L15 5 L8 9 Z" fill="#475569"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="36" y="40" font-size="24" fill="#1E293B" font-weight="700" text-anchor="start">MayoristaPro B2B — Estilo arquitectónico</text>
+<text x="36" y="69" font-size="16" fill="#64748B" font-weight="400" text-anchor="start">Cliente-servidor con backend monolítico modular · Colaboración en ejecución</text>
+<text x="1804" y="40" font-size="14" fill="#64748B" font-weight="400" text-anchor="end">Diseño propuesto · v1.0</text>
+<text x="36" y="112" font-size="22" fill="#2467AD" font-weight="700" text-anchor="start">Una aplicación comercial desplegable; módulos internos con contratos públicos</text>
+<rect x="36" y="195" width="330" height="145" rx="12" fill="#EDF5FF" stroke="#2467AD" stroke-width="1.5"/>
+<text x="54" y="226" font-size="20" fill="#2467AD" font-weight="700" text-anchor="start">Comprador empresarial</text>
+<text x="54" y="256" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Busca productos por volumen.</text>
+<text x="54" y="281" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Solicita y acepta cotizaciones.</text>
+<rect x="36" y="390" width="330" height="145" rx="12" fill="#EDF5FF" stroke="#2467AD" stroke-width="1.5"/>
+<text x="54" y="421" font-size="20" fill="#2467AD" font-weight="700" text-anchor="start">Proveedor mayorista</text>
+<text x="54" y="451" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Importa el catálogo por bloques.</text>
+<text x="54" y="476" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Define mínimos y atiende pedidos.</text>
+<rect x="36" y="585" width="330" height="145" rx="12" fill="#EDF5FF" stroke="#2467AD" stroke-width="1.5"/>
+<text x="54" y="616" font-size="20" fill="#2467AD" font-weight="700" text-anchor="start">Administrador</text>
+<text x="54" y="646" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Verifica proveedores.</text>
+<text x="54" y="671" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Supervisa accesos y operaciones.</text>
+<rect x="410" y="355" width="240" height="195" rx="12" fill="#EDF8F0" stroke="#36814B" stroke-width="1.5"/>
+<text x="428" y="386" font-size="23" fill="#36814B" font-weight="700" text-anchor="start">Cliente web</text>
+<text x="428" y="416" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Angular + TypeScript</text>
+<text x="428" y="441" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Catálogo y tarjetas</text>
+<text x="428" y="466" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Carga CSV / Excel</text>
+<text x="428" y="491" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Cotizaciones y pedidos</text>
+<path d="M366,270 L385,270 L385,450 L410,450" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M366,465 L385,465 L385,450 L410,450" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M366,660 L385,660 L385,450 L410,450" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="392" y="326" font-size="16" fill="#607080" font-weight="400" text-anchor="start">Usa la plataforma</text>
+<rect x="700" y="160" width="760" height="770" rx="0" fill="none" stroke="#64748B" stroke-width="1.5" stroke-dasharray="9 6"/>
+<text x="716" y="186" font-size="17" fill="#1E293B" font-weight="700" text-anchor="start">BACKEND NESTJS · MONOLITO MODULAR</text>
+<rect x="730" y="210" width="700" height="110" rx="12" fill="#EDF5FF" stroke="#2467AD" stroke-width="1.5"/>
+<text x="748" y="241" font-size="23" fill="#2467AD" font-weight="700" text-anchor="start">API REST y controles de acceso</text>
+<text x="748" y="271" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Controladores HTTP, validación, roles y autorización por empresa.</text>
+<path d="M650,450 L675,450 L675,265 L730,265" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="560" y="610" font-size="17" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">Solicitudes y respuestas</text>
+<text x="560" y="628" font-size="17" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">HTTPS / JSON</text>
+<rect x="730" y="370" width="330" height="110" rx="12" fill="#EDF8F0" stroke="#36814B" stroke-width="1.5"/>
+<text x="748" y="401" font-size="19" fill="#36814B" font-weight="700" text-anchor="start">Identidad y proveedores</text>
+<text x="748" y="431" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Cuentas, permisos y verificación.</text>
+<rect x="1100" y="370" width="330" height="110" rx="12" fill="#EDF8F0" stroke="#36814B" stroke-width="1.5"/>
+<text x="1118" y="401" font-size="19" fill="#36814B" font-weight="700" text-anchor="start">Productos</text>
+<text x="1118" y="431" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Importación, SKU, mínimos y stock.</text>
+<rect x="730" y="535" width="330" height="110" rx="12" fill="#EDF8F0" stroke="#36814B" stroke-width="1.5"/>
+<text x="748" y="566" font-size="19" fill="#36814B" font-weight="700" text-anchor="start">Cotizaciones</text>
+<text x="748" y="596" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Solicitudes y ofertas por proveedor.</text>
+<rect x="1100" y="535" width="330" height="110" rx="12" fill="#EDF8F0" stroke="#36814B" stroke-width="1.5"/>
+<text x="1118" y="566" font-size="19" fill="#36814B" font-weight="700" text-anchor="start">Pedidos</text>
+<text x="1118" y="596" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Acuerdos, reservas y estados.</text>
+<rect x="730" y="700" width="330" height="110" rx="12" fill="#EDF8F0" stroke="#36814B" stroke-width="1.5"/>
+<text x="748" y="731" font-size="19" fill="#36814B" font-weight="700" text-anchor="start">Gestión operativa</text>
+<text x="748" y="761" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Despacho y recepción básicos.</text>
+<rect x="1100" y="700" width="330" height="110" rx="12" fill="#F4EEFC" stroke="#7954A7" stroke-width="1.5"/>
+<text x="1118" y="731" font-size="19" fill="#7954A7" font-weight="700" text-anchor="start">Recomendaciones</text>
+<text x="1118" y="761" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Elegibilidad y motivo del orden.</text>
+<path d="M1080,320 L1080,345" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M895,345 L1265,345" fill="none" stroke="#64748B" stroke-width="1.6"/>
+<path d="M895,345 L895,370" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M1265,345 L1265,370" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="735" y="512" font-size="18" fill="#36814B" font-weight="700" text-anchor="start">Casos de uso y colaboración mediante APIs públicas internas</text>
+<path d="M1265,645 L1265,665 L895,665 L895,645" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1080" y="689" font-size="15" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">Consulta oferta aceptada</text>
+<path d="M1265,535 L1265,480" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1328" y="516" font-size="15" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">Reserva</text>
+<text x="1118" y="838" font-size="17" fill="#7954A7" font-weight="400" text-anchor="start">Según alcance validado</text>
+<text x="735" y="875" font-size="18" fill="#607080" font-weight="700" text-anchor="start">Persistencia mediante puertos, adaptadores y unidad de trabajo</text>
+<rect x="1530" y="210" width="275" height="175" rx="12" fill="#F4EEFC" stroke="#7954A7" stroke-width="1.5"/>
+<text x="1548" y="241" font-size="18" fill="#7954A7" font-weight="700" text-anchor="start">Integraciones previstas</text>
+<text x="1548" y="271" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Pasarela de pago</text>
+<text x="1548" y="296" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Consulta de RUC</text>
+<text x="1548" y="321" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">PSE, avisos y mapas</text>
+<path d="M1430,280 L1530,280" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<text x="1496" y="253" font-size="15" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">HTTPS</text>
+<rect x="1530" y="475" width="275" height="175" rx="12" fill="#F4EEFC" stroke="#7954A7" stroke-width="1.5"/>
+<text x="1548" y="506" font-size="19" fill="#7954A7" font-weight="700" text-anchor="start">Procesos auxiliares</text>
+<text x="1548" y="536" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Python / FastAPI</text>
+<text x="1548" y="561" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">SQS y workers</text>
+<text x="1548" y="586" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Incorporación por etapas</text>
+<path d="M1430,755 L1495,755 L1495,565 L1530,565" fill="none" stroke="#64748B" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<rect x="730" y="1010" width="700" height="130" rx="12" fill="#FFF7DD" stroke="#AB7A12" stroke-width="1.5"/>
+<text x="748" y="1041" font-size="23" fill="#AB7A12" font-weight="700" text-anchor="start">PostgreSQL · Fuente de verdad comercial</text>
+<text x="748" y="1071" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Propiedad de datos por módulo. SKU único por proveedor.</text>
+<text x="748" y="1096" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Pedido y reserva comparten una transacción y conexión.</text>
+<path d="M1080,930 L1080,1010" fill="none" stroke="#64748B" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1120" y="975" font-size="18" fill="#64748B" font-weight="400" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="6" stroke-linejoin="round">SQL</text>
+<rect x="1530" y="850" width="275" height="185" rx="12" fill="#F3F5F7" stroke="#607080" stroke-width="1.5"/>
+<text x="1548" y="881" font-size="17" fill="#607080" font-weight="700" text-anchor="start">Recursos según necesidad</text>
+<text x="1548" y="911" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Redis: datos temporales</text>
+<text x="1548" y="936" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">S3: imágenes / documentos</text>
+<text x="1548" y="961" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">CloudWatch: observación</text>
+<text x="1548" y="986" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">No sustituyen PostgreSQL.</text>
+<rect x="36" y="1180" width="1768" height="125" rx="12" fill="#F3F5F7" stroke="#607080" stroke-width="1.5"/>
+<text x="54" y="1211" font-size="20" fill="#607080" font-weight="700" text-anchor="start">Lectura del diagrama</text>
+<text x="54" y="1241" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Límite discontinuo: una aplicación backend. Flechas: colaboración en ejecución; no son imports del código.</text>
+<text x="54" y="1266" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Verde: responsabilidades del núcleo. Morado y gris: capacidades previstas que se incorporan según alcance.</text>
+<text x="54" y="1291" font-size="18" fill="#1E293B" font-weight="400" text-anchor="start">Ejemplo: importar cajas con mínimo de compra; aceptar una cotización y crear un pedido sin sobreventa.</text>
+<text x="36" y="1347" font-size="18" fill="#607080" font-weight="400" text-anchor="start">El despliegue puede replicar el backend completo. La capacidad y el alcance final siguen pendientes de validación.</text>
+</svg>

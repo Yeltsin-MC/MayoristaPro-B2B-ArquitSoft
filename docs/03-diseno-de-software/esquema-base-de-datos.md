@@ -65,6 +65,12 @@ Todas las tablas usan id UUID y fechas de creación; las modificables agregan fe
 
 ## Integridad y concurrencia
 
+La operación mayorista amplía el diseño de `productos` con `sku` (único por proveedor), `multiplo_compra` y `unidades_por_presentacion`. Se conserva `unidad` como presentación de venta (caja, paquete u otra); `stock`, cantidades, mínimos y rangos de precio se expresan en esa presentación. El mínimo será positivo y compatible con el múltiplo. Los ítems de oferta y pedido conservarán una copia de presentación, equivalencia y condiciones aceptadas para no reinterpretar cantidades históricas.
+
+Para la carga masiva se proponen `importaciones_catalogo` (proveedor, responsable, estado, clave de idempotencia, vencimiento y resumen) e `importacion_filas` (lote, número de fila, SKU, datos validados y errores). El backend revalida una vista previa vigente al confirmar. Un lote aplicado no puede duplicar efectos. La retención de archivos y datos de preparación se fijará al implementar.
+
+La carga inicial declara existencias; las importaciones posteriores de metadatos no sobrescriben stock. Los ajustes de inventario tendrán responsable y motivo y se coordinarán con las reservas. Detalle: [reglas mayoristas](reglas-comerciales-mayoristas.md).
+
 - Dinero en numeric con precisión definida y moneda PEN en v1; no usar flotantes para cálculos monetarios.
 - FK y restricciones de unicidad protegen relaciones; checks validan cantidades, stock y estados. La pertenencia entre entidades se refuerza con claves compuestas o validaciones transaccionales en la implementación.
 - Crear pedido, ítems y reservas y descontar stock disponible en **una transacción y conexión**. Bloquear productos en orden estable para reducir interbloqueos; aplicar reintentos limitados ante conflictos recuperables.

@@ -126,6 +126,18 @@ Administración o proveedor sobre sus propios indicadores.
 
 ## Contratos críticos
 
+### Importación mayorista y cantidades
+
+| Método y ruta propuesta | Acceso y resultado |
+|---|---|
+| `POST /products/imports/preview` | Proveedor propietario verificado; recibe CSV/XLSX, valida y devuelve identificador de lote, filas nuevas/actualizaciones, errores por fila y vencimiento de vista previa. No publica productos todavía. |
+| `POST /products/imports/:id/confirm` | Proveedor propietario e Idempotency-Key; revalida lote vigente y confirma todos los registros en una transacción. Un lote con errores no se aplica parcialmente; reintentar no duplica efectos. |
+| `GET /products/imports/:id` | Solo proveedor propietario; consulta estado y reporte del lote sin exponer archivos de otras empresas. |
+
+La propuesta inicial limita cada archivo a 500 filas y 5 MB, pendiente de pruebas. La importación inicial declara stock; las actualizaciones de metadatos no reemplazan existencias. Los cambios posteriores de inventario se harán mediante un contrato de ajustes autorizado, por concretar antes de implementarlo.
+
+Catálogo y cotizaciones expondrán presentación, unidades por presentación, mínimo y múltiplo de compra, además del precio y stock en esa misma presentación. Las cantidades de oferta y pedido deben alcanzar el mínimo y ser múltiplos válidos; el backend revalida dentro de la reserva. Las recomendaciones filtran ofertas elegibles y devuelven un motivo y método del orden. Estas reglas amplían los contratos propuestos y quedan pendientes de implementación y OpenAPI en Sprint 02. Detalle: [reglas mayoristas](reglas-comerciales-mayoristas.md).
+
 | Operación | Entrada relevante | Resultado esperado |
 |---|---|---|
 | POST /quotations | Ítems con descripción, unidad y cantidad; proveedores destinatarios. Puede incluir producto de referencia para comparar equivalentes. | 201: solicitud e identificadores de sus ítems. |

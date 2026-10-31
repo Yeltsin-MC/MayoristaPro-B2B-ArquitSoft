@@ -17,6 +17,10 @@ Ayudar al comprador a comparar proveedores elegibles según precio, disponibilid
 
 ## Flujo de recomendación
 
+La sección **Proveedores recomendados** mostrará tarjetas con proveedor, producto, presentación, precio para la cantidad solicitada, mínimo, múltiplo, disponibilidad y motivo del orden. Antes de puntuar se filtran ofertas vigentes de proveedores verificados que puedan atender la cantidad y presentación solicitadas. Las equivalencias se normalizan al comparar presentaciones diferentes; no se inventa reputación cuando falta historial.
+
+El fallback por precio conserva esos filtros y se identifica por su método. Si aún no existe recomendación implementada, se muestra búsqueda y orden comercial sin un distintivo que sugiera una evaluación inexistente. La tarjeta no sustituye la revalidación transaccional del stock. Detalle: [operación mayorista](../03-diseno-de-software/reglas-comerciales-mayoristas.md).
+
 ```mermaid
 sequenceDiagram
     participant C as Comprador

@@ -65,6 +65,8 @@ Para evaluar **escalamiento**, se comparará el mismo perfil con una y luego dos
 
 ## 4. Concurrencia y confiabilidad — AC06 y AC07
 
+Las cantidades del ensayo se expresarán en una presentación mayorista: una caja de 12 artículos como unidad de venta, mínimo 1 caja y múltiplo 1. El stock inicial será de 100 cajas y cada comprador solicitará una caja. El informe conservará esta equivalencia para no confundir una presentación comercial con un artículo suelto.
+
 Se ejecutará EQ-06 por separado del perfil normal: **500 compradores distintos, 100 unidades disponibles y una unidad por intento**, con dos instancias backend. Cada comprador tendrá una cotización aceptada válida para el mismo producto y una clave de idempotencia diferente. Se prepararán los datos y se deshabilitarán vencimientos/cancelaciones durante la ventana controlada.
 
 k6 programará una única creación por comprador con inicio común; se registrará la dispersión real de los envíos, porque programar 500 usuarios no garantiza que lleguen en el mismo instante. No se reutilizará una sola oferta aceptada para los 500 compradores. Los pagos, si se incluyen, serán simulados y aprobados.

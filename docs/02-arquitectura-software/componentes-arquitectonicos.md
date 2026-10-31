@@ -2,13 +2,23 @@
 
 Esta vista identifica responsabilidades del backend. Los módulos son divisiones lógicas del monolito; no representan un microservicio por funcionalidad.
 
+## Diagrama de componentes de la API
+
+![Componentes de MayoristaPro: actores, aplicación web, módulos e integraciones](../../img/nivel3-componentes.png)
+
+[Ver imagen en tamaño completo](../../img/nivel3-componentes.png) · [Fuente editable SVG](../../img/fuentes-svg/nivel3-componentes.svg)
+
+El diagrama se lee de arriba hacia abajo: los tres actores utilizan Angular, que llama a la API NestJS. Dentro del límite de la API aparecen los módulos de negocio y los adaptadores de infraestructura. PostgreSQL, el proceso de recomendación y los servicios externos quedan fuera de ese contenedor. La tecnología indicada en cada caja corresponde a ese componente o contenedor.
+
+Pedidos consulta la oferta aceptada en Cotizaciones, solicita la reserva a Productos y coordina el pago con Pagos. Los identificadores RF relacionan cada módulo con sus requisitos. Se muestra la visión completa del sistema; su implementación se organiza por etapas según el alcance del MVP.
+
 ## Módulos del sistema
 
 | Módulo | Responsabilidad | Ejemplo de operación |
 |---|---|---|
 | Usuarios | Cuentas, pertenencia a empresas y permisos. | Iniciar sesión y comprobar acceso a un pedido. |
 | Proveedores | Perfil, verificación y reputación comercial. | Aprobar un proveedor y consultar sus evaluaciones. |
-| Productos | Catálogo, precios por volumen, mínimos de compra y stock. | Publicar una oferta o reservar existencias. |
+| Productos | Importación por bloques, presentaciones, mínimos, múltiplos, precios y stock. | Validar un lote o reservar existencias para una cantidad mayorista. |
 | Cotizaciones | Solicitudes, respuestas por proveedor y aceptación. | Comparar precios por ítem y condiciones. |
 | Pedidos | Pedido de un comprador y un proveedor, condiciones aceptadas y estados. | Crear un pedido pendiente de pago. |
 | Pagos | Intentos, referencias y estados de la pasarela externa. | Procesar una confirmación sin duplicar sus efectos. |
@@ -32,7 +42,7 @@ El **Producto Mínimo Viable (MVP)** es una primera versión funcional que permi
 |---|---|---|
 | Usuarios | Registro, autenticación, empresa y permisos básicos. | Administración avanzada de cuentas. |
 | Proveedores y Administración | Perfil comercial, revisión y aprobación básica del proveedor. | Supervisión integral y gestión avanzada de reputación. |
-| Productos | Publicación manual, consulta, precios por volumen, mínimos y stock. | Carga masiva y búsqueda avanzada. |
+| Productos | Carga masiva CSV/Excel con validación y vista previa; edición individual, presentaciones, mínimos, múltiplos, precios y stock. | Lotes de mayor tamaño y búsqueda avanzada. |
 | Cotizaciones | Solicitud a un proveedor, respuesta y aceptación de una oferta vigente. | Comparación automática entre múltiples proveedores y negociación avanzada. |
 | Pedidos | Creación desde oferta aceptada, reserva transaccional y consulta de estados. | Flujos comerciales adicionales. |
 | Pagos | Modalidad pendiente de acuerdo: una pasarela sandbox si la rúbrica la exige; registro manual autorizado si la docente lo permite. No se considera una integración implementada por registrar un pago manual. | Cobros reales, más medios de pago y reembolsos automatizados. |
@@ -65,6 +75,8 @@ La base del núcleo propuesto es Angular, NestJS y PostgreSQL. El monolito modul
 | Tiempo y costo | Estimar tareas, horas disponibles, recursos cloud y servicios externos antes de comprometer la fecha y el alcance final. Los créditos educativos no sustituyen la estimación. |
 
 ## Componentes dentro de cada módulo
+
+La edición individual permite mantener el catálogo. La incorporación de productos se diseña desde el inicio mediante lotes CSV/Excel. La disponibilidad y las recomendaciones consideran cantidad solicitada, presentación y mínimo de compra. Detalle: [reglas comerciales mayoristas](../03-diseno-de-software/reglas-comerciales-mayoristas.md).
 
 | Capa | Contenido | Ejemplo en Pedidos |
 |---|---|---|

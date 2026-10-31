@@ -128,38 +128,56 @@ def contenedores():
 
 
 def componentes():
-    d=Diagram('nivel3-componentes',2000,1660,'[Diagrama de componentes] MayoristaPro — API NestJS','Modelo C4 · Nivel 3 · Módulos del monolito modular; colaboración en ejecución')
-    d.box(690,120,400,105,'Aplicación web','[Contenedor: Angular]',['Interfaz de usuarios empresariales'])
-    d.boundary(45,295,1510,1120,'API MayoristaPro [Contenedor: NestJS · monolito modular]')
-    d.box(680,365,420,115,'Controladores HTTP','[Componente: presentación NestJS]',['Valida entrada e invoca casos de uso.'],COMPONENT)
-    d.edge([(890,225),(890,365)],'Invoca API [HTTPS / JSON]',(890,265))
-    xs=[90,460,830,1200]
-    row1=[('Usuarios',['Identidad, empresa y permisos.']),('Proveedores',['Perfil y verificación comercial.']),('Cotizaciones',['Solicitudes y ofertas aceptadas.']),('Recomendaciones',['Coordina Python y alternativa.'])]
-    for x,(title,lines) in zip(xs,row1): d.box(x,620,300,110,title,'[Componente: módulo]',lines,COMPONENT)
-    d.edge([(890,480),(890,550),(240,550),(240,620)],'Invoca casos de uso',(500,535))
-    for cx in [610,980,1350]: d.edge([(cx,550),(cx,620)])
-    d.edge([(890,550),(1350,550)],marker=None)
-    for x,title,lines in [(90,'Productos',['Catálogo, precios y reservas.']),(460,'Pedidos',['Condiciones, ítems y estados.']),(830,'Pagos',['Intentos y reconciliación.'])]:
-        d.box(x,900,300,120,title,'[Componente: módulo]',lines,COMPONENT)
-    d.edge([(610,900),(610,825),(240,825),(240,900)],'Reserva / libera stock',(420,810))
-    d.edge([(660,900),(660,780),(980,780),(980,730)],'Obtiene oferta aceptada',(810,766))
-    d.edge([(760,935),(830,935)],'Inicia / consulta',(795,918),size=12)
-    d.edge([(830,995),(760,995)],'Resultado verificado',(795,1045),size=12)
-    d.box(1200,900,300,160,'Gestión operativa','[Componentes: módulos]',['Entregas · Incidencias','Reportes · Administración'],COMPONENT)
-    d.edge([(680,420),(65,420),(65,1090)],marker=None)
-    d.edge([(65,1090),(1350,1090),(1350,1060)],'Controladores invocan también Productos, Pedidos, Pagos y gestión operativa',(710,1115))
-    d.edge([(240,1090),(240,1020)])
-    for cx in [610,980]: d.edge([(cx,1090),(cx,1020)])
-    d.box(1630,615,325,115,'Recomendación','[Contenedor: Python / FastAPI]',['Puntuación y explicación.'])
-    d.box(1630,900,325,120,'Pasarela de pago','[Sistema externo]',['Procesa cobros y consultas.'],EXTERNAL)
-    d.edge([(1500,675),(1630,675)],'HTTP privado',(1565,640),size=12)
-    # La salida a pasarela evita atravesar los componentes operativos.
-    d.edge([(980,900),(980,850),(1585,850),(1585,960),(1630,960)],'Cobro / consulta y notificación verificada [HTTPS]',(1300,835))
-    d.box(240,1220,360,145,'Persistencia de módulos','[Adaptadores: PostgreSQL]',['Cada módulo posee sus datos.','Transacción común para pedido y stock.'],COMPONENT)
-    d.box(870,1220,420,145,'Eventos posteriores','[Adaptadores: outbox / SQS]',['Eventos persistidos atómicamente.','Publicador y workers en el nivel 2.'],COMPONENT)
-    d.edge([(420,1090),(420,1220)],'Usa puertos internos',(420,1170))
-    d.edge([(1080,1090),(1080,1220)],'Persiste eventos',(1080,1170))
-    d.footer(1480,['Los módulos se despliegan juntos; no son microservicios.','Colaboran por contratos / API pública, sin tablas privadas ajenas.','Persistencia y eventos son infraestructura compartida, no negocio.'])
+    d=Diagram('nivel3-componentes',2200,2070,'[Diagrama de componentes] MayoristaPro — API Backend','Modelo C4 · Nivel 3 · Monolito modular NestJS · Organización interna con Clean Architecture')
+    for x,title,lines in [(420,'Comprador empresarial',['Busca, cotiza y realiza pedidos.']),(900,'Proveedor mayorista',['Carga catálogos y atiende pedidos.']),(1380,'Administrador',['Verifica y supervisa operaciones.'])]:
+        d.box(x,155,350,110,title,'[Persona]',lines,PERSON,person=True)
+    d.edge([(595,265),(595,305),(1555,305),(1555,265)],marker=None)
+    d.edge([(1075,265),(1075,360)],'Usa [HTTPS]',(1140,329))
+    d.box(850,360,450,110,'Aplicación web','[Contenedor: Angular + TypeScript]',['Interfaz según el rol de cada empresa.'])
+    d.boundary(330,545,1510,1120,'API MayoristaPro [Contenedor: NestJS / Node.js · todos los módulos se despliegan juntos]')
+    d.box(850,605,450,120,'API REST','[Componente: controladores y guards NestJS]',['Valida solicitudes, autentica con JWT','y aplica permisos por rol y empresa.'],COMPONENT)
+    d.edge([(1075,470),(1075,605)],'Invoca /api/v1 [HTTPS / JSON]',(1075,515))
+    d.rect(355,810,1460,640,fill='none',stroke='#A6B4C6',dash=True)
+    d.text(375,838,'Módulos de negocio · cada uno contiene aplicación, dominio y adaptadores',17,bold=True)
+    xs=[390,750,1110,1470]
+    modules=[
+        (0,875,'Usuarios',['Identidad, empresa y permisos.','RF-01 a RF-04 · RF-35']),
+        (1,875,'Proveedores',['Perfil, aprobación y evaluaciones.','RF-05 · RF-06 · RF-28']),
+        (2,875,'Productos',['CSV/Excel, mínimos y múltiplos.','Catálogo, precios y stock.','RF-07 a RF-12']),
+        (3,875,'Recomendaciones',['Coordina puntuación y alternativa.','RF-16 · RF-17']),
+        (0,1100,'Cotizaciones',['Solicitudes, respuestas y aceptación.','RF-13 a RF-15']),
+        (1,1100,'Pedidos',['Condiciones, reservas y estados.','RF-18 a RF-21 · RF-39']),
+        (2,1100,'Pagos',['Intentos y resultados verificables.','RF-22 a RF-24']),
+        (3,1100,'Entregas',['Despacho y recepción.','RF-26 · RF-27']),
+        (0,1310,'Incidencias',['Reclamos y seguimiento.','RF-29 · RF-30']),
+        (1,1310,'Reportes',['Ventas e indicadores.','RF-32 · RF-33']),
+        (2,1310,'Administración',['Supervisión de la operación.','RF-31'])]
+    for col,y,title,lines in modules:
+        d.box(xs[col],y,310,120,title,'[Componente: módulo]',lines,COMPONENT)
+    d.edge([(1075,725),(1075,780)],'Invoca casos de uso de los módulos',(1075,765))
+    # Relaciones representativas; canales reservados entre filas.
+    d.edge([(905,1100),(905,1040),(1265,1040),(1265,995)],'Reserva / libera stock',(1085,1030))
+    d.edge([(750,1160),(700,1160)],'Consulta oferta',(725,1080),size=12)
+    d.edge([(1060,1150),(1110,1150)],'Inicia pago',(1085,1120),size=12)
+    d.edge([(1110,1190),(1060,1190)],'Resultado',(1085,1230),size=12)
+    # Infraestructura compartida: no son módulos de negocio ni accesos a tablas ajenas.
+    d.box(420,1510,570,115,'Persistencia y unidad de trabajo','[Componentes: adaptadores PostgreSQL]',['Repositorios por módulo; pedido y reserva atómicos.','Auditoría de operaciones relevantes · RF-36'],COMPONENT)
+    d.box(1150,1510,570,115,'Eventos posteriores','[Componentes: outbox y adaptadores de mensajería]',['Persiste tareas de notificación y facturación.','RF-25 · RF-34'],COMPONENT)
+    d.edge([(355,1180),(340,1180),(340,1475),(705,1475),(705,1510)],'Los casos de uso invocan puertos de persistencia',(725,1465))
+    d.edge([(1435,1450),(1435,1510)],'Registra eventos',(1510,1485))
+    d.box(30,880,260,125,'Consulta de RUC','[Sistema externo]',['Validación empresarial.'],EXTERNAL)
+    d.edge([(750,930),(725,930),(725,785),(310,785),(310,940),(290,940)],'Consulta [HTTPS / REST]',(485,775))
+    d.box(1890,875,280,130,'Recomendación','[Contenedor: Python / FastAPI]',['Puntúa y explica resultados.','Ampliación del MVP.'])
+    d.edge([(1780,930),(1890,930)],'HTTP privado',(1835,910),size=12)
+    d.box(1890,1100,280,120,'Pasarela de pago','[Sistema externo]',['Cobros y consulta de estado.','Integración en sandbox.'],EXTERNAL)
+    d.edge([(1420,1160),(1445,1160),(1445,1265),(1865,1265),(1865,1160),(1890,1160)],'Solicita / consulta cobro [HTTPS / REST]',(1670,1255),size=13)
+    d.box(30,1100,260,135,'Archivos del catálogo','[Contenedor: Amazon S3]',['Imágenes y documentos.','Adaptador de almacenamiento.'])
+    d.edge([(1265,875),(1265,795),(305,795),(305,1160),(290,1160)],'Guarda / obtiene archivos [HTTPS]',(570,815),size=13)
+    d.box(430,1745,550,130,'Base de datos','[Contenedor: PostgreSQL]',['Datos de negocio, reservas, auditoría y outbox.','Cada módulo administra sus propias tablas.'],db=True)
+    d.edge([(705,1625),(705,1745)],'Lee / escribe [SQL]',(705,1695))
+    d.box(1160,1745,550,130,'Publicador y workers','[Contenedores auxiliares: NestJS + SQS]',['Notificaciones y facturación mediante proveedores.','Procesamiento diferido; reintentos e idempotencia.'])
+    d.edge([(1435,1625),(1435,1745)],'Publica tareas durables',(1435,1695))
+    d.footer(1910,['Flechas: colaboración en ejecución mediante contratos públicos; no imports circulares.','Se muestran relaciones principales; los controladores atienden todos los módulos.','Visión completa propuesta: las integraciones y auxiliares se implementan por etapas.'])
     d.save()
 
 

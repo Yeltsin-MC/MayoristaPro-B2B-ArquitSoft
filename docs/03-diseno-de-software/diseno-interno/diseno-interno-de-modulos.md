@@ -63,7 +63,7 @@ Si se repite una solicitud con la misma clave de idempotencia y contenido, se de
 |---|---|
 | RN-01 | Cada pedido tiene una empresa compradora, un usuario responsable y un proveedor. |
 | RN-02 | El pedido contiene al menos un ítem del mismo proveedor. |
-| RN-03 | Las cantidades son positivas y cumplen los mínimos de compra. |
+| RN-03 | Las cantidades usan la presentación ofertada, son positivas, alcanzan el mínimo y respetan el múltiplo; la transacción revalida esas condiciones. |
 | RN-04 | El total se obtiene de cantidades y precios aceptados, con una política explícita de moneda y redondeo. |
 | RN-05 | Solo se inicia un nuevo pago de un pedido pendiente y con reserva vigente; una confirmación tardía se reconcilia. |
 | RN-06 | No se cancela directamente un pedido despachado o entregado. La cancelación de uno pagado requiere resolver el reembolso. |

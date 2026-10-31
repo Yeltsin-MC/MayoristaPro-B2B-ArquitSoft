@@ -11,7 +11,7 @@
 | RF-07 | El sistema debe permitir al proveedor publicar productos con nombre, descripción, categoría, precio, cantidad mínima de compra, stock e imágenes. | Productos | Alta |
 | RF-08 | El sistema debe permitir al proveedor definir precios diferenciados por rango de cantidad. | Productos | Alta |
 | RF-09 | El sistema debe permitir al proveedor actualizar precios, stock y características de sus productos. | Productos | Alta |
-| RF-10 | El sistema debe permitir al proveedor cargar múltiples productos mediante archivo CSV/Excel. | Productos | Media |
+| RF-10 | El sistema debe permitir al proveedor cargar su catálogo por bloques mediante CSV/Excel, revisar errores y confirmar un lote válido sin duplicados. | Productos | Alta |
 | RF-11 | El sistema debe permitir buscar productos por nombre, categoría, rango de precio y proveedor. | Búsqueda | Alta |
 | RF-12 | El sistema debe permitir comparar hasta 5 proveedores para un mismo producto. | Búsqueda | Alta |
 | RF-13 | El sistema debe permitir al comprador solicitar cotización a uno o varios proveedores. | Cotizaciones | Alta |
@@ -20,7 +20,7 @@
 | RF-16 | El sistema debe generar recomendaciones de proveedores mediante IA según precio, disponibilidad, ubicación e historial. | IA | Alta |
 | RF-17 | El sistema debe permitir consultar y comparar proveedores aunque el servicio de IA no esté disponible. | IA | Media |
 | RF-18 | El sistema debe permitir al comprador confirmar un pedido a partir de una cotización aceptada. | Pedidos | Alta |
-| RF-19 | El sistema debe validar stock y aplicar control de concurrencia antes de confirmar un pedido. | Pedidos | Alta |
+| RF-19 | El sistema debe revalidar presentación, mínimo, múltiplo y stock y aplicar control de concurrencia al crear un pedido. | Pedidos | Alta |
 | RF-20 | El sistema debe gestionar los estados del pedido: Pendiente, Confirmado, En preparación, Despachado, Entregado, Cancelado. | Pedidos | Alta |
 | RF-21 | El sistema debe permitir al comprador y proveedor consultar el estado e historial de pedidos. | Pedidos | Alta |
 | RF-22 | El sistema debe integrarse con pasarela de pago externa para procesar transacciones. | Pagos | Alta |
@@ -44,6 +44,8 @@
 | RF-40 | El sistema debe permitir pruebas de carga para evaluar rendimiento, concurrencia y estabilidad. | Rendimiento | Media |
 
 ## Relación entre historias y requisitos
+
+La carga masiva es parte del núcleo inicial. Las reglas de presentación, mínimos, múltiplos y tarjetas recomendadas se detallan en [operación mayorista](../03-diseno-de-software/reglas-comerciales-mayoristas.md). Los IDs existentes se conservan.
 
 | Historia | Funcionalidad | Requisitos relacionados |
 |---|---|---|

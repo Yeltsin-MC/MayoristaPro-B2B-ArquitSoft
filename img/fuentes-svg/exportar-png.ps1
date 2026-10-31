@@ -1,3 +1,4 @@
+param([string]$Filter = 'nivel*.svg')
 # Exporta los SVG propios a PNG con Microsoft Edge en modo headless.
 # Ejecutar: powershell -ExecutionPolicy Bypass -File img/fuentes-svg/exportar-png.ps1
 $ErrorActionPreference = 'Stop'
@@ -5,7 +6,7 @@ $edgePath = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
 if (-not (Test-Path -LiteralPath $edgePath)) { throw 'Microsoft Edge no encontrado. Ajusta $edgePath.' }
 $outputDir = Split-Path -Parent $PSScriptRoot
 $profileDir = Join-Path ([System.IO.Path]::GetTempPath()) ('mayoristapro-c4-edge-' + [guid]::NewGuid())
-foreach ($source in Get-ChildItem -LiteralPath $PSScriptRoot -Filter 'nivel*.svg') {
+foreach ($source in Get-ChildItem -LiteralPath $PSScriptRoot -Filter $Filter) {
     [xml]$svg = Get-Content -LiteralPath $source.FullName -Raw -Encoding UTF8
     $width = [int]$svg.DocumentElement.width
     $height = [int]$svg.DocumentElement.height

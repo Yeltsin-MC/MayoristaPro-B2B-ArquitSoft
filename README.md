@@ -44,7 +44,7 @@ La primera versión de MayoristaPro se plantea como un producto mínimo viable (
 | Núcleo propuesto para el MVP | Evolución posterior o alcance por confirmar |
 |---|---|
 | Registro, inicio de sesión y permisos por empresa. | Administración avanzada de cuentas y reputación. |
-| Perfil y verificación manual del proveedor; catálogo y stock. | Consulta automática de RUC, mapas y carga masiva. |
+| Perfil y verificación manual; catálogo por carga masiva CSV/Excel, mínimos y stock. | Consulta automática de RUC, mapas y ampliación de importaciones. |
 | Solicitud a un proveedor, respuesta y aceptación de cotización. | Comparación automática entre varios proveedores y negociación avanzada. |
 | Pedido desde oferta aceptada, reserva transaccional y estados básicos de atención. | Seguimiento logístico avanzado, reclamos y reportes completos. |
 | Consulta del pedido por comprador y proveedor autorizados. | IA, facturación PSE y notificaciones externas, según exigencia académica. |

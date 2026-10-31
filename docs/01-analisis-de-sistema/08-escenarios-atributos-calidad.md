@@ -71,6 +71,8 @@ El [plan de medición de calidad](09-plan-de-medicion-calidad.md) detalla herram
 
 ## EQ-06. Concurrencia
 
+Para el caso mayorista, la unidad del ensayo será una **presentación comercial**: por ejemplo, caja de 12 artículos, con mínimo de 1 caja y múltiplo de 1. Las 100 unidades iniciales y cada intento de una unidad se interpretan como 100 cajas y una caja, respectivamente. El ensayo no representa venta minorista de un artículo suelto; se registrará la equivalencia en el conjunto de datos.
+
 | Elemento | Descripción |
 |---|---|
 | Atributo | AC06, AC07 |

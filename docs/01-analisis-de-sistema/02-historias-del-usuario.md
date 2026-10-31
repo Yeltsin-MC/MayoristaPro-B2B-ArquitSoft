@@ -9,7 +9,7 @@
 | HU-05 | Como proveedor, quiero publicar productos con nombre, descripción, categoría, precio, stock e imágenes, para ofrecerlos a compradores empresariales. | Alta |
 | HU-06 | Como proveedor, quiero definir precios diferenciados según la cantidad solicitada, para incentivar compras al por mayor. | Alta |
 | HU-07 | Como proveedor, quiero actualizar precios, stock y características de mis productos, para mantener la información vigente. | Alta |
-| HU-08 | Como proveedor, quiero subir múltiples productos mediante archivo CSV/Excel, para reducir el tiempo de carga de mi catálogo. | Media |
+| HU-08 | Como proveedor, quiero cargar mi catálogo por bloques mediante CSV/Excel, revisar errores y confirmar una vista previa, para registrar o actualizar mis productos sin cargarlos uno por uno. | Alta |
 | HU-09 | Como comprador empresarial, quiero buscar productos por nombre, categoría, precio o proveedor, para encontrar lo que necesito rápidamente. | Alta |
 | HU-10 | Como comprador empresarial, quiero comparar varios proveedores para un mismo producto, para elegir la mejor oferta. | Alta |
 | HU-11 | Como comprador empresarial, quiero solicitar cotización a uno o varios proveedores, para obtener precios y condiciones antes de comprar. | Alta |
@@ -41,14 +41,14 @@ Estos criterios describen el comportamiento esperado; su implementación y verif
 | HU-05 | Solo un proveedor autorizado publica productos propios con los campos obligatorios. |
 | HU-06 | Rangos de cantidad sin superposición y precio aplicable al volumen solicitado. |
 | HU-07 | Solo el proveedor propietario modifica el producto; los pedidos conservan el precio aceptado. |
-| HU-08 | Validación del archivo y reporte de registros aceptados y errores. |
+| HU-08 | Vista previa por SKU propio, errores por fila y confirmación transaccional de un lote válido sin duplicados. |
 | HU-09 | Resultados filtrables por nombre, categoría, precio y proveedor. |
 | HU-10 | Comparación de hasta cinco proveedores con precio, disponibilidad y condiciones. |
 | HU-11 | Solicitud con productos, cantidades y proveedores destinatarios. |
 | HU-12 | Cada proveedor responde con sus precios por ítem y condiciones de entrega. |
 | HU-13 | El comprador compara respuestas y acepta una oferta vigente. |
 | HU-14 | Lista ordenada con criterios explicables; consulta manual disponible si falla la recomendación. |
-| HU-15 | Pedido de un comprador y un proveedor; validación del mínimo de compra, precio y stock dentro de la operación transaccional. |
+| HU-15 | Pedido de un comprador y un proveedor; revalidación de presentación, mínimo, múltiplo, precio y stock dentro de la transacción. |
 | HU-16 | Consulta de estados: pendiente, confirmado, en preparación, despachado, entregado y cancelado. |
 | HU-17 | El proveedor solo gestiona pedidos en los que participa y transiciones permitidas. |
 | HU-18 | Pago externo confirmado mediante notificación verificada o consulta; duplicados no generan otro cobro o actualización. |
