@@ -116,6 +116,8 @@ $null=Table $s @('Actor','Funciones principales') @(
 ) 42 120 876 310 23 @(255,621)
 $null=Text $s 'El acceso depende de la empresa, el rol y la participación en cada operación' 42 453 876 44 19 $muted
 
+. (Join-Path $PSScriptRoot 'contenido-requisitos.ps1')
+
 # 05. MVP
 $s=NewSlide 'Alcance de la primera versión' 'MVP significa producto mínimo viable. El núcleo propuesto conserva el proceso de compra y reduce integraciones iniciales. La modalidad de pagos y la inclusión de IA deben validarse con la docente según la rúbrica. La primera versión puede abarcar varios sprints. No prometer fecha o costo sin estimar horas y recursos.'
 $null=Text $s 'MVP propuesto' 42 115 420 40 27 $blue $true
@@ -123,6 +125,31 @@ $null=Text $s "Registro y permisos por empresa`r`rCatálogo y verificación manu
 $null=Text $s 'Entregas posteriores' 520 115 398 40 27 $teal $true
 $null=Text $s "Recomendaciones de proveedores`r`rFacturación y avisos externos`r`rReportes y reclamos avanzados`r`rMapas y automatizaciones" 520 174 398 240 22 $ink
 $null=Text $s 'Pagos e IA: alcance sujeto a los requisitos del curso y validación docente' 42 463 876 35 18 $muted
+
+# 14. Metas
+$s=NewSlide 'Atributos de calidad prioritarios' 'Todas las cifras son metas propuestas, no resultados. p95 significa que al menos 95% de solicitudes medidas cumple el límite. Los dos mil usuarios son usuarios virtuales activos con pausas, no dos mil solicitudes por segundo. La disponibilidad requiere observación mensual. Para seguridad, la aprobación se limita a la matriz de casos ejecutada.' 'docs/01-analisis-de-sistema/04-atributos-de-calidad.md; docs/01-analisis-de-sistema/08-escenarios-atributos-calidad.md'
+$null=Table $s @('Atributo','Meta propuesta','Herramienta') @(
+    @('Rendimiento','p95 de hasta 500 ms por endpoint local.','k6'),
+    @('Escalabilidad','Evaluar hasta 2,000 usuarios virtuales.','k6 + CloudWatch'),
+    @('Concurrencia','Sin sobreventa ni stock negativo.','k6 + SQL'),
+    @('Seguridad','Rechazar accesos indebidos de la matriz.','Jest + HTTP'),
+    @('Disponibilidad','99.5% mensual, RTO 4 h y RPO 1 h.','Sondas + CloudWatch')
+) 42 111 876 342 19 @(196,445,235)
+$null=Text $s 'Metas pendientes de validación sobre el software implementado' 42 473 876 28 19 $blue $true
+
+# 15. Medicion
+$s=NewSlide 'Medición después del despliegue' 'Describir el procedimiento y las herramientas. k6 se ejecuta separado del backend. El perfil propone mesetas de cinco minutos en 500, mil y dos mil usuarios, con subidas de dos minutos y pausas de dos segundos. Se evalúa por endpoint y meseta, separando calentamiento. CloudWatch correlaciona recursos y latencia. La prueba de stock usa quinientos compradores distintos, una creación por comprador y cien unidades iniciales. Las respuestas de negocio esperadas se contabilizan aparte de los errores técnicos. Disponibilidad se observa un mes. Guardar versión, configuración, scripts, métricas y consultas. Los casos de desarrollo comienzan antes del despliegue.' 'docs/01-analisis-de-sistema/09-plan-de-medicion-calidad.md'
+$null=Table $s @('Prueba','Cómo se realizará','Evidencia') @(
+    @('Carga con k6',"500, 1,000 y 2,000 usuarios.`rMesetas de 5 min y pausas de 2 s.",'p95 y errores por endpoint y etapa.'),
+    @('Stock concurrente',"500 compradores y 100 unidades.`rUna unidad por intento.",'100 aceptados, 400 rechazos y stock 0.'),
+    @('Infraestructura','Correlacionar carga con CPU, memoria instrumentada y conexiones.','Métricas y registros en CloudWatch.'),
+    @('Disponibilidad','Sondas cada minuto durante un mes.','Historial, incidentes y cobertura.')
+) 42 113 876 330 19 @(190,405,281)
+$null=Text $s 'Ejecución pendiente. El informe incluirá versión, entorno y resultados reales' 42 466 876 34 18 $muted
+
+AddDriversSlide
+
+. (Join-Path $PSScriptRoot 'contenido-tecnologias.ps1')
 
 # 06. Estilos
 $s=NewSlide 'Estilos y decisiones arquitectónicas' 'Explicar que las decisiones corresponden a perspectivas diferentes y se combinan. Cliente-servidor separa navegador y API. El monolito modular reúne los módulos comerciales en un backend desplegable. Clean Architecture separa reglas y tecnología dentro de cada módulo. El procesamiento asíncrono se propone para tareas posteriores si entran en el alcance. Se evita dividir todo el negocio en microservicios por el esfuerzo operativo adicional.' 'docs/02-arquitectura-software/estilo-arquitectonico.md; docs/02-arquitectura-software/enfoque-arquitectonico.md'
@@ -146,61 +173,6 @@ Arrow $s 485 350 485 263 'Implementa puertos' 345 291 200
 Arrow $s 785 350 785 263 'Implementa repositorios' 693 291 225
 $null=Text $s 'Las reglas de negocio permanecen independientes de NestJS y PostgreSQL' 42 474 876 30 18 $muted
 
-# 08. C4 Contexto
-$s=NewSlide 'C4 nivel 1: contexto del sistema' 'Esta vista trata MayoristaPro como un único sistema. Identificar primero sus tres actores y después las integraciones de la visión general. El proceso Python de recomendación es propio, por lo que aparece dentro del sistema en el nivel 2. Los diagramas completos están en los anexos.' 'docs/04-modelo-c4/Nivel1-Diagrama-de-Contexto.md'
-$null=Box $s 'Comprador' 'Busca y compra' 42 110 260 100 $navy
-$null=Box $s 'Proveedor' 'Publica y atiende' 350 110 260 100 $navy
-$null=Box $s 'Administrador' 'Verifica y supervisa' 658 110 260 100 $navy
-$null=Box $s 'MayoristaPro' 'Marketplace entre empresas' 235 290 490 110 $blue 27
-Arrow $s 172 210 320 290
-Arrow $s 480 210 480 290
-Arrow $s 788 210 640 290
-$null=Text $s 'Servicios externos previstos: pagos, consulta RUC, PSE, avisos y mapas' 42 453 876 48 21 $muted
-
-# 09. C4 Contenedores
-$s=NewSlide 'C4 nivel 2: contenedores' 'En C4 un contenedor es una aplicación o almacén de datos. La base inicial propuesta es Angular, la API NestJS y PostgreSQL. La visión completa añade Redis, S3, Python y SQS con workers. Su incorporación depende del alcance validado. No se expone PostgreSQL ni Python directamente al navegador.' 'docs/04-modelo-c4/Nivel2-Diagrama-de-Contenedores.md; README.md'
-$null=Box $s 'Aplicación web' "Angular`rInterfaz del navegador" 42 180 245 145 $blue 24
-$null=Box $s 'API comercial' "NestJS`rMonolito modular" 357 180 245 145 $blue 24
-$null=Box $s 'Datos comerciales' "PostgreSQL`rPedidos y stock" 672 180 245 145 $blue 24
-Arrow $s 287 252 357 252 'HTTPS / JSON' 287 140 130
-Arrow $s 602 252 672 252 'SQL' 624 140 60
-$null=Text $s 'Núcleo inicial propuesto' 42 112 876 34 23 $teal $true
-$null=Text $s "Visión ampliada: Redis, S3, Python y SQS con workers`rIncorporación por etapas según necesidad y requisitos" 42 392 876 85 23 $ink
-
-# 10. C4 Componentes
-$s=NewSlide 'C4 nivel 3: componentes de la API' 'Abrir la API comercial del nivel anterior. Cada caja representa un módulo lógico del mismo backend. Pedidos obtiene la oferta de Cotizaciones y reserva stock mediante Productos. Pagos coordina la pasarela cuando esa integración forma parte de la entrega. Las colaboraciones usan contratos públicos, sin leer tablas privadas de otros módulos.' 'docs/04-modelo-c4/Nivel3-Diagrama-de-Componentes.md'
-$null=Text $s 'API NestJS: módulos con contratos públicos' 42 107 876 35 24 $blue $true
-$null=Box $s 'Usuarios' 'Identidad y permisos' 42 175 255 100 $blue
-$null=Box $s 'Proveedores' 'Perfil y verificación' 352 175 255 100 $blue
-$null=Box $s 'Cotizaciones' 'Ofertas aceptadas' 662 175 255 100 $blue
-$null=Box $s 'Productos' 'Catálogo y reservas' 42 345 255 100 $teal
-$null=Box $s 'Pedidos' 'Condiciones y estados' 352 345 255 100 $teal
-$null=Box $s 'Pagos' 'Intentos y confirmación' 662 345 255 100 $gray
-Arrow $s 352 395 297 395
-Arrow $s 607 395 662 395
-$seg=$s.Shapes.AddLine(575,345,575,315); $seg.Line.ForeColor.RGB=$muted; $seg.Line.Weight=1.5
-$seg=$s.Shapes.AddLine(575,315,735,315); $seg.Line.ForeColor.RGB=$muted; $seg.Line.Weight=1.5
-Arrow $s 735 315 735 275
-$null=Text $s 'Oferta aceptada' 590 287 140 23 14 $muted
-$null=Text $s 'Pagos sujeto al alcance acordado. Otros módulos permanecen en la visión general' 42 474 876 30 17 $muted
-
-# 11. Codigo
-$s=NewSlide 'C4 nivel 4: diseño de Pedidos' 'Vista resumida de clases con objetos editables. El controlador usa CrearPedidoUseCase, que coordina puertos y crea Pedido. Pedido contiene al menos un ItemPedido. PostgresOrderRepository implementa OrderRepository. El diseño completo añade unidad de trabajo, stock, cotizaciones y confirmación de pago. Las firmas definitivas corresponden a la implementación.' 'docs/04-modelo-c4/Nivel4-Diagrama-de-Codigo.md'
-ClassBox $s 'OrderController' '+ crear()' 42 155 260 105
-ClassBox $s 'CrearPedidoUseCase' '+ ejecutar()' 352 155 270 105
-ClassBox $s 'Pedido' "- estado`r+ crear()`r+ confirmarPagoVerificado()" 672 155 246 153
-ClassBox $s 'OrderRepository' "Interfaz`r+ guardar()`r+ buscarPorId()" 352 345 270 130
-ClassBox $s 'PostgresOrderRepository' '+ guardar()' 42 345 260 130
-ClassBox $s 'ItemPedido' "cantidad y precio`r+ subtotal()" 672 355 246 120
-Arrow $s 302 207 352 207
-Arrow $s 622 207 672 207
-Arrow $s 487 260 487 345
-$line=$s.Shapes.AddLine(302,409,342,409); $line.Line.ForeColor.RGB=$muted; $line.Line.Weight=1.5; $line.Line.DashStyle=4
-$triangle=$s.Shapes.AddShape(7,341,403,12,12); $triangle.Rotation=90; $triangle.Fill.ForeColor.RGB=$white; $triangle.Line.ForeColor.RGB=$muted
-$null=Text $s 'Implementa' 234 317 120 25 14 $muted
-$line=$s.Shapes.AddLine(795,308,795,355); $line.Line.ForeColor.RGB=$muted; $line.Line.Weight=1.5; $line.Line.BeginArrowheadStyle=5
-$null=Text $s 'Contiene 1..*' 808 320 110 28 14 $muted
-
 # 12. Datos
 $s=NewSlide 'Diseño de datos del flujo principal' 'Modelo resumido del flujo, con relaciones y entidades editables. Cada empresa agrupa usuarios. El proveedor publica productos. Una cotización tiene respuestas y una oferta aceptada origina como máximo un pedido. Los ítems conservan precios históricos y las reservas vinculan pedido y producto. El esquema completo incluye destinatarios, detalles de cotización, pagos y auditoría. Cada pedido corresponde a un comprador y un proveedor.' 'docs/03-diseno-de-software/esquema-base-de-datos.md'
 $null=Table $s @('Grupo de datos','Relaciones principales') @(
@@ -222,51 +194,12 @@ $null=Table $s @('Paso','Responsabilidad') @(
 ) 42 118 876 285 21 @(245,631)
 $null=Text $s 'La llamada a la pasarela ocurre después de guardar el pedido' 42 438 876 45 24 $blue $true
 
-# 14. Metas
-$s=NewSlide 'Atributos de calidad prioritarios' 'Todas las cifras son metas propuestas, no resultados. p95 significa que al menos 95% de solicitudes medidas cumple el límite. Los dos mil usuarios son usuarios virtuales activos con pausas, no dos mil solicitudes por segundo. La disponibilidad requiere observación mensual. Para seguridad, la aprobación se limita a la matriz de casos ejecutada.' 'docs/01-analisis-de-sistema/04-atributos-de-calidad.md; docs/01-analisis-de-sistema/08-escenarios-atributos-calidad.md'
-$null=Table $s @('Atributo','Meta propuesta','Herramienta') @(
-    @('Rendimiento','p95 de hasta 500 ms por endpoint local.','k6'),
-    @('Escalabilidad','Evaluar hasta 2,000 usuarios virtuales.','k6 + CloudWatch'),
-    @('Concurrencia','Sin sobreventa ni stock negativo.','k6 + SQL'),
-    @('Seguridad','Rechazar accesos indebidos de la matriz.','Jest + HTTP'),
-    @('Disponibilidad','99.5% mensual, RTO 4 h y RPO 1 h.','Sondas + CloudWatch')
-) 42 111 876 342 19 @(196,445,235)
-$null=Text $s 'Metas pendientes de validación sobre el software implementado' 42 473 876 28 19 $blue $true
-
-# 15. Medicion
-$s=NewSlide 'Medición después del despliegue' 'Describir el procedimiento y las herramientas. k6 se ejecuta separado del backend. El perfil propone mesetas de cinco minutos en 500, mil y dos mil usuarios, con subidas de dos minutos y pausas de dos segundos. Se evalúa por endpoint y meseta, separando calentamiento. CloudWatch correlaciona recursos y latencia. La prueba de stock usa quinientos compradores distintos, una creación por comprador y cien unidades iniciales. Las respuestas de negocio esperadas se contabilizan aparte de los errores técnicos. Disponibilidad se observa un mes. Guardar versión, configuración, scripts, métricas y consultas. Los casos de desarrollo comienzan antes del despliegue.' 'docs/01-analisis-de-sistema/09-plan-de-medicion-calidad.md'
-$null=Table $s @('Prueba','Cómo se realizará','Evidencia') @(
-    @('Carga con k6',"500, 1,000 y 2,000 usuarios.`rMesetas de 5 min y pausas de 2 s.",'p95 y errores por endpoint y etapa.'),
-    @('Stock concurrente',"500 compradores y 100 unidades.`rUna unidad por intento.",'100 aceptados, 400 rechazos y stock 0.'),
-    @('Infraestructura','Correlacionar carga con CPU, memoria instrumentada y conexiones.','Métricas y registros en CloudWatch.'),
-    @('Disponibilidad','Sondas cada minuto durante un mes.','Historial, incidentes y cobertura.')
-) 42 113 876 330 19 @(190,405,281)
-$null=Text $s 'Ejecución pendiente. El informe incluirá versión, entorno y resultados reales' 42 466 876 34 18 $muted
-
 # 16. Cierre
 $s=NewSlide 'Siguiente etapa: implementación' 'Cerrar conectando la documentación con el trabajo posterior. El Sprint 01 entrega análisis, decisiones y diseño. A continuación se valida el alcance del MVP y se implementa el núcleo con sus pruebas. Swagger/OpenAPI pertenece al Sprint 02. La evaluación real de capacidad requiere desplegar el software y conservar evidencias. El presupuesto y las horas disponibles todavía requieren estimación. No prometer todas las integraciones de la visión general en una sola entrega.'
 $null=Text $s 'Sprint 01' 42 116 420 40 28 $blue $true
 $null=Text $s "Análisis y alcance propuesto`r`rArquitectura y diagramas C4`r`rDiseño de datos y módulos`r`rPlan de medición de calidad" 42 180 400 250 23 $ink
 $null=Text $s 'Sprint 02 y siguientes' 520 116 398 40 28 $teal $true
 $null=Text $s "Validar el MVP e implementar el núcleo`r`rDocumentar la API con Swagger`r`rDesplegar el entorno de pruebas`r`rEjecutar y registrar mediciones" 520 180 398 250 23 $ink
-
-# Anexos: imagenes originales, sin recorte ni deformacion.
-$annexes=@(
-    @('Anexo: contexto completo','nivel1-contexto.png'),
-    @('Anexo: contenedores completos','nivel2-contenedores.png'),
-    @('Anexo: componentes completos','nivel3-componentes.png'),
-    @('Anexo: clases de Pedidos','nivel4-clases.png'),
-    @('Anexo: secuencia de pedido y pago','nivel4-secuencia.png')
-)
-Add-Type -AssemblyName System.Drawing
-foreach($entry in $annexes) {
-    $s=NewSlide $entry[0] 'Diagrama completo de consulta. Corresponde a la visión general del diseño y no obliga a desplegar todos los componentes en el MVP. Consultar este anexo ante preguntas sobre detalles y ampliar en PowerPoint para leer sus etiquetas.' ('img/'+$entry[1])
-    $file=Join-Path $repoRoot ('img/'+$entry[1])
-    $image=[System.Drawing.Image]::FromFile($file)
-    $ratio=[Math]::Min(876.0/$image.Width,415.0/$image.Height)
-    $w=$image.Width*$ratio; $h=$image.Height*$ratio; $image.Dispose()
-    $null=$s.Shapes.AddPicture($file,0,-1,(480-$w/2),90,$w,$h)
-}
 
 $deck.SaveAs($OutputPath,24)
 for($i=1;$i -le $deck.Slides.Count;$i++) {

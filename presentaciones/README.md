@@ -1,10 +1,10 @@
 # Presentación del Sprint 01
 
-[Abrir la presentación actualizada](MayoristaPro-Sprint-01-actualizado.pptx)
+[Abrir la presentación con tecnologías](MayoristaPro-Sprint-01-tecnologias.pptx)
 
-La presentación contiene 16 diapositivas principales y 5 anexos con los diagramas completos. Las notas de cada diapositiva incluyen explicaciones y referencias a la documentación del proyecto. En PowerPoint se pueden consultar desde **Vista > Página de notas** o durante la exposición con la **Vista Moderador**.
+La presentación contiene 18 diapositivas: carátula, problema, propuesta, actores, historias de usuario, requisitos funcionales, MVP, atributos y medición de calidad, drivers, tecnologías, arquitectura y diseño. Las notas de cada diapositiva incluyen explicaciones y referencias a la documentación del proyecto. En PowerPoint se pueden consultar desde **Vista > Página de notas** o durante la exposición con la **Vista Moderador**.
 
-El texto, las tablas y los diagramas resumidos son editables. Los diagramas completos de los anexos están insertados como imágenes y sus fuentes SVG se encuentran en `img/fuentes-svg/`.
+El texto, las tablas y el esquema de capas son editables. Los diagramas C4 se mostrarán directamente desde [la documentación en GitHub](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/tree/main/docs/04-modelo-c4) y no forman parte de esta versión del PowerPoint. Las versiones anteriores se conservan como archivos separados.
 
 Para regenerar en Windows con PowerPoint instalado, desde la raíz del repositorio:
 
@@ -15,3 +15,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File presentaciones/fuentes/gener
 El generador crea una presentación nueva a partir del contenido de su script. Los cambios realizados directamente en el PowerPoint no se incorporan automáticamente al generador.
 
 Escudo: Universidad Nacional de San Cristóbal de Huamanga, disponible en [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Escudo_de_la_UNSCH.png), licencia [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Imagen original conservada y escalada proporcionalmente. La atribución también figura en las notas de la carátula.
+
+Logos de tecnologías: [Devicon](https://github.com/devicons/devicon), licencia MIT conservada en `recursos/tecnologias/LICENSE-devicon.txt`. Los logos identifican las tecnologías y conservan sus colores originales.
