@@ -2,6 +2,24 @@
 
 Incremento desde `main` (`8c2e5b4`), rama `sprint-2/carga-masiva-catalogo`. Especificación, plan y aceptación del recorrido Angular → NestJS → PostgreSQL. T2 conserva la identidad y el catálogo sigue siendo público.
 
+## Estado real y criterios de aceptación
+
+La implementación de T3 está disponible desde `b993dfc`: migración, API, interfaz Angular y pruebas HTTP con PostgreSQL. Esta especificación registra ese comportamiento existente. La continuación conserva el código y completa su trazabilidad. La revisión interactiva de navegador sigue pendiente; compilar Angular no acredita por sí solo esa comprobación.
+
+| ID | Criterio verificable | Prueba o comprobación |
+|---|---|---|
+| T3-AC01 | CSV y XLSX generan vista previa sin modificar productos y pueden confirmarse. Ambas plantillas son utilizables. | [CSV y catálogo](../tests/imports.integration.cjs#L66); [XLSX real y plantillas](../tests/imports.integration.cjs#L151). |
+| T3-AC02 | Solo una vinculación activa con permiso de publicación y proveedor verificado opera sobre lotes propios. Un proveedor pendiente o ajeno no los confirma ni consulta. | [Aislamiento y proveedor pendiente](../tests/imports.integration.cjs#L101); [revocación y pérdida de verificación](../tests/imports.integration.cjs#L178). |
+| T3-AC03 | Validar presentación, equivalencia, enteros, mínimo/múltiplo, precio, moneda, IGV, publicación y SKU duplicados; informar fila y columna. | [Errores por fila y columna](../tests/imports.integration.cjs#L114); [fórmulas y estructura inválida](../tests/imports.integration.cjs#L151). |
+| T3-AC04 | Una fila inválida impide aplicar todo el lote. Un fallo SQL durante la aplicación revierte productos, lote y auditoría juntos. | [Lote inválido sin cambios parciales](../tests/imports.integration.cjs#L114); [rollback real y reintento](../tests/imports.integration.cjs#L192). |
+| T3-AC05 | Repetir o confirmar simultáneamente el lote no duplica productos ni auditoría; se exige clave y huella correcta. | [Confirmación repetida y concurrente](../tests/imports.integration.cjs#L80). |
+| T3-AC06 | Identificar por SKU del proveedor; actualizar metadatos preservando stock vigente, incluso si se movió después de la vista previa. | [Conservación de stock](../tests/imports.integration.cjs#L91); [mismo SKU en proveedores distintos](../tests/imports.integration.cjs#L101). |
+| T3-AC07 | Un cambio de SKU o metadatos posterior a la vista previa exige revisar de nuevo. Una inserción concurrente del SKU esperado como nuevo también se detecta. | [SKU renombrado y revisión de metadatos](../tests/imports.integration.cjs#L130); [dos lotes para un SKU ausente](../tests/imports.integration.cjs#L144). |
+| T3-AC08 | Los publicados aparecen en catálogo público, los borradores no; se informa disponibilidad según stock y mínimo. | [Publicaciones y borradores](../tests/imports.integration.cjs#L66); [stock inferior al mínimo](../tests/imports.integration.cjs#L91). |
+| T3-AC09 | Rechazar archivos mayores de 5 MiB, más de 500 filas y vistas previas vencidas; admitir 500 productos válidos. | [Límites y lote de 500](../tests/imports.integration.cjs#L170); [vencimiento](../tests/imports.integration.cjs#L178). |
+| T3-AC10 | Mantener catálogo e identidad T1/T2, y compilar ambas aplicaciones. | [Prueba T1](../tests/catalog.integration.cjs#L4), [pruebas T2](../tests/identity.integration.cjs#L7), `npm run build` y `npm run test:integration`. Resultados reales al final de esta especificación. |
+| T3-AC11 | Angular permite cargar, revisar errores, confirmar, descargar reporte y recargar catálogo. | [Componente de carga](../apps/web/src/catalog-import.ts). Plantilla verificada por compilación; comprobación interactiva pendiente mediante los pasos de navegador indicados abajo. |
+
 ## Comportamiento
 
 1. Un usuario con permiso `publish`, vinculación activa y proveedor verificado descarga la plantilla CSV o XLSX. Completa hasta 500 filas y 5 MiB (5 × 1024 × 1024 bytes).
@@ -81,7 +99,16 @@ npm run test:integration
 
 Detén antes los servidores de desarrollo al reinstalar dependencias en Windows. PostgreSQL debe estar disponible y `.env` configurado como en [T1](sprint-2-base-catalogo.md). Las pruebas T2/T3 crean y eliminan esquemas aislados, por lo que la cuenta de pruebas necesita ese permiso. No se borran empresas de desarrollo.
 
-Inicia `npm run dev:api` y `npm run dev:web` en terminales separadas. Sigue [T2](sprint-2-identidad.md) para registrar una empresa ficticia, aprobar su vinculación y verificar por separado al proveedor. Ingresa como responsable, abre la carga masiva, descarga la plantilla y revisa un lote. Introduce un precio inválido para ver el error por fila y la confirmación bloqueada. Corrige el archivo, vuelve a cargarlo y confirma: los productos con `publicado=true` aparecen en el catálogo. Reimporta el mismo SKU con otro nombre y stock diferente: se actualiza el nombre, manteniendo existencias.
+### Pasos de navegador
+
+1. Inicia `npm run dev:api` y `npm run dev:web` en terminales separadas y abre `http://localhost:4200`.
+2. Sigue [T2](sprint-2-identidad.md#revisión-local) para crear un administrador local si todavía no existe. En «Solicitar alta», registra una empresa ficticia con correo, contraseña, RUC, razón social y evidencia ficticia. Ingresa como administrador y abre «Solicitudes (administración)» para aprobar la vinculación. Usa el ID del proveedor mostrado allí para verificarlo por separado.
+3. Sal de administración e ingresa con la cuenta de la empresa. Si ya habías ingresado antes de la verificación, pulsa «Mi empresa» para actualizar su estado. Con permiso `publish` y proveedor verificado aparece «Carga masiva del catálogo».
+4. Descarga «Plantilla CSV» o «Plantilla Excel». Conserva encabezados y completa una fila con un SKU nuevo, presentación `caja`, 12 unidades, precio `48.00`, `PEN`, IGV `true`, mínimo `2`, múltiplo `1`, stock `20` y publicado `true`.
+5. Para comprobar los errores, cambia primero el precio a `abc`, selecciona el archivo y pulsa «Cargar y revisar lote». Debe aparecer el error de la columna `precio` en su fila y no debe estar disponible la confirmación. Ningún producto se modifica.
+6. Corrige el precio a `48.00`, guarda el archivo y vuelve a seleccionarlo y cargarlo. Revisa el resumen, el detalle y el vencimiento; pulsa «Confirmar lote completo». Debe aparecer el resultado aplicado y el producto en el catálogo público. Si hay más de 20 productos, usa la paginación para localizarlo.
+7. Repite el recorrido con el otro formato. Usa el mismo SKU de tu proveedor, cambia el nombre y declara stock `999`: la vista previa debe indicar actualización y stock conservado; al confirmar cambia el nombre y permanece el stock vigente, no `999`.
+8. Pulsa «Descargar reporte CSV» y comprueba las filas, acciones, estado y errores del lote. La repetición de confirmaciones, los cambios concurrentes de SKU y los accesos ajenos se verifican de forma reproducible en las pruebas enlazadas en la matriz.
 
 ## Aceptación automatizada
 
@@ -104,4 +131,14 @@ D4 sigue abierta para transporte, impuestos, redondeo y rangos sin precio de las
 
 500 filas/5 MiB se usan como límites operativos iniciales de la propuesta y se prueban funcionalmente, sin afirmar capacidad de carga general. Imágenes, importación asíncrona y movimientos autorizados de inventario siguen pendientes de su contrato. El criterio Redis y las pruebas de carga pertenecen a evidencia posterior.
 
-Verificación local del 10/11/2026: migración aplicada y compilación Angular/NestJS correcta. La batería T1–T3 pasó 19 pruebas con PostgreSQL real. La revisión visual quedó bloqueada porque el servicio de navegador no estaba disponible y el navegador local no devolvió estado accesible; no se afirma una prueba E2E de navegador. El recorrido de archivos, vista previa, confirmación y catálogo sí se verificó automáticamente por HTTP.
+### Resultado de la última verificación local
+
+Ejecución del 10/11/2026 sobre esta misma rama, conservando la implementación `b993dfc` y completando la especificación:
+
+| Comando | Resultado real |
+|---|---|
+| `npm run db:migrate` | Código de salida 0; migraciones al día, sin errores. |
+| `npm run build` | Código de salida 0; NestJS/TypeScript y Angular compilados. |
+| `npm run test:integration` | Código de salida 0; Node reportó 19 pruebas aprobadas, 0 fallidas y 0 omitidas. Incluye catálogo T1, identidad T2 e importación T3 con PostgreSQL real. |
+
+La revisión visual anterior quedó bloqueada porque el servicio de navegador no estaba disponible y el navegador local no devolvió estado accesible. Esta continuación no realizó una nueva prueba interactiva: T3-AC11 conserva esa comprobación pendiente. El recorrido de archivos, vista previa, confirmación y catálogo sí se verificó automáticamente por HTTP; no se afirma una prueba E2E de navegador.
