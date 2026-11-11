@@ -6,7 +6,7 @@ Definen cómo debe comportarse MayoristaPro. Las cifras son metas de diseño pen
 |---|---|---|
 | AC01 | Rendimiento | Meta p95 de 500 ms o menos para consultas y operaciones locales definidas en EQ-01. |
 | AC02 | Disponibilidad | Meta mensual de 99.5%; recuperación en hasta 4 horas (RTO) y pérdida máxima objetivo de 1 hora de datos (RPO). |
-| AC03 | Escalabilidad | Evaluar hasta 2,000 usuarios concurrentes y permitir agregar instancias del backend. |
+| AC03 | Escalabilidad | Evaluar al menos 2.000 usuarios virtuales concurrentes y permitir agregar instancias del backend. |
 | AC04 | Seguridad | Controlar el acceso por identidad, rol, empresa y participación en la operación. |
 | AC05 | Mantenibilidad | Separar módulos y capas para concentrar cada cambio en su responsabilidad. |
 | AC06 | Concurrencia | Evitar sobreventa y stock negativo ante pedidos simultáneos. |
@@ -28,7 +28,7 @@ El [plan de medición](09-plan-de-medicion-calidad.md) concreta endpoints, carga
 | AC03 | k6 y Amazon CloudWatch | Incrementar la carga de 500 a 1,000 y 2,000 usuarios virtuales. Comparar latencia y errores con CPU, memoria si está instrumentada y conexiones de base de datos; registrar recursos e instancias usados. |
 | AC04 | Pruebas automatizadas con Jest y solicitudes HTTP de prueba | Intentar operaciones con distintos roles y empresas, tokens inválidos y acceso a recursos ajenos. Registrar casos autorizados/no autorizados y comprobar que no se filtran datos. |
 | AC05 | Jest y análisis de dependencias con ESLint | Cambiar de forma controlada un adaptador, ejecutar regresión y revisar imports. Evidencia: pruebas aprobadas y ausencia de dependencias prohibidas en Dominio. |
-| AC06 | k6 y consultas SQL en PostgreSQL | Ejecutar el escenario EQ-06: 500 compradores, una unidad por intento y 100 unidades iniciales. Contrastar respuestas con pedidos, ítems, reservas y stock final. Los rechazos esperados por stock no son errores técnicos. |
+| AC06 | k6 y PostgreSQL | EQ-06: 500 compradores, una caja por intento y 100 cajas iniciales. Contrastar respuestas con pedidos, ítems, reservas y stock final. |
 | AC07 | Jest, sandbox de pagos y PostgreSQL | Simular fallo, timeout, reintentos y eventos duplicados. Verificar rollback local, una sola aplicación de cada efecto y reconciliación sin pedidos o reservas huérfanos. |
 | AC08 | Consultas de audit_log y registros en CloudWatch | Ejecutar operaciones conocidas y contrastarlas con sus registros de actor, fecha, entidad y cambio. Comprobar que no se registran secretos. |
 | AC09 | Pruebas HTTP automatizadas y sandboxes disponibles | Probar respuestas válidas, rechazo, timeout y duplicados por integración. Registrar tiempos, estados y activación del fallback de IA según EQ-07. |

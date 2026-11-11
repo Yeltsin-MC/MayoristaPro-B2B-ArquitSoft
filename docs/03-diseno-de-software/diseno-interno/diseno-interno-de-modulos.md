@@ -53,7 +53,7 @@ El adaptador de stock pertenece a Productos y el adaptador de la pasarela a Pago
 | 4 | Bloquear productos en orden estable, reservar stock y guardar pedido e ítems. | Una sola confirmación de transacción o rollback completo. |
 | 5 | Responder con pedido pendiente y vencimiento de reserva. | El pedido existe antes de contactar la pasarela. |
 | 6 | Pagos registra un intento e inicia la operación externa. | Referencia persistida y resultado pendiente o definitivo. |
-| 7 | Procesar confirmación o consulta verificada. | Pedido confirmado, rechazo o estado por reconciliar. |
+| 7 | Consultar resultado verificable y aplicar el cambio local. | Intento, pedido, reserva y outbox se actualizan juntos cuando corresponda. |
 
 Si se repite una solicitud con la misma clave de idempotencia y contenido, se devuelve el resultado previo. Si cambia el contenido con la misma clave, se rechaza el conflicto.
 
@@ -68,7 +68,7 @@ Si se repite una solicitud con la misma clave de idempotencia y contenido, se de
 | RN-05 | Solo se inicia un nuevo pago de un pedido pendiente y con reserva vigente; una confirmación tardía se reconcilia. |
 | RN-06 | No se cancela directamente un pedido despachado o entregado. La cancelación de uno pagado requiere resolver el reembolso. |
 | RN-07 | Pedido y reserva se persisten atómicamente antes de iniciar el pago externo. |
-| RN-08 | Un rechazo definitivo permite liberar la reserva de forma idempotente; un timeout exige consultar el pago antes de liberarla. |
+| RN-08 | Un timeout o un resultado incierto mantiene el caso en reconciliación. Un rechazo definitivo se procesa según la política de reintentos y liberación pendiente de aprobación. |
 | RN-09 | Los precios son positivos y proceden del servidor, nunca del importe declarado por el cliente. |
 | RN-10 | Solo un pedido en preparación puede pasar a despachado. |
 

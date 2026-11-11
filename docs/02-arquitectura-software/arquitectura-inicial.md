@@ -1,5 +1,7 @@
 # Arquitectura inicial
 
+La vista siguiente muestra la evolución prevista. El [despliegue académico](despliegue-academico.md) concreta el entorno inicial y el de carga.
+
 MayoristaPro es un marketplace B2B que conecta proveedores mayoristas con negocios compradores de Ayacucho. Esta vista presenta el diseño propuesto; el despliegue y su capacidad se validarán durante la implementación.
 
 ## Vista general
@@ -63,4 +65,4 @@ Los módulos y sus responsabilidades se detallan en [Componentes arquitectónico
 | Redis | Caché compartida entre instancias. | Hosting administrado o propio según recursos disponibles. |
 | S3, SQS y CloudWatch | Archivos, cola y monitoreo. | Verificar acceso y límites de la cuenta educativa. |
 
-**Objetivo de evaluación:** hasta 2,000 usuarios concurrentes según los escenarios de calidad. Este diseño no demuestra esa capacidad ni presupone que tres instancias serán suficientes.
+**Objetivo de evaluación:** al menos 2.000 usuarios virtuales concurrentes según los escenarios de calidad. Este diseño no demuestra esa capacidad ni presupone que tres instancias serán suficientes.

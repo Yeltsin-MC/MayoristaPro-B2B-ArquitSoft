@@ -2,7 +2,7 @@
 
 **Pregunta:** ¿quién usa MayoristaPro y con qué sistemas se relaciona? La plataforma se muestra como una sola caja; no se detallan frameworks ni bases de datos.
 
-![Diagrama de contexto de MayoristaPro](../../img/nivel1-contexto.png)
+![Diagrama de contexto de MayoristaPro](../../img/fuentes-svg/nivel1-contexto.svg)
 
 **Fuente editable:** [nivel1-contexto.svg](../../img/fuentes-svg/nivel1-contexto.svg).
 
@@ -16,8 +16,8 @@
 ## Límites del sistema
 
 - El negocio es B2B; no incluye grupos de consumidores, custodia de fondos ni transporte propio.
-- La recomendación Python es un componente propio de MayoristaPro: se detalla en el nivel 2, no como un proveedor externo de IA en v1.
+- La asistencia de comparación es una capacidad de MayoristaPro. Si se usa un modelo administrado, la vista de despliegue académico muestra esa dependencia.
 - Consulta de RUC y facturación son responsabilidades distintas; no se presupone que el PSE provea ambas.
-- Se diseñará para evaluar 2,000 usuarios concurrentes. No se afirma que esa capacidad ya esté demostrada.
+- Se diseñará para evaluar al menos 2.000 usuarios virtuales concurrentes. No se afirma que esa capacidad ya esté demostrada.
 
 **Siguiente vista:** [Nivel 2: contenedores](Nivel2-Diagrama-de-Contenedores.md).

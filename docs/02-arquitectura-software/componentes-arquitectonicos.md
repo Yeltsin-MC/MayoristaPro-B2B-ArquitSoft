@@ -45,9 +45,9 @@ La carga masiva y el catálogo visible al ingresar son condiciones del núcleo i
 | Usuarios | Registro, autenticación, empresa y permisos básicos. | Administración avanzada de cuentas. |
 | Proveedores y Administración | Perfil comercial, revisión y aprobación básica del proveedor. | Supervisión integral y gestión avanzada de reputación. |
 | Productos | Carga masiva CSV/Excel obligatoria, con validación y vista previa; catálogo visible al ingresar, tarjetas por oferta y proveedor; edición individual, presentaciones, mínimos, múltiplos, precios y stock. | Lotes de mayor tamaño y búsqueda avanzada. |
-| Cotizaciones | Solicitud a un proveedor, respuesta y aceptación de una oferta vigente. | Comparación automática entre múltiples proveedores y negociación avanzada. |
+| Cotizaciones | Primera prueba del recorrido con un proveedor; para la demo de IA se requieren varias respuestas a una misma solicitud. | Negociación avanzada y comparación entre catálogos independientes. |
 | Pedidos | Creación desde oferta aceptada, reserva transaccional y consulta de estados. | Flujos comerciales adicionales. |
-| Pagos | Modalidad pendiente de acuerdo: una pasarela sandbox si la rúbrica la exige; registro manual autorizado si la docente lo permite. No se considera una integración implementada por registrar un pago manual. | Cobros reales, más medios de pago y reembolsos automatizados. |
+| Pagos | Mercado Pago Checkout Pro en modo de prueba, con notificaciones verificadas y reconciliación. | Cobros reales, más medios de pago y automatización adicional. |
 | Entregas | Registro básico de despacho y confirmación de recepción. | Integraciones logísticas y seguimiento avanzado. |
 | IA | Fuera del núcleo mínimo propuesto; su inclusión y método se confirmarán frente a la exigencia académica. La búsqueda y selección manual siguen disponibles. | Recomendación por reglas, modelo entrenado o API externa según requisito, datos y evaluación. |
 | Reportes e Incidencias | Se mantienen como alcance documentado, fuera del núcleo inicial propuesto. | Dashboards, reportes y seguimiento completo de reclamos. |
@@ -55,22 +55,22 @@ La carga masiva y el catálogo visible al ingresar son condiciones del núcleo i
 
 ### Condiciones académicas y criterio de aceptación
 
-- El MVP contempla despliegue real en **AWS** y evaluación progresiva con **k6 hasta 2,000 usuarios concurrentes**. Son objetivos por comprobar, no capacidad demostrada.
+- El MVP contempla despliegue real en **AWS** y evaluación progresiva con **k6 al menos 2.000 usuarios virtuales concurrentes**. Son objetivos por comprobar, no capacidad demostrada.
 - La puntuación por reglas es un punto de partida; si el requisito de IA exige un modelo entrenado u otra técnica, deberá incorporarse al alcance acordado antes de darlo por cumplido.
 - No se posponen requisitos obligatorios de la rúbrica sin acordarlo con la docente. La prioridad del MVP no elimina el alcance general documentado.
 - Recorrido del núcleo a demostrar: una empresa compradora se registra, consulta productos de un proveedor verificado manualmente, solicita y acepta una cotización, crea un pedido sin sobreventa y consulta su atención, despacho y recepción básicos.
-- La demostración incluye accesos autorizados, rechazo por stock insuficiente y rollback ante fallas de creación. Si se acuerda pago sandbox, se añadirá su confirmación, idempotencia y reconciliación; si se admite registro manual, solo un responsable autorizado podrá verificarlo y quedará auditado. La confirmación y el avance del pedido respetarán esa modalidad y requerirán ajustar los contratos antes de implementar.
+- La demostración incluye accesos autorizados, rechazo por stock insuficiente y rollback de creación. El pago de prueba incluye confirmación verificable, idempotencia y reconciliación.
 - Las pruebas de recuperación de recomendación, PSE y otras integraciones se ejecutarán cuando esas capacidades entren en una entrega. Los escenarios y el plan de calidad conservan las metas generales; cada informe identificará qué alcance está realmente desplegado y qué pruebas siguen pendientes.
 
 La primera funcionalidad del Sprint 02 será la base de ese recorrido: identidad empresarial, catálogo y pedido con reserva. Las siguientes entregas completarán el MVP acordado.
 
 ### Infraestructura inicial y viabilidad
 
-La base del núcleo propuesto es Angular, NestJS y PostgreSQL. El monolito modular y las capas internas se mantienen aunque no se desplieguen todos los componentes auxiliares desde el inicio. Los C4 y contratos actuales representan la visión general; al validar el MVP se actualizará la vista de implementación y, si cambia la modalidad de pago, sus contratos y estados.
+La base del núcleo es Angular, NestJS y PostgreSQL. Los C4 existentes representan la visión general. La [vista de despliegue académico](despliegue-academico.md) identifica el entorno público inicial y el de carga.
 
 | Decisión de alcance | Criterio propuesto |
 |---|---|
-| Redis, SQS y workers | Incorporarlos cuando exista una necesidad de caché o tareas asíncronas del alcance acordado, o evidencia de las pruebas. |
+| Redis, SQS y workers | Redis para caché de catálogo público. SQS y workers separados se evalúan según tareas requeridas. La recuperación de reservas y pagos requiere un ejecutor durable aunque se use PostgreSQL sin SQS. |
 | Python / recomendación | Incorporarlo si se incluye recomendación y se valida el método exigido por el curso. |
 | Servicios externos | Limitar el número de integraciones iniciales; acordar primero cuáles son obligatorias. |
 | Despliegue y escalamiento | Mantener AWS y evaluar progresivamente la carga; aumentar recursos según mediciones y presupuesto. No prometer capacidad antes de probar. |

@@ -37,6 +37,8 @@ Los negocios compradores de Ayacucho necesitan encontrar proveedores mayoristas,
 
 El proyecto surgió como AyniCompra y fue reformulado a **MayoristaPro B2B**. El diseño vigente corresponde a comercialización entre empresas.
 
+El [diagnóstico y plan del Sprint 2](docs/05-preparacion-sprint-2.md) registra la rúbrica y las decisiones pendientes. Véanse el [flujo comercial](docs/03-diseno-de-software/flujo-comercial-sprint-2.md) y el [despliegue académico](docs/02-arquitectura-software/despliegue-academico.md).
+
 ## Alcance de la primera versión — MVP
 
 La carga masiva CSV/Excel es obligatoria para el MVP; la edición individual sirve para mantenimiento. Al ingresar, el catálogo mostrará tarjetas de ofertas con proveedor, precio por presentación y condiciones mayoristas. [Detalle de catálogo, precios y referencias B2B](docs/03-diseno-de-software/reglas-comerciales-mayoristas.md).
@@ -47,13 +49,13 @@ La primera versión de MayoristaPro se plantea como un producto mínimo viable (
 |---|---|
 | Registro, inicio de sesión y permisos por empresa. | Administración avanzada de cuentas y reputación. |
 | Perfil y verificación manual; catálogo por carga masiva CSV/Excel, mínimos y stock. | Consulta automática de RUC, mapas y ampliación de importaciones. |
-| Solicitud a un proveedor, respuesta y aceptación de cotización. | Comparación automática entre varios proveedores y negociación avanzada. |
+| Primera prueba con un proveedor; varias respuestas a una solicitud para la demo de IA. | Negociación avanzada y comparación entre catálogos independientes. |
 | Pedido desde oferta aceptada, reserva transaccional y estados básicos de atención. | Seguimiento logístico avanzado, reclamos y reportes completos. |
 | Consulta del pedido por comprador y proveedor autorizados. | IA, facturación PSE y notificaciones externas, según exigencia académica. |
 
-**Pagos:** se acordará con la docente si el MVP requiere una pasarela en sandbox o permite registro manual verificado por un responsable autorizado. El registro manual no se presentará como cobro integrado ni permitirá al comprador confirmar su propio pago. Si se exige la pasarela, se priorizará una sola integración y se ajustará el resto del alcance.
+**Pagos:** Mercado Pago Checkout Pro en modo de prueba para la entrega académica. El retorno del navegador sirve para mostrar el estado y la confirmación depende de una verificación del backend. El perfil exacto de la API se comprobará con las credenciales de prueba.
 
-La base tecnológica propuesta para el núcleo es **Angular + NestJS + PostgreSQL**. Redis, Python, SQS y workers se incorporarán cuando el alcance acordado o las pruebas justifiquen su necesidad. No se afirma que esta base ya cumpla las metas de carga. AWS y los 2,000 usuarios concurrentes se mantienen como objetivos académicos pendientes de evaluación; una exigencia obligatoria no se elimina mediante esta priorización.
+La base del núcleo es **Angular + NestJS + PostgreSQL**. Redis se incorpora para demostrar caché del catálogo público. El despliegue académico se prevé en AWS con Cloudflare para DNS/CDN, sujeto a elegibilidad de servicios y presupuesto. La meta de al menos 2.000 usuarios virtuales concurrentes se comprobará con k6.
 
 El MVP puede abarcar varios sprints; **Sprint 01 entrega el diseño y Sprint 02 inicia la implementación**. El tiempo y costo aún deben estimarse con las semanas, horas disponibles y servicios seleccionados. El detalle está en la [priorización de módulos del MVP](docs/02-arquitectura-software/componentes-arquitectonicos.md#primera-versión-mvp).
 
@@ -77,19 +79,19 @@ Las siguientes decisiones describen la arquitectura general prevista. Su incorpo
 | Frontend | Angular y TypeScript. |
 | Backend | NestJS, Node.js y TypeScript. |
 | Datos | PostgreSQL y Redis; MongoDB y Elasticsearch solo como evolución si se justifican. |
-| Recomendación | Python y FastAPI con puntuación por reglas en v1. Modelo entrenado con Scikit-learn o API externa sujeto a datos y evaluación. |
+| Recomendación | Asistencia para comparar cotizaciones mediante un puerto de aplicación. El proveedor del modelo queda pendiente de una prueba técnica y verificación de costo. |
 | Cloud | AWS: EC2, RDS, S3, SQS y CloudWatch; ALB para evaluar escalamiento y Cloudflare según disponibilidad del plan. |
-| Pagos y comprobantes | Pasarela externa y PSE, con proveedores y contratos sandbox por confirmar. |
+| Pagos y comprobantes | Mercado Pago Checkout Pro en modo de prueba. La entrega de facturación PSE y su proveedor se confirman por separado. |
 | Otros servicios | Consulta de RUC, notificaciones y mapas con OpenStreetMap/MapLibre según integración seleccionada. |
 | Pruebas | Pruebas unitarias, de integración y de carga con k6 previstas para la implementación. |
 
-La recomendación por reglas es una primera propuesta explicable; su aceptación frente al requisito académico de IA debe confirmarse. No se presenta como un modelo entrenado.
+El backend conserva los cálculos de costo, unidades y elegibilidad. El modelo interpreta preferencias y explica diferencias a partir de datos autorizados. El orden determinista mantiene la comparación disponible ante fallos del modelo.
 
 ## Metas de calidad
 
 | Meta propuesta | Cómo se validará |
 |---|---|
-| Hasta 2,000 usuarios concurrentes como requisito académico. | Pruebas de carga con operaciones, duración, datos e infraestructura documentados. |
+| Al menos 2.000 usuarios virtuales concurrentes como requisito académico. | Pruebas de carga con operaciones, duración, datos e infraestructura documentados. |
 | p95 de 500 ms o menos en los endpoints locales definidos. | Medición por operación; dependencias externas evaluadas por separado. |
 | Sin sobreventa ni stock negativo. | Confirmaciones simultáneas sobre inventario limitado. |
 | Disponibilidad mensual objetivo de 99.5%. | Monitoreo y pruebas de recuperación. |

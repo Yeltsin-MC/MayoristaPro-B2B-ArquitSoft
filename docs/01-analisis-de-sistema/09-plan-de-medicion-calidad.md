@@ -67,13 +67,13 @@ Para evaluar **escalamiento**, se comparará el mismo perfil con una y luego dos
 
 Las cantidades del ensayo se expresarán en una presentación mayorista: una caja de 12 artículos como unidad de venta, mínimo 1 caja y múltiplo 1. El stock inicial será de 100 cajas y cada comprador solicitará una caja. El informe conservará esta equivalencia para no confundir una presentación comercial con un artículo suelto.
 
-Se ejecutará EQ-06 por separado del perfil normal: **500 compradores distintos, 100 unidades disponibles y una unidad por intento**, con dos instancias backend. Cada comprador tendrá una cotización aceptada válida para el mismo producto y una clave de idempotencia diferente. Se prepararán los datos y se deshabilitarán vencimientos/cancelaciones durante la ventana controlada.
+Se ejecutará EQ-06 por separado del perfil normal: **500 compradores distintos, 100 cajas disponibles y una caja por intento**, con dos instancias backend. Cada comprador tendrá una oferta aceptada distinta para el mismo producto y una clave diferente. Se deshabilitarán vencimientos y cancelaciones durante la ventana controlada.
 
-k6 programará una única creación por comprador con inicio común; se registrará la dispersión real de los envíos, porque programar 500 usuarios no garantiza que lleguen en el mismo instante. No se reutilizará una sola oferta aceptada para los 500 compradores. Los pagos, si se incluyen, serán simulados y aprobados.
+k6 programará una única creación por comprador con inicio común; se registrará la dispersión real de los envíos, porque programar 500 usuarios no garantiza que lleguen en el mismo instante. No se reutilizará una sola oferta aceptada para los 500 compradores. La prueba de sobreventa termina al crear la reserva. Los pagos se verifican en los escenarios de confiabilidad.
 
 **Aprobación:** 100 pedidos aceptados y 400 rechazos por falta de stock, stock disponible final 0, sin cantidades negativas, duplicados ni reservas huérfanas. Se contará por producto uniendo pedidos, pedido_items y reservas_stock; no bastará contar respuestas HTTP. Consumir una reserva pagada no debe descontar el stock por segunda vez.
 
-En pruebas adicionales con Jest, PostgreSQL y un adaptador controlado se provocarán: fallo antes del commit, timeout de pago, respuesta definitiva rechazada y evento de pago duplicado. Se verificará respectivamente rollback completo, estado pendiente hasta reconciliación, liberación única y aplicación única del efecto. Cada caso incluirá su condición inicial, plazo de espera configurado, resultado esperado y consultas antes/después; los plazos de reconciliación se fijarán al implementar la política de reintentos.
+En pruebas adicionales con Jest, PostgreSQL y un adaptador controlado se provocarán: fallo antes del commit, timeout de pago, respuesta definitiva rechazada y evento de pago duplicado. Se verificará respectivamente rollback completo, estado pendiente hasta reconciliación, aplicación de la política de rechazo aprobada y efecto único. Cada caso incluirá su condición inicial, plazo de espera configurado, resultado esperado y consultas antes/después; los plazos de reconciliación se fijarán al implementar la política de reintentos.
 
 ## 5. Disponibilidad y recuperación — AC02
 

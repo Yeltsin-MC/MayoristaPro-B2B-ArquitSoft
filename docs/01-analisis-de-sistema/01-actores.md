@@ -22,6 +22,6 @@ MayoristaPro conecta empresas proveedoras con negocios compradores de Ayacucho. 
 
 ## Recomendación de proveedores
 
-Es un componente propio de MayoristaPro, ejecutado en un proceso Python separado y consultado por el backend. En v1 se propone una puntuación por reglas; el uso de un modelo entrenado requiere datos y evaluación. Si falla, la búsqueda y la comparación siguen disponibles. Una API de IA de terceros se considera una evolución futura.
+NestJS coordina la comparación de cotizaciones y llama al modelo a través de un puerto. El modelo recibe datos autorizados y la comparación determinista sigue disponible ante fallos.
 
 **Ejemplo de interacción:** una librería solicita cotizaciones, compara las respuestas y realiza un pedido a un proveedor verificado. Cada parte consulta la operación que le corresponde.

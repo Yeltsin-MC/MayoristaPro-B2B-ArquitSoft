@@ -16,7 +16,7 @@ El proveedor descarga una plantilla CSV o Excel, completa sus productos, carga e
 
 Propuesta inicial: hasta **500 filas y 5 MB por archivo**, pendiente de evaluar con pruebas y recursos disponibles. Las imágenes se adjuntan después o se vinculan por SKU mediante un mecanismo autorizado; no se descargan direcciones arbitrarias de Internet desde una celda. Los archivos se leen como datos y no se ejecutan macros ni fórmulas.
 
-En la importación inicial se declara stock. Las actualizaciones masivas de productos existentes no sobrescriben existencias: los movimientos posteriores de inventario se registran como ajustes autorizados, coordinados con las reservas. La unicidad se establece por proveedor y SKU. Estos límites permiten empezar con procesamiento acotado en el backend; lotes mayores requerirán evaluar tareas asíncronas.
+Al confirmar se comprueba que las condiciones relevantes del SKU no hayan cambiado desde la vista previa. Un cambio concurrente obliga a revisar el lote. En la importación inicial se declara stock. Las actualizaciones masivas de productos existentes no sobrescriben existencias: los movimientos posteriores de inventario se registran como ajustes autorizados, coordinados con las reservas. La unicidad se establece por proveedor y SKU. Estos límites permiten empezar con procesamiento acotado en el backend; lotes mayores requerirán evaluar tareas asíncronas.
 
 ## 2. Oferta del proveedor y mínimo del comprador
 
@@ -64,7 +64,7 @@ El catálogo presentará tarjetas con información suficiente para decidir si so
 | Acción | Solicitar cotización, indicando una cantidad válida. |
 | Motivo de recomendación | “Puede atender tus 4 cajas y tiene menor precio para esa cantidad”. Solo cuando el criterio se haya calculado. |
 
-La sección **Proveedores recomendados** mostrará ofertas elegibles para el producto, cantidad y ubicación consultados. Primero se filtra verificación, vigencia, compatibilidad de presentación, mínimo, múltiplo y disponibilidad. Después se aplica el orden documentado. No se comparan directamente cajas de distinto contenido sin normalizar la equivalencia y el importe de la cantidad solicitada.
+Para la primera asistencia se comparan respuestas a una misma solicitud. La recomendación de ofertas independientes de catálogo descrita a continuación queda como evolución. Primero se filtra verificación, vigencia, compatibilidad de presentación, mínimo, múltiplo y disponibilidad. Después se aplica el orden documentado. No se comparan directamente cajas de distinto contenido sin normalizar la equivalencia y el importe de la cantidad solicitada.
 
 El distintivo “Recomendado” debe indicar su motivo. No significa automáticamente “mejor proveedor” ni “IA entrenada”. Si todavía no se implementa recomendación, la interfaz ofrece filtros y orden por precio con ese nombre. Si falla Python, la alternativa conserva los mismos filtros de elegibilidad y se identifica como orden por precio. La validación definitiva de stock siempre ocurre al crear el pedido.
 
@@ -89,3 +89,5 @@ Estas referencias sustentan decisiones concretas y no identifican la página mos
 | PostgreSQL | Unicidad de SKU por proveedor, restricciones y transacciones sobre lotes y reservas. |
 
 **Aceptación prevista:** importar un lote válido sin duplicados; rechazar un lote con errores indicando sus filas; impedir compras menores al mínimo o incompatibles con el múltiplo; no recomendar ofertas incapaces de atender la cantidad solicitada; impedir sobreventa entre compradores concurrentes.
+
+[Véanse invariantes y permisos del flujo](flujo-comercial-sprint-2.md).

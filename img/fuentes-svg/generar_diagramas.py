@@ -91,7 +91,7 @@ def contexto():
         x=45+i*350; cx=x+150; sx=650+i*120; yy=715+i*33
         d.box(x,960,300,130,title,'[Sistema externo]',lines,EXTERNAL)
         d.edge([(sx,660),(sx,yy),(cx,yy),(cx,960)],label,(cx,880))
-    d.footer(1150,['Azul: alcance propio. Gris: servicios de terceros.','La recomendación Python es interna; se abre en el nivel 2.','No incluye transporte propio ni custodia de fondos.'])
+    d.footer(1150,['Azul: alcance propio. Gris: servicios de terceros.','La comparación asistida forma parte del sistema.','No incluye transporte propio ni custodia de fondos.'])
     d.save()
 
 
@@ -106,7 +106,7 @@ def contenedores():
     d.box(100,620,340,140,'Recomendación','[Contenedor: Python / FastAPI]',['Puntúa proveedores por reglas.','Lectura limitada; no modifica pedidos.'])
     d.edge([(700,675),(440,675)],'Solicita recomendación\n[HTTP privado]',(565,630))
     d.box(100,1000,340,150,'Base de datos','[Contenedor: PostgreSQL / RDS]',['Pedidos, stock e intentos de pago.','Fuente de verdad y outbox.'],db=True)
-    d.box(580,1000,280,150,'Caché','[Contenedor: Redis]',['Copias temporales y sesiones.','No confirma stock.'],db=True)
+    d.box(580,1000,280,150,'Caché','[Contenedor: Redis]',['Caché de catálogo público.','No confirma stock.'],db=True)
     d.box(1020,1000,280,150,'Objetos','[Contenedor: Amazon S3]',['Imágenes y documentos.','Visibilidad según el uso.'],db=True)
     d.edge([(760,800),(760,865),(360,865),(360,1000)],'Lee / escribe [SQL]',(450,855))
     d.edge([(850,800),(850,915),(720,915),(720,1000)],'Lee / escribe [Redis]',(720,950))
@@ -144,7 +144,7 @@ def componentes():
         (0,875,'Usuarios',['Identidad, empresa y permisos.','RF-01 a RF-04 · RF-35']),
         (1,875,'Proveedores',['Perfil, aprobación y evaluaciones.','RF-05 · RF-06 · RF-28']),
         (2,875,'Productos',['CSV/Excel, mínimos y múltiplos.','Catálogo, precios y stock.','RF-07 a RF-12']),
-        (3,875,'Recomendaciones',['Coordina puntuación y alternativa.','RF-16 · RF-17']),
+        (3,875,'Recomendaciones',['Compara ofertas autorizadas.','RF-16 · RF-17']),
         (0,1100,'Cotizaciones',['Solicitudes, respuestas y aceptación.','RF-13 a RF-15']),
         (1,1100,'Pedidos',['Condiciones, reservas y estados.','RF-18 a RF-21 · RF-39']),
         (2,1100,'Pagos',['Intentos y resultados verificables.','RF-22 a RF-24']),
@@ -167,9 +167,9 @@ def componentes():
     d.edge([(1435,1450),(1435,1510)],'Registra eventos',(1510,1485))
     d.box(30,880,260,125,'Consulta de RUC','[Sistema externo]',['Validación empresarial.'],EXTERNAL)
     d.edge([(750,930),(725,930),(725,785),(310,785),(310,940),(290,940)],'Consulta [HTTPS / REST]',(485,775))
-    d.box(1890,875,280,130,'Recomendación','[Contenedor: Python / FastAPI]',['Puntúa y explica resultados.','Ampliación del MVP.'])
+    d.box(1890,875,280,130,'Recomendación','[Contenedor: Python / FastAPI]',['Puntúa y explica resultados.','Proceso opcional de evolución.'])
     d.edge([(1780,930),(1890,930)],'HTTP privado',(1835,910),size=12)
-    d.box(1890,1100,280,120,'Pasarela de pago','[Sistema externo]',['Cobros y consulta de estado.','Integración en sandbox.'],EXTERNAL)
+    d.box(1890,1100,280,120,'Pasarela de pago','[Sistema externo]',['Mercado Pago Checkout Pro.','Integración en sandbox.'],EXTERNAL)
     d.edge([(1420,1160),(1445,1160),(1445,1265),(1865,1265),(1865,1160),(1890,1160)],'Solicita / consulta cobro [HTTPS / REST]',(1670,1255),size=13)
     d.box(30,1100,260,135,'Archivos del catálogo','[Contenedor: Amazon S3]',['Imágenes y documentos.','Adaptador de almacenamiento.'])
     d.edge([(1265,875),(1265,795),(305,795),(305,1160),(290,1160)],'Guarda / obtiene archivos [HTTPS]',(570,815),size=13)
@@ -204,7 +204,7 @@ def clases():
     cls(810,175,510,'Pedido',['+ id','+ compradorEmpresaId','+ proveedorId','- estado'],['+ crear()','+ confirmarPagoVerificado()','+ solicitarCancelacion()','+ marcarDespachado()'],'«entity»')
     cls(810,520,510,'ItemPedido',['+ productoId','+ cantidad','+ precioUnitario'],['+ subtotal()'])
     cls(810,745,510,'OrderRepository',[],['+ guardar()','+ buscarPorId()'],'«interface»')
-    cls(345,650,400,'StockPort',[],['+ reservar()','+ liberarUnaVez()'],'«interface»')
+    cls(345,650,400,'StockPort',[],['+ reservar()','+ consumir()','+ liberarUnaVez()'],'«interface»')
     cls(345,870,400,'CotizacionesPort',[],['+ obtenerOfertaAceptada()'],'«interface»')
     cls(345,1130,400,'UnidadTrabajoPort',[],['+ ejecutar()'],'«interface»')
     cls(1390,745,450,'PostgresOrderRepository',[],['+ guardar()','+ buscarPorId()'])
@@ -259,19 +259,19 @@ def secuencia():
     msg(4,3,805,'9. Persistir intento y referencia')
     msg(4,5,865,'10. Solicitar pago [HTTPS]')
     msg(5,4,925,'11. Resultado verificable o pendiente',True)
-    msg(4,3,985,'12. Guardar estado del intento')
+    msg(4,3,985,'12. Registrar entrada para reconciliar')
     d.rect(420,1025,1505,135,'#FFFBEA','#B7A54A')
     d.text(440,1052,'Solo ante un resultado definitivo y verificado:',16,bold=True)
     msg(4,2,1095,'13. Aplicar resultado al pedido por contrato')
-    msg(2,3,1140,'14. Cambio de pedido, reserva y outbox atómicos')
+    msg(2,3,1140,'14. Intento, pedido, reserva y outbox atómicos')
     d.edge([(25,1200),(1965,1200)],dash=True,marker=None)
     d.text(45,1230,'[Stock insuficiente o conflicto]',16,bold=True)
     msg(2,3,1280,'ROLLBACK')
     msg(1,0,1340,'Rechazo controlado; no se inicia pago',True)
     d.rect(35,1500,1930,110,'#FFFBEA','#B7A54A')
     d.text(55,1530,'Resultado pendiente: no confirma ni cancela el pedido. Pagos consulta la pasarela hasta resolver la incertidumbre.',17)
-    d.text(55,1558,'Un rechazo definitivo libera la reserva una sola vez; una confirmación tardía exige reconciliación.',16)
-    d.text(55,1585,'Reintentos persistidos permiten recuperarse entre el registro del intento y la actualización del pedido. Flecha discontinua: respuesta.',15,MUTED)
+    d.text(55,1558,'Un rechazo definitivo sigue la política de reintento y liberación. Un cobro tardío exige reconciliación.',16)
+    d.text(55,1585,'Las tareas durables permiten retomar verificaciones y aplicar el resultado una sola vez. Flecha discontinua: respuesta.',15,MUTED)
     d.save()
 
 

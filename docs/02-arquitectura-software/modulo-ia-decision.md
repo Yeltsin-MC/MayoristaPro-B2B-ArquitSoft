@@ -1,6 +1,16 @@
-# Módulo de IA: recomendación de proveedores
+# IA para comparar cotizaciones
 
-**Decisión relacionada:** ADR-007. Se propone un proceso Python separado, consultado por NestJS mediante HTTP interno. El núcleo comercial conserva el estilo de monolito modular.
+## Alcance académico de la primera entrega
+
+RF-16 y HU-14 se concretan como asistencia sobre las respuestas autorizadas de una misma solicitud. NestJS valida al comprador, normaliza cantidades comparables y calcula importes y plazos a partir de datos disponibles. El modelo interpreta preferencias y explica diferencias mediante un puerto de aplicación. Cuando el costo de envío o un plazo sea desconocido, la respuesta lo indica. El modelo recibe solo los campos necesarios y su salida se valida contra identificadores y datos del backend.
+
+Si el proveedor falla, se conserva la comparación determinista. Evaluar preferencias de menor costo y menor plazo, datos incompletos, respuesta inventada, timeout y acceso a una cotización ajena. D6 registra proveedor y aceptación académica pendientes.
+
+## Evolución del recomendador de catálogo
+
+El diseño siguiente conserva el análisis previo del recomendador por reglas. Aplica si se habilita equivalencia de productos entre proveedores y se justifica un proceso separado.
+
+En esta evolución se evaluó un proceso Python separado, consultado por NestJS mediante HTTP interno.
 
 ## Objetivo y alcance
 

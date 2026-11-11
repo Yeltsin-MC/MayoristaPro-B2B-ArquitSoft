@@ -26,3 +26,5 @@ Para cambios reproducibles, editar el generador antes de regenerar los SVG. Los 
 La presentación toma como referencia los [diagramas del repositorio Marketplace-arquitSoft-02](https://github.com/devlizbethjaico/Marketplace-arquitSoft-02/tree/main/docs/04-modelo-c4): personas en azul oscuro, contenedores en azul, componentes en azul claro, servicios externos en gris, límites discontinuos, leyendas y clases UML organizadas por capas.
 
 Los gráficos se construyeron para MayoristaPro a partir de su documentación. No se incorporaron las imágenes ni la arquitectura del proyecto de referencia. Los diagramas representan un diseño propuesto, no una implementación verificada.
+
+Las vistas C4 de la revisión enlazan a los SVG vigentes. Los PNG conservan las exportaciones del Sprint 1 para consulta histórica.

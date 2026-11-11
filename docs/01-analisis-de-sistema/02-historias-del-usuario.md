@@ -15,7 +15,7 @@
 | HU-11 | Como comprador empresarial, quiero solicitar cotización a uno o varios proveedores, para obtener precios y condiciones antes de comprar. | Alta |
 | HU-12 | Como proveedor, quiero responder cotizaciones indicando precio, disponibilidad y condiciones, para ofrecer mis productos. | Alta |
 | HU-13 | Como comprador empresarial, quiero comparar las cotizaciones recibidas, para elegir la mejor opción antes de confirmar un pedido. | Alta |
-| HU-14 | Como comprador empresarial, quiero recibir recomendaciones de proveedores generadas por IA, para identificar rápidamente las mejores opciones. | Alta |
+| HU-14 | Como comprador empresarial, quiero recibir asistencia de IA para comparar mis cotizaciones por costo y plazo según mis preferencias. | Alta |
 | HU-15 | Como comprador empresarial, quiero confirmar un pedido a partir de una cotización aceptada, para concretar la compra. | Alta |
 | HU-16 | Como comprador empresarial, quiero consultar el estado y el historial de mis pedidos, para saber en qué etapa se encuentran. | Alta |
 | HU-17 | Como proveedor, quiero consultar y gestionar los pedidos recibidos, para organizar mi despacho y cumplir con los plazos. | Alta |
@@ -47,7 +47,7 @@ Estos criterios describen el comportamiento esperado; su implementación y verif
 | HU-11 | Solicitud con productos, cantidades y proveedores destinatarios. |
 | HU-12 | Cada proveedor responde con sus precios por ítem y condiciones de entrega. |
 | HU-13 | El comprador compara respuestas y acepta una oferta vigente. |
-| HU-14 | Lista ordenada con criterios explicables; consulta manual disponible si falla la recomendación. |
+| HU-14 | Comparación con cálculos verificables y explicación de diferencias. Si falla el modelo, la comparación determinista sigue disponible. |
 | HU-15 | Pedido de un comprador y un proveedor; revalidación de presentación, mínimo, múltiplo, precio y stock dentro de la transacción. |
 | HU-16 | Consulta de estados: pendiente, confirmado, en preparación, despachado, entregado y cancelado. |
 | HU-17 | El proveedor solo gestiona pedidos en los que participa y transiciones permitidas. |

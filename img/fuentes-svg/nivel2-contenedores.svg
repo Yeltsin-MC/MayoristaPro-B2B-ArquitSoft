@@ -46,7 +46,7 @@
 <ellipse cx="720.0" cy="1018" rx="140.0" ry="18" fill="#438DD2" stroke="#367DBD"/>
 <text x="720.0" y="1050.0" font-size="19" fill="white" font-weight="700" text-anchor="middle">Caché</text>
 <text x="720.0" y="1071.0" font-size="14" fill="white" font-weight="400" text-anchor="middle">[Contenedor: Redis]</text>
-<text x="720.0" y="1094.0" font-size="15" fill="white" font-weight="400" text-anchor="middle">Copias temporales y sesiones.</text>
+<text x="720.0" y="1094.0" font-size="15" fill="white" font-weight="400" text-anchor="middle">Caché de catálogo público.</text>
 <text x="720.0" y="1114.0" font-size="15" fill="white" font-weight="400" text-anchor="middle">No confirma stock.</text>
 <path d="M1020,1018 C1020,994 1300,994 1300,1018 V1132 C1300,1156 1020,1156 1020,1132 Z" fill="#438DD2" stroke="#367DBD"/>
 <ellipse cx="1160.0" cy="1018" rx="140.0" ry="18" fill="#438DD2" stroke="#367DBD"/>
