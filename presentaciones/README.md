@@ -6,7 +6,7 @@ La presentación conserva la evidencia del Sprint 1. Para el alcance y las decis
 
 La presentación contiene 19 diapositivas: carátula, problema, propuesta, actores, historias de usuario, requisitos funcionales, MVP, catálogo y ofertas al ingresar, atributos y medición de calidad, drivers, tecnologías, arquitectura y diseño. Las notas de cada diapositiva incluyen explicaciones y referencias a la documentación del proyecto. En PowerPoint se pueden consultar desde **Vista > Página de notas** o durante la exposición con la **Vista Moderador**.
 
-El texto, las tablas y el esquema de capas son editables. Los diagramas C4 se mostrarán directamente desde [la documentación en GitHub](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/tree/main/docs/04-modelo-c4) y no forman parte de esta versión del PowerPoint. El archivo vigente es `MayoristaPro-Sprint-01-tecnologias.pptx`; los otros PPTX son versiones anteriores. Esta versión incluye HU-08, RF-10 y el ejemplo de compra por cajas.
+El texto, las tablas y el esquema de capas son editables. Los diagramas C4 se mostrarán directamente desde [la documentación en GitHub](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/tree/main/docs/04-modelo-c4) y no forman parte de esta versión del PowerPoint. El archivo vigente es `MayoristaPro-Sprint-01-tecnologias.pptx`. Se conserva también [la versión de exposición](MayoristaPro-Sprint-01-exposicion.pptx) como respaldo. Esta versión incluye HU-08, RF-10 y el ejemplo de compra por cajas.
 
 Para regenerar en Windows con PowerPoint instalado, desde la raíz del repositorio:
 
