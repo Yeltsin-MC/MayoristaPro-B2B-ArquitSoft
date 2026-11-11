@@ -20,7 +20,7 @@ Al confirmar se comprueba que las condiciones relevantes del SKU no hayan cambia
 
 ## 2. Oferta del proveedor y mínimo del comprador
 
-Para T4, D2 y D4 están aprobadas: solicitud a varios proveedores, una oferta aceptada y como máximo un pedido por oferta; desglose PEN con cantidades por presentación, indicador IGV, envío y plazo antes de aceptar y copia al pedido. La creación del pedido revalida vigencia, condiciones y stock, y reserva en la misma transacción. Si falla por vencimiento o stock, se informa el motivo y se permite nueva solicitud. La [SDD T4](../sprint-2-cotizaciones-pedidos.md) documenta cálculo decimal, criterios y decisiones fiscales sin resolver; implementación pendiente de fusionar T3.
+Para T4, D2 y D4 están aprobadas: solicitud a varios proveedores, una oferta aceptada y como máximo un pedido por oferta; desglose PEN con cantidades por presentación, indicador IGV, envío y plazo antes de aceptar y copia al pedido. La creación del pedido revalida vigencia, condiciones y stock, y reserva en la misma transacción. Si falla por vencimiento o stock, se informa el motivo y se permite nueva solicitud. La [SDD T4](../sprint-2-cotizaciones-pedidos.md) documenta el cálculo decimal y los criterios. En la demo se aceptan precios con IGV incluido y envío por importe final fijo o S/ 0.
 
 La **presentación de venta** determina qué significa una cantidad: unidad, paquete, docena, caja o saco. El stock, precio y cantidad del pedido deben utilizar la misma presentación y conservar su equivalencia en unidades base.
 
