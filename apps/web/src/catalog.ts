@@ -6,6 +6,8 @@ import { Component, inject, signal } from '@angular/core';
 interface Product {
   id: string;
   name: string;
+  category: string;
+  available: boolean;
   supplier: string;
   unit: string;
   unitsPerPack: number;
@@ -26,16 +28,18 @@ export class CatalogComponent {
   private readonly http = inject(HttpClient);
   readonly products = signal<Product[]>([]);
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');
+  readonly page = signal(1);
 
   constructor() {
     this.load();
   }
 
-  load(): void {
+  load(page = 1): void {
     this.status.set('loading');
-    this.http.get<{ items: Product[] }>('/api/v1/products').subscribe({
+    this.http.get<{ items: Product[] }>('/api/v1/products?page='+page).subscribe({
       next: response => {
         this.products.set(response.items);
+        this.page.set(page);
         this.status.set('ready');
       },
       error: () => this.status.set('error'),

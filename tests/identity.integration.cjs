@@ -19,7 +19,7 @@ test('T2: identidad empresarial y permisos con PostgreSQL real', async t => {
   const url=new URL(original); url.searchParams.set('options',`-c search_path=${schema},public`);
   process.env.DATABASE_URL=url.toString();
   db=new Pool({connectionString:process.env.DATABASE_URL});
-  for(const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
+  for(const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql','database/migrations/003_catalog_imports.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
   await db.query('INSERT INTO accounts(email,password_hash,platform_admin) VALUES($1,$2,true)',['admin@example.test',await passwordHash(password)]);
   app=await NestFactory.create(CatalogModule,{logger:false,abortOnError:false});
   app.setGlobalPrefix('api/v1');await app.listen(0,'127.0.0.1');

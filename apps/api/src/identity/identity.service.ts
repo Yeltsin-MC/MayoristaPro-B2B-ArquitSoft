@@ -33,12 +33,16 @@ export class IdentityService implements OnModuleDestroy {
     catch (error: any) { await db.query('ROLLBACK'); if (error.code === '23505') throw new ConflictException('Correo o RUC ya registrado. La coincidencia no concede acceso.'); throw error; }
     finally { db.release(); }
   }
-  private async actor(db: PoolClient, authorization?: string, admin = false): Promise<Actor> {
+  private async authenticated(db: PoolClient, authorization?: string): Promise<Actor> {
     const token = authorization?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
     if (!token) throw new UnauthorizedException();
     const { rows } = await db.query('SELECT a.id, a.platform_admin FROM identity_sessions s JOIN accounts a ON a.id=s.account_id WHERE s.token_hash=$1 AND s.expires_at>now() FOR UPDATE OF a', [digest(token)]);
     const actor = rows[0];
     if (!actor) throw new UnauthorizedException();
+    return actor;
+  }
+  private async actor(db: PoolClient, authorization?: string, admin = false): Promise<Actor> {
+    const actor = await this.authenticated(db,authorization);
     if (admin) { if (!actor.platform_admin) throw new ForbiddenException(); return actor; }
     const membership = await db.query(`SELECT m.id AS membership_id,m.company_id,m.permissions FROM memberships m JOIN companies c ON c.id=m.company_id WHERE m.account_id=$1 AND m.active AND c.status='enabled' FOR UPDATE OF m`, [actor.id]);
     if (!membership.rows[0]) throw new ForbiddenException('Vinculación no habilitada.');
@@ -46,6 +50,14 @@ export class IdentityService implements OnModuleDestroy {
   }
   private async audit(db: PoolClient, actor: Actor, action: string, id: string) {
     await db.query('INSERT INTO identity_audit(actor_id,action,resource_id) VALUES($1,$2,$3)', [actor.id,action,id]);
+  }
+  async requireSupplier(db: PoolClient, auth?: string): Promise<{ accountId: string; supplierId: string }> {
+    const actor = await this.actor(db, auth);
+    if (!actor.permissions.includes('publish')) throw new ForbiddenException('Requiere permiso de publicación.');
+    const result = await db.query(`SELECT s.id FROM suppliers s JOIN companies c ON c.supplier_id=s.id
+      WHERE c.id=$1 AND c.status='enabled' AND s.verified FOR SHARE OF s,c`, [actor.company_id]);
+    if (!result.rows[0]) throw new ForbiddenException('Requiere proveedor verificado.');
+    return { accountId:actor.id, supplierId:result.rows[0].id };
   }
   async register(body: any) {
     const mail = email(body.email), ruc = text(body.ruc,11), name = text(body.legalName), evidence = text(body.evidence,2000);
@@ -83,6 +95,12 @@ export class IdentityService implements OnModuleDestroy {
       const actor = await this.actor(db,auth);
       const company = await db.query('SELECT c.id,c.ruc,c.legal_name,c.review_label,c.supplier_id,s.verified AS supplier_verified FROM companies c JOIN suppliers s ON s.id=c.supplier_id WHERE c.id=$1',[actor.company_id]);
       return { accountId:actor.id, membershipId:actor.membership_id, permissions:actor.permissions, company:company.rows[0] };
+    });
+  }
+  async session(auth?: string) {
+    return this.tx(async db => {
+      const account = await this.authenticated(db,auth);
+      return { accountId:account.id, platformAdmin:account.platform_admin };
     });
   }
   async requests(auth?: string) {
@@ -161,7 +179,7 @@ export class IdentityService implements OnModuleDestroy {
     return this.tx(async db => {
       const actor=await this.actor(db,auth);
       if (!actor.permissions.includes('publish')) throw new ForbiddenException();
-      const result=await db.query('UPDATE products p SET published=true FROM suppliers s,companies c WHERE p.id=$1 AND p.supplier_id=s.id AND c.supplier_id=s.id AND c.id=$2 AND s.verified RETURNING p.id',[id,actor.company_id]);
+      const result=await db.query('UPDATE products p SET published=true FROM suppliers s,companies c WHERE p.id=$1 AND p.supplier_id=s.id AND c.supplier_id=s.id AND c.id=$2 AND s.verified AND (p.published OR p.stock>=p.minimum) RETURNING p.id',[id,actor.company_id]);
       if (!result.rowCount) throw new ForbiddenException('Requiere propiedad y proveedor verificado.');
       await this.audit(db,actor,'publish-product',id);
       return { published:true };

@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, DefaultValuePipe, Get, ParseIntPipe, Query } from '@nestjs/common';
+import { BadRequestException, Controller, DefaultValuePipe, Get, Header, ParseIntPipe, Query } from '@nestjs/common';
 import { ListProducts } from '../application/list-products';
 
 @Controller('products')
@@ -6,6 +6,7 @@ export class ProductsController {
   constructor(private readonly listProducts: ListProducts) {}
 
   @Get()
+  @Header('Cache-Control', 'no-store')
   async list(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,

@@ -1,6 +1,8 @@
 export interface PublishedProduct {
   id: string;
   name: string;
+  category: string;
+  available: boolean;
   supplier: string;
   unit: string;
   unitsPerPack: number;

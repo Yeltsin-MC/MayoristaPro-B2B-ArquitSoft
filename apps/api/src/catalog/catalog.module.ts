@@ -1,14 +1,17 @@
 import { IdentityController } from '../identity/identity.controller';
 import { IdentityService } from '../identity/identity.service';
+import { CatalogImports } from './application/catalog-imports';
+import { ImportsController } from './presentation/imports.controller';
 import { Module } from '@nestjs/common';
 import { ListProducts, PRODUCT_READER, ProductReader } from './application/list-products';
 import { PostgresProducts } from './infrastructure/postgres-products';
 import { ProductsController } from './presentation/products.controller';
 
 @Module({
-  controllers: [ProductsController, IdentityController],
+  controllers: [ProductsController, IdentityController, ImportsController],
   providers: [
     IdentityService,
+    CatalogImports,
     {
       provide: PRODUCT_READER,
       useFactory: () => {

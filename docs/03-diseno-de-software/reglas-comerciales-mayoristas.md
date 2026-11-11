@@ -4,6 +4,8 @@ Diseño propuesto para la implementación. La carga masiva es un requisito oblig
 
 ## 1. Carga del catálogo por bloques
 
+**T3 implementada:** [plantilla, validaciones y aceptación](../sprint-2-carga-masiva.md). Límites operativos iniciales: 500 filas y 5 MiB; vista previa válida por 30 minutos. La equivalencia de una presentación existente no se cambia por importación, pues alteraría el significado del stock preservado. Se admiten presentaciones contables con precio publicado PEN; excepciones por peso/volumen, rangos y condiciones finales de D4 conservan su estado pendiente. El resto de este documento describe también el alcance objetivo de entregas posteriores.
+
 El proveedor descarga una plantilla CSV o Excel, completa sus productos, carga el archivo y revisa un reporte antes de confirmar la importación. La edición individual queda disponible para correcciones y mantenimiento; no es el único medio de registrar un catálogo.
 
 | Etapa | Comportamiento esperado |
