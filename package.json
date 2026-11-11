@@ -16,6 +16,7 @@
     "db:seed": "node --env-file-if-exists=.env database/seed.cjs",
     "test:integration": "node --env-file-if-exists=.env --test tests/*.integration.cjs",
     "test:browser": "node --env-file-if-exists=.env --test tests/catalog.browser.cjs",
+    "test:demo": "node --env-file-if-exists=.env --test tests/demo.browser.cjs",
     "identity:admin": "node --env-file-if-exists=.env database/create-admin.cjs"
   },
   "devDependencies": {

@@ -18,7 +18,7 @@ La implementación de T3 está disponible desde `b993dfc`: migración, API, inte
 | T3-AC08 | Los publicados aparecen en catálogo público, los borradores no; se informa disponibilidad según stock y mínimo. | [Publicaciones y borradores](../tests/imports.integration.cjs#L66); [stock inferior al mínimo](../tests/imports.integration.cjs#L91). |
 | T3-AC09 | Rechazar archivos mayores de 5 MiB, más de 500 filas y vistas previas vencidas; admitir 500 productos válidos. | [Límites y lote de 500](../tests/imports.integration.cjs#L170); [vencimiento](../tests/imports.integration.cjs#L178). |
 | T3-AC10 | Mantener catálogo e identidad T1/T2, y compilar ambas aplicaciones. | [Prueba T1](../tests/catalog.integration.cjs#L4), [pruebas T2](../tests/identity.integration.cjs#L7), `npm run build` y `npm run test:integration`. Resultados reales al final de esta especificación. |
-| T3-AC11 | Angular permite cargar, revisar errores, confirmar, descargar reporte y recargar catálogo. | [Prueba de navegador](../tests/catalog.browser.cjs): ingresar como proveedor verificado, cargar Excel con precio inválido, corregirlo, confirmar, comprobar publicación y descargar reporte. |
+| T3-AC11 | Angular permite cargar, revisar errores, confirmar, descargar reporte y recargar catálogo. | [Prueba aislada de navegador](../tests/catalog.browser.cjs) y [comprobación con proveedor demo existente](../tests/demo.browser.cjs): ingresar, descargar la plantilla Excel, introducir un precio inválido, corregirlo, confirmar y comprobar publicación. [Resultado y capturas del cierre](evidencias/t3-cierre-demo.md). |
 | T3-AC12 | La pantalla muestra solicitudes administrativas solo a administradores y controles de publicación/importación solo a proveedores verificados con `publish`. | [Pruebas de navegador por rol](../tests/catalog.browser.cjs): administrador sin empresa, proveedor pendiente, usuario sin `publish` y proveedor verificado; sin llamadas 403 provocadas por la pantalla. |
 
 ## Comportamiento
@@ -132,6 +132,24 @@ La prueba usa Playwright headless, sirve la compilación Angular y la API NestJS
 
 Al actualizar una API local que ya está ejecutándose, reiníciala con `npm run dev:api` para incorporar `GET /auth/session`; después recarga Angular e inicia sesión otra vez.
 
+### Repetir el cierre con la cuenta de demo existente
+
+`npm run test:demo` es una comprobación optativa de la cuenta ficticia `proveedor@example.test`, en la base de desarrollo local existente. Requiere empresa habilitada, RUC ficticio `20999999991`, proveedor verificado y permiso `publish`. No crea cuentas, no modifica contraseñas y no se ejecuta en CI. A diferencia de las pruebas aisladas, deja un producto publicado con SKU único y sus lotes como evidencia de cada ejecución autorizada.
+
+```powershell
+$env:PLAYWRIGHT_CHANNEL = 'msedge'
+$env:DEMO_EMAIL = 'proveedor@example.test'
+$demoSecret = Read-Host 'Contraseña existente del proveedor demo' -AsSecureString
+$env:DEMO_PASSWORD = ([System.Net.NetworkCredential]::new('', $demoSecret)).Password
+npm run test:demo
+Remove-Item Env:DEMO_PASSWORD
+Remove-Item Env:DEMO_EMAIL
+Remove-Item Env:PLAYWRIGHT_CHANNEL
+Remove-Variable demoSecret
+```
+
+Las capturas y el resultado sin contraseña se guardan en `.angular/t3-demo-evidence/`, ignorado por Git. La [evidencia de cierre versionada](evidencias/t3-cierre-demo.md) corresponde a la ejecución realizada para esta entrega.
+
 ## Aceptación automatizada
 
 `tests/imports.integration.cjs` arranca NestJS y envía archivos multipart por HTTP a un esquema PostgreSQL temporal. Cubre:
@@ -155,7 +173,7 @@ D4 sigue abierta para transporte, impuestos, redondeo y rangos sin precio de las
 
 ### Resultado de la última verificación local
 
-Ejecución del 10/11/2026 sobre esta misma rama, conservando la implementación `b993dfc` y completando la especificación:
+Ejecución de cierre sobre esta misma rama, incluida la corrección de controles por rol de `6d80482` y la comprobación con la cuenta demo existente:
 
 | Comando | Resultado real |
 |---|---|
@@ -163,5 +181,8 @@ Ejecución del 10/11/2026 sobre esta misma rama, conservando la implementación 
 | `npm run build` | Código de salida 0; NestJS/TypeScript y Angular compilados. |
 | `npm run test:integration` | Código de salida 0; Node reportó 19 pruebas aprobadas, 0 fallidas y 0 omitidas. Incluye catálogo T1, identidad T2 e importación T3 con PostgreSQL real. |
 | `npm run test:browser` con `PLAYWRIGHT_CHANNEL=msedge` | Código de salida 0; Node reportó 5 pruebas aprobadas, 0 fallidas y 0 omitidas (grupo y cuatro casos). Edge headless 157.0.4341.42, Angular compilado y PostgreSQL real. |
+| `npm run test:demo` con credenciales existentes y `PLAYWRIGHT_CHANNEL=msedge` | Código de salida 0; 1 prueba aprobada, 0 fallidas. Inicio de sesión real del proveedor demo, descarga de plantilla, error de precio en fila 2, corrección, confirmación y publicación en el catálogo local. |
 
-T3-AC11 y T3-AC12 cuentan ahora con comprobación E2E automatizada de navegador. La revisión manual de apariencia visual permanece fuera de esta evidencia: las aserciones verifican controles, errores, descarga y resultado publicado, sin afirmar una revisión visual manual.
+T3-AC11 y T3-AC12 cuentan con comprobación E2E automatizada de navegador. Para cerrar el recorrido se utilizó además el proveedor demo existente sobre PostgreSQL local y se inspeccionaron las capturas del error y del producto publicado. No se encontraron otros fallos que impidieran completarlo. [Resumen, producto persistido y capturas](evidencias/t3-cierre-demo.md).
+
+**Estado del incremento:** T3 cerrada para revisión en `sprint-2/carga-masiva-catalogo`; fusión a `main` pendiente. Las decisiones comerciales y evidencias posteriores indicadas arriba conservan su estado pendiente y no se consideran implementadas por este cierre.

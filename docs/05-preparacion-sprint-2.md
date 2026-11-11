@@ -76,3 +76,5 @@ Implementación y aceptación: [T2 — Identidad](sprint-2-identidad.md).
 ### Alcance implementado de T3
 
 [Carga masiva CSV/XLSX](sprint-2-carga-masiva.md): vista previa con errores por fila, lote de hasta 500 filas/5 MiB, confirmación transaccional y repetible, revisiones de SKU y stock existente preservado. Proveedor verificado y permiso de publicación en cada operación. D4, excepciones por peso/volumen y ajustes autorizados de inventario siguen pendientes; se implementan presentaciones contables, precio publicado PEN e indicador de IGV. No hay caché de servidor todavía: lectura directa PostgreSQL, `no-store` y recarga Angular tras confirmar. Redis y su evidencia de invalidación continúan pendientes.
+
+**Cierre del incremento para revisión:** controles por rol y recorrido de plantilla Excel comprobados en navegador con el proveedor demo existente; compilación correcta, 19 pruebas HTTP, 5 de navegador aislado y 1 de demo aprobadas. [Evidencia y capturas](evidencias/t3-cierre-demo.md). Fusión a `main` pendiente.

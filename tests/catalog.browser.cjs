@@ -92,9 +92,15 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
         await expect(page.getByRole('button',{name:'Publicar producto',exact:true})).toBeVisible();
         const values={sku:'BROWSER-CUAD',nombre:'Cuaderno Browser',categoria:'Papelería',presentacion:'caja',
           unidades_por_presentacion:12,precio:'abc',moneda:'PEN',incluye_igv:'true',minimo:2,multiplo:1,stock:20,publicado:'true'};
+        const templatePromise=page.waitForEvent('download');
+        await page.getByRole('link',{name:'Plantilla Excel',exact:true}).click();
+        const template=await templatePromise;
+        assert.equal(template.suggestedFilename(),'catalogo.xlsx');
+        const templateBytes=await readFile(await template.path());
         async function upload() {
-          const workbook = new ExcelJS.Workbook();const sheet=workbook.addWorksheet('Catalogo');
-          sheet.addRow([...COLUMNS]);sheet.addRow(COLUMNS.map(c=>values[c]));
+          const workbook = new ExcelJS.Workbook();await workbook.xlsx.load(templateBytes);
+          const sheet=workbook.worksheets[0];
+          COLUMNS.forEach((column,index)=>{sheet.getRow(2).getCell(index+1).value=values[column];});
           await page.getByLabel('Archivo del catálogo').setInputFiles({name:'catalogo.xlsx',
             mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:Buffer.from(await workbook.xlsx.writeBuffer())});
           await page.getByRole('button',{name:'Cargar y revisar lote',exact:true}).click();
