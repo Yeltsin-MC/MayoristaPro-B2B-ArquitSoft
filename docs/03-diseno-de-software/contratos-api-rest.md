@@ -54,6 +54,8 @@ Lectura pública del catálogo publicado desde la página de inicio; escritura s
 
 ### quotations
 
+D2 y D4 aprobadas; [SDD T4 y pruebas previstas](../sprint-2-cotizaciones-pedidos.md). T3 está incorporada a main; T4 continúa pendiente de implementación. La respuesta agrega envío, plazo, vigencia e indicador de IGV y devuelve desglose/total calculado por el servidor antes de aceptar. Una aceptación por solicitud y un pedido por oferta. La demo admite precios con IGV incluido y envío por importe final fijo o S/ 0.
+
 Comprador propietario y proveedores destinatarios; respuestas según participación.
 
 | Método y ruta |

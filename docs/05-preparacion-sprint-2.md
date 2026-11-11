@@ -45,9 +45,9 @@ La IA y la concurrencia se incorporan según lo informado en clase. Esta matriz 
 | ID | Propuesta | Afecta |
 |---|---|---|
 | D1 | **Aprobada el 10/11/2026.** Primer usuario solicita alta con correo, RUC, razón social y evidencia de representación; administración aprueba la vinculación. Demo con empresas y evidencias ficticias. Responsable invita mediante enlace de un uso con vencimiento y revoca accesos. Empresa puede comprar y vender, con permisos combinables por usuario. Administración de plataforma separada. T2 valida formato y unicidad de RUC; SUNAT externa pendiente. | Registro, permisos y migraciones. |
-| D2 | Ante oferta aceptada vencida o inviable, solicitar una nueva cotización. Confirmar si se permite reapertura o cambio de oferta. | Estados y API de cotizaciones. |
+| D2 | **Aprobada el 11/11/2026.** El comprador solicita ofertas a varios proveedores y acepta una sola por solicitud. La oferta aceptada origina como máximo un pedido. Crear pedido verifica vigencia, condiciones y stock en la misma transacción que guarda pedido, ítems y reserva. Si venció o falta stock, informar el motivo y permitir iniciar una nueva solicitud; no reabrir ni sustituir la aceptación anterior. | Estados, API, unicidad y reserva transaccional. |
 | D3 | Permitir nuevo intento tras rechazo definitivo mientras siga activa la reserva. Confirmar duración, conciliación al vencer, cancelación y quién autoriza reembolso de cobro tardío. | Máquina de estados, tareas durables y UX. |
-| D4 | Confirmar si la oferta separa transporte, impuestos y redondeo y cómo se tratan rangos sin precio. | Oferta, pedido y comparación. |
+| D4 | **Aprobada el 11/11/2026.** La oferta declara cantidades por presentación, precio PEN, indicador de IGV, envío y plazo; envío fijo o S/ 0 para demo. Mostrar total y desglose antes de aceptar y conservarlos en el pedido. Cálculo decimal y redondeo documentados en la especificación T4. Para la demo se aceptan precios con IGV incluido y envío por importe final fijo o S/ 0. El cálculo tributario para otros casos queda pendiente. | Oferta, desglose y copia histórica del pedido. |
 | D5 | Publicar con enlace del proveedor y conectar dominio propio o compartido si lo requiere la evaluación. Confirmar también PSE, avisos y validación externa de RUC por entrega. | Despliegue, presupuesto y cronograma. |
 | D6 | Evaluar un modelo económico en Bedrock y confirmar cobertura y criterios de aceptación docente. | Adaptador, privacidad, costo y pruebas. |
 
@@ -66,6 +66,10 @@ Para cada incremento versionar especificación de comportamiento, plan de implem
 | T7 Despliegue, k6 y entrega | T1 para la demo; T3–T6 según el recorrido final; D5 | Enlace HTTPS y versión reproducible. Evidencias de CI, k6, seguridad, videos e informe. |
 
 Referencias de implementación: [flujo comercial](03-diseno-de-software/flujo-comercial-sprint-2.md) · [despliegue académico](02-arquitectura-software/despliegue-academico.md) · [plan de calidad](01-analisis-de-sistema/09-plan-de-medicion-calidad.md).
+
+## Preparación de T4
+
+[Especificación SDD de cotizaciones, pedidos y stock](sprint-2-cotizaciones-pedidos.md), con criterios y pruebas previstas. D2 y D4 aprobadas por el responsable del proyecto. **Implementación pendiente de incorporar T3 a `main`**: la consulta remota del 11/11/2026 mostró `origin/main` en `8c2e5b4`, anterior al cierre T3 `55006f9`. Esta preparación es solo documental en `docs/preparacion-t4`; no fusiona T3 ni adelanta migraciones o código T4.
 
 ### Alcance aprobado de T2
 
