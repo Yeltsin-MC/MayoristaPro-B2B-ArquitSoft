@@ -17,11 +17,11 @@ Resolver empresa y permisos en el servidor en cada operación protegida. Probar 
 
 ## Cotización e inventario
 
-La aceptación bloquea la solicitud, comprueba la respuesta, pertenencia y vigencia y permite una sola oferta aceptada. Repetir la misma aceptación devuelve el resultado existente. Aceptar otra oferta en la misma solicitud devuelve conflicto mientras exista una aceptación. El cambio o reapertura posterior se define en D2.
+La aceptación bloquea la solicitud, comprueba la respuesta, pertenencia y vigencia y permite una sola oferta aceptada. Repetir la misma aceptación devuelve el resultado existente. Aceptar otra oferta en la misma solicitud devuelve conflicto mientras exista una aceptación. D2 aprobada: no se sustituye ni reabre la aceptación anterior; una oferta vencida o sin stock al crear pedido informa el motivo y permite iniciar una nueva solicitud. Cada oferta aceptada puede originar un solo pedido.
 
 El pedido exige una oferta aceptada y guarda sus condiciones. La misma transacción revalida la elegibilidad, agrupa cantidades por SKU para reservar, bloquea productos en orden estable y guarda pedido, ítems y reservas. Ante falta de stock, modificación incompatible o fallo, revierte todo. El precio pactado se toma de la oferta. PostgreSQL confirma el stock disponible. Consumir la reserva no vuelve a descontar inventario; liberarla devuelve unidades una sola vez.
 
-Los lotes CSV/XLSX tienen plantilla, errores por fila, vista previa con vencimiento y confirmación atómica. Al confirmar se verifica la vigencia, la titularidad y si cambió un dato relevante del SKU desde la vista previa. Un conflicto devuelve el lote al flujo de revisión. La importación de metadatos preserva existencias; el ajuste autorizado registra actor y motivo y se coordina con las reservas. La política de precios, redondeo e impuestos se decide en D4.
+Los lotes CSV/XLSX tienen plantilla, errores por fila, vista previa con vencimiento y confirmación atómica. Al confirmar se verifica la vigencia, la titularidad y si cambió un dato relevante del SKU desde la vista previa. Un conflicto devuelve el lote al flujo de revisión. La importación de metadatos preserva existencias; el ajuste autorizado registra actor y motivo y se coordina con las reservas. D4 aprobada exige desglose previo, importes decimales y copia histórica. Su política fiscal no especificada queda identificada, junto con el cálculo comercial y las pruebas previstas, en la [SDD T4](../sprint-2-cotizaciones-pedidos.md). T4 termina con pedido pendiente y reserva activa; no integra pasarela ni libera reservas por un plazo inventado.
 
 ## Repeticiones y pagos
 

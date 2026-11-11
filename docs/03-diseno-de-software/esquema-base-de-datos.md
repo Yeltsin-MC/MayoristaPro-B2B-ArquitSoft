@@ -69,6 +69,8 @@ Todas las tablas usan id UUID y fechas de creación; las modificables agregan fe
 
 ## Integridad y concurrencia
 
+Preparación T4: D2/D4 aprobadas requieren conservar en oferta y pedido el desglose de productos, indicador de IGV, costo de envío, total PEN y plazo. Aceptación única por solicitud, pedido único por oferta y reserva por pedido/producto; creación y deducción de stock en una sola transacción. La [SDD T4](../sprint-2-cotizaciones-pedidos.md) especifica los casos concurrentes y las decisiones fiscales/vida de reserva todavía abiertas. No hay migración T4 ejecutable hasta incorporar T3 a `main`.
+
 La operación mayorista amplía el diseño de `productos` con `sku` (único por proveedor), `multiplo_compra` y `unidades_por_presentacion`. Se conserva `unidad` como presentación de venta (caja, paquete u otra); `stock`, cantidades, mínimos y rangos de precio se expresan en esa presentación. El mínimo será positivo y compatible con el múltiplo. Los ítems de oferta y pedido conservarán una copia de presentación, equivalencia y condiciones aceptadas para no reinterpretar cantidades históricas.
 
 Para la carga masiva se proponen `importaciones_catalogo` (proveedor, responsable, estado, clave de idempotencia, vencimiento y resumen) e `importacion_filas` (lote, número de fila, SKU, datos validados y errores). El backend revalida una vista previa vigente al confirmar. Un lote aplicado no puede duplicar efectos. La retención de archivos y datos de preparación se fijará al implementar.
