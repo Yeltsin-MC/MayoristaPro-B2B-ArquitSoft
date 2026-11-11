@@ -1,0 +1,22 @@
+{
+  "name": "@mayoristapro/web",
+  "private": true,
+  "scripts": {
+    "build": "ng build",
+    "start": "ng serve"
+  },
+  "dependencies": {
+    "@angular/common": "^21",
+    "@angular/compiler": "^21",
+    "@angular/core": "^21",
+    "@angular/forms": "21.2.26",
+    "@angular/platform-browser": "^21",
+    "rxjs": "^7.8"
+  },
+  "devDependencies": {
+    "@angular/build": "^21",
+    "@angular/cli": "^21",
+    "@angular/compiler-cli": "^21",
+    "typescript": "~5.9.3"
+  }
+}

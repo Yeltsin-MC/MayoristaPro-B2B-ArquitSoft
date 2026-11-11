@@ -7,7 +7,7 @@ Propuesta API-First. Base `/api/v1`. Las rutas pertenecen a MayoristaPro. El ada
 | Aspecto | Regla |
 |---|---|
 | Formato | JSON; fechas ISO 8601; importes decimales como cadenas y moneda explícita. |
-| Autenticación | JWT Bearer para operaciones protegidas. Identidad y empresa se obtienen de la sesión validada. |
+| Autenticación | T2 usa Bearer opaco aleatorio con sesión persistida y vencimiento de 8 horas. Empresa y permisos se consultan en servidor. JWT queda como propuesta posterior. |
 | Autorización | Validar rol, empresa y participación en cada recurso. No aceptar comprador o tenant arbitrarios del body. |
 | Paginación | page y limit; límite máximo propuesto de 100. |
 | Idempotencia | `Idempotency-Key` en creación de pedidos, confirmación de importaciones, inicio de pago y reembolso. Ámbito de creación por empresa compradora y operación. Los demás ámbitos se especifican en el diseño del flujo. Misma clave con distinto contenido devuelve `409`. |
@@ -18,13 +18,13 @@ Propuesta API-First. Base `/api/v1`. Las rutas pertenecen a MayoristaPro. El ada
 
 ### auth
 
-Registro y login públicos. Refresh y logout requieren credencial o sesión válida. El registro comprueba los datos empresariales sin asociar automáticamente usuarios a una empresa existente por coincidencia de RUC. La política de representación e incorporación se decide en D1.
+Registro y login públicos. Logout requiere token Bearer. T2 no implementa refresh: al vencer la sesión se inicia sesión otra vez. El registro comprueba formato y unicidad de RUC sin asociar usuarios por coincidencia. D1 aprobada: revisión manual del alta e invitaciones de un uso con vencimiento; administración de plataforma separada. Consulta SUNAT pendiente de confirmación. El contrato implementado y sus cuerpos están en [T2](../sprint-2-identidad.md).
 
 | Método y ruta |
 |---|
 | `POST /auth/register` |
 | `POST /auth/login` |
-| `POST /auth/refresh` |
+| `GET /auth/me` |
 | `POST /auth/logout` |
 
 ### providers

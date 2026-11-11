@@ -1,0 +1,20 @@
+{
+  "name": "mayoristapro",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "engines": {
+    "node": "^24.15.0"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:api": "npm run dev -w @mayoristapro/api",
+    "dev:web": "npm run start -w @mayoristapro/web",
+    "db:migrate": "node --env-file-if-exists=.env database/migrate.cjs",
+    "db:seed": "node --env-file-if-exists=.env database/seed.cjs",
+    "test:integration": "node --env-file-if-exists=.env --test tests/*.integration.cjs",
+    "identity:admin": "node --env-file-if-exists=.env database/create-admin.cjs"
+  }
+}

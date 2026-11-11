@@ -2,7 +2,7 @@
 
 ## Identidad y autorización
 
-El RUC identifica a una empresa y su validación comprueba datos empresariales. El acceso a una empresa existente requiere una vinculación autorizada. El registro público no acepta asignaciones de administrador ni vincula automáticamente una cuenta por coincidencia de RUC. La evidencia de representación y el proceso de incorporación se acuerdan en D1.
+El RUC identifica a una empresa. T2 comprueba formato y unicidad; la consulta externa SUNAT queda pendiente de confirmación para otra entrega. El acceso a una empresa existente requiere una vinculación autorizada. El registro público no acepta asignaciones de administrador ni vincula automáticamente una cuenta por coincidencia de RUC. D1 aprobada: administración revisa el alta y la evidencia ficticia de la demo; después, el responsable invita y revoca usuarios. La empresa puede comprar y vender, con permisos por usuario. Habilitarla para comprar y verificarla como proveedor son decisiones separadas. Se informa «revisado manualmente». Véase [T2](../sprint-2-identidad.md).
 
 | Operación | Autorización mínima |
 |---|---|

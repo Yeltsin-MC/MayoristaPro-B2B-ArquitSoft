@@ -1,0 +1,16 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f6f0; color: #1c2f26; font-family: "DM Sans", system-ui, sans-serif; }
+header { background: #19382a; color: white; padding: 1rem max(1.5rem, calc((100vw - 68rem) / 2)); }
+header strong { color: #cfe68c; }
+main { max-width: 71rem; margin: auto; padding: 3.5rem 1.5rem; }
+h1 { font-size: clamp(2rem, 6vw, 3.5rem); line-height: 1.1; margin: 0; }
+.intro { margin: 1rem 0 2rem; }
+.catalog { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1rem; }
+article { padding: 1.4rem; background: white; border: 1px solid #dce3d8; border-radius: 0.9rem; }
+article p { margin: .5rem 0; }
+h2 { margin: .4rem 0; font-size: 1.3rem; }
+.supplier { color: #41604f; }
+.price { color: #1f6245; font-weight: 750; font-size: 1.55rem; }
+dl { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0 0; padding-top: .9rem; border-top: 1px solid #dce3d8; }
+dd { margin: .2rem 0 0; font-weight: 700; }
+button { font: inherit; cursor: pointer; background: #19382a; color: white; border: 0; padding: .65rem 1rem; border-radius: .4rem; }
