@@ -21,7 +21,9 @@ import { CatalogImportComponent } from './catalog-import';
  <button [disabled]="busy()">{{mode==='login'?'Ingresar':mode==='register'?'Enviar solicitud':'Aceptar invitación'}}</button>
  </form>
  } @else {
- <button (click)="loadAccount()">Mi empresa</button> <button (click)="loadAdmin()">Solicitudes (administración)</button> <button (click)="logout()">Salir</button>
+ @if(admin()) { <button (click)="loadAdmin()">Solicitudes (administración)</button> }
+ @else { <button (click)="loadAccount()">Mi empresa</button> }
+ <button (click)="logout()">Salir</button>
  @if(company()) {
  <h3>{{company().legal_name}}</h3><p>RUC {{company().ruc}} · {{company().review_label}}</p>
  <p>Permisos: {{permissions().join(', ')}}.</p>
@@ -37,9 +39,11 @@ import { CatalogImportComponent } from './catalog-import';
  @for(member of members();track member.id) {<p>{{member.email}} · {{member.active?'Activo':'Revocado'}} @if(member.active && !member.permissions.includes('manage')) {<button (click)="revoke(member.id)">Revocar acceso</button>}</p>}
  }
  @if(permissions().includes('publish')) {
- @if(company().supplier_verified) { <app-catalog-import [token]="token()" (applied)="catalogChanged.emit()" /> }
- @else { <p>La carga masiva requiere que administración verifique primero al proveedor.</p> }
+ @if(company().supplier_verified) {
+ <app-catalog-import [token]="token()" (applied)="catalogChanged.emit()" />
  <form (ngSubmit)="publishProduct()"><label>ID del producto propio <input name="productId" required [(ngModel)]="productId"></label><button [disabled]="busy()">Publicar producto</button></form>
+ }
+ @else { <p>La carga masiva y la publicación requieren que administración verifique primero al proveedor.</p> }
  }
  }
  @for(request of requests();track request.id) {
@@ -71,17 +75,24 @@ export class IdentityComponent {
  }catch(error){this.message.set(error instanceof Error?error.message:'No se pudo conectar.');return null;}finally{this.busy.set(false);}
  }
  async submit(){
- if(this.mode==='login'){const result=await this.call('auth/login','POST',{email:this.email,password:this.password});if(result){this.token.set(result.token);this.password='';await this.loadAccount();}}
+ if(this.mode==='login'){const result=await this.call('auth/login','POST',{email:this.email,password:this.password});if(result){this.token.set(result.token);this.password='';await this.loadSession();}}
  else if(this.mode==='register'){const result=await this.call('auth/register','POST',{email:this.email,password:this.password,ruc:this.ruc,legalName:this.legalName,evidence:this.evidence});if(result){this.password='';this.message.set('Solicitud enviada. Espera la aprobación de administración.');}}
  else {const result=await this.call('auth/invitations/accept','POST',{email:this.email,password:this.password,token:this.invitation});if(result){this.password='';this.invitation='';history.replaceState(null,'',location.pathname);this.mode='login';this.message.set('Invitación aceptada. Ya puedes ingresar.');}}
  }
+ async loadSession(){
+ this.admin.set(false);this.company.set(null);this.permissions.set([]);this.requests.set([]);this.members.set([]);this.link.set('');
+ const session=await this.call('auth/session');
+ if(!session){this.token.set('');return;}
+ this.admin.set(session.platformAdmin===true);
+ if(!this.admin())await this.loadAccount();
+ }
  async loadAccount(){const result=await this.call('auth/me');this.company.set(result?.company??null);this.permissions.set(result?.permissions??[]);}
- async loadAdmin(){const result=await this.call('admin/enrollments');if(result){this.admin.set(true);this.requests.set(result);}}
+ async loadAdmin(){const result=await this.call('admin/enrollments');this.requests.set(result??[]);if(!result)this.admin.set(false);}
  async approve(id:string){if(await this.call('admin/enrollments/'+id+'/approve','POST'))await this.loadAdmin();}
  async invite(){const result=await this.call('company/invitations','POST',{email:this.inviteEmail,permissions:[...(this.buy?['buy']:[]),...(this.publish?['publish']:[])]});if(result)this.link.set(location.origin+result.link);}
  async loadMembers(){const result=await this.call('company/members');if(result)this.members.set(result);}
  async revoke(id:string){if(await this.call('company/members/'+id+'/revoke','POST'))await this.loadMembers();}
  async verify(){await this.call('providers/'+this.supplierId+'/verify','PATCH');}
- async publishProduct(){await this.call('products/'+this.productId+'/publish','POST');}
+ async publishProduct(){if(await this.call('products/'+this.productId+'/publish','POST'))this.catalogChanged.emit();}
  async logout(){await this.call('auth/logout','POST');this.token.set('');this.company.set(null);this.requests.set([]);this.members.set([]);this.admin.set(false);this.link.set('');}
 }

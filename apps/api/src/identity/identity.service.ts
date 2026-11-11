@@ -33,12 +33,16 @@ export class IdentityService implements OnModuleDestroy {
     catch (error: any) { await db.query('ROLLBACK'); if (error.code === '23505') throw new ConflictException('Correo o RUC ya registrado. La coincidencia no concede acceso.'); throw error; }
     finally { db.release(); }
   }
-  private async actor(db: PoolClient, authorization?: string, admin = false): Promise<Actor> {
+  private async authenticated(db: PoolClient, authorization?: string): Promise<Actor> {
     const token = authorization?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
     if (!token) throw new UnauthorizedException();
     const { rows } = await db.query('SELECT a.id, a.platform_admin FROM identity_sessions s JOIN accounts a ON a.id=s.account_id WHERE s.token_hash=$1 AND s.expires_at>now() FOR UPDATE OF a', [digest(token)]);
     const actor = rows[0];
     if (!actor) throw new UnauthorizedException();
+    return actor;
+  }
+  private async actor(db: PoolClient, authorization?: string, admin = false): Promise<Actor> {
+    const actor = await this.authenticated(db,authorization);
     if (admin) { if (!actor.platform_admin) throw new ForbiddenException(); return actor; }
     const membership = await db.query(`SELECT m.id AS membership_id,m.company_id,m.permissions FROM memberships m JOIN companies c ON c.id=m.company_id WHERE m.account_id=$1 AND m.active AND c.status='enabled' FOR UPDATE OF m`, [actor.id]);
     if (!membership.rows[0]) throw new ForbiddenException('Vinculación no habilitada.');
@@ -91,6 +95,12 @@ export class IdentityService implements OnModuleDestroy {
       const actor = await this.actor(db,auth);
       const company = await db.query('SELECT c.id,c.ruc,c.legal_name,c.review_label,c.supplier_id,s.verified AS supplier_verified FROM companies c JOIN suppliers s ON s.id=c.supplier_id WHERE c.id=$1',[actor.company_id]);
       return { accountId:actor.id, membershipId:actor.membership_id, permissions:actor.permissions, company:company.rows[0] };
+    });
+  }
+  async session(auth?: string) {
+    return this.tx(async db => {
+      const account = await this.authenticated(db,auth);
+      return { accountId:account.id, platformAdmin:account.platform_admin };
     });
   }
   async requests(auth?: string) {

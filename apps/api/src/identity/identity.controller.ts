@@ -7,6 +7,7 @@ export class IdentityController {
  @Post('auth/login') login(@Body() body: any) { return this.identity.login(body ?? {}); }
  @Post('auth/logout') logout(@Headers('authorization') auth?: string) { return this.identity.logout(auth); }
  @Get('auth/me') me(@Headers('authorization') auth?: string) { return this.identity.me(auth); }
+ @Get('auth/session') session(@Headers('authorization') auth?: string) { return this.identity.session(auth); }
  @Get('admin/enrollments') requests(@Headers('authorization') auth?: string) { return this.identity.requests(auth); }
  @Post('admin/enrollments/:id/approve') approve(@Param('id') id: string,@Headers('authorization') auth?: string) { return this.identity.approve(id,auth); }
  @Post('company/invitations') invite(@Body() body: any,@Headers('authorization') auth?: string) { return this.identity.invite(body ?? {},auth); }

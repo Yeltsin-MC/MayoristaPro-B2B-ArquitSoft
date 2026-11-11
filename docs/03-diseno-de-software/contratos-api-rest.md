@@ -24,8 +24,11 @@ Registro y login públicos. Logout requiere token Bearer. T2 no implementa refre
 |---|
 | `POST /auth/register` |
 | `POST /auth/login` |
+| `GET /auth/session` |
 | `GET /auth/me` |
 | `POST /auth/logout` |
+
+`GET /auth/session` exige Bearer válido y devuelve `{accountId,platformAdmin}` de la cuenta autenticada, sin exigir una vinculación empresarial. Angular consulta este dato para mostrar «Solicitudes (administración)» exclusivamente a administradores. `GET /auth/me` conserva el requisito de vinculación habilitada; publicación y carga masiva requieren además permiso `publish` y proveedor verificado. La visibilidad de controles no sustituye la autorización del backend.
 
 ### providers
 

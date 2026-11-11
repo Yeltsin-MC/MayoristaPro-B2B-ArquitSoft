@@ -4,7 +4,7 @@ Incremento desde `main` (`8c2e5b4`), rama `sprint-2/carga-masiva-catalogo`. Espe
 
 ## Estado real y criterios de aceptación
 
-La implementación de T3 está disponible desde `b993dfc`: migración, API, interfaz Angular y pruebas HTTP con PostgreSQL. Esta especificación registra ese comportamiento existente. La continuación conserva el código y completa su trazabilidad. La revisión interactiva de navegador sigue pendiente; compilar Angular no acredita por sí solo esa comprobación.
+La implementación de T3 está disponible desde `b993dfc`: migración, API, interfaz Angular y pruebas HTTP con PostgreSQL. Esta especificación registra ese comportamiento y su trazabilidad. La corrección de controles por rol y el recorrido de importación Excel se verifican también en un navegador real headless con PostgreSQL aislado; no dependen de que el servidor de desarrollo esté abierto en el puerto 4200.
 
 | ID | Criterio verificable | Prueba o comprobación |
 |---|---|---|
@@ -18,7 +18,8 @@ La implementación de T3 está disponible desde `b993dfc`: migración, API, inte
 | T3-AC08 | Los publicados aparecen en catálogo público, los borradores no; se informa disponibilidad según stock y mínimo. | [Publicaciones y borradores](../tests/imports.integration.cjs#L66); [stock inferior al mínimo](../tests/imports.integration.cjs#L91). |
 | T3-AC09 | Rechazar archivos mayores de 5 MiB, más de 500 filas y vistas previas vencidas; admitir 500 productos válidos. | [Límites y lote de 500](../tests/imports.integration.cjs#L170); [vencimiento](../tests/imports.integration.cjs#L178). |
 | T3-AC10 | Mantener catálogo e identidad T1/T2, y compilar ambas aplicaciones. | [Prueba T1](../tests/catalog.integration.cjs#L4), [pruebas T2](../tests/identity.integration.cjs#L7), `npm run build` y `npm run test:integration`. Resultados reales al final de esta especificación. |
-| T3-AC11 | Angular permite cargar, revisar errores, confirmar, descargar reporte y recargar catálogo. | [Componente de carga](../apps/web/src/catalog-import.ts). Plantilla verificada por compilación; comprobación interactiva pendiente mediante los pasos de navegador indicados abajo. |
+| T3-AC11 | Angular permite cargar, revisar errores, confirmar, descargar reporte y recargar catálogo. | [Prueba de navegador](../tests/catalog.browser.cjs): ingresar como proveedor verificado, cargar Excel con precio inválido, corregirlo, confirmar, comprobar publicación y descargar reporte. |
+| T3-AC12 | La pantalla muestra solicitudes administrativas solo a administradores y controles de publicación/importación solo a proveedores verificados con `publish`. | [Pruebas de navegador por rol](../tests/catalog.browser.cjs): administrador sin empresa, proveedor pendiente, usuario sin `publish` y proveedor verificado; sin llamadas 403 provocadas por la pantalla. |
 
 ## Comportamiento
 
@@ -110,6 +111,27 @@ Detén antes los servidores de desarrollo al reinstalar dependencias en Windows.
 7. Repite el recorrido con el otro formato. Usa el mismo SKU de tu proveedor, cambia el nombre y declara stock `999`: la vista previa debe indicar actualización y stock conservado; al confirmar cambia el nombre y permanece el stock vigente, no `999`.
 8. Pulsa «Descargar reporte CSV» y comprueba las filas, acciones, estado y errores del lote. La repetición de confirmaciones, los cambios concurrentes de SKU y los accesos ajenos se verifican de forma reproducible en las pruebas enlazadas en la matriz.
 
+### Prueba automática de navegador
+
+Después de compilar, instala el navegador de prueba y ejecuta:
+
+```powershell
+npx playwright install chromium
+npm run test:browser
+```
+
+Si Edge ya está instalado en Windows, puedes usarlo sin descargar Chromium:
+
+```powershell
+$env:PLAYWRIGHT_CHANNEL = 'msedge'
+npm run test:browser
+Remove-Item Env:PLAYWRIGHT_CHANNEL
+```
+
+La prueba usa Playwright headless, sirve la compilación Angular y la API NestJS en un puerto local aleatorio, y crea/elimina un esquema PostgreSQL propio. No usa las cuentas de desarrollo ni necesita servidores activos en 3000/4200. Cubre los cuatro perfiles de acceso y el recorrido Excel completo, incluidos error por fila y publicación visible tras confirmar. GitHub Actions instala Chromium y ejecuta esta prueba además de la regresión HTTP.
+
+Al actualizar una API local que ya está ejecutándose, reiníciala con `npm run dev:api` para incorporar `GET /auth/session`; después recarga Angular e inicia sesión otra vez.
+
 ## Aceptación automatizada
 
 `tests/imports.integration.cjs` arranca NestJS y envía archivos multipart por HTTP a un esquema PostgreSQL temporal. Cubre:
@@ -140,5 +162,6 @@ Ejecución del 10/11/2026 sobre esta misma rama, conservando la implementación 
 | `npm run db:migrate` | Código de salida 0; migraciones al día, sin errores. |
 | `npm run build` | Código de salida 0; NestJS/TypeScript y Angular compilados. |
 | `npm run test:integration` | Código de salida 0; Node reportó 19 pruebas aprobadas, 0 fallidas y 0 omitidas. Incluye catálogo T1, identidad T2 e importación T3 con PostgreSQL real. |
+| `npm run test:browser` con `PLAYWRIGHT_CHANNEL=msedge` | Código de salida 0; Node reportó 5 pruebas aprobadas, 0 fallidas y 0 omitidas (grupo y cuatro casos). Edge headless 157.0.4341.42, Angular compilado y PostgreSQL real. |
 
-La revisión visual anterior quedó bloqueada porque el servicio de navegador no estaba disponible y el navegador local no devolvió estado accesible. Esta continuación no realizó una nueva prueba interactiva: T3-AC11 conserva esa comprobación pendiente. El recorrido de archivos, vista previa, confirmación y catálogo sí se verificó automáticamente por HTTP; no se afirma una prueba E2E de navegador.
+T3-AC11 y T3-AC12 cuentan ahora con comprobación E2E automatizada de navegador. La revisión manual de apariencia visual permanece fuera de esta evidencia: las aserciones verifican controles, errores, descarga y resultado publicado, sin afirmar una revisión visual manual.
