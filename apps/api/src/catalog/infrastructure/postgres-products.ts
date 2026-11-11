@@ -11,7 +11,7 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
 
   async listPublished(offset: number, limit: number): Promise<PublishedProduct[]> {
     const result = await this.pool.query<PublishedProduct>(`
-      SELECT p.id, p.name, s.name AS supplier, p.unit,
+      SELECT p.id, p.name, p.category, (p.stock >= p.minimum) AS available, s.name AS supplier, p.unit,
              p.units_per_pack AS "unitsPerPack", p.minimum, p.multiple,
              p.stock, p.price::text, p.currency, p.includes_tax AS "includesTax"
       FROM products p

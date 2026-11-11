@@ -129,6 +129,8 @@ Administración o proveedor sobre sus propios indicadores.
 
 ### Importación mayorista y cantidades
 
+**Implementado en T3:** [contrato físico, columnas, estados y errores](../sprint-2-carga-masiva.md). Carga multipart en `file`, plantillas CSV/XLSX en `GET /products/imports/template`, vista previa de 30 minutos y confirmación con JSON `{previewHash}` más `Idempotency-Key`. Las tres operaciones del lote exigen proveedor verificado con permiso `publish`. Campos inválidos conservan un lote `invalid`, sin modificar productos; cambios posteriores del SKU dejan `stale` y exigen cargar/revisar de nuevo. La consulta pública sigue leyendo PostgreSQL y se recarga tras confirmar, sin caché de servidor implementada.
+
 | Método y ruta propuesta | Acceso y resultado |
 |---|---|
 | `POST /products/imports/preview` | Proveedor propietario verificado; recibe CSV/XLSX, valida y devuelve identificador de lote, filas nuevas/actualizaciones, errores por fila y vencimiento de vista previa. No publica productos todavía. |

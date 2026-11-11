@@ -72,3 +72,7 @@ Referencias de implementación: [flujo comercial](03-diseno-de-software/flujo-co
 La empresa habilitada puede comprar aunque su proveedor siga pendiente. Publicar exige proveedor verificado, propiedad y permiso de publicación. Un RUC coincidente nunca concede acceso. La interfaz indica «revisado manualmente» y no afirma validación SUNAT. D5 conserva la consulta externa para una entrega posterior por confirmar. La verificación del proveedor corresponde por separado a administración.
 
 Implementación y aceptación: [T2 — Identidad](sprint-2-identidad.md).
+
+### Alcance implementado de T3
+
+[Carga masiva CSV/XLSX](sprint-2-carga-masiva.md): vista previa con errores por fila, lote de hasta 500 filas/5 MiB, confirmación transaccional y repetible, revisiones de SKU y stock existente preservado. Proveedor verificado y permiso de publicación en cada operación. D4, excepciones por peso/volumen y ajustes autorizados de inventario siguen pendientes; se implementan presentaciones contables, precio publicado PEN e indicador de IGV. No hay caché de servidor todavía: lectura directa PostgreSQL, `no-store` y recarga Angular tras confirmar. Redis y su evidencia de invalidación continúan pendientes.

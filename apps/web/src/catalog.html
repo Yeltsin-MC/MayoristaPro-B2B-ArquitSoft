@@ -13,6 +13,7 @@
         <article>
           <p class="supplier">{{ product.supplier }}</p>
           <h2>{{ product.name }}</h2>
+          <p>{{ product.category }}</p>
           <p>{{ product.unit }} de {{ product.unitsPerPack }} unidades</p>
           <p class="price">{{ product.price | currency:product.currency:'S/ ' }}</p>
           <p>{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
@@ -21,11 +22,18 @@
             <div><dt>Múltiplo</dt><dd>{{ product.multiple }}</dd></div>
             <div><dt>Disponibles</dt><dd>{{ product.stock }}</dd></div>
           </dl>
+          <p>{{ product.available ? 'Disponible para cotizar' : 'Sin disponibilidad para una nueva compra' }}</p>
+          <p>Envío se cotiza aparte.</p>
         </article>
       } @empty {
         <p role="status">Todavía no hay productos publicados.</p>
       }
     </section>
+    <nav aria-label="Páginas del catálogo">
+      <button type="button" [disabled]="page()===1" (click)="load(page()-1)">Anterior</button>
+      <span> Página {{page()}} </span>
+      <button type="button" [disabled]="products().length<20" (click)="load(page()+1)">Siguiente</button>
+    </nav>
   }
-  <app-identity />
+  <app-identity (catalogChanged)="load()" />
 </main>

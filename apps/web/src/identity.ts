@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CatalogImportComponent } from './catalog-import';
 @Component({
- selector:'app-identity', imports:[FormsModule],
+ selector:'app-identity', imports:[FormsModule, CatalogImportComponent],
  template:`
  <section aria-label="Cuenta empresarial" class="identity">
  <h2>Cuenta empresarial</h2>
@@ -36,6 +37,8 @@ import { FormsModule } from '@angular/forms';
  @for(member of members();track member.id) {<p>{{member.email}} · {{member.active?'Activo':'Revocado'}} @if(member.active && !member.permissions.includes('manage')) {<button (click)="revoke(member.id)">Revocar acceso</button>}</p>}
  }
  @if(permissions().includes('publish')) {
+ @if(company().supplier_verified) { <app-catalog-import [token]="token()" (applied)="catalogChanged.emit()" /> }
+ @else { <p>La carga masiva requiere que administración verifique primero al proveedor.</p> }
  <form (ngSubmit)="publishProduct()"><label>ID del producto propio <input name="productId" required [(ngModel)]="productId"></label><button [disabled]="busy()">Publicar producto</button></form>
  }
  }
@@ -53,6 +56,7 @@ import { FormsModule } from '@angular/forms';
  styles:[`.identity {margin:2rem 0;padding:1rem;border:1px solid #ccc} form {display:grid;gap:.7rem;max-width:36rem;margin:1rem 0} label {display:grid;gap:.25rem} input,textarea,button {font:inherit;padding:.5rem} nav {display:flex;gap:.5rem;flex-wrap:wrap} p,a {overflow-wrap:anywhere}`]
 })
 export class IdentityComponent {
+ readonly catalogChanged = output<void>();
  mode='login'; email=''; password=''; ruc=''; legalName=''; evidence=''; invitation=new URLSearchParams(location.hash.slice(1)).get('token')??'';
  inviteEmail=''; buy=true; publish=false; productId=''; supplierId='';
  token=signal(''); busy=signal(false); message=signal(''); company=signal<any>(null); permissions=signal<string[]>([]); members=signal<any[]>([]); requests=signal<any[]>([]); admin=signal(false); link=signal('');

@@ -164,6 +164,8 @@ El incremento inicial del Sprint 2 está en `apps/api`, `apps/web` y `database`.
 
 T2 incorpora [identidad y vinculación empresarial](docs/sprint-2-identidad.md): alta aprobada manualmente, invitaciones, revocación y verificación independiente del proveedor. D1 está aprobada; SUNAT externa queda pendiente de confirmación posterior.
 
+T3 incorpora [carga masiva CSV/XLSX](docs/sprint-2-carga-masiva.md): plantilla, vista previa con errores por fila y confirmación completa del lote por proveedor verificado. Actualiza SKU propios sin reemplazar stock y exige revisar de nuevo ante cambios concurrentes.
+
 ## Estado y siguiente paso
 
 | Etapa | Estado |
