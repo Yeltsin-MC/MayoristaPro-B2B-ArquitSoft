@@ -6,7 +6,8 @@ Modelo lógico propuesto para PostgreSQL. No es una migración ejecutada. Mantie
 
 ```mermaid
 erDiagram
-    TENANTS ||--o{ USUARIOS : agrupa
+    TENANTS ||--o{ VINCULACIONES : autoriza
+    USUARIOS ||--o| VINCULACIONES : accede
     TENANTS ||--o| PROVEEDORES : perfil
     PROVEEDORES ||--o{ PRODUCTOS : publica
     PRODUCTOS ||--o{ PRECIOS_VOLUMEN : define
@@ -40,8 +41,9 @@ Todas las tablas usan id UUID y fechas de creación; las modificables agregan fe
 
 | Tabla | Campos y relaciones relevantes | Regla principal |
 |---|---|---|
-| tenants | nombre, ruc único, tipo, estado | Cada empresa es un tenant. |
-| usuarios | tenant_id, email único, password_hash, rol, estado | Usuario empresarial asociado a su empresa. Cuenta administrativa de plataforma con tenant nulo y permisos explícitos. |
+| tenants | nombre, ruc único, estado | Cada empresa es un tenant y puede comprar y vender simultáneamente. T2 usa `companies`. |
+| usuarios | email único, password_hash, administración de plataforma | Cuenta independiente de la empresa. T2 usa `accounts`; el registro público nunca concede administración. |
+| vinculaciones | tenant_id, usuario_id, permisos combinables, activo | T2 usa `memberships`, con permisos `manage`, `buy`, `publish`. El alta aprobada crea al responsable; la invitación incorpora cuentas nuevas. |
 | proveedores | tenant_id único, estado_verificacion, dirección, ciudad | Perfil de empresa, no extensión exclusiva de un usuario; varios usuarios autorizados pueden operarlo. |
 | productos | tenant_id, proveedor_id, sku, nombre, descripción, categoría, precio_base, moneda, precio_incluye_igv, cantidad_minima_compra, multiplo_compra, unidades_por_presentacion, stock, unidad, estado | Stock disponible no negativo; producto y proveedor pertenecen a la misma empresa. |
 | importaciones_catalogo | proveedor_id, responsable_id, estado, idempotency_key, vence_at, resumen | Lote propio, vista previa vigente y confirmación única. |
@@ -97,3 +99,9 @@ No se aplica un filtro universal tenant_id del usuario a toda consulta. Las tabl
 Índices iniciales: productos por proveedor/categoría, pedidos por empresa compradora/proveedor y fecha, reservas por estado/vencimiento, pagos por pedido/referencia, outbox por estado/próximo intento. Las búsquedas de texto se evaluarán con PostgreSQL y datos representativos antes de agregar otro motor.
 
 Se probarán restricciones, restauración, acceso entre empresas, reintentos y sobreventa. Para EQ-06 se cuentan unidades y pedidos mediante la relación pedidos → pedido_items; producto_id no es una columna de pedidos.
+
+## Precisión aprobada para T2 (10/11/2026)
+
+T2 comprueba formato (11 dígitos) y unicidad del RUC. La consulta externa SUNAT queda pendiente de confirmación para otra entrega; se informa «revisado manualmente». Cada empresa puede comprar y vender. Los permisos combinables pertenecen a la vinculación usuario/empresa; administración de plataforma separada. Alta aprobada e invitación autorizan acceso, nunca la coincidencia de RUC. La verificación del proveedor es independiente. Véase [D1](../05-preparacion-sprint-2.md).
+
+El esquema anterior es el objetivo comercial. La migración física `002_identity.sql` agrega además solicitudes de alta, sesiones, invitaciones y auditoría. Cada empresa nueva referencia un perfil en `suppliers`; los productos siguen obteniendo su empresa por ese proveedor. Los proveedores sintéticos de T1 se conservan sin usuarios asociados. La pertenencia a una sola empresa por cuenta es el alcance de T2. Detalle: [identidad implementada](../sprint-2-identidad.md).

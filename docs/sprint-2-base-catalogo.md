@@ -30,3 +30,5 @@ npm run test:integration
 La prueba requiere una base de prueba migrada y poblada. GitHub Actions compila ambas aplicaciones y ejecuta la prueba contra PostgreSQL. Para servir la compilación fuera del entorno local, enrutar `/api` al backend desde el mismo origen.
 
 La migración contiene las tablas mínimas para el catálogo de prueba. Las siguientes migraciones incorporarán identidad, atributos y relaciones del [esquema comercial](03-diseno-de-software/esquema-base-de-datos.md) conforme se aprueben las reglas correspondientes.
+
+La migración `002_identity.sql` incorpora [T2 — Identidad y vinculación empresarial](sprint-2-identidad.md), con D1 aprobada. El catálogo público y sus datos sintéticos se conservan. El alta empresarial, las invitaciones y la revisión administrativa se encuentran debajo del catálogo.

@@ -2,11 +2,11 @@
 
 | ID | Requisito | Módulo | Prioridad |
 |---|---|---|---|
-| RF-01 | El sistema debe permitir el registro de proveedores mayoristas con validación de RUC contra SUNAT. | Usuarios | Alta |
-| RF-02 | El sistema debe permitir el registro de compradores empresariales con validación de RUC contra SUNAT. | Usuarios | Alta |
-| RF-03 | El sistema debe autenticar usuarios mediante email y contraseña con token JWT. | Usuarios | Alta |
-| RF-04 | El sistema debe asignar permisos diferenciados según el rol del usuario (proveedor, comprador, administrador). | Usuarios | Alta |
-| RF-05 | El sistema debe permitir al administrador verificar y aprobar proveedores antes de que operen. | Proveedores | Alta |
+| RF-01 | Alta empresarial con RUC y revisión manual de vinculación. Verificación como proveedor separada. T2 valida formato y unicidad; consulta SUNAT pendiente de confirmación posterior. | Usuarios | Alta |
+| RF-02 | La empresa habilitada puede comprar con permiso del usuario aunque su verificación como proveedor siga pendiente. T2 valida formato y unicidad de RUC; consulta SUNAT pendiente. | Usuarios | Alta |
+| RF-03 | Autenticación por email y contraseña. T2 usa token Bearer opaco con sesión persistida y vencimiento; JWT queda como propuesta posterior. | Usuarios | Alta |
+| RF-04 | Permisos combinables por usuario dentro de su empresa; administración de plataforma separada del registro público. | Usuarios | Alta |
+| RF-05 | Administración verifica al proveedor antes de publicar. La empresa habilitada puede comprar mientras esa verificación está pendiente. | Proveedores | Alta |
 | RF-06 | El sistema debe permitir al proveedor consultar su historial de ventas, pedidos y evaluaciones. | Proveedores | Media |
 | RF-07 | El sistema debe permitir al proveedor publicar productos con nombre, descripción, categoría, precio, cantidad mínima de compra, stock e imágenes. | Productos | Alta |
 | RF-08 | El sistema debe permitir al proveedor definir precios diferenciados por rango de cantidad. | Productos | Alta |
@@ -90,3 +90,7 @@ La carga masiva es parte del núcleo inicial. Las reglas de presentación, míni
 - RF-37 a RF-40 se conservan con sus identificadores para mantener la trazabilidad, aunque describen cualidades y verificación del sistema. Sus medidas se desarrollan en los escenarios de calidad.
 - Cada pedido corresponde a un comprador y un proveedor. Los precios y condiciones aceptados se conservan aunque el catálogo cambie.
 - Los requisitos son el alcance documentado; las prioridades y dependencias definirán el orden de implementación. Las integraciones de pagos y facturación se probarán primero en sandbox.
+
+## Precisión aprobada para T2 (10/11/2026)
+
+T2 comprueba formato (11 dígitos) y unicidad del RUC. La consulta externa SUNAT queda pendiente de confirmación para otra entrega; se informa «revisado manualmente». Cada empresa puede comprar y vender. Los permisos combinables pertenecen a la vinculación usuario/empresa; administración de plataforma separada. Alta aprobada e invitación autorizan acceso, nunca la coincidencia de RUC. La verificación del proveedor es independiente. Véase [D1](../05-preparacion-sprint-2.md).

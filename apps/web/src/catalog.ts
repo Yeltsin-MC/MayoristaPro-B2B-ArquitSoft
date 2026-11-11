@@ -1,3 +1,4 @@
+import { IdentityComponent } from './identity';
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
@@ -18,7 +19,7 @@ interface Product {
 
 @Component({
   selector: 'app-root',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, IdentityComponent],
   templateUrl: './catalog.html',
 })
 export class CatalogComponent {

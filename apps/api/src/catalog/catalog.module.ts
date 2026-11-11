@@ -1,11 +1,14 @@
+import { IdentityController } from '../identity/identity.controller';
+import { IdentityService } from '../identity/identity.service';
 import { Module } from '@nestjs/common';
 import { ListProducts, PRODUCT_READER, ProductReader } from './application/list-products';
 import { PostgresProducts } from './infrastructure/postgres-products';
 import { ProductsController } from './presentation/products.controller';
 
 @Module({
-  controllers: [ProductsController],
+  controllers: [ProductsController, IdentityController],
   providers: [
+    IdentityService,
     {
       provide: PRODUCT_READER,
       useFactory: () => {

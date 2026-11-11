@@ -162,6 +162,8 @@ MayoristaPro-B2B-ArquitSoft/
 
 El incremento inicial del Sprint 2 está en `apps/api`, `apps/web` y `database`. Consulta la [guía para ejecutar el catálogo de prueba](docs/sprint-2-base-catalogo.md).
 
+T2 incorpora [identidad y vinculación empresarial](docs/sprint-2-identidad.md): alta aprobada manualmente, invitaciones, revocación y verificación independiente del proveedor. D1 está aprobada; SUNAT externa queda pendiente de confirmación posterior.
+
 ## Estado y siguiente paso
 
 | Etapa | Estado |

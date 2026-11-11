@@ -9,7 +9,7 @@ Identificar las restricciones que condicionan las decisiones de diseño y arquit
 | RC03 | API REST | La comunicación entre el frontend y los servicios del sistema debe realizarse mediante una API REST. |
 | RC04 | Pasarela de pago | La demo integra Mercado Pago Checkout Pro en modo de prueba. |
 | RC05 | Servicio de facturación | El sistema debe integrarse con un PSE externo para emitir comprobantes electrónicos ante SUNAT. |
-| RC06 | Validación de RUC | El sistema debe validar el RUC de proveedores y compradores contra el padrón de SUNAT. |
+| RC06 | Validación de RUC | T2 valida formato y unicidad, con revisión manual de vinculación. La consulta externa al padrón SUNAT queda pendiente de confirmación para una entrega posterior. |
 | RC07 | Servicio de IA | El sistema debe integrar un módulo de recomendación de proveedores basado en inteligencia artificial. |
 | RC08 | Servicio de notificaciones | El sistema debe integrarse con un servicio externo de notificaciones (email y WhatsApp). |
 | RC09 | Almacenamiento de archivos | S3 es la opción prevista para objetos. Su incorporación se verifica contra alcance, crédito y necesidad de almacenamiento compartido. |
@@ -29,3 +29,7 @@ Identificar las restricciones que condicionan las decisiones de diseño y arquit
 | Recursos | RC14 | Los servicios disponibles y el presupuesto deben verificarse antes del despliegue. |
 
 El alcance es B2B: no incluye grupos de consumidores, custodia de fondos ni logística propia. Las pruebas de servicios externos se realizarán primero en sandbox. Los créditos educativos no garantizan disponibilidad de todos los servicios ni costo cero.
+
+## Precisión aprobada para T2 (10/11/2026)
+
+T2 comprueba formato (11 dígitos) y unicidad del RUC. La consulta externa SUNAT queda pendiente de confirmación para otra entrega; se informa «revisado manualmente». Cada empresa puede comprar y vender. Los permisos combinables pertenecen a la vinculación usuario/empresa; administración de plataforma separada. Alta aprobada e invitación autorizan acceso, nunca la coincidencia de RUC. La verificación del proveedor es independiente. Véase [D1](../05-preparacion-sprint-2.md).

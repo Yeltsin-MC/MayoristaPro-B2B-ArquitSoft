@@ -40,11 +40,11 @@ La revisión se basa en `cb203a9`, versión de main consultada el 10 de noviembr
 
 La IA y la concurrencia se incorporan según lo informado en clase. Esta matriz refleja estado documental y evidencia prevista.
 
-## Decisiones pendientes de aprobación
+## Decisiones y aprobación
 
 | ID | Propuesta | Afecta |
 |---|---|---|
-| D1 | Alta inicial mediante revisión autorizada y usuarios posteriores mediante invitación. Confirmar evidencia, roles combinables y alcance de validación de RUC. | Registro, permisos y migraciones. |
+| D1 | **Aprobada el 10/11/2026.** Primer usuario solicita alta con correo, RUC, razón social y evidencia de representación; administración aprueba la vinculación. Demo con empresas y evidencias ficticias. Responsable invita mediante enlace de un uso con vencimiento y revoca accesos. Empresa puede comprar y vender, con permisos combinables por usuario. Administración de plataforma separada. T2 valida formato y unicidad de RUC; SUNAT externa pendiente. | Registro, permisos y migraciones. |
 | D2 | Ante oferta aceptada vencida o inviable, solicitar una nueva cotización. Confirmar si se permite reapertura o cambio de oferta. | Estados y API de cotizaciones. |
 | D3 | Permitir nuevo intento tras rechazo definitivo mientras siga activa la reserva. Confirmar duración, conciliación al vencer, cancelación y quién autoriza reembolso de cobro tardío. | Máquina de estados, tareas durables y UX. |
 | D4 | Confirmar si la oferta separa transporte, impuestos y redondeo y cómo se tratan rangos sin precio. | Oferta, pedido y comparación. |
@@ -66,3 +66,9 @@ Para cada incremento versionar especificación de comportamiento, plan de implem
 | T7 Despliegue, k6 y entrega | T1 para la demo; T3–T6 según el recorrido final; D5 | Enlace HTTPS y versión reproducible. Evidencias de CI, k6, seguridad, videos e informe. |
 
 Referencias de implementación: [flujo comercial](03-diseno-de-software/flujo-comercial-sprint-2.md) · [despliegue académico](02-arquitectura-software/despliegue-academico.md) · [plan de calidad](01-analisis-de-sistema/09-plan-de-medicion-calidad.md).
+
+### Alcance aprobado de T2
+
+La empresa habilitada puede comprar aunque su proveedor siga pendiente. Publicar exige proveedor verificado, propiedad y permiso de publicación. Un RUC coincidente nunca concede acceso. La interfaz indica «revisado manualmente» y no afirma validación SUNAT. D5 conserva la consulta externa para una entrega posterior por confirmar. La verificación del proveedor corresponde por separado a administración.
+
+Implementación y aceptación: [T2 — Identidad](sprint-2-identidad.md).
