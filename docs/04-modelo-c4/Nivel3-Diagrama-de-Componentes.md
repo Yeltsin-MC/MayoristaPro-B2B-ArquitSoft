@@ -2,7 +2,7 @@
 
 **Pregunta:** ¿cómo se divide el backend por dentro? Esta vista abre la API NestJS del nivel 2; no representa servicios independientes.
 
-![Diagrama de componentes de la API MayoristaPro](../../img/nivel3-componentes.png)
+![Diagrama de componentes de la API MayoristaPro](../../img/fuentes-svg/nivel3-componentes.svg)
 
 **Fuente editable:** [nivel3-componentes.svg](../../img/fuentes-svg/nivel3-componentes.svg).
 
@@ -22,7 +22,7 @@ Las flechas representan colaboración en ejecución. El retorno de un resultado 
 | Incidencias | Reclamos, estado y seguimiento. |
 | Reportes | Proyecciones o consultas acordadas con módulos propietarios. |
 | Administración | Supervisión mediante las APIs públicas de los módulos. |
-| IA | Coordinar recomendaciones y alternativa por precio. |
+| IA | Comparar cotizaciones autorizadas, invocar el puerto de IA y conservar alternativa determinista. |
 
 ## Puertos e infraestructura
 

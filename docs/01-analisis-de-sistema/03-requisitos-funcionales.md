@@ -17,7 +17,7 @@
 | RF-13 | El sistema debe permitir al comprador solicitar cotización a uno o varios proveedores. | Cotizaciones | Alta |
 | RF-14 | El sistema debe permitir al proveedor responder cotizaciones con precio, disponibilidad y condiciones de entrega. | Cotizaciones | Alta |
 | RF-15 | El sistema debe permitir al comprador comparar cotizaciones recibidas y aceptar una. | Cotizaciones | Alta |
-| RF-16 | El sistema debe generar recomendaciones de proveedores mediante IA según precio, disponibilidad, ubicación e historial. | IA | Alta |
+| RF-16 | El sistema debe asistir con IA en la comparación de cotizaciones autorizadas, según costo, disponibilidad y plazo, usando preferencias del comprador. | IA | Alta |
 | RF-17 | El sistema debe permitir consultar y comparar proveedores aunque el servicio de IA no esté disponible. | IA | Media |
 | RF-18 | El sistema debe permitir al comprador confirmar un pedido a partir de una cotización aceptada. | Pedidos | Alta |
 | RF-19 | El sistema debe revalidar presentación, mínimo, múltiplo y stock y aplicar control de concurrencia al crear un pedido. | Pedidos | Alta |
@@ -39,7 +39,7 @@
 | RF-35 | El sistema debe implementar autenticación, autorización, auditoría y protección de la información comercial. | Seguridad | Alta |
 | RF-36 | El sistema debe registrar las operaciones relevantes para fines de auditoría y trazabilidad. | Seguridad | Alta |
 | RF-37 | El sistema debe ser web y responsive, accesible desde computadoras y dispositivos móviles. | Rendimiento | Alta |
-| RF-38 | El sistema debe soportar 2,000 usuarios concurrentes como objetivo de validación mediante pruebas de carga. | Rendimiento | Alta |
+| RF-38 | El sistema debe demostrar mediante k6 al menos 2.000 usuarios virtuales concurrentes con recorridos definidos. | Rendimiento | Alta |
 | RF-39 | El sistema debe preservar la integridad del stock ante operaciones simultáneas. | Rendimiento | Alta |
 | RF-40 | El sistema debe permitir pruebas de carga para evaluar rendimiento, concurrencia y estabilidad. | Rendimiento | Media |
 

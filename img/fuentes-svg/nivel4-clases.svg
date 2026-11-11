@@ -59,13 +59,14 @@
 <path d="M810,821 L1320,821" fill="none" stroke="#64748B" stroke-width="1.6"/>
 <text x="820" y="844" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ guardar()</text>
 <text x="820" y="866" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ buscarPorId()</text>
-<rect x="345" y="650" width="400" height="132" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
+<rect x="345" y="650" width="400" height="154" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
 <text x="545.0" y="669" font-size="13" fill="#64748B" font-weight="400" text-anchor="middle">«interface»</text>
 <text x="545.0" y="690" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">StockPort</text>
 <path d="M345,702 L745,702" fill="none" stroke="#64748B" stroke-width="1.6"/>
 <path d="M345,726 L745,726" fill="none" stroke="#64748B" stroke-width="1.6"/>
 <text x="355" y="749" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ reservar()</text>
-<text x="355" y="771" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ liberarUnaVez()</text>
+<text x="355" y="771" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ consumir()</text>
+<text x="355" y="793" font-size="15" fill="#1E293B" font-weight="400" text-anchor="start">+ liberarUnaVez()</text>
 <rect x="345" y="870" width="400" height="110" rx="0" fill="white" stroke="#475569" stroke-width="1.5"/>
 <text x="545.0" y="889" font-size="13" fill="#64748B" font-weight="400" text-anchor="middle">«interface»</text>
 <text x="545.0" y="910" font-size="17" fill="#1E293B" font-weight="700" text-anchor="middle">CotizacionesPort</text>

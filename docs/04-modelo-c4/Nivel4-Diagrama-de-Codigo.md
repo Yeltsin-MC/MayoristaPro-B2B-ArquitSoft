@@ -4,7 +4,7 @@
 
 ## Diagrama de clases
 
-![Diagrama UML de clases del módulo Pedidos](../../img/nivel4-clases.png)
+![Diagrama UML de clases del módulo Pedidos](../../img/fuentes-svg/nivel4-clases.svg)
 
 **Fuente editable:** [nivel4-clases.svg](../../img/fuentes-svg/nivel4-clases.svg).
 
@@ -12,11 +12,11 @@ Composición: un Pedido contiene sus ítems. Realización: el repositorio Postgr
 
 ## Secuencia principal
 
-![Diagrama UML de secuencia de creación de pedido y pago](../../img/nivel4-secuencia.png)
+![Diagrama UML de secuencia de creación de pedido y pago](../../img/fuentes-svg/nivel4-secuencia.svg)
 
 **Fuente editable:** [nivel4-secuencia.svg](../../img/fuentes-svg/nivel4-secuencia.svg).
 
-El resultado pendiente no confirma ni cancela el pedido. Pagos consulta la pasarela hasta resolver la incertidumbre; solo un resultado definitivo autoriza la transición correspondiente. Los pasos de intento y pedido requieren una política de reintentos persistida para recuperarse si el proceso se interrumpe entre ellos.
+El resultado pendiente conserva el intento para reconciliación. Los resultados definitivos y verificados se aplican a intento, pedido, reserva y outbox dentro de la misma transacción local cuando corresponde. La llamada a la pasarela queda fuera de esa transacción.
 
 ## Reglas de negocio
 
@@ -29,7 +29,7 @@ El resultado pendiente no confirma ni cancela el pedido. Pagos consulta la pasar
 | RN-05 | Solo se inicia un nuevo pago de un pedido pendiente y con reserva vigente; una confirmación tardía se reconcilia. |
 | RN-06 | No se cancela directamente un pedido despachado o entregado. La cancelación de uno pagado requiere resolver el reembolso. |
 | RN-07 | Pedido y reserva se persisten atómicamente antes de iniciar el pago externo. |
-| RN-08 | Un rechazo definitivo permite liberar la reserva de forma idempotente; un timeout exige consultar el pago antes de liberarla. |
+| RN-08 | Un timeout o un resultado incierto mantiene el caso en reconciliación. Un rechazo definitivo se procesa según la política de reintentos y liberación pendiente de aprobación. |
 | RN-09 | Los precios son positivos y proceden del servidor, nunca del importe declarado por el cliente. |
 | RN-10 | Solo un pedido en preparación puede pasar a despachado. |
 

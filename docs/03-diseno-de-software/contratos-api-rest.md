@@ -1,6 +1,6 @@
 # Contratos de API REST
 
-Propuesta API-First para la implementación. Base: `/api/v1`. Las rutas son contratos propios de MayoristaPro; no representan rutas verificadas de Niubiz, Mercado Pago u otro proveedor.
+Propuesta API-First. Base `/api/v1`. Las rutas pertenecen a MayoristaPro. El adaptador del MVP utiliza Mercado Pago Checkout Pro en modo de prueba.
 
 ## Convenciones
 
@@ -10,7 +10,7 @@ Propuesta API-First para la implementación. Base: `/api/v1`. Las rutas son cont
 | Autenticación | JWT Bearer para operaciones protegidas. Identidad y empresa se obtienen de la sesión validada. |
 | Autorización | Validar rol, empresa y participación en cada recurso. No aceptar comprador o tenant arbitrarios del body. |
 | Paginación | page y limit; límite máximo propuesto de 100. |
-| Idempotencia | Idempotency-Key en creación de pedidos, inicio de pago y reembolso; alcance por identidad y operación. Misma clave con distinto contenido devuelve conflicto. |
+| Idempotencia | `Idempotency-Key` en creación de pedidos, confirmación de importaciones, inicio de pago y reembolso. Ámbito de creación por empresa compradora y operación. Los demás ámbitos se especifican en el diseño del flujo. Misma clave con distinto contenido devuelve `409`. |
 | Errores | code y message; 400 entrada inválida, 401 sin autenticación, 403 sin permiso, 404 no encontrado, 409 conflicto y 422 regla de negocio. No exponer secretos ni trazas. |
 | Respuesta incierta | Un timeout de pasarela no confirma rechazo. Consultar el intento persistido antes de repetir la operación. |
 
@@ -18,7 +18,7 @@ Propuesta API-First para la implementación. Base: `/api/v1`. Las rutas son cont
 
 ### auth
 
-Registro/login públicos; refresh/logout requieren credencial o sesión válida.
+Registro y login públicos. Refresh y logout requieren credencial o sesión válida. El registro comprueba los datos empresariales sin asociar automáticamente usuarios a una empresa existente por coincidencia de RUC. La política de representación e incorporación se decide en D1.
 
 | Método y ruta |
 |---|
@@ -62,7 +62,7 @@ Comprador propietario y proveedores destinatarios; respuestas según participaci
 
 ### ai
 
-Comprador autenticado; datos autorizados.
+Comprador propietario de la cotización. Las ofertas de la comparación pertenecen a la misma solicitud.
 
 | Método y ruta |
 |---|
@@ -148,7 +148,7 @@ Catálogo y cotizaciones expondrán presentación, unidades por presentación, m
 | PATCH /orders/:id/status | estado solicitado y motivo cuando corresponda. | Transición autorizada. No permite al navegador marcar confirmado sin pago verificado. |
 | GET /payments/:pedidoId | Pedido visible para el solicitante. | Lista de intentos y su estado; nunca tokens ni credenciales. |
 | POST /payments/:pedidoId/refund | motivo e Idempotency-Key; administrador autorizado. | 202 si se solicita al proveedor de forma asíncrona; reembolsado solo tras confirmación. |
-| GET /ai/recommendations | producto, cantidad y ubicación pertinentes. | 200: lista, explicación y método reglas o precio_alternativo. No etiqueta reglas como modelo entrenado. |
+| GET /ai/recommendations | Cotización propia y preferencia opcional. | `200` con ofertas elegibles, costo/plazo disponibles, explicación y método. El cálculo y el filtrado se ejecutan en el backend. |
 
 Para v1 se toma como recorrido principal el pedido desde cotización aceptada. La compra directa desde catálogo descrita en la propuesta general requiere definir su contrato y las mismas validaciones antes de implementarse.
 
@@ -156,10 +156,10 @@ Para v1 se toma como recorrido principal el pedido desde cotización aceptada. L
 
 | Método y ruta propuesta | Acceso y comportamiento |
 |---|---|
-| POST /payments/:pedidoId/attempts | Comprador del pedido pendiente y con reserva válida. Persiste intento y clave antes de llamar a la pasarela; responde 201 o 202 con referencia y estado. |
-| POST /payments/webhooks/:pasarela | Autenticación propia del proveedor (firma o mecanismo verificado), no JWT de comprador. Verifica evento, referencia, monto y moneda; identifica duplicados. |
+| POST /payments/:pedidoId/attempts | Comprador participante y reserva válida. Persiste intento y referencia antes de invocar al proveedor. Devuelve `201` con referencia y URL de checkout cuando esté disponible, o `202` si está pendiente de resolución. |
+| POST /payments/webhooks/:pasarela | Verifica autenticidad según el perfil de Mercado Pago, deduplica y verifica en la pasarela referencia, estado, monto y moneda. El retorno del navegador carece de autoridad para confirmar. |
 
-El contrato exacto de tokenización, redirección y verificación de firma se definirá con la documentación del proveedor elegido. Una notificación no verificada no confirma un pedido. Los eventos confirmados actualizan intento y pedido, junto a la tarea pendiente de publicación.
+El perfil Checkout Pro y sus campos se verificarán con las credenciales de prueba. El retorno del navegador muestra el estado consultado a MayoristaPro. El webhook autenticado dispara la verificación con el proveedor. El resultado definitivo se aplica en una única transacción local a intento, pedido, reserva y outbox cuando corresponde.
 
 ## Estados y permisos
 
@@ -179,4 +179,4 @@ El contrato exacto de tokenización, redirección y verificación de firma se de
 
 La cabecera Idempotency-Key identifica el intento de creación. El servidor obtiene comprador, proveedor, productos y precios de fuentes autorizadas; no recibe el total como importe confiable.
 
-**Pendientes para Sprint 02:** OpenAPI completo, esquemas de validación por ruta, límites de archivos/carga masiva, permisos detallados y contrato sandbox del proveedor seleccionado. Los endpoints de consulta existentes no implican que todo el alcance esté implementado.
+**Pendientes para Sprint 02:** OpenAPI completo, esquemas de validación, matriz de permisos y prueba del perfil Checkout Pro. Véanse las [invariantes y decisiones pendientes](flujo-comercial-sprint-2.md).

@@ -11,7 +11,7 @@ El [plan de medición de calidad](09-plan-de-medicion-calidad.md) detalla herram
 | Atributo | AC01 |
 | Fuente | Comprador empresarial. |
 | Estímulo | Busca productos, consulta cotizaciones o registra un pedido pendiente. |
-| Condición | Datos representativos y una mezcla documentada de operaciones, con hasta 2,000 usuarios concurrentes. |
+| Condición | Datos representativos y una mezcla documentada de operaciones, con una etapa de al menos 2.000 usuarios virtuales concurrentes. |
 | Respuesta esperada | Responder sin errores técnicos inesperados; medir por separado las llamadas que esperan servicios externos. |
 | Medida propuesta | Meta p95 ≤ 500 ms y menos de 1% de errores técnicos para endpoints locales definidos. Los rechazos de negocio esperados se contabilizan aparte. |
 | Verificación | k6: registrar endpoints, duración, datos, infraestructura, p50/p95/p99, solicitudes por segundo y errores. |
@@ -71,14 +71,14 @@ El [plan de medición de calidad](09-plan-de-medicion-calidad.md) detalla herram
 
 ## EQ-06. Concurrencia
 
-Para el caso mayorista, la unidad del ensayo será una **presentación comercial**: por ejemplo, caja de 12 artículos, con mínimo de 1 caja y múltiplo de 1. Las 100 unidades iniciales y cada intento de una unidad se interpretan como 100 cajas y una caja, respectivamente. El ensayo no representa venta minorista de un artículo suelto; se registrará la equivalencia en el conjunto de datos.
+Para el caso mayorista, la unidad del ensayo será una **presentación comercial**: por ejemplo, caja de 12 artículos, con mínimo de 1 caja y múltiplo de 1. El conjunto de datos registrará la equivalencia de cada caja.
 
 | Elemento | Descripción |
 |---|---|
 | Atributo | AC06, AC07 |
 | Fuente | 500 compradores empresariales distintos. |
-| Estímulo | Intentan reservar simultáneamente una unidad del mismo producto. |
-| Condición | 100 unidades iniciales; cantidad mínima de una unidad, sin reservas previas, sin cancelaciones, al menos dos instancias backend y pagos simulados aprobados. |
+| Estímulo | Intentan reservar simultáneamente una caja del mismo producto. |
+| Condición | 100 cajas iniciales, mínimo y múltiplo de una caja, sin reservas previas ni cancelaciones y con dos instancias backend. El ensayo termina al crear la reserva. |
 | Respuesta esperada | Aceptar solo reservas cubiertas por stock y rechazar las restantes por falta de existencias. |
 | Medida propuesta | 100 pedidos/reservas aceptados, 400 rechazos esperados por stock y stock final 0, sin reservas huérfanas ni duplicados. |
 | Verificación | k6 y consulta de pedidos unida a pedido_items para contar el producto probado; contrastar unidades reservadas y stock. Simular fallas y reintentos en pruebas adicionales de recuperación. |

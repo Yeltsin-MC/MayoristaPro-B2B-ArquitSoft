@@ -2,19 +2,19 @@
 
 **Pregunta:** ¿qué aplicaciones y almacenes forman MayoristaPro? En C4, contenedor significa una aplicación o almacén de datos; no equivale necesariamente a Docker.
 
-![Diagrama de contenedores de MayoristaPro](../../img/nivel2-contenedores.png)
+![Diagrama de contenedores de MayoristaPro](../../img/fuentes-svg/nivel2-contenedores.svg)
 
 **Fuente editable:** [nivel2-contenedores.svg](../../img/fuentes-svg/nivel2-contenedores.svg).
 
-El worker representa procesos auxiliares del mismo código base; publicador y consumidores pueden ejecutarse por separado. SQS entrega mensajes; el consumidor debe reconocer duplicados.
+La imagen representa la visión de evolución. El [despliegue académico](../02-arquitectura-software/despliegue-academico.md) concreta la primera entrega. El worker representa procesos auxiliares del mismo código base; publicador y consumidores pueden ejecutarse por separado. SQS entrega mensajes; el consumidor debe reconocer duplicados.
 
 | Contenedor | Responsabilidad y acceso |
 |---|---|
 | Angular | Interfaz del navegador, sin secretos de proveedores. |
 | API NestJS | Autoriza operaciones y ejecuta casos de uso. |
-| Python/FastAPI | Puntuación de proveedores por reglas y explicación; lectura limitada. |
+| Python/FastAPI | Vista de evolución. El despliegue académico llama al modelo mediante un puerto de NestJS. Un proceso Python separado queda sujeto a justificación. |
 | PostgreSQL | Fuente de verdad de pedidos y stock; incluye intentos de pago y eventos pendientes. |
-| Redis | Copias temporales y sesiones compartidas; no confirma stock. |
+| Redis | Caché compartida del catálogo público. La estrategia de sesiones se verifica aparte. |
 | S3 | Imágenes y documentos con visibilidad pública o privada según uso. |
 | SQS y workers | Tareas posteriores, reintentos y resultados persistidos. |
 

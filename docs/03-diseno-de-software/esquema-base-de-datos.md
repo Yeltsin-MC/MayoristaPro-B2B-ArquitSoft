@@ -18,7 +18,7 @@ erDiagram
     COTIZACION_RESPUESTAS ||--|{ COTIZACION_RESPUESTA_ITEMS : ofrece
     COTIZACION_ITEMS ||--o{ COTIZACION_RESPUESTA_ITEMS : referencia
     PRODUCTOS ||--o{ COTIZACION_RESPUESTA_ITEMS : oferta
-    COTIZACION_RESPUESTAS |o--o| PEDIDOS : origina
+    COTIZACION_RESPUESTAS ||--o| PEDIDOS : origina
     TENANTS ||--o{ PEDIDOS : compra
     PROVEEDORES ||--o{ PEDIDOS : vende
     PEDIDOS ||--|{ PEDIDO_ITEMS : conserva
@@ -51,8 +51,8 @@ Todas las tablas usan id UUID y fechas de creación; las modificables agregan fe
 | cotizacion_items | cotizacion_id, descripción solicitada, unidad, cantidad, producto_referencia_id opcional | No almacena el precio que ofrecen todos los proveedores. |
 | cotizacion_destinatarios | cotizacion_id, proveedor_id | Par único; identifica quién puede recibir y responder. |
 | cotizacion_respuestas | destinatario_id único, estado, moneda, precio_total, vigente_hasta, condiciones_entrega, dias_entrega | Oferta completa de un proveedor; solo una respuesta aceptada por solicitud en v1. |
-| cotizacion_respuesta_items | respuesta_id, solicitud_item_id, producto_id, cantidad, precio_unitario, subtotal | Precio por ítem de cada oferta; producto del proveedor que responde. |
-| pedidos | tenant_id del comprador, comprador_id, proveedor_id obligatorio, cotizacion_respuesta_id opcional único, total, moneda, estado, idempotency_key, request_hash | Un comprador y un proveedor; snapshot de condiciones y entrega aceptadas. En el recorrido v1 la respuesta de cotización es obligatoria. |
+| cotizacion_respuesta_items | respuesta_id, solicitud_item_id, producto_id, cantidad, presentación, equivalencia, mínimo y múltiplo de la oferta, precio_unitario, subtotal | Conserva las condiciones ofrecidas y exige que ítem, solicitud, destinatario y proveedor correspondan. |
+| pedidos | tenant_id del comprador, comprador_id, proveedor_id obligatorio, cotizacion_respuesta_id obligatorio y único en v1, total, moneda, estado, idempotency_key, request_hash | Un comprador y un proveedor. Conserva condiciones de entrega e importes aceptados. |
 | pedido_items | pedido_id, producto_id, descripción, unidad, unidades_por_presentacion, minimo y multiplo históricos, cantidad, precio_unitario, subtotal | Conserva cantidades y precios aceptados; todos los productos corresponden al proveedor del pedido. |
 | reservas_stock | pedido_id, producto_id, cantidad, estado, vence_at | Par pedido/producto único. Activa, consumida o liberada. |
 | pagos | pedido_id, monto, moneda, pasarela, estado, idempotency_key, referencia_externa, autorización opcional | Una fila por intento; el pedido puede tener varios intentos, pero no cobros duplicados. |
@@ -78,7 +78,7 @@ La carga inicial declara existencias; las importaciones posteriores de metadatos
 - Crear pedido, ítems y reservas y descontar stock disponible en **una transacción y conexión**. Bloquear productos en orden estable para reducir interbloqueos; aplicar reintentos limitados ante conflictos recuperables.
 - Consumir la reserva después del pago no vuelve a descontar stock. Liberarla lo reintegra una sola vez mediante transición condicionada.
 - La clave de creación es única por empresa compradora y operación; el hash detecta contenido distinto. Solo se permite un intento de pago en curso por pedido, con referencias estables y reconciliación antes de otro intento.
-- La aceptación de una oferta debe ser exclusiva y repetible sin crear otro pedido. Los cobros tardíos y reembolsos requieren seguimiento, no eliminación de registros.
+- La aceptación bloquea la solicitud y verifica pertenencia, vigencia y ausencia de otra oferta aceptada en la misma transacción. La restricción lógica es una aceptación por solicitud. La base mantiene un pedido por oferta en v1.
 
 ## Acceso entre empresas
 

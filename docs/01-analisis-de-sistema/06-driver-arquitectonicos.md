@@ -4,8 +4,8 @@ Los drivers arquitectónicos identificados para el sistema son los siguientes:
 
 | ID | Driver arquitectónico | Origen | ¿Por qué influye en la arquitectura? |
 |---|---|---|---|
-| DA01 | El sistema debe soportar 2,000 usuarios concurrentes durante campañas comerciales. | AC03 — Escalabilidad | Influye en la estrategia de escalamiento horizontal y despliegue con balanceador de carga. |
-| DA02 | El sistema debe mantener tiempos de respuesta menores a 500 ms en p95 durante alta concurrencia. | AC01 — Rendimiento | Influye en el uso de caché Redis, consultas optimizadas y procesamiento asíncrono. |
+| DA01 | El sistema debe demostrar al menos 2.000 usuarios virtuales concurrentes con k6. | AC03 — Escalabilidad | Influye en la estrategia de escalamiento horizontal y despliegue con balanceador de carga. |
+| DA02 | El sistema debe alcanzar p95 ≤ 500 ms en los endpoints locales evaluados con EQ-01. | AC01 — Rendimiento | Influye en la caché Redis, la optimización de consultas y el procesamiento asíncrono. |
 | DA03 | El sistema debe garantizar la integridad del stock ante confirmaciones simultáneas de pedidos. | AC06 — Concurrencia | Influye en el uso de transacciones ACID, bloqueo optimista/pesimista y control de concurrencia en PostgreSQL. |
 | DA04 | El sistema debe proteger los datos de usuarios y operaciones comerciales. | AC04 — Seguridad | Influye en autenticación con JWT, autorización por roles, HTTPS y protección perimetral con Cloudflare. |
 | DA05 | El sistema debe integrar un módulo de recomendación de proveedores con IA. | RC07 — Servicio de IA | Influye en el diseño de un componente de IA desacoplado, con fallback si el servicio no está disponible. |

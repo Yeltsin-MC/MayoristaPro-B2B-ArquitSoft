@@ -1,5 +1,7 @@
 # Presentación del Sprint 01
 
+La presentación conserva la evidencia del Sprint 1. Para el alcance y las decisiones de la próxima entrega, consultar la [preparación del Sprint 2](../docs/05-preparacion-sprint-2.md).
+
 [Abrir la presentación con tecnologías](MayoristaPro-Sprint-01-tecnologias.pptx)
 
 La presentación contiene 19 diapositivas: carátula, problema, propuesta, actores, historias de usuario, requisitos funcionales, MVP, catálogo y ofertas al ingresar, atributos y medición de calidad, drivers, tecnologías, arquitectura y diseño. Las notas de cada diapositiva incluyen explicaciones y referencias a la documentación del proyecto. En PowerPoint se pueden consultar desde **Vista > Página de notas** o durante la exposición con la **Vista Moderador**.
