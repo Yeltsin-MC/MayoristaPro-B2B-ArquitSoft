@@ -160,14 +160,14 @@ MayoristaPro-B2B-ArquitSoft/
 └── README.md
 ```
 
-La carpeta local `tecnologia/boilerplate-clean-architecture/` está reservada para la implementación. Al estar vacía, no forma parte de los archivos publicados en Git.
+El incremento inicial del Sprint 2 está en `apps/api`, `apps/web` y `database`. Consulta la [guía para ejecutar el catálogo de prueba](docs/sprint-2-base-catalogo.md).
 
 ## Estado y siguiente paso
 
 | Etapa | Estado |
 |---|---|
 | Sprint 01: documentación técnica | Documentación elaborada y revisada para sustentación; evaluación docente pendiente. |
-| Sprint 02: implementación | Pendiente de inicio. Primera funcionalidad propuesta: identidad empresarial, catálogo y pedido con reserva transaccional. |
+| Sprint 02: implementación | Base de Angular, NestJS y PostgreSQL con catálogo de prueba. Identidad empresarial, catálogo comercial y pedido con reserva se completan en incrementos posteriores. |
 | Despliegue e integraciones | Diseñados; pendientes de implementación y verificación. |
 | Pruebas de capacidad | Pendientes; no se afirma soporte demostrado de 2,000 usuarios. |
 

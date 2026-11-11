@@ -1,0 +1,22 @@
+{
+  "name": "@mayoristapro/api",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "dev": "npm run build && node --env-file-if-exists=../../.env dist/main.js"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11",
+    "@nestjs/core": "^11",
+    "@nestjs/platform-express": "^11",
+    "pg": "^8",
+    "reflect-metadata": "^0.2",
+    "rxjs": "^7.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/pg": "^8",
+    "typescript": "~5.9.3"
+  }
+}

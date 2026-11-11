@@ -1,0 +1,30 @@
+<header><span>MayoristaPro <strong>B2B</strong></span></header>
+<main>
+  <h1>Catálogo mayorista</h1>
+  <p class="intro">Consulta precios y condiciones de compra por presentación.</p>
+  @if (status() === 'loading') {
+    <p role="status">Cargando productos…</p>
+  } @else if (status() === 'error') {
+    <p role="alert">El catálogo no está disponible en este momento.</p>
+    <button type="button" (click)="load()">Reintentar</button>
+  } @else {
+    <section aria-label="Productos" class="catalog">
+      @for (product of products(); track product.id) {
+        <article>
+          <p class="supplier">{{ product.supplier }}</p>
+          <h2>{{ product.name }}</h2>
+          <p>{{ product.unit }} de {{ product.unitsPerPack }} unidades</p>
+          <p class="price">{{ product.price | currency:product.currency:'S/ ' }}</p>
+          <p>{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
+          <dl>
+            <div><dt>Mínimo</dt><dd>{{ product.minimum }}</dd></div>
+            <div><dt>Múltiplo</dt><dd>{{ product.multiple }}</dd></div>
+            <div><dt>Disponibles</dt><dd>{{ product.stock }}</dd></div>
+          </dl>
+        </article>
+      } @empty {
+        <p role="status">Todavía no hay productos publicados.</p>
+      }
+    </section>
+  }
+</main>
