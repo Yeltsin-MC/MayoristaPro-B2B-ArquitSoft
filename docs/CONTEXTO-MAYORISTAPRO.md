@@ -161,17 +161,23 @@
 
 ---
 
-### 🔄 T5: Pagos con Mercado Pago (Phase 1 Completada)
+### ✅ T5: Pagos con Mercado Pago (Implementado - Modo Mock)
 
 **Rama:** `sprint-2/pagos-mercadopago`
-**Commit verificado:** `5026a9c`
-**Estado:** Migración de base de datos implementada y probada; endpoints y frontend **pendientes**
+**Commits:** Backend `aa748bd`, Frontend+Worker (pending commit)
+**Estado:** Backend, worker, frontend y tests implementados; **pendiente merge a main**
 
-**Fase 1: Migración de Estructura ✅ Completada**
-- ✅ Migración `005_payments.sql` implementada y aplicada
-- ✅ 15 tests de estructura (T5-M01 a T5-M15) aprobados
-- ✅ Compatibilidad T1-T4 verificada (28 tests de regresión pasan)
-- ✅ Tests totales: 44/44 (1 unitario + 28 T1-T4 + 15 T5)
+**Implementación Completa:**
+- ✅ Migración `005_payments.sql` (tablas, triggers, funciones, índices)
+- ✅ Backend NestJS: PaymentsModule con Clean Architecture
+- ✅ Gateway Mercado Pago con modo mock (desarrollo/tests sin credenciales)
+- ✅ Endpoints: POST/GET `/orders/:id/payment-attempts`, POST `/webhooks/mercadopago`
+- ✅ Worker automático: expira pedidos y libera stock (cron cada 2 minutos)
+- ✅ Frontend Angular: botón pagar, countdown, lista de intentos, estados visuales
+- ✅ Webhook signature verification (HMAC-SHA256 timing-safe)
+- ✅ 8 tests de integración pagos (T5-P01 a T5-P08)
+- ✅ 5 tests de seguridad (T5-S01 a T5-S05)
+- ✅ Tests totales: 63+ (1 unitario + 28 T1-T4 + 17 T5-M + 8 T5-P + 5 T5-S + 4 browser)
 
 **Decisión D3 (Aprobada 11/11/2026):**
 - **Duración de reserva:** 30 minutos desde `trade_orders.created_at`
@@ -227,28 +233,61 @@
 - T5-M14: Foreign keys funcionan
 - T5-M15: Compatibilidad con T1-T4 sin `payment_attempts`
 
-**Fase 2: Endpoints y Frontend (Pendiente)**
-- Integrar Mercado Pago Checkout Pro (Preferences API) en modo test
-- Implementar endpoints NestJS:
-  - `POST /api/v1/orders/:id/payment-attempts` - Crear preferencia MP
-  - `POST /api/v1/webhooks/mercadopago` - Recibir notificaciones
-  - `GET /api/v1/orders/:id/payment-attempts` - Consultar intentos
-- Implementar frontend Angular:
-  - Botón "Pagar" que redirecciona a Checkout Pro
-  - Página de retorno con confirmación/rechazo
-  - Indicador de expiración (countdown 30 min)
-- Webhooks con verificación HMAC-SHA256 contra `x-signature`
-- Worker cron para expirar pedidos (cada 2 min)
-- Reconciliación manual de casos especiales
-- **Nunca llamadas HTTP externas dentro de transacciones PostgreSQL**
+**Fase 2: Backend NestJS ✅ Completada**
+- ✅ PaymentsModule integrado en CatalogModule
+- ✅ Clean Architecture: domain, application, infrastructure, presentation
+- ✅ MercadoPagoGateway con modo mock (desarrollo sin credenciales)
+- ✅ Endpoints REST implementados:
+  - `POST /api/v1/orders/:id/payment-attempts` - Crea preferencia MP
+  - `GET /api/v1/orders/:id/payment-attempts` - Lista intentos del pedido
+  - `POST /api/v1/webhooks/mercadopago` - Procesa notificaciones MP
+- ✅ Verificación de firma HMAC-SHA256 timing-safe
+- ✅ Validaciones: 1 intento activo, máximo 3 intentos, pedido no expirado
+- ✅ 8 tests de integración (T5-P01 a T5-P08)
 
-**Decisiones técnicas registradas:**
-- **API elegida:** Preferences API (clásica, madura, suficiente para MVP académico)
-- **API descartada:** Orders API (moderna pero más compleja, no necesaria para demo)
-- Credenciales MP test: Pendientes de obtener
-- Webhooks en localhost: Requieren ngrok o simulación en desarrollo
+**Fase 3: Worker Automático ✅ Completada**
+- ✅ Script Node.js: `apps/api/src/workers/expire-orders.cjs`
+- ✅ Lógica de expiración idempotente:
+  - Busca pedidos con `expires_at < now()` en estado `pendiente`
+  - Si hay pagos activos: marca `expired_pending_payment`, reservas `payment_pending`
+  - Si no hay pagos activos: marca `expired`, libera stock atómicamente
+- ✅ Comando npm: `npm run expire:orders` (cron cada 2 minutos)
+- ✅ Manejo de concurrencia con locks PostgreSQL
+- ✅ 5 tests de seguridad (T5-S01 a T5-S05)
 
-**Próximo paso:** Implementar Fase 2 (endpoints + frontend + worker)
+**Fase 4: Frontend Angular ✅ Completada**
+- ✅ Componente extendido en `apps/web/src/trade.ts`
+- ✅ Funciones implementadas:
+  - `startPayment()` - Crea intento de pago
+  - `openCheckout()` - Redirecciona a Mercado Pago
+  - `expiresIn()` - Calcula tiempo restante
+  - `paymentAttempts` - Signal con lista de intentos
+- ✅ UI implementada:
+  - Botón "Pagar" (deshabilitado si expirado/pagado)
+  - Countdown timer hasta vencimiento
+  - Lista de intentos con estados y enlaces
+  - Mensajes contextuales por estado de pedido
+- ✅ Build Angular exitoso
+
+**Decisiones técnicas implementadas:**
+- **API elegida:** Preferences API (madura, suficiente para MVP académico)
+- **API descartada:** Orders API (más compleja, no necesaria para demo)
+- **Modo mock:** Gateway funciona sin credenciales (MP_ACCESS_TOKEN no configurado)
+- **Verificación webhook:** HMAC-SHA256 timing-safe con MP_WEBHOOK_SECRET
+- **Worker:** Idempotente, diseñado para cron, no libera stock dos veces
+- **Frontend:** SPA Angular sin reload, signals para reactividad
+
+**Archivos creados (Fase 2-4):**
+- `apps/api/src/payments/*` (domain, application, infrastructure, presentation)
+- `apps/api/src/workers/expire-orders.cjs`
+- `tests/payments.integration.cjs` (8 tests)
+- `tests/payments-security.integration.cjs` (5 tests)
+- Modificado: `apps/web/src/trade.ts`, `apps/api/package.json`
+
+**Próximo paso:** 
+- Configurar credenciales MP test para integración real
+- Merge a `sprint-2/cotizaciones-pedidos` o directamente a `main`
+- Implementar UI de reconciliación manual (admin)
 
 ---
 
@@ -294,15 +333,18 @@
 
 ### Estado Actual
 
-**Rama activa:** `sprint-2/cotizaciones-pedidos`
+**Rama activa:** `sprint-2/pagos-mercadopago`
 
-**Último commit:** `dd13ea8` - "wip: respaldar avances de cotizaciones pedidos y pruebas"
+**Último commit backend:** `aa748bd` - "Implementación completa de T5 Fase 2: Backend Pagos MP (mock)"
 
-**Estado del working tree:** Limpio (sin cambios pendientes)
+**Último commit frontend+worker:** Pendiente de commit
+
+**Estado del working tree:** Cambios no commiteados (worker, frontend, tests seguridad)
 
 **Ramas principales:**
 - `main` - Integra T1, T2, T3 (estable)
 - `sprint-2/cotizaciones-pedidos` - Contiene T4 implementado, **pendiente de merge a `main`**
+- `sprint-2/pagos-mercadopago` - Contiene T5 backend+worker+frontend, **pendiente de commit y merge**
 
 ### Reglas de Trabajo con Git
 

@@ -4,7 +4,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
-    "dev": "npm run build && node --env-file-if-exists=../../.env dist/main.js"
+    "dev": "npm run build && node --env-file-if-exists=../../.env dist/main.js",
+    "expire:orders": "node --env-file-if-exists=../../.env src/workers/expire-orders.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11",

@@ -68,19 +68,41 @@ import {FormsModule} from '@angular/forms';
    <p>Productos: S/ {{o.subtotal}} · Envío final: S/ {{o.shipping}} · <strong>Total: S/ {{o.total}} PEN</strong></p>
    <p>IGV incluido en precios. Plazo: {{o.deliveryDays}} días.</p>
    @for(r of o.reservations;track r.productId){<p>Reserva {{r.state}}: {{r.quantity}} presentaciones.</p>}
-   <p>Estado: {{o.state}}. Stock reservado; el pago aún no está habilitado.</p>
+   <p>Estado: {{o.state}}.</p>
+   @if(o.state==='pendiente'){
+    <p><strong>Pagar antes de: {{expiresIn(o.expiresAt)}}</strong></p>
+    <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar con Mercado Pago</button>
+   }
+   @if(o.state==='paid'){<p class="success">✓ Pago confirmado. Pedido procesándose.</p>}
+   @if(o.state==='expired'){<p class="error">✗ Pedido vencido sin pago. Stock liberado.</p>}
+   @if(o.state==='requires_reconciliation'){<p class="warning">⚠ Requiere reconciliación manual (pago tardío).</p>}
+   @if(paymentAttempts().length>0){
+    <h5>Intentos de pago</h5>
+    @for(a of paymentAttempts();track a.id){
+     <p>{{formatDate(a.created_at)}} · {{a.state}} · S/ {{a.amount}}
+      @if(a.state==='created' && a.preference_id){<button type="button" (click)="openCheckout(a)">Continuar pago</button>}
+     </p>
+    }
+   }
   </article>
  }
-</section>`,styles:[`.trade{border-top:1px solid #ccc;margin-top:2rem;padding-top:1rem} form{display:grid;gap:.75rem;margin:1rem 0;max-width:45rem}label{display:grid;gap:.25rem}.check{display:flex;gap:.5rem}input,select{padding:.5rem;font:inherit;max-width:100%}fieldset{display:grid;gap:.5rem;border:1px solid #ccc}button{margin:.2rem}p{overflow-wrap:anywhere}.offer{margin:1rem 0}button:disabled{opacity:.5;cursor:default}`]})
+</section>`,styles:[`.trade{border-top:1px solid #ccc;margin-top:2rem;padding-top:1rem} form{display:grid;gap:.75rem;margin:1rem 0;max-width:45rem}label{display:grid;gap:.25rem}.check{display:flex;gap:.5rem}input,select{padding:.5rem;font:inherit;max-width:100%}fieldset{display:grid;gap:.5rem;border:1px solid #ccc}button{margin:.2rem}p{overflow-wrap:anywhere}.offer{margin:1rem 0}button:disabled{opacity:.5;cursor:default}.success{color:green;font-weight:bold}.error{color:red;font-weight:bold}.warning{color:orange;font-weight:bold}`]})
 export class TradeComponent {
  readonly token=input.required<string>();readonly canBuy=input(false);readonly canSell=input(false);readonly catalogChanged=output<void>();
  providers=signal<any[]>([]);products=signal<any[]>([]);requests=signal<any[]>([]);orders=signal<any[]>([]);
- selected=signal<any>(null);currentOrder=signal<any>(null);busy=signal(false);message=signal('');creating=signal(false);
+ selected=signal<any>(null);currentOrder=signal<any>(null);paymentAttempts=signal<any[]>([]);busy=signal(false);message=signal('');creating=signal(false);
  supplierIds:string[]=[];items=[{descripcion:'',presentacion:'caja',unidadesPorPresentacion:12,cantidad:2}];
  responseItems:any[]=[];shipping='0.00';deliveryDays=3;expiresAt=this.future();private keys=new Map<string,string>();
  constructor(){effect(()=>{this.token();this.canBuy();this.canSell();void this.refresh();});}
  future(){return new Date(Date.now()+86400000-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);}
  date(value:string){return new Date(value).toLocaleString('es-PE');}
+ formatDate(value:string){return new Date(value).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'});}
+ expiresIn(expiresAt:string){
+  const now=Date.now();const exp=new Date(expiresAt).getTime();const diff=exp-now;
+  if(diff<=0)return 'VENCIDO';
+  const min=Math.floor(diff/60000);const sec=Math.floor((diff%60000)/1000);
+  return `${min}min ${sec}s`;
+ }
  private async call(path:string,method='GET',body?:unknown,key?:string):Promise<any>{
   this.busy.set(true);try{
    const r=await fetch('/api/v1/'+path,{method,headers:{Authorization:'Bearer '+this.token(),'Content-Type':'application/json',...(key?{'Idempotency-Key':key}:{})},...(body?{body:JSON.stringify(body)}:{})});
@@ -106,5 +128,17 @@ export class TradeComponent {
  async accept(id:string){const q=this.selected();const r=await this.call('quotations/'+q.id+'/responses/'+id+'/accept','PATCH');if(r)this.selected.set(r);}
  async order(id:string){if(!this.keys.has(id))this.keys.set(id,crypto.randomUUID());const o=await this.call('orders','POST',{cotizacionRespuestaId:id},this.keys.get(id));
   if(o){this.currentOrder.set(o);this.catalogChanged.emit();const list=await this.call('orders');if(list)this.orders.set(list);}}
- async openOrder(id:string){const o=await this.call('orders/'+id);if(o)this.currentOrder.set(o);}
+ async openOrder(id:string){const o=await this.call('orders/'+id);if(o){this.currentOrder.set(o);const attempts=await this.call('orders/'+id+'/payment-attempts');if(attempts)this.paymentAttempts.set(attempts);}}
+ async startPayment(orderId:string){
+  const attempt=await this.call('orders/'+orderId+'/payment-attempts','POST',{});
+  if(attempt && attempt.init_point){
+   this.message.set('Redirigiendo a Mercado Pago...');
+   window.location.href=attempt.init_point;
+  }
+ }
+ openCheckout(attempt:any){
+  if(attempt.mp_preference_response?.init_point){
+   window.location.href=attempt.mp_preference_response.init_point;
+  }
+ }
 }
