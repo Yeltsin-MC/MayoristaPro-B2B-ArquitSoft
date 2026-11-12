@@ -24,7 +24,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
     process.env.DATABASE_URL = url.toString();
     db = new Pool({connectionString:process.env.DATABASE_URL});
     for (const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql',
-      'database/migrations/003_catalog_imports.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
+      'database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
     const hash = await passwordHash(password);
     await db.query("INSERT INTO accounts(email,password_hash,platform_admin) VALUES('admin@browser.test',$1,true)",[hash]);
     for (const [i,name] of ['verified','pending','reader'].entries()) {

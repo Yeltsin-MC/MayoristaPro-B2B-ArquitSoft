@@ -166,6 +166,8 @@ T2 incorpora [identidad y vinculación empresarial](docs/sprint-2-identidad.md):
 
 T3 incorpora [carga masiva CSV/XLSX](docs/sprint-2-carga-masiva.md): plantilla, vista previa con errores por fila y confirmación completa del lote por proveedor verificado. Actualiza SKU propios sin reemplazar stock y exige revisar de nuevo ante cambios concurrentes.
 
+T4 incorpora [cotizaciones, pedidos y reserva de stock](docs/sprint-2-cotizaciones-pedidos.md): ofertas privadas de varios proveedores, aceptación única y creación idempotente de pedido pendiente con reserva atómica. La demo suma precios con IGV incluido y envío final fijo/cero con aritmética exacta; no integra pago ni liberación automática.
+
 ## Estado y siguiente paso
 
 | Etapa | Estado |

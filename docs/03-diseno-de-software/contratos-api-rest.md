@@ -54,7 +54,7 @@ Lectura pública del catálogo publicado desde la página de inicio; escritura s
 
 ### quotations
 
-D2 y D4 aprobadas; [SDD T4 y pruebas previstas](../sprint-2-cotizaciones-pedidos.md). T3 está incorporada a main; T4 continúa pendiente de implementación. La respuesta agrega envío, plazo, vigencia e indicador de IGV y devuelve desglose/total calculado por el servidor antes de aceptar. Una aceptación por solicitud y un pedido por oferta. La demo admite precios con IGV incluido y envío por importe final fijo o S/ 0.
+D2 y D4 aprobadas; [SDD T4, contrato implementado y pruebas](../sprint-2-cotizaciones-pedidos.md). Una aceptación por solicitud y un pedido por oferta. La respuesta agrega envío, plazo, vigencia e IGV incluido y devuelve desglose/total calculado antes de aceptar. Solicitudes: `GET/POST /quotations` y `GET /quotations/:id`; pedidos: `GET/POST /orders` y `GET /orders/:id`. Directorio autorizado: `GET /trade/providers`; productos propios: `GET /trade/products`. La SDD documenta cuerpos, respuestas, permisos y límites. El envío es un importe final fijo o cero, sin cálculo tributario adicional. La reserva T4 devuelve vencimiento nulo, sin inventar un plazo de pago.
 
 Comprador propietario y proveedores destinatarios; respuestas según participación.
 

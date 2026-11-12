@@ -3,11 +3,13 @@ import { IdentityService } from '../identity/identity.service';
 import { CatalogImports } from './application/catalog-imports';
 import { ImportsController } from './presentation/imports.controller';
 import { Module } from '@nestjs/common';
+import { TradeModule } from '../trade/trade.module';
 import { ListProducts, PRODUCT_READER, ProductReader } from './application/list-products';
 import { PostgresProducts } from './infrastructure/postgres-products';
 import { ProductsController } from './presentation/products.controller';
 
 @Module({
+  imports: [TradeModule],
   controllers: [ProductsController, IdentityController, ImportsController],
   providers: [
     IdentityService,

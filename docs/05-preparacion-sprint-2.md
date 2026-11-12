@@ -69,7 +69,7 @@ Referencias de implementación: [flujo comercial](03-diseno-de-software/flujo-co
 
 ## Preparación de T4
 
-[Especificación SDD de cotizaciones, pedidos y stock](sprint-2-cotizaciones-pedidos.md), con criterios y pruebas previstas. D2 y D4 aprobadas por el responsable del proyecto. **Implementación pendiente de incorporar T3 a `main`**: la consulta remota del 11/11/2026 mostró `origin/main` en `8c2e5b4`, anterior al cierre T3 `55006f9`. Esta preparación es solo documental en `docs/preparacion-t4`; no fusiona T3 ni adelanta migraciones o código T4.
+[Especificación SDD de cotizaciones, pedidos y stock](sprint-2-cotizaciones-pedidos.md), con criterios y pruebas verificables. D2 y D4 aprobadas por el responsable del proyecto. T3 fue incorporada a `main` en `2af3b1f`; T4 se implementa en `sprint-2/cotizaciones-pedidos` desde esa base, incorporando la SDD hasta `4741615` sin duplicar commits. Pedido pendiente, reserva activa y descuento de stock se guardan juntos; pago y liberación automática quedan para T5. La fusión de T4 a `main` sigue pendiente de revisión.
 
 ### Alcance aprobado de T2
 

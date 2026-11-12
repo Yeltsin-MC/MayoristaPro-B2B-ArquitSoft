@@ -27,7 +27,7 @@ test('T3: importación CSV/XLSX con PostgreSQL y HTTP reales', async t => {
     process.env.DATABASE_URL = url.toString();
     db = new Pool({ connectionString:process.env.DATABASE_URL });
     for (const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql',
-      'database/migrations/003_catalog_imports.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
+      'database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
     const hash = await passwordHash(password);
     for (const [index,name] of ['owner','other','pending','reader'].entries()) {
       const supplier = (await db.query('INSERT INTO suppliers(code,name,verified) VALUES($1,$1,$2) RETURNING id',[name,name!=='pending'])).rows[0].id;

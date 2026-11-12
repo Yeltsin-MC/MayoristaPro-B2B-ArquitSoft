@@ -1,8 +1,9 @@
 import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogImportComponent } from './catalog-import';
+import { TradeComponent } from './trade';
 @Component({
- selector:'app-identity', imports:[FormsModule, CatalogImportComponent],
+ selector:'app-identity', imports:[FormsModule, CatalogImportComponent, TradeComponent],
  template:`
  <section aria-label="Cuenta empresarial" class="identity">
  <h2>Cuenta empresarial</h2>
@@ -28,6 +29,9 @@ import { CatalogImportComponent } from './catalog-import';
  <h3>{{company().legal_name}}</h3><p>RUC {{company().ruc}} · {{company().review_label}}</p>
  <p>Permisos: {{permissions().join(', ')}}.</p>
  <p>Proveedor: {{company().supplier_verified ? 'verificado · revisado manualmente' : 'pendiente de verificación'}}. La compra sigue habilitada con permiso de compra.</p>
+ @if(permissions().includes('buy') || (permissions().includes('publish') && company().supplier_verified)) {
+ <app-trade [token]="token()" [canBuy]="permissions().includes('buy')" [canSell]="permissions().includes('publish') && company().supplier_verified" (catalogChanged)="catalogChanged.emit()" />
+ }
  @if(permissions().includes('manage')) {
  <form (ngSubmit)="invite()"><h3>Invitar usuario</h3>
  <label>Correo <input name="inviteEmail" type="email" required [(ngModel)]="inviteEmail"></label>

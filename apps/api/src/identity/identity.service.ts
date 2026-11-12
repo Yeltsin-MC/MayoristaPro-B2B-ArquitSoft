@@ -59,6 +59,14 @@ export class IdentityService implements OnModuleDestroy {
     if (!result.rows[0]) throw new ForbiddenException('Requiere proveedor verificado.');
     return { accountId:actor.id, supplierId:result.rows[0].id };
   }
+  async tradeIdentity(db:PoolClient,auth?:string) {
+    const actor=await this.actor(db,auth);
+    const company=(await db.query(`SELECT c.id,c.supplier_id,s.verified FROM companies c JOIN suppliers s ON s.id=c.supplier_id
+      WHERE c.id=$1 AND c.status='enabled' FOR SHARE OF c,s`,[actor.company_id])).rows[0];
+    if(!company)throw new ForbiddenException('Empresa no habilitada.');
+    return {accountId:actor.id,companyId:company.id as string,supplierId:company.supplier_id as string,
+      canBuy:actor.permissions.includes('buy'),canSell:actor.permissions.includes('publish')&&company.verified===true};
+  }
   async register(body: any) {
     const mail = email(body.email), ruc = text(body.ruc,11), name = text(body.legalName), evidence = text(body.evidence,2000);
     if (!/^\d{11}$/.test(ruc) || name.length < 2) throw new BadRequestException('RUC de 11 dígitos y razón social requeridos.');
