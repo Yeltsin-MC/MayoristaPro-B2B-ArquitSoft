@@ -9,9 +9,11 @@
     "recover:webhooks": "node --env-file-if-exists=../../.env src/workers/recover-webhooks.cjs"
   },
   "dependencies": {
+    "@nestjs/axios": "^4",
     "@nestjs/common": "^11",
     "@nestjs/core": "^11",
     "@nestjs/platform-express": "^11",
+    "axios": "^1.7",
     "csv-parse": "6.1.0",
     "exceljs": "4.4.0",
     "pg": "^8",

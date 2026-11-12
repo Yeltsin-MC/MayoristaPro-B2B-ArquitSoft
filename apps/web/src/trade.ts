@@ -47,8 +47,20 @@ import {FormsModule} from '@angular/forms';
    </form>
   }
   <h4>Ofertas privadas autorizadas</h4>
-  @for(o of q.offers;track o.id){
+  @if(q.isBuyer && q.offers.length>1){
+   <button type="button" [disabled]="busy()" (click)="scoreOffers(q.id)">{{scoredOffers().length>0?'Actualizar':'Calcular'}} puntuación IA</button>
+   @if(scoredOffers().length>0){<label class="check"><input type="checkbox" [(ngModel)]="sortByScore" (change)="sortOffers()">Ordenar por puntuación</label>}
+  }
+  @for(o of displayedOffers();track o.id){
    <article class="offer"><h4>Oferta de {{o.supplierName}}</h4>
+    @if(o.score!==undefined){
+     <p class="score-info">
+      <strong>Puntuación IA: {{o.score!==null?o.score.toFixed(1):'N/A'}}</strong>
+      @if(o.breakdown && o.score!==null){
+       <span class="tooltip" title="Precio: {{o.breakdown.price_score.toFixed(1)}} | Entrega: {{o.breakdown.delivery_score.toFixed(1)}} | Reputación: {{o.breakdown.reputation_score.toFixed(1)}}">ℹ️</span>
+      }
+     </p>
+    }
     @for(i of o.items;track i.requestItemId){<p>{{i.snapshot.name}} · {{i.snapshot.unit}} de {{i.snapshot.unitsPerPack}} · {{i.quantity}} × S/ {{i.unitPrice}} = S/ {{i.subtotal}}</p>}
     <p>Productos: S/ {{o.subtotal}} · Envío final: S/ {{o.shipping}}</p>
     <p><strong>Total: S/ {{o.total}} PEN</strong> · IGV incluido en precios; no se calcula desglose fiscal.</p>
@@ -86,11 +98,12 @@ import {FormsModule} from '@angular/forms';
    }
   </article>
  }
-</section>`,styles:[`.trade{border-top:1px solid #ccc;margin-top:2rem;padding-top:1rem} form{display:grid;gap:.75rem;margin:1rem 0;max-width:45rem}label{display:grid;gap:.25rem}.check{display:flex;gap:.5rem}input,select{padding:.5rem;font:inherit;max-width:100%}fieldset{display:grid;gap:.5rem;border:1px solid #ccc}button{margin:.2rem}p{overflow-wrap:anywhere}.offer{margin:1rem 0}button:disabled{opacity:.5;cursor:default}.success{color:green;font-weight:bold}.error{color:red;font-weight:bold}.warning{color:orange;font-weight:bold}`]})
+</section>`,styles:[`.trade{border-top:1px solid #ccc;margin-top:2rem;padding-top:1rem} form{display:grid;gap:.75rem;margin:1rem 0;max-width:45rem}label{display:grid;gap:.25rem}.check{display:flex;gap:.5rem}input,select{padding:.5rem;font:inherit;max-width:100%}fieldset{display:grid;gap:.5rem;border:1px solid #ccc}button{margin:.2rem}p{overflow-wrap:anywhere}.offer{margin:1rem 0;padding:1rem;border:1px solid #ddd;border-radius:4px}button:disabled{opacity:.5;cursor:default}.success{color:green;font-weight:bold}.error{color:red;font-weight:bold}.warning{color:orange;font-weight:bold}.score-info{display:flex;align-items:center;gap:.5rem;background:#f0f8ff;padding:.5rem;border-radius:4px;margin-bottom:.5rem}.tooltip{cursor:help;font-size:1.2em}`]})
 export class TradeComponent {
  readonly token=input.required<string>();readonly canBuy=input(false);readonly canSell=input(false);readonly catalogChanged=output<void>();
  providers=signal<any[]>([]);products=signal<any[]>([]);requests=signal<any[]>([]);orders=signal<any[]>([]);
  selected=signal<any>(null);currentOrder=signal<any>(null);paymentAttempts=signal<any[]>([]);busy=signal(false);message=signal('');creating=signal(false);
+ scoredOffers=signal<any[]>([]);sortByScore=false;
  supplierIds:string[]=[];items=[{descripcion:'',presentacion:'caja',unidadesPorPresentacion:12,cantidad:2}];
  responseItems:any[]=[];shipping='0.00';deliveryDays=3;expiresAt=this.future();private keys=new Map<string,string>();
  constructor(){effect(()=>{this.token();this.canBuy();this.canSell();void this.refresh();});}
@@ -120,7 +133,28 @@ export class TradeComponent {
  addItem(){this.items.push({descripcion:'',presentacion:'caja',unidadesPorPresentacion:12,cantidad:2});}
  async create(){const q=await this.call('quotations','POST',{proveedorIds:this.supplierIds,items:this.items});if(q){this.selected.set(q);this.creating.set(false);const r=await this.call('quotations');if(r)this.requests.set(r);}}
  async open(id:string){const q=await this.call('quotations/'+id);if(q){this.selected.set(q);this.currentOrder.set(null);this.creating.set(false);this.expiresAt=this.future();
+  this.scoredOffers.set([]);this.sortByScore=false;
   this.responseItems=q.items.map((i:any)=>({solicitudItemId:i.id,productoId:'',cantidad:i.quantity,precioUnitario:''}));}}
+ async scoreOffers(quotationId:string){
+  const result=await this.call('quotations/'+quotationId+'/score-offers','POST');
+  if(result && result.scored_offers){
+   this.scoredOffers.set(result.scored_offers);
+   if(!result.ai_service_available){this.message.set('Servicio de IA no disponible. Ofertas mostradas sin puntuación.');}
+   else{this.message.set('Puntuación IA calculada exitosamente.');}
+  }
+ }
+ displayedOffers(){
+  const q=this.selected();
+  if(!q || !q.offers)return [];
+  const scored=this.scoredOffers();
+  if(scored.length===0)return q.offers;
+  const offersWithScores=q.offers.map((o:any)=>{
+   const s=scored.find((x:any)=>x.offer_id===o.id);
+   return s?{...o,score:s.score,breakdown:s.breakdown}:{...o,score:undefined};
+  });
+  return this.sortByScore?offersWithScores.sort((a:any,b:any)=>(b.score??-1)-(a.score??-1)):offersWithScores;
+ }
+ sortOffers(){/* triggers displayedOffers recompute */}
  async respond(){const q=this.selected();if(!q)return;const expiry=new Date(this.expiresAt);
   if(!this.expiresAt||!Number.isFinite(expiry.getTime())){this.message.set('Vigencia inválida: indica fecha y hora.');return;}
   const result=await this.call('quotations/'+q.id+'/responses','POST',{

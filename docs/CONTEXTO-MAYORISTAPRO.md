@@ -378,17 +378,127 @@
 
 ---
 
-### ⏳ T6: IA de Comparación/Recomendación (Pendiente)
+### ✅ T6: IA de Comparación y Recomendación de Proveedores (Implementado)
 
-**Estado:** No iniciado
+**Rama:** `sprint-2/ia-proveedores`
+**Estado:** **IMPLEMENTADO** - Servicio Python FastAPI, integración NestJS, frontend Angular, tests unitarios
 
-**Propuesta:**
-- Proceso Python + FastAPI separado
-- Evaluar ofertas de la misma solicitud
-- Comparar precios, plazos, reputación
-- Ordenar por relevancia para el comprador
+**Arquitectura:**
+- **Servicio Python FastAPI:** Microservicio independiente en puerto 5000
+- **Algoritmo Determinista:** Scoring basado en pesos configurables (50% precio, 30% entrega, 20% reputación)
+- **Integración NestJS:** Comunicación HTTP con degradación elegante
+- **Datos de Reputación:** Consulta desde PostgreSQL (`trade_orders` con estado `paid`)
 
-**Pendiente:** Definir modelo de datos, scoring, y comunicación backend↔Python
+**Funcionalidad Completa:**
+1. **Endpoint NestJS:** `POST /api/v1/quotations/:id/score-offers`
+   - Autorización: Solo comprador propietario de la cotización
+   - Consulta ofertas existentes
+   - Enriquece con datos de reputación desde PostgreSQL
+   - Llama a servicio Python FastAPI
+   - Retorna ofertas ordenadas por score descendente
+   
+2. **Servicio Python FastAPI:**
+   - Endpoint: `POST /api/v1/score-offers`
+   - Health check: `GET /health`
+   - Normalización: Escala 0-100 invertida para precio y entrega (menor es mejor)
+   - Reputación: `completed_orders / total_orders * 100`, neutral (50) si sin historial
+   - Casos extremos: oferta única recibe scores neutrales (50)
+
+3. **Frontend Angular:**
+   - Botón "Calcular puntuación IA" (visible solo si hay 2+ ofertas)
+   - Columna de score con valor numérico
+   - Tooltip con desglose (precio, entrega, reputación)
+   - Checkbox "Ordenar por puntuación" (opcional)
+   - Degradación elegante: muestra ofertas sin score si servicio no disponible
+
+**Algoritmo de Scoring:**
+```
+score_final = (price_score * 0.50) + (delivery_score * 0.30) + (reputation_score * 0.20)
+
+Normalización inversa (menor es mejor):
+  normalized = ((max_val - value) / (max_val - min_val)) * 100
+
+Reputación:
+  reputation_score = (completed_orders / total_orders) * 100
+  reputation_score = 50 si total_orders = 0
+```
+
+**Archivos Implementados (11 archivos):**
+- `apps/ai-service/main.py` (FastAPI service, 250+ líneas)
+- `apps/ai-service/requirements.txt` (fastapi, uvicorn, pydantic, pytest)
+- `apps/ai-service/README.md` (documentación API y algoritmo)
+- `apps/ai-service/test_scoring.py` (tests unitarios, 15+ casos)
+- `apps/api/src/ai/ai.module.ts`
+- `apps/api/src/ai/domain/scored-offer.ts`
+- `apps/api/src/ai/application/ai.service.ts`
+- `apps/api/src/ai/presentation/ai.controller.ts`
+- `apps/api/src/trade/trade.module.ts` (modificado: exporta Trade)
+- `apps/api/src/catalog/catalog.module.ts` (modificado: importa AiModule)
+- `apps/api/package.json` (agregado: @nestjs/axios@^4, axios@^1.7)
+- `apps/web/src/trade.ts` (extendido: UI de scoring)
+- `apps/api/src/ai/ai.integration.test.md` (guía de tests manuales)
+
+**Tests Unitarios Python:**
+- Normalización básica e invertida
+- Cálculo de reputación con y sin historial
+- Oferta única recibe score neutral (50)
+- Múltiples ofertas rankean correctamente
+- Ofertas idénticas tienen mismo score
+- Sin historial = reputación 50
+- Pesos aplicados correctamente (50%, 30%, 20%)
+- Casos extremos: lista vacía, diferencias extremas de precio/entrega
+
+**Tests de Integración (Manuales):**
+- T6-01: Endpoint funcional con servicio Python disponible
+- T6-02: Autorización por compañía (solo comprador)
+- T6-03: Degradación elegante sin servicio Python
+- T6-04: Cálculo de reputación desde PostgreSQL
+- T6-05: Regresión T1-T5 sin afectación
+
+**Decisiones Técnicas:**
+- **Lenguaje:** Python (no ML, algoritmo determinista)
+- **Framework:** FastAPI (ligero, async, Pydantic para validación)
+- **Comunicación:** HTTP síncrono (académico, suficiente para demo)
+- **Reputación:** Consulta desde PostgreSQL (`COUNT WHERE state='paid'`)
+- **Sin nueva migración:** Usa tablas existentes (`suppliers`, `quotation_offers`, `trade_orders`)
+- **Degradación elegante:** Frontend muestra ofertas sin score si Python no disponible
+
+**Comandos de Ejecución:**
+```powershell
+# Servicio Python FastAPI
+cd apps\ai-service
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 5000
+
+# Tests unitarios Python
+cd apps\ai-service
+pytest test_scoring.py -v
+
+# Backend NestJS (debe estar corriendo)
+cd apps\api
+npm run dev
+
+# Frontend Angular (debe estar corriendo)
+cd apps\web
+npm start
+```
+
+**Variables de Entorno:**
+- `AI_SERVICE_URL` (default: `http://localhost:5000`) - URL del servicio Python
+
+**Validación de Build:**
+- ✅ Backend NestJS compila sin errores
+- ✅ Frontend Angular compila sin errores
+- ⏳ Tests unitarios Python (ejecutar con pytest)
+- ⏳ Tests de integración manual (requiere servicios corriendo)
+
+**Próximo paso:**
+- Ejecutar tests unitarios Python para validación final
+- Crear commit con T6 completo
+- Actualizar documentación final
+- Generar resumen para auditor (350 palabras máx)
 
 ---
 

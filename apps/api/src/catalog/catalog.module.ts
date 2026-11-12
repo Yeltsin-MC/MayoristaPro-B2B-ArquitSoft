@@ -5,12 +5,13 @@ import { ImportsController } from './presentation/imports.controller';
 import { Module } from '@nestjs/common';
 import { TradeModule } from '../trade/trade.module';
 import { PaymentsModule } from '../payments/payments.module';
+import { AiModule } from '../ai/ai.module';
 import { ListProducts, PRODUCT_READER, ProductReader } from './application/list-products';
 import { PostgresProducts } from './infrastructure/postgres-products';
 import { ProductsController } from './presentation/products.controller';
 
 @Module({
-  imports: [TradeModule, PaymentsModule],
+  imports: [TradeModule, PaymentsModule, AiModule],
   controllers: [ProductsController, IdentityController, ImportsController],
   providers: [
     IdentityService,
