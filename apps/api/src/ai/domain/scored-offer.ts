@@ -19,8 +19,8 @@ export interface ScoreOffersRequest {
     supplier_name: string;
     total: number;
     delivery_days: number;
-    completed_orders: number;
-    total_orders: number;
+    supplier_completed_orders: number;
+    supplier_total_orders: number;
   }>;
 }
 

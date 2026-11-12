@@ -123,8 +123,8 @@ export class AiController {
             supplier_name: offer.supplier_name,
             total: parseFloat(offer.total),
             delivery_days: offer.delivery_days,
-            completed_orders: parseInt(stats.completed_orders) || 0,
-            total_orders: parseInt(stats.total_orders) || 0,
+            supplier_completed_orders: parseInt(stats.completed_orders) || 0,
+            supplier_total_orders: parseInt(stats.total_orders) || 0,
           };
         })
       );

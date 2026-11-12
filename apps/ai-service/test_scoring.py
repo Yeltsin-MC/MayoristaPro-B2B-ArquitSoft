@@ -36,21 +36,21 @@ class TestScoringAlgorithm:
     """Tests para el algoritmo completo de scoring"""
     
     def test_single_offer_neutral_score(self):
-        """Una sola oferta debe recibir scores neutrales (50)"""
+        """Una sola oferta debe recibir scores neutrales (50) en precio/entrega, pero reputación real"""
         offers = [
             Offer(
                 offer_id="o1",
                 supplier_id="s1",
-                supplier_name="Proveedor 1",
                 total=1000,
                 delivery_days=5,
-                completed_orders=8,
-                total_orders=10
+                supplier_completed_orders=8,
+                supplier_total_orders=10
             )
         ]
         result = score_offers(offers)
         assert len(result) == 1
-        assert result[0].score == 50.0
+        # Score ponderado: 50*0.5 + 50*0.3 + 80*0.2 = 25 + 15 + 16 = 56
+        assert result[0].score == 56.0
         assert result[0].breakdown.price_score == 50.0
         assert result[0].breakdown.delivery_score == 50.0
         assert result[0].breakdown.reputation_score == 80.0  # 8/10 * 100
@@ -61,29 +61,26 @@ class TestScoringAlgorithm:
             Offer(
                 offer_id="o1",
                 supplier_id="s1",
-                supplier_name="Caro y lento",
                 total=2000,
                 delivery_days=10,
-                completed_orders=5,
-                total_orders=10
+                supplier_completed_orders=5,
+                supplier_total_orders=10
             ),
             Offer(
                 offer_id="o2",
                 supplier_id="s2",
-                supplier_name="Barato y rápido",
                 total=1000,
                 delivery_days=3,
-                completed_orders=9,
-                total_orders=10
+                supplier_completed_orders=9,
+                supplier_total_orders=10
             ),
             Offer(
                 offer_id="o3",
                 supplier_id="s3",
-                supplier_name="Medio",
                 total=1500,
                 delivery_days=5,
-                completed_orders=7,
-                total_orders=10
+                supplier_completed_orders=7,
+                supplier_total_orders=10
             ),
         ]
         result = score_offers(offers)
@@ -103,20 +100,18 @@ class TestScoringAlgorithm:
             Offer(
                 offer_id="o1",
                 supplier_id="s1",
-                supplier_name="Proveedor 1",
                 total=1500,
                 delivery_days=5,
-                completed_orders=7,
-                total_orders=10
+                supplier_completed_orders=7,
+                supplier_total_orders=10
             ),
             Offer(
                 offer_id="o2",
                 supplier_id="s2",
-                supplier_name="Proveedor 2",
                 total=1500,
                 delivery_days=5,
-                completed_orders=7,
-                total_orders=10
+                supplier_completed_orders=7,
+                supplier_total_orders=10
             ),
         ]
         result = score_offers(offers)
@@ -134,20 +129,18 @@ class TestScoringAlgorithm:
             Offer(
                 offer_id="o1",
                 supplier_id="s1",
-                supplier_name="Nuevo proveedor",
                 total=1000,
                 delivery_days=3,
-                completed_orders=0,
-                total_orders=0
+                supplier_completed_orders=0,
+                supplier_total_orders=0
             ),
             Offer(
                 offer_id="o2",
                 supplier_id="s2",
-                supplier_name="Proveedor con historial",
                 total=1100,
                 delivery_days=3,
-                completed_orders=10,
-                total_orders=10
+                supplier_completed_orders=10,
+                supplier_total_orders=10
             ),
         ]
         result = score_offers(offers)
@@ -166,20 +159,18 @@ class TestScoringAlgorithm:
             Offer(
                 offer_id="o1",
                 supplier_id="s1",
-                supplier_name="Mejor precio",
                 total=1000,
                 delivery_days=10,
-                completed_orders=0,
-                total_orders=10
+                supplier_completed_orders=0,
+                supplier_total_orders=10
             ),
             Offer(
                 offer_id="o2",
                 supplier_id="s2",
-                supplier_name="Mejor entrega",
                 total=2000,
                 delivery_days=1,
-                completed_orders=0,
-                total_orders=10
+                supplier_completed_orders=0,
+                supplier_total_orders=10
             ),
         ]
         result = score_offers(offers)
@@ -206,20 +197,18 @@ class TestEdgeCases:
             Offer(
                 offer_id="o1",
                 supplier_id="s1",
-                supplier_name="Muy barato",
                 total=10,
                 delivery_days=5,
-                completed_orders=5,
-                total_orders=10
+                supplier_completed_orders=5,
+                supplier_total_orders=10
             ),
             Offer(
                 offer_id="o2",
                 supplier_id="s2",
-                supplier_name="Muy caro",
                 total=10000,
                 delivery_days=5,
-                completed_orders=5,
-                total_orders=10
+                supplier_completed_orders=5,
+                supplier_total_orders=10
             ),
         ]
         result = score_offers(offers)
@@ -234,20 +223,18 @@ class TestEdgeCases:
             Offer(
                 offer_id="o1",
                 supplier_id="s1",
-                supplier_name="Entrega inmediata",
                 total=1000,
                 delivery_days=1,
-                completed_orders=5,
-                total_orders=10
+                supplier_completed_orders=5,
+                supplier_total_orders=10
             ),
             Offer(
                 offer_id="o2",
                 supplier_id="s2",
-                supplier_name="Entrega muy lenta",
                 total=1000,
                 delivery_days=365,
-                completed_orders=5,
-                total_orders=10
+                supplier_completed_orders=5,
+                supplier_total_orders=10
             ),
         ]
         result = score_offers(offers)

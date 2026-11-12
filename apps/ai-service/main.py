@@ -15,6 +15,7 @@ class Offer(BaseModel):
     """Oferta para evaluar"""
     offer_id: str
     supplier_id: str
+    supplier_name: Optional[str] = None
     total: float = Field(gt=0, description="Precio total en PEN")
     delivery_days: int = Field(gt=0, description="Días de entrega")
     supplier_completed_orders: int = Field(ge=0, default=0, description="Pedidos completados del proveedor")
@@ -35,6 +36,7 @@ class ScoredOffer(BaseModel):
     """Oferta con puntuación"""
     offer_id: str
     supplier_id: str
+    supplier_name: Optional[str] = None
     score: float = Field(ge=0, le=100, description="Puntuación total 0-100")
     breakdown: ScoreBreakdown
     rank: int = Field(ge=1, description="Posición en ranking (1 = mejor)")
@@ -42,13 +44,13 @@ class ScoredOffer(BaseModel):
 
 class ScoreRequest(BaseModel):
     """Solicitud de scoring de múltiples ofertas"""
-    request_id: str
+    request_id: Optional[str] = None
     offers: List[Offer]
 
 
 class ScoreResponse(BaseModel):
     """Respuesta con ofertas rankeadas"""
-    request_id: str
+    request_id: Optional[str] = None
     scored_offers: List[ScoredOffer]
     algorithm: str = "deterministic_v1"
     explanation: str = "Scoring basado en: 50% precio, 30% plazo entrega, 20% reputación proveedor"
@@ -119,6 +121,7 @@ def score_offers(offers: List[Offer]) -> List[ScoredOffer]:
         return [ScoredOffer(
             offer_id=single.offer_id,
             supplier_id=single.supplier_id,
+            supplier_name=single.supplier_name,
             score=round(total_score, 2),
             breakdown=breakdown,
             rank=1
@@ -131,7 +134,8 @@ def score_offers(offers: List[Offer]) -> List[ScoredOffer]:
     min_price, max_price = min(prices), max(prices)
     min_delivery, max_delivery = min(deliveries), max(deliveries)
     
-    scored = []
+    # Calcular scores pero sin crear objetos aún (para evitar validación de rank)
+    results = []
     for offer in offers:
         price_score = normalize_inversed(offer.total, min_price, max_price)
         delivery_score = normalize_inversed(offer.delivery_days, min_delivery, max_delivery)
@@ -153,20 +157,28 @@ def score_offers(offers: List[Offer]) -> List[ScoredOffer]:
             reputation_score * breakdown.reputation_weight
         )
         
-        scored.append(ScoredOffer(
-            offer_id=offer.offer_id,
-            supplier_id=offer.supplier_id,
-            score=round(total_score, 2),
-            breakdown=breakdown,
-            rank=0  # Se asigna después de ordenar
-        ))
+        results.append({
+            'offer_id': offer.offer_id,
+            'supplier_id': offer.supplier_id,
+            'supplier_name': offer.supplier_name,
+            'score': round(total_score, 2),
+            'breakdown': breakdown
+        })
     
     # Ordenar por score descendente (mayor score = mejor oferta)
-    scored.sort(key=lambda x: x.score, reverse=True)
+    results.sort(key=lambda x: x['score'], reverse=True)
     
-    # Asignar ranks
-    for idx, offer in enumerate(scored, start=1):
-        offer.rank = idx
+    # Crear objetos ScoredOffer con ranks asignados
+    scored = []
+    for idx, result in enumerate(results, start=1):
+        scored.append(ScoredOffer(
+            offer_id=result['offer_id'],
+            supplier_id=result['supplier_id'],
+            supplier_name=result['supplier_name'],
+            score=result['score'],
+            breakdown=result['breakdown'],
+            rank=idx
+        ))
     
     return scored
 
