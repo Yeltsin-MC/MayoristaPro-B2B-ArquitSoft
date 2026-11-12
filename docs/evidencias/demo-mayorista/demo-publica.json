@@ -1,0 +1,51 @@
+{
+  "url": "http://127.0.0.1:3100",
+  "products": 5,
+  "enabledQuotes": 2,
+  "accounts": [
+    {
+      "email": "admin@example.test",
+      "status": null,
+      "permissions": null,
+      "verified": null
+    },
+    {
+      "email": "comprador@example.test",
+      "status": "enabled",
+      "permissions": [
+        "manage",
+        "buy",
+        "publish"
+      ],
+      "verified": false
+    },
+    {
+      "email": "proveedor1@example.test",
+      "status": "enabled",
+      "permissions": [
+        "manage",
+        "buy",
+        "publish"
+      ],
+      "verified": true
+    },
+    {
+      "email": "proveedor2@example.test",
+      "status": "enabled",
+      "permissions": [
+        "manage",
+        "buy",
+        "publish"
+      ],
+      "verified": true
+    }
+  ],
+  "existingQuotation": [
+    {
+      "id": "5d04b33f-4652-4ce9-afca-e48a253c8324",
+      "offers": 2
+    }
+  ],
+  "javascriptErrors": [],
+  "authenticatedDemoSession": "Pendiente de credenciales del comprador. Sin cambios de contrasenas."
+}

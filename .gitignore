@@ -5,3 +5,6 @@
 .angular/
 dist/
 __pycache__/
+
+# Entornos virtuales de Python
+.venv/

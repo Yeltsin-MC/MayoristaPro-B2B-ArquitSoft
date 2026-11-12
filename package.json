@@ -14,8 +14,9 @@
     "dev:web": "npm run start -w @mayoristapro/web",
     "db:migrate": "node --env-file-if-exists=.env database/migrate.cjs",
     "db:seed": "node --env-file-if-exists=.env database/seed.cjs",
-    "test:integration": "node --env-file-if-exists=.env --test tests/*.integration.cjs",
-    "test:browser": "node --env-file-if-exists=.env --test tests/catalog.browser.cjs",
+    "test:integration": "node --env-file-if-exists=.env --test --test-concurrency=1 tests/*.integration.cjs",
+    "test:unit": "node --test tests/*.test.cjs",
+    "test:browser": "node --env-file-if-exists=.env --test --test-concurrency=1 tests/catalog.browser.cjs tests/quotations.browser.cjs",
     "test:demo": "node --env-file-if-exists=.env --test tests/demo.browser.cjs",
     "identity:admin": "node --env-file-if-exists=.env database/create-admin.cjs"
   },
