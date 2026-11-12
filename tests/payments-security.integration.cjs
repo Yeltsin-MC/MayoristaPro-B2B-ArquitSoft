@@ -75,11 +75,15 @@ test('T5: Seguridad de webhooks y validaciones',async t=>{
    const {o}=await prepared();
    const ord=ok(await order(o.id,'worker-02'));
    
+   // Limpiar pedidos expirados de pruebas anteriores (marcarlos como processed)
+   await db.query("UPDATE trade_orders SET state='expired' WHERE state='pendiente' AND expires_at<now()");
+   await db.query("UPDATE stock_reservations SET state='expired' WHERE state='activa' AND order_id IN (SELECT id FROM trade_orders WHERE state='expired')");
+   
    // Obtener stock inicial
    const initialStock=await db.query('SELECT stock FROM products WHERE id=$1',[products.vendor.id]);
    const stockBefore=parseInt(initialStock.rows[0].stock);
    
-   // Expirar el pedido
+   // Expirar el pedido de esta prueba
    await db.query("UPDATE trade_orders SET expires_at=now()-interval '1 minute' WHERE id=$1",[ord.id]);
    
    // Ejecutar worker

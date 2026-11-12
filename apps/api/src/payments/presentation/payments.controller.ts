@@ -107,15 +107,21 @@ export class PaymentsController {
       xRequestId,
     });
 
-    // Procesar webhook
-    await this.payments.processWebhookNotification({
-      notificationId,
-      dataId,
-      type: type || topic || 'payment',
-      action: body.action || 'payment.updated',
-      payload: body,
-      signatureVerified,
-    });
+    // Procesar webhook (con manejo de errores)
+    try {
+      await this.payments.processWebhookNotification({
+        notificationId,
+        dataId,
+        type: type || topic || 'payment',
+        action: body.action || 'payment.updated',
+        payload: body,
+        signatureVerified,
+      });
+    } catch (error) {
+      // Webhook registrado pero procesamiento falló
+      // Devolver 200 para que MP no reintente (error ya registrado en DB)
+      console.error('[Webhook] Processing error:', error instanceof Error ? error.message : error);
+    }
 
     return { status: 'ok' };
   }
