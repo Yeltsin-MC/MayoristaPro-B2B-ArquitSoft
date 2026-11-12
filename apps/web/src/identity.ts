@@ -1,82 +1,104 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, effect, output, signal, untracked, viewChild } from '@angular/core';
+import { CatalogProduct } from './catalog-product';
 import { FormsModule } from '@angular/forms';
 import { CatalogImportComponent } from './catalog-import';
 import { TradeComponent } from './trade';
 @Component({
  selector:'app-identity', imports:[FormsModule, CatalogImportComponent, TradeComponent],
- template:`
- <section aria-label="Cuenta empresarial" class="identity">
- <h2>Cuenta empresarial</h2>
- <p>Demo con empresas y evidencias ficticias. El alta se revisa manualmente; no se consulta SUNAT.</p>
- <nav aria-label="Acceso"><button (click)="mode='login'">Ingresar</button> <button (click)="mode='register'">Solicitar alta</button> <button (click)="mode='accept'">Aceptar invitación</button></nav>
- @if (!token()) {
- <form (ngSubmit)="submit()">
- <label>Correo <input name="email" type="email" required [(ngModel)]="email"></label>
- <label>Contraseña (12–128 caracteres) <input name="password" type="password" required minlength="12" maxlength="128" [(ngModel)]="password"></label>
- @if(mode==='register') {
- <label>RUC (11 dígitos) <input name="ruc" pattern="[0-9]{11}" required [(ngModel)]="ruc"></label>
- <label>Razón social <input name="legalName" required [(ngModel)]="legalName"></label>
- <label>Evidencia ficticia de representación <textarea name="evidence" required [(ngModel)]="evidence"></textarea></label>
- }
- @if(mode==='accept') { <label>Código de invitación <input name="invitation" required [(ngModel)]="invitation"></label> }
- <button [disabled]="busy()">{{mode==='login'?'Ingresar':mode==='register'?'Enviar solicitud':'Aceptar invitación'}}</button>
- </form>
- } @else {
- @if(admin()) { <button (click)="loadAdmin()">Solicitudes (administración)</button> }
- @else { <button (click)="loadAccount()">Mi empresa</button> }
- <button (click)="logout()">Salir</button>
- @if(company()) {
- <h3>{{company().legal_name}}</h3><p>RUC {{company().ruc}} · {{company().review_label}}</p>
- <p>Permisos: {{permissions().join(', ')}}.</p>
- <p>Proveedor: {{company().supplier_verified ? 'verificado · revisado manualmente' : 'pendiente de verificación'}}. La compra sigue habilitada con permiso de compra.</p>
- @if(permissions().includes('buy') || (permissions().includes('publish') && company().supplier_verified)) {
- <app-trade [token]="token()" [canBuy]="permissions().includes('buy')" [canSell]="permissions().includes('publish') && company().supplier_verified" (catalogChanged)="catalogChanged.emit()" />
- }
- @if(permissions().includes('manage')) {
- <form (ngSubmit)="invite()"><h3>Invitar usuario</h3>
- <label>Correo <input name="inviteEmail" type="email" required [(ngModel)]="inviteEmail"></label>
- <label><input name="buy" type="checkbox" [(ngModel)]="buy"> Comprar</label>
- <label><input name="publish" type="checkbox" [(ngModel)]="publish"> Publicar</label>
- <button [disabled]="busy()">Crear enlace por 24 horas</button></form>
- @if(link()) { <p>Comparte este enlace con el destinatario: <a [href]="link()">{{link()}}</a></p> }
- <button (click)="loadMembers()">Ver usuarios</button>
- @for(member of members();track member.id) {<p>{{member.email}} · {{member.active?'Activo':'Revocado'}} @if(member.active && !member.permissions.includes('manage')) {<button (click)="revoke(member.id)">Revocar acceso</button>}</p>}
- }
- @if(permissions().includes('publish')) {
- @if(company().supplier_verified) {
- <app-catalog-import [token]="token()" (applied)="catalogChanged.emit()" />
- <form (ngSubmit)="publishProduct()"><label>ID del producto propio <input name="productId" required [(ngModel)]="productId"></label><button [disabled]="busy()">Publicar producto</button></form>
- }
- @else { <p>La carga masiva y la publicación requieren que administración verifique primero al proveedor.</p> }
- }
- }
- @for(request of requests();track request.id) {
- <article><h3>{{request.legal_name}}</h3><p>{{request.ruc}} · {{request.email}}</p><p>Evidencia: {{request.evidence}}</p><p>ID del proveedor: {{request.supplier_id}}</p>
- @if(!request.approved_at) {<button (click)="approve(request.id)">Aprobar vinculación</button>} @else {<p>Revisado manualmente</p>}
- </article>
- }
- @if(admin()) {
- <form (ngSubmit)="verify()"><label>ID del proveedor habilitado <input name="supplierId" required [(ngModel)]="supplierId"></label><button [disabled]="busy()">Verificar proveedor por separado</button></form>
- }
- }
- <p role="status">{{message()}}</p>
- </section>`,
- styles:[`.identity {margin:2rem 0;padding:1rem;border:1px solid #ccc} form {display:grid;gap:.7rem;max-width:36rem;margin:1rem 0} label {display:grid;gap:.25rem} input,textarea,button {font:inherit;padding:.5rem} nav {display:flex;gap:.5rem;flex-wrap:wrap} p,a {overflow-wrap:anywhere}`]
+ template:` <section aria-label="Cuenta empresarial" class="identity">
+  <div class="account-heading"><div><p class="eyebrow">TU ESPACIO EMPRESARIAL</p><h2>Cuenta empresarial</h2><p>Demo con empresas y evidencias ficticias. El alta se revisa manualmente; no se consulta SUNAT.</p></div>
+   @if(token()){<div class="actions">@if(admin()){<button class="secondary" (click)="loadAdmin()">Solicitudes (administración)</button>}@else{<button class="secondary" (click)="loadAccount()">Mi empresa</button>}<button class="secondary" (click)="logout()">Salir</button></div>}
+  </div>
+  @if(!token()) {
+   <div class="auth-layout">
+    <aside class="auth-aside"><h3>Tu empresa,<br>mejor conectada.</h3><p>Compra y vende con una cuenta empresarial revisada manualmente.</p><ol><li>Solicita el alta de tu empresa.</li><li>Espera la aprobación de administración.</li><li>Solicita ofertas y compara proveedores.</li></ol></aside>
+    <div class="auth-content">
+     <nav class="auth-tabs" aria-label="Acceso"><button type="button" [attr.aria-pressed]="mode==='login'" (click)="mode='login'">Ingresar</button><button type="button" [attr.aria-pressed]="mode==='register'" (click)="mode='register'">Solicitar alta</button><button type="button" [attr.aria-pressed]="mode==='accept'" (click)="mode='accept'">Aceptar invitación</button></nav>
+     <form (ngSubmit)="submit()">
+      <label>Correo<input name="email" type="email" autocomplete="username" required [(ngModel)]="email"></label>
+      <label>Contraseña (12–128 caracteres)<input name="password" type="password" [attr.autocomplete]="mode==='login'?'current-password':'new-password'" required minlength="12" maxlength="128" [(ngModel)]="password"></label>
+      @if(mode==='register'){
+       <label>RUC (11 dígitos)<input name="ruc" pattern="[0-9]{11}" inputmode="numeric" required [(ngModel)]="ruc"></label>
+       <label>Razón social<input name="legalName" required [(ngModel)]="legalName"></label>
+       <label>Evidencia ficticia de representación<textarea name="evidence" required [(ngModel)]="evidence"></textarea></label>
+      }
+      @if(mode==='accept'){<label>Código de invitación<input name="invitation" required [(ngModel)]="invitation"></label>}
+      <button [disabled]="busy()">{{busy()?'Procesando…':mode==='login'?'Ingresar':mode==='register'?'Enviar solicitud':'Aceptar invitación'}}</button>
+     </form>
+    </div>
+   </div>
+  } @else {
+   @if(company()){
+    <div class="company-summary"><h3>{{company().legal_name}}</h3><p>RUC {{company().ruc}} · {{company().review_label}}</p><p>Proveedor {{company().supplier_verified?'verificado · revisado manualmente':'pendiente de verificación'}}. La compra sigue habilitada con permiso de compra.</p><div class="role-tags">@for(permission of permissions();track permission){<span>{{permission==='buy'?'Comprar':permission==='publish'?'Publicar':permission==='manage'?'Gestionar usuarios':permission}}</span>}</div></div>
+    @if(permissions().includes('buy') || (permissions().includes('publish') && company().supplier_verified)){
+     <app-trade [token]="token()" [canBuy]="permissions().includes('buy')" [canSell]="permissions().includes('publish') && company().supplier_verified" (catalogChanged)="catalogChanged.emit()" />
+    }
+    @if(permissions().includes('manage')){
+     <details class="management"><summary>Usuarios y accesos de mi empresa</summary>
+      <form (ngSubmit)="invite()"><h3>Invitar usuario</h3><label>Correo<input name="inviteEmail" type="email" required [(ngModel)]="inviteEmail"></label><label class="check"><input name="buy" type="checkbox" [(ngModel)]="buy">Comprar</label><label class="check"><input name="publish" type="checkbox" [(ngModel)]="publish">Publicar</label><button [disabled]="busy()">Crear enlace por 24 horas</button></form>
+      @if(link()){<p>Comparte este enlace con el destinatario <a [href]="link()">{{link()}}</a></p>}
+      <button class="secondary" (click)="loadMembers()">Ver usuarios</button>
+      @for(member of members();track member.id){<p>{{member.email}} · {{member.active?'Activo':'Revocado'}} @if(member.active && !member.permissions.includes('manage')){<button class="secondary" (click)="revoke(member.id)">Revocar acceso</button>}</p>}
+     </details>
+    }
+    @if(permissions().includes('publish')){
+     @if(company().supplier_verified){
+      <app-catalog-import [token]="token()" (applied)="catalogChanged.emit()" />
+      <form class="management" (ngSubmit)="publishProduct()"><h3>Publicación individual</h3><label>ID del producto propio<input name="productId" required [(ngModel)]="productId"></label><button [disabled]="busy()">Publicar producto</button></form>
+     } @else {<p class="notice">La carga masiva y la publicación requieren que administración verifique primero al proveedor.</p>}
+    }
+   }
+   @for(request of requests();track request.id){
+    <article><h3>{{request.legal_name}}</h3><p>{{request.ruc}} · {{request.email}}</p><p>Evidencia {{request.evidence}}</p>
+     @if(!request.approved_at){<button [disabled]="busy()" (click)="approve(request.id)">Aprobar vinculación</button>}@else{<p class="status-pill">Revisado manualmente</p><button class="secondary" [disabled]="busy()" (click)="verify(request.supplier_id)">Verificar proveedor de {{request.legal_name}}</button>}
+    </article>
+   }
+   @if(admin()){
+    <form class="management" (ngSubmit)="verify()"><label>ID del proveedor habilitado<input name="supplierId" required [(ngModel)]="supplierId"></label><button [disabled]="busy()">Verificar proveedor por separado</button></form>
+   }
+  }
+  @if(message()){<p class="notice" [class.error]="failed()" [attr.role]="failed()?'alert':'status'" aria-live="polite">{{message()}}</p>}
+ </section>`
 })
 export class IdentityComponent {
  readonly catalogChanged = output<void>();
+ private readonly trade = viewChild(TradeComponent);
+ private readonly pendingQuote = signal<CatalogProduct | null>(null);
+ failed = signal(false);
  mode='login'; email=''; password=''; ruc=''; legalName=''; evidence=''; invitation=new URLSearchParams(location.hash.slice(1)).get('token')??'';
  inviteEmail=''; buy=true; publish=false; productId=''; supplierId='';
  token=signal(''); busy=signal(false); message=signal(''); company=signal<any>(null); permissions=signal<string[]>([]); members=signal<any[]>([]); requests=signal<any[]>([]); admin=signal(false); link=signal('');
- constructor(){if(this.invitation)this.mode='accept';}
+ constructor(){
+  if(this.invitation)this.mode='accept';
+  effect(()=>{
+   const product=this.pendingQuote();
+   const trade=this.trade();
+   if(product && trade && this.permissions().includes('buy')){
+    untracked(()=>{this.pendingQuote.set(null);void trade.beginFromCatalog(product);});
+   }
+  });
+ }
+ beginQuote(product:CatalogProduct){
+  this.failed.set(false);
+  if(this.token() && (this.admin() || !this.permissions().includes('buy'))){
+   this.message.set('Tu cuenta necesita permiso de compra para solicitar cotizaciones.');
+  }else{
+   this.pendingQuote.set(product);
+   if(!this.token()){
+    this.mode='login';
+    this.message.set('Ingresa con tu cuenta compradora para cotizar '+product.name+'. Conservaremos la selección.');
+   }
+  }
+  document.getElementById('cuenta')?.scrollIntoView({behavior:'smooth',block:'start'});
+ }
  private async call(path:string, method='GET',body?:unknown):Promise<any>{
  this.busy.set(true);
  try {
  const response=await fetch('/api/v1/'+path,{method,headers:{'Content-Type':'application/json',...(this.token()?{Authorization:'Bearer '+this.token()}: {})},...(body?{body:JSON.stringify(body)}:{})});
  const result=await response.json();
  if(!response.ok) throw new Error(result.message??'Operación rechazada');
- this.message.set('Operación completada.'); return result;
- }catch(error){this.message.set(error instanceof Error?error.message:'No se pudo conectar.');return null;}finally{this.busy.set(false);}
+ this.failed.set(false); this.message.set(''); return result;
+ }catch(error){this.failed.set(true);this.message.set(error instanceof Error?error.message:'No se pudo conectar.');return null;}finally{this.busy.set(false);}
  }
  async submit(){
  if(this.mode==='login'){const result=await this.call('auth/login','POST',{email:this.email,password:this.password});if(result){this.token.set(result.token);this.password='';await this.loadSession();}}
@@ -96,7 +118,7 @@ export class IdentityComponent {
  async invite(){const result=await this.call('company/invitations','POST',{email:this.inviteEmail,permissions:[...(this.buy?['buy']:[]),...(this.publish?['publish']:[])]});if(result)this.link.set(location.origin+result.link);}
  async loadMembers(){const result=await this.call('company/members');if(result)this.members.set(result);}
  async revoke(id:string){if(await this.call('company/members/'+id+'/revoke','POST'))await this.loadMembers();}
- async verify(){await this.call('providers/'+this.supplierId+'/verify','PATCH');}
+ async verify(id=this.supplierId){if(await this.call('providers/'+id+'/verify','PATCH'))this.message.set('Proveedor verificado. Revisado manualmente.');}
  async publishProduct(){if(await this.call('products/'+this.productId+'/publish','POST'))this.catalogChanged.emit();}
- async logout(){await this.call('auth/logout','POST');this.token.set('');this.company.set(null);this.requests.set([]);this.members.set([]);this.admin.set(false);this.link.set('');}
+ async logout(){await this.call('auth/logout','POST');this.token.set('');this.company.set(null);this.requests.set([]);this.members.set([]);this.admin.set(false);this.link.set('');this.permissions.set([]);this.pendingQuote.set(null);}
 }

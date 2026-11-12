@@ -1,39 +1,64 @@
-<header><span>MayoristaPro <strong>B2B</strong></span></header>
-<main>
-  <h1>Catálogo mayorista</h1>
-  <p class="intro">Consulta precios y condiciones de compra por presentación.</p>
-  @if (status() === 'loading') {
-    <p role="status">Cargando productos…</p>
-  } @else if (status() === 'error') {
-    <p role="alert">El catálogo no está disponible en este momento.</p>
-    <button type="button" (click)="load()">Reintentar</button>
-  } @else {
-    <section aria-label="Productos" class="catalog">
-      @for (product of products(); track product.id) {
-        <article>
-          <p class="supplier">{{ product.supplier }}</p>
-          <h2>{{ product.name }}</h2>
-          <p>{{ product.category }}</p>
-          <p>{{ product.unit }} de {{ product.unitsPerPack }} unidades</p>
-          <p class="price">{{ product.price | currency:product.currency:'S/ ' }}</p>
-          <p>{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
-          <dl>
-            <div><dt>Mínimo</dt><dd>{{ product.minimum }}</dd></div>
-            <div><dt>Múltiplo</dt><dd>{{ product.multiple }}</dd></div>
-            <div><dt>Disponibles</dt><dd>{{ product.stock }}</dd></div>
-          </dl>
-          <p>{{ product.available ? 'Disponible para cotizar' : 'Sin disponibilidad para una nueva compra' }}</p>
-          <p>Envío se cotiza aparte.</p>
-        </article>
-      } @empty {
-        <p role="status">Todavía no hay productos publicados.</p>
-      }
-    </section>
-    <nav aria-label="Páginas del catálogo">
-      <button type="button" [disabled]="page()===1" (click)="load(page()-1)">Anterior</button>
-      <span> Página {{page()}} </span>
-      <button type="button" [disabled]="products().length<20" (click)="load(page()+1)">Siguiente</button>
-    </nav>
-  }
-  <app-identity (catalogChanged)="load()" />
+<a class="skip-link" href="#catalogo">Ir al catálogo</a>
+<div class="top-strip">Compras por volumen · Precios en soles · Empresas de demostración</div>
+<header class="site-header">
+  <div class="header-content">
+    <a class="brand" href="#inicio" aria-label="MayoristaPro, inicio"><span class="brand-mark" aria-hidden="true">m<span>+</span></span><span>Mayorista<span class="brand-pro">Pro</span><small>NEGOCIOS QUE CONECTAN</small></span></a>
+    <nav aria-label="Navegación principal"><a class="active" href="#catalogo">Catálogo</a><a href="#cuenta">Mi empresa <span aria-hidden="true">↗</span></a></nav>
+  </div>
+</header>
+<main id="inicio">
+  <section class="catalog-hero" aria-labelledby="catalog-title">
+    <div class="hero-copy">
+      <p class="eyebrow">TU PRÓXIMA COMPRA MAYORISTA</p>
+      <h1 id="catalog-title">Abastece tu negocio.<br><span>Compara y elige mejor.</span></h1>
+      <p>Encuentra productos por presentación y solicita ofertas a proveedores. Compara precio, entrega y reputación en un mismo lugar.</p>
+      <a class="button" href="#catalogo">Explorar catálogo <span aria-hidden="true">↓</span></a>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-package"><span>MAYORISTAPRO</span><strong>Tu negocio,<br>bien abastecido.</strong><i></i></div><div class="hero-note">Compra por volumen<span>Compara ofertas</span></div></div>
+  </section>
+  <section id="catalogo" class="catalog-section" aria-labelledby="products-title">
+    <div class="section-heading"><div><p class="eyebrow">PRODUCTOS PARA TU EMPRESA</p><h2 id="products-title">Catálogo mayorista</h2></div><span class="section-caption">Precio por presentación · Envío por cotizar</span></div>
+    <form class="search-bar" (ngSubmit)="load()" role="search">
+      <span aria-hidden="true" class="search-icon">⌕</span>
+      <input aria-label="Buscar productos" name="search" [(ngModel)]="search" maxlength="120" placeholder="Busca productos, categorías o proveedores">
+      <button type="submit">Buscar <span aria-hidden="true">→</span></button>
+    </form>
+    <div class="catalog-layout">
+      <aside class="filters" aria-label="Filtros del catálogo">
+        <div class="filter-heading"><h3>Filtrar productos</h3><button class="text-button" type="button" (click)="reset()">Limpiar</button></div>
+        <label>Categoría<select aria-label="Categoría del catálogo" [(ngModel)]="category" (ngModelChange)="load()"><option value="">Todas las categorías</option>@for(c of options().categories;track c){<option [value]="c">{{c}}</option>}</select></label>
+        <label>Proveedor<select aria-label="Proveedor del catálogo" [(ngModel)]="supplier" (ngModelChange)="load()"><option value="">Todos los proveedores</option>@for(s of options().suppliers;track s.id){<option [value]="s.id">{{s.name}}</option>}</select></label>
+        <label class="check"><input type="checkbox" [(ngModel)]="available" (ngModelChange)="load()">Con disponibilidad</label>
+        <div class="filter-note"><strong>Compra por presentación</strong><p>Revisa el mínimo y el múltiplo de cada producto antes de solicitar una oferta.</p></div>
+      </aside>
+      <div class="catalog-results">
+        <div class="results-toolbar"><p role="status">@if(status()==='ready'){<strong>{{products().length}}</strong> productos en esta página}@else if(status()==='loading'){Consultando catálogo…}@else{Consulta no disponible}</p><label>Ordenar<select aria-label="Orden del catálogo" [(ngModel)]="sort" (ngModelChange)="load()"><option value="">Orden del catálogo</option><option value="price-asc">Menor precio por presentación</option><option value="price-desc">Mayor precio por presentación</option></select></label></div>
+        @if(status()==='loading') {
+          <div class="state-panel" role="status"><span class="loading-dot"></span><h3>Cargando productos</h3><p>Consultando precios y disponibilidad.</p></div>
+        } @else if(status()==='error') {
+          <div class="state-panel error-panel" role="alert"><h3>El catálogo no está disponible</h3><p>No pudimos consultar los productos. Comprueba que la API y PostgreSQL estén disponibles.</p><button type="button" (click)="reload()">Reintentar</button></div>
+        } @else {
+          <section aria-label="Productos" class="catalog">
+            @for(product of products();track product.id) {
+              <article class="product-card">
+                <div class="product-visual" aria-label="Imagen referencial de presentación" role="img"><span class="category-tag">{{product.category}}</span><div class="paper-stack" aria-hidden="true"><i></i><i></i><i></i><span>{{product.unitsPerPack}}<small>unidades</small></span></div><small class="image-caption">Presentación referencial</small></div>
+                <div class="product-content"><p class="supplier">{{product.supplier}}</p><h3>{{product.name}}</h3><p class="presentation">{{product.unit}} de {{product.unitsPerPack}} unidades</p>
+                  <div class="product-price"><strong>{{product.price | currency:product.currency:'S/ ':'1.2-2'}}</strong><span>por {{product.unit.toLowerCase()}}</span></div>
+                  <p class="tax-note">{{product.includesTax?'Incluye IGV':'IGV por separado'}}</p>
+                  <dl><div><dt>Mínimo</dt><dd>{{product.minimum}} presentaciones</dd></div><div><dt>Múltiplo</dt><dd>{{product.multiple}}</dd></div></dl>
+                  <p class="stock" [class.unavailable]="!product.available"><span aria-hidden="true">●</span> {{product.available?product.stock+' presentaciones disponibles':'Sin disponibilidad'}}</p>
+                  <button type="button" class="quote-button" [disabled]="!product.available || !product.quoteEnabled" (click)="identity.beginQuote(product)">{{product.quoteEnabled?'Solicitar cotización':'Cotización no habilitada'}} <span aria-hidden="true">↗</span></button>
+                </div>
+              </article>
+            } @empty {
+              <div class="state-panel"><h3>No encontramos productos</h3><p>Prueba otra búsqueda o cambia los filtros.</p><button class="secondary" type="button" (click)="reset()">Limpiar filtros</button></div>
+            }
+          </section>
+          <nav class="pagination" aria-label="Páginas del catálogo"><button class="secondary" type="button" [disabled]="page()===1" (click)="load(page()-1)">← Anterior</button><span>Página {{page()}}</span><button class="secondary" type="button" [disabled]="products().length<12" (click)="load(page()+1)">Siguiente →</button></nav>
+        }
+      </div>
+    </div>
+  </section>
+  <section id="cuenta" class="account-section"><app-identity #identity (catalogChanged)="reload()" /></section>
 </main>
+<footer class="site-footer"><a class="brand" href="#inicio">Mayorista<span class="brand-pro">Pro</span></a><span>Demo académica · Empresas y productos ficticios</span></footer>

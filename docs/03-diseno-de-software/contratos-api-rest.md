@@ -52,6 +52,12 @@ Lectura pública del catálogo publicado desde la página de inicio; escritura s
 | `PATCH /products/:id` |
 | `DELETE /products/:id` |
 
+### Catálogo público implementado para la demo
+
+`GET /products` devuelve `{items,page,limit}`. Acepta `page` desde 1, `limit` de 1 a 100, `q` de hasta 120 caracteres, `category`, `supplier` UUID, `available=true|false` y `sort=price-asc|price-desc`. La búsqueda literal y los filtros se aplican antes de paginar. Cada ítem incluye presentación, equivalencia, mínimo, múltiplo, stock, precio PEN, IGV, proveedor, `supplierId` y `quoteEnabled`. Este último indica si el proveedor tiene una empresa habilitada para recibir solicitudes. La disponibilidad de inventario se informa mediante `available`.
+
+`GET /products/options` devuelve `{categories,suppliers:[{id,name}]}` a partir de productos publicados de proveedores verificados. Angular utiliza ilustraciones referenciales propias cuando falta una imagen del producto. La selección de un producto conduce al registro o inicio de sesión empresarial y al formulario de cotización autorizado.
+
 ### quotations
 
 D2 y D4 aprobadas; [SDD T4, contrato implementado y pruebas](../sprint-2-cotizaciones-pedidos.md). Una aceptación por solicitud y un pedido por oferta. La respuesta agrega envío, plazo, vigencia e IGV incluido y devuelve desglose/total calculado antes de aceptar. Solicitudes: `GET/POST /quotations` y `GET /quotations/:id`; pedidos: `GET/POST /orders` y `GET /orders/:id`. Directorio autorizado: `GET /trade/providers`; productos propios: `GET /trade/products`. La SDD documenta cuerpos, respuestas, permisos y límites. El envío es un importe final fijo o cero, sin cálculo tributario adicional. La reserva T4 devuelve vencimiento nulo, sin inventar un plazo de pago.
@@ -66,6 +72,9 @@ Comprador propietario y proveedores destinatarios; respuestas según participaci
 | `PATCH /quotations/:id/responses/:respuestaId/accept` |
 
 ### ai
+
+La demo T6 implementa `POST /quotations/:id/score-offers`, con Bearer del comprador propietario, y `GET /ai/health`. NestJS agrega el prefijo `/api/v1` una sola vez. El scoring devuelve `{quotation_id,scored_offers,ai_service_available}`. Cada oferta conserva identificadores, nombre del proveedor, total y plazo, y agrega `score` de 0 a 100 y `breakdown`. El algoritmo determinista pondera precio 50%, entrega 30% y reputación 20%. Ante indisponibilidad o respuesta incompatible de FastAPI se conservan las ofertas con puntuación y desglose nulos. La cotización sin ofertas devuelve una lista vacía. El flujo se comprueba con PostgreSQL y FastAPI reales en la evidencia de demo.
+
 
 Comprador propietario de la cotización. Las ofertas de la comparación pertenecen a la misma solicitud.
 

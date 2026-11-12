@@ -1,0 +1,20 @@
+{
+  "browser": "157.0.4341.46",
+  "flow": "login -> catalogo -> solicitud -> ofertas -> FastAPI",
+  "quotationId": "5d4e3cd8-9687-407c-8eef-d48d22f8b4c8",
+  "scores": [
+    90,
+    10
+  ],
+  "desktop": "1440x1050",
+  "mobile": [
+    "390x844",
+    "360x800",
+    "320x740"
+  ],
+  "horizontalOverflow": false,
+  "foreignCompanyStatus": 404,
+  "javascriptErrors": [],
+  "offlineUi": "Respuesta fallback simulada en navegador; HTTP 503 real cubierto por ai.integration.cjs",
+  "data": "Fixture sintetico aislado. El esquema PostgreSQL se elimina al terminar."
+}

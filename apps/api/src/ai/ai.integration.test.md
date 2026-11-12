@@ -1,3 +1,33 @@
+## Verificacion dirigida de las correcciones de integracion
+
+Las correcciones incluyen el prefijo REST unico, autorizacion exclusiva del comprador,
+campos camelCase de T4, reputacion mediante DATABASE_URL y conservacion de importes
+cuando FastAPI devuelve puntuaciones o no esta disponible. La consulta PostgreSQL
+esta en el adaptador de infraestructura. El controlador delega en aplicacion.
+
+Se preparo `tests/ai.integration.cjs` con ocho comprobaciones mas la suite contenedora.
+Cubre catalogo HTTP, login mediante el fixture, rutas, contrato, permisos, revocacion,
+historial pagado real, ausencia de historial, degradacion y respuestas incompatibles.
+La ultima comprobacion usa FastAPI real solo si se configura T6_AI_URL.
+
+Resultado del 12/11/2026 con PostgreSQL y FastAPI real en 5055, nueve resultados aprobados y cero omitidos. Las compilaciones Angular y NestJS completaron correctamente. Se conserva la evidencia previa de Kiro de 11 pruebas Python. Ver [evidencia de demo](../../../../docs/evidencias/demo-mayorista.md).
+
+Desde la raiz del repositorio, con PostgreSQL disponible y FastAPI en 5055
+
+```powershell
+npm run build -w @mayoristapro/api
+$env:T6_AI_URL = 'http://127.0.0.1:5055'
+node --env-file=.env --test --test-concurrency=1 tests/ai.integration.cjs
+Remove-Item Env:T6_AI_URL
+```
+
+El fixture crea un esquema PostgreSQL temporal, inicia NestJS en un puerto aleatorio
+y elimina el esquema al terminar. No usa las cuentas ni los pedidos de la demo.
+Se esperan nueve resultados aprobados y cero omitidos cuando FastAPI esta disponible.
+Sin T6_AI_URL, la comprobacion real se omite y las otras siete permanecen activas.
+
+---
+
 # Tests de Integración para T6 - IA de Comparación de Proveedores
 
 Este documento describe los tests de integración para validar el módulo de scoring de ofertas.

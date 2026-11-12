@@ -3,6 +3,8 @@ import { HttpModule } from '@nestjs/axios';
 import { TradeModule } from '../trade/trade.module';
 import { AiService } from './application/ai.service';
 import { AiController } from './presentation/ai.controller';
+import { OFFER_REPUTATION } from './application/offer-reputation';
+import { PostgresOfferReputation } from './infrastructure/postgres-offer-reputation';
 
 @Module({
   imports: [
@@ -13,7 +15,7 @@ import { AiController } from './presentation/ai.controller';
     TradeModule,
   ],
   controllers: [AiController],
-  providers: [AiService],
+  providers: [AiService, { provide: OFFER_REPUTATION, useClass: PostgresOfferReputation }],
   exports: [AiService],
 })
 export class AiModule {}

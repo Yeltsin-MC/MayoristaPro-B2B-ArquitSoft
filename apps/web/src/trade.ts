@@ -1,12 +1,10 @@
 import {Component,effect,input,output,signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {CatalogProduct} from './catalog-product';
 @Component({selector:'app-trade',imports:[FormsModule],template:`
-<section class="trade" aria-label="Cotizaciones y pedidos">
- <h3>Cotizaciones y pedidos</h3>
- <p>Solicita ofertas privadas, revisa el desglose y crea un pedido con reserva de stock. El pago aún no está habilitado.</p>
- <button type="button" (click)="refresh()" [disabled]="busy()">Actualizar cotizaciones</button>
- @if(canBuy()) { <button type="button" (click)="newRequest()">Nueva solicitud</button> }
- <p role="status">{{message()}}</p>
+<section id="cotizaciones" class="trade" aria-label="Cotizaciones y pedidos">
+ <div class="workspace-heading"><div><p class="eyebrow">COMPRAS CON MEJOR INFORMACIÓN</p><h3>Cotizaciones y pedidos</h3><p>Solicita ofertas privadas y compara sus condiciones antes de aceptar. El stock se reserva al crear el pedido.</p></div><div class="actions"><button class="secondary" type="button" (click)="refresh()" [disabled]="busy()">Actualizar cotizaciones</button>@if(canBuy()){<button type="button" (click)="newRequest()">Nueva solicitud</button>}</div></div>
+ @if(message()){<p class="notice" role="status" aria-live="polite">{{message()}}</p>}
  @if(canBuy() && creating()) {
  <form (ngSubmit)="create()">
   <h4>Nueva solicitud de cotización</h4>
@@ -27,11 +25,11 @@ import {FormsModule} from '@angular/forms';
  </form>
  }
  <h4>Solicitudes autorizadas</h4>
- @for(q of requests();track q.id){<p>{{q.buyerName}} · {{q.status}} <button type="button" (click)="open(q.id)">Abrir solicitud {{q.id}}</button></p>}
+ <div class="request-list">@for(q of requests();track q.id){<div class="request-row"><p><strong>{{q.buyerName}}</strong> <span class="status-pill">{{q.status}}</span></p><button class="secondary" type="button" (click)="open(q.id)">Abrir solicitud {{q.id}}</button></div>}@empty{<p>No tienes solicitudes todavía.</p>}</div>
  @if(selected();as q) {
-  <h4>Solicitud {{q.id}}</h4><p>Comprador: {{q.buyerName}} · {{q.status}}</p>
+  <div class="selected-request"><h4>Solicitud {{q.id}}</h4><p>Comprador {{q.buyerName}} · {{q.status}}</p>
   @for(i of q.items;track i.id){<p>{{i.description}} · {{i.unit}} de {{i.unitsPerPack}} · cantidad {{i.quantity}}</p>}
-  @if(!q.isBuyer && q.status==='abierta' && q.offers.length===0 && canSell()) {
+  </div>@if(!q.isBuyer && q.status==='abierta' && q.offers.length===0 && canSell()) {
    <form (ngSubmit)="respond()"><h4>Responder con productos propios</h4>
     @for(line of responseItems;track line.solicitudItemId;let n=$index) {
      <fieldset><legend>{{q.items[n].description}} ({{line.cantidad}} presentaciones)</legend>
@@ -46,36 +44,35 @@ import {FormsModule} from '@angular/forms';
     <button [disabled]="busy()">Enviar oferta</button>
    </form>
   }
-  <h4>Ofertas privadas autorizadas</h4>
+  <div class="comparison-heading"><h4>Ofertas privadas autorizadas</h4><span class="section-caption">{{q.offers.length}} ofertas · PEN · Precio por presentación</span></div>
   @if(q.isBuyer && q.offers.length>1){
-   <button type="button" [disabled]="busy()" (click)="scoreOffers(q.id)">{{scoredOffers().length>0?'Actualizar':'Calcular'}} puntuación IA</button>
-   @if(scoredOffers().length>0){<label class="check"><input type="checkbox" [(ngModel)]="sortByScore" (change)="sortOffers()">Ordenar por puntuación</label>}
+   <div class="ai-controls"><button class="secondary" type="button" [disabled]="busy()" (click)="scoreOffers(q.id)">{{scoredOffers().length>0?'Actualizar':'Calcular'}} puntuación IA</button>@if(scoredOffers().length>0){<label class="check"><input type="checkbox" [(ngModel)]="sortByScore" (change)="sortOffers()">Ordenar por puntuación</label>}</div>
+   <p class="comparison-help">La puntuación compara precio, plazo y reputación. Tú eliges la oferta que se convierte en pedido.</p>
   }
-  @for(o of displayedOffers();track o.id){
-   <article class="offer"><h4>Oferta de {{o.supplierName}}</h4>
-    @if(o.score!==undefined){
-     <p class="score-info">
-      <strong>Puntuación IA: {{o.score!==null?o.score.toFixed(1):'N/A'}}</strong>
-      @if(o.breakdown && o.score!==null){
-       <span class="tooltip" title="Precio: {{o.breakdown.price_score.toFixed(1)}} | Entrega: {{o.breakdown.delivery_score.toFixed(1)}} | Reputación: {{o.breakdown.reputation_score.toFixed(1)}}">ℹ️</span>
-      }
-     </p>
-    }
-    @for(i of o.items;track i.requestItemId){<p>{{i.snapshot.name}} · {{i.snapshot.unit}} de {{i.snapshot.unitsPerPack}} · {{i.quantity}} × S/ {{i.unitPrice}} = S/ {{i.subtotal}}</p>}
-    <p>Productos: S/ {{o.subtotal}} · Envío final: S/ {{o.shipping}}</p>
-    <p><strong>Total: S/ {{o.total}} PEN</strong> · IGV incluido en precios; no se calcula desglose fiscal.</p>
-    <p>Plazo: {{o.deliveryDays}} días · Vigencia: {{date(o.expiresAt)}}</p>
-    @if(q.isBuyer){
-     @if(!q.acceptedOfferId){<button type="button" [disabled]="busy()" (click)="accept(o.id)">Aceptar oferta de {{o.supplierName}}</button>}
-     @if(q.acceptedOfferId===o.id){<p>Oferta aceptada. Aceptar no reserva stock.</p><button type="button" [disabled]="busy()" (click)="order(o.id)">Crear pedido pendiente</button>}
-    }
-   </article>
-  }
+  <div class="offers-grid">
+   @for(o of displayedOffers();track o.id){
+    <article class="offer" [class.best-offer]="isTopScore(o)">
+     @if(isTopScore(o)){<span class="best-label">Mayor puntuación de esta comparación</span>}
+     <p class="eyebrow">PROPUESTA DEL PROVEEDOR</p><h4>Oferta de {{o.supplierName}}</h4>
+     @for(i of o.items;track i.requestItemId){<p class="offer-line"><strong>{{i.snapshot.name}}</strong><br>{{i.quantity}} {{i.snapshot.unit}} de {{i.snapshot.unitsPerPack}} · S/ {{i.unitPrice}} por presentación<br>{{i.quantity}} × S/ {{i.unitPrice}} = S/ {{i.subtotal}}</p>}
+     <dl class="offer-conditions"><div><dt>Productos</dt><dd>S/ {{o.subtotal}}</dd></div><div><dt>Envío final</dt><dd>S/ {{o.shipping}}</dd></div><div><dt>Plazo de entrega</dt><dd>{{o.deliveryDays}} días</dd></div><div><dt>Vigente hasta</dt><dd>{{date(o.expiresAt)}}</dd></div></dl>
+     <div class="offer-total"><span>Total con envío</span><strong>S/ {{o.total}}</strong></div><p class="offer-tax">PEN · IGV incluido en precios; no se calcula desglose fiscal.</p>
+     @if(o.score!==undefined){
+      <div class="score-info"><span>Puntuación IA</span><strong>{{o.score!==null?o.score.toFixed(1)+' / 100':'Sin puntuación'}}</strong></div>
+      @if(o.breakdown && o.score!==null){<dl class="score-breakdown"><div><dt>Precio · 50%</dt><dd>{{o.breakdown.price_score.toFixed(1)}}</dd></div><div><dt>Entrega · 30%</dt><dd>{{o.breakdown.delivery_score.toFixed(1)}}</dd></div><div><dt>Reputación · 20%</dt><dd>{{o.breakdown.reputation_score.toFixed(1)}}</dd></div></dl>}
+     }
+     @if(q.isBuyer){
+      @if(!q.acceptedOfferId){<button class="offer-action" type="button" [disabled]="busy()" (click)="accept(o.id)">Aceptar oferta de {{o.supplierName}}</button>}
+      @if(q.acceptedOfferId===o.id){<p class="notice">Oferta aceptada. Aceptar no reserva stock.</p><button class="offer-action" type="button" [disabled]="busy()" (click)="order(o.id)">Crear pedido pendiente</button>}
+     }
+    </article>
+   }@empty{<p class="state-panel">Los proveedores destinatarios todavía no han enviado ofertas.</p>}
+  </div>
  }
  <h4>Pedidos autorizados</h4>
  @for(o of orders();track o.id){<p>Pedido {{o.id}} · {{o.state}} · S/ {{o.total}} <button type="button" (click)="openOrder(o.id)">Ver pedido {{o.id}}</button></p>}
  @if(currentOrder();as o){
-  <article aria-label="Detalle del pedido"><h4>Pedido pendiente {{o.id}}</h4>
+  <article aria-label="Detalle del pedido"><h4>{{o.state==='pendiente'?'Pedido pendiente':'Pedido'}} {{o.id}}</h4>
    @for(i of o.items;track $index){<p>{{i.snapshot.name}} · {{i.snapshot.unit}} de {{i.snapshot.unitsPerPack}} · {{i.quantity}} × S/ {{i.unitPrice}} = S/ {{i.subtotal}}</p>}
    <p>Productos: S/ {{o.subtotal}} · Envío final: S/ {{o.shipping}} · <strong>Total: S/ {{o.total}} PEN</strong></p>
    <p>IGV incluido en precios. Plazo: {{o.deliveryDays}} días.</p>
@@ -98,7 +95,7 @@ import {FormsModule} from '@angular/forms';
    }
   </article>
  }
-</section>`,styles:[`.trade{border-top:1px solid #ccc;margin-top:2rem;padding-top:1rem} form{display:grid;gap:.75rem;margin:1rem 0;max-width:45rem}label{display:grid;gap:.25rem}.check{display:flex;gap:.5rem}input,select{padding:.5rem;font:inherit;max-width:100%}fieldset{display:grid;gap:.5rem;border:1px solid #ccc}button{margin:.2rem}p{overflow-wrap:anywhere}.offer{margin:1rem 0;padding:1rem;border:1px solid #ddd;border-radius:4px}button:disabled{opacity:.5;cursor:default}.success{color:green;font-weight:bold}.error{color:red;font-weight:bold}.warning{color:orange;font-weight:bold}.score-info{display:flex;align-items:center;gap:.5rem;background:#f0f8ff;padding:.5rem;border-radius:4px;margin-bottom:.5rem}.tooltip{cursor:help;font-size:1.2em}`]})
+</section>`})
 export class TradeComponent {
  readonly token=input.required<string>();readonly canBuy=input(false);readonly canSell=input(false);readonly catalogChanged=output<void>();
  providers=signal<any[]>([]);products=signal<any[]>([]);requests=signal<any[]>([]);orders=signal<any[]>([]);
@@ -128,15 +125,35 @@ export class TradeComponent {
   if(this.canSell()){const p=await this.call('trade/products');if(p)this.products.set(p);}
   const r=await this.call('quotations');if(r)this.requests.set(r);const o=await this.call('orders');if(o)this.orders.set(o);
  }
- newRequest(){this.selected.set(null);this.currentOrder.set(null);this.creating.set(true);this.message.set('Completa una nueva solicitud; la anterior conserva su historial.');}
+ async beginFromCatalog(product:CatalogProduct){
+  if(!this.canBuy())return;
+  const providers=await this.call('trade/providers');
+  if(!providers)return;
+  this.providers.set(providers);
+  if(!providers.some((provider:any)=>provider.id===product.supplierId)){
+   this.message.set('Este proveedor no está disponible para una solicitud de tu empresa.');return;
+  }
+  this.supplierIds=[product.supplierId];
+  this.items=[{descripcion:product.name,presentacion:product.unit.toLowerCase(),
+   unidadesPorPresentacion:product.unitsPerPack,cantidad:Math.ceil(product.minimum/product.multiple)*product.multiple}];
+  this.newRequest();
+  this.message.set('Producto y proveedor seleccionados. Puedes añadir proveedores para comparar sus ofertas.');
+  document.getElementById('cotizaciones')?.scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ newRequest(){this.selected.set(null);this.currentOrder.set(null);this.creating.set(true);this.scoredOffers.set([]);this.sortByScore=false;this.message.set('Completa una nueva solicitud; la anterior conserva su historial.');}
  toggle(id:string){this.supplierIds=this.supplierIds.includes(id)?this.supplierIds.filter(x=>x!==id):[...this.supplierIds,id];}
  addItem(){this.items.push({descripcion:'',presentacion:'caja',unidadesPorPresentacion:12,cantidad:2});}
  async create(){const q=await this.call('quotations','POST',{proveedorIds:this.supplierIds,items:this.items});if(q){this.selected.set(q);this.creating.set(false);const r=await this.call('quotations');if(r)this.requests.set(r);}}
  async open(id:string){const q=await this.call('quotations/'+id);if(q){this.selected.set(q);this.currentOrder.set(null);this.creating.set(false);this.expiresAt=this.future();
   this.scoredOffers.set([]);this.sortByScore=false;
   this.responseItems=q.items.map((i:any)=>({solicitudItemId:i.id,productoId:'',cantidad:i.quantity,precioUnitario:''}));}}
+ isTopScore(offer:any):boolean{
+  if(typeof offer.score!=='number')return false;
+  return offer.score===Math.max(...this.scoredOffers().map(item=>item.score??-1));
+ }
  async scoreOffers(quotationId:string){
   const result=await this.call('quotations/'+quotationId+'/score-offers','POST');
+  if(this.selected()?.id!==quotationId)return;
   if(result && result.scored_offers){
    this.scoredOffers.set(result.scored_offers);
    if(!result.ai_service_available){this.message.set('Servicio de IA no disponible. Ofertas mostradas sin puntuación.');}

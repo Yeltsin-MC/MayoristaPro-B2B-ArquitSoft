@@ -1,3 +1,5 @@
+> Estado operativo de Codex del 12/11/2026. Rama local `sprint-2/demo-mayorista-t6`, desde `6f88fe4` y los cambios locales existentes. Demo compilada en http://localhost:3100 con FastAPI en 5055. Catálogo, cuenta y comparación rediseñados, integración T6 corregida y verificada. La evidencia actual y los comandos están en [demo mayorista](evidencias/demo-mayorista.md). Las cuentas existentes se comprobaron por PostgreSQL. El recorrido autenticado de navegador usa un fixture sintético aislado, pues faltan las contraseñas de las cuentas demo para automatizar su acceso.
+
 # Contexto Operativo de MayoristaPro B2B
 
 **Memoria persistente para Kiro, Codex y auditor de arquitectura.**

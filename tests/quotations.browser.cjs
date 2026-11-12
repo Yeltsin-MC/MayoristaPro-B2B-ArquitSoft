@@ -26,8 +26,11 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
     const offered=seller.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/responses'));
     await seller.getByRole('button',{name:'Enviar oferta',exact:true}).click();const result=await(await offered).json();assert.equal(result.offers.length,1);offerIds.push(result.offers[0].id);
    }
-   await open(buyer,q.id);await expect(buyer.getByText('Total: S/ 104.00 PEN',{exact:true})).toBeVisible();
-   await expect(buyer.getByText('Productos: S/ 96.00 · Envío final: S/ 8.00',{exact:true})).toBeVisible();
+   await open(buyer,q.id);
+   const vendorOffer=buyer.locator('.offer').filter({has:buyer.getByRole('heading',{name:'Oferta de vendor',exact:true})});
+   await expect(vendorOffer.locator('.offer-total strong')).toHaveText('S/ 104.00');
+   await expect(vendorOffer.locator('.offer-conditions dd').nth(0)).toHaveText('S/ 96.00');
+   await expect(vendorOffer.locator('.offer-conditions dd').nth(1)).toHaveText('S/ 8.00');
    await buyer.getByRole('button',{name:'Aceptar oferta de vendor',exact:true}).click();
    await expect(buyer.getByText('Oferta aceptada. Aceptar no reserva stock.',{exact:true})).toBeVisible();
    assert.equal((await f.db.query('SELECT stock FROM products WHERE id=$1',[f.products.vendor.id])).rows[0].stock,20);
@@ -40,7 +43,7 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
    assert.deepEqual(reservations,[{quantity:2,state:'activa',expires_at:null}]);assert.equal(order.total,'104.00');assert.equal(order.state,'pendiente');
    await buyer.getByRole('button',{name:'Crear pedido pendiente',exact:true}).click();await expect(buyer.getByRole('heading',{name:'Pedido pendiente '+order.id,exact:true})).toBeVisible();
    assert.equal((await f.db.query('SELECT stock FROM products WHERE id=$1',[f.products.vendor.id])).rows[0].stock,18);
-   const seller=pages[1];await open(seller,q.id);await expect(seller.getByText('Total: S/ 108.00 PEN',{exact:true})).toHaveCount(0);
+   const seller=pages[1];await open(seller,q.id);await expect(seller.getByText('S/ 108.00',{exact:true})).toHaveCount(0);
    await mkdir('.angular/t4-evidence',{recursive:true});
    await buyer.getByRole('article',{name:'Detalle del pedido'}).screenshot({path:'.angular/t4-evidence/pedido-pendiente.png'});
    await writeFile('.angular/t4-evidence/resultado.json',JSON.stringify({browser:await browser.version(),requestId:q.id,offerIds,order,stockAfter:stock,reservations},null,2)+'\n');
