@@ -9,6 +9,16 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
     this.pool = new Pool({ connectionString: databaseUrl, connectionTimeoutMillis: 5000 });
   }
 
+  async revision(): Promise<string> {
+    const result = await this.pool.query(`
+      SELECT r.revision::text FROM catalog_cache_revision r WHERE r.singleton
+      AND (SELECT relnamespace FROM pg_class WHERE oid=r.tableoid) =
+          (SELECT relnamespace FROM pg_class WHERE oid='products'::regclass)
+    `);
+    if (!result.rows[0]) throw new Error('Falta la revisión del catálogo. Aplica db:migrate.');
+    return result.rows[0].revision;
+  }
+
   async listPublished(offset: number, limit: number, filters: CatalogFilters = {}): Promise<PublishedProduct[]> {
     const result = await this.pool.query<PublishedProduct>(`
       SELECT p.id, p.name, p.category, (p.stock >= p.minimum) AS available,
