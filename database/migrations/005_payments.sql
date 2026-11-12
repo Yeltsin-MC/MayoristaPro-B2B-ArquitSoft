@@ -61,11 +61,10 @@ DROP CONSTRAINT IF EXISTS stock_reservations_state_check;
 ALTER TABLE stock_reservations
 ADD CONSTRAINT stock_reservations_state_check 
 CHECK (state IN (
-  'activa',          -- [T4] Reservada
-  'consumed',        -- [T5] Consumida (pedido pagado)
-  'expired',         -- [T5] Expiró sin pago
-  'released',        -- [T5] Liberada por expiración o rechazo
-  'payment_pending'  -- [T5] Pedido expirado con pago pendiente (reconciliación)
+  'activa',      -- [T4] Reservada
+  'consumed',    -- [T5] Consumida (pedido pagado)
+  'expired',     -- [T5] Expiró sin pago
+  'released'     -- [T5] Liberada por expiración o rechazo
 ));
 
 -- 2.2. Índice para consultas del worker
