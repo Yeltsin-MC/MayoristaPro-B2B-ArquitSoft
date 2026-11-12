@@ -337,9 +337,9 @@
 
 **Último commit backend:** `aa748bd` - "Implementación completa de T5 Fase 2: Backend Pagos MP (mock)"
 
-**Último commit frontend+worker:** Pendiente de commit
+**Último commit frontend+worker:** `4b08e5c` - "Completar Fases 3-4 - Worker expiración, frontend Angular, tests seguridad"
 
-**Estado del working tree:** Cambios no commiteados (worker, frontend, tests seguridad)
+**Estado del working tree:** Limpio (2 commits adelante de origin)
 
 **Ramas principales:**
 - `main` - Integra T1, T2, T3 (estable)
