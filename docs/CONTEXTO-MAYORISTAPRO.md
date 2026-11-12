@@ -161,23 +161,110 @@
 
 ---
 
-### ✅ T5: Pagos con Mercado Pago (Implementado - Modo Mock)
+### ✅ T5: Pagos con Mercado Pago (Implementado y Verificado - Modo Mock)
 
 **Rama:** `sprint-2/pagos-mercadopago`
-**Commits:** Backend `aa748bd`, Frontend+Worker (pending commit)
-**Estado:** Backend, worker, frontend y tests implementados; **pendiente merge a main**
+**Commits:** `aa748bd` (backend), `4b08e5c` (worker+frontend), `dd2aa74` (fixes)
+**Estado:** **COMPLETO Y FUNCIONAL** - Backend, worker, frontend, tests (modo mock sin credenciales MP)
 
 **Implementación Completa:**
 - ✅ Migración `005_payments.sql` (tablas, triggers, funciones, índices)
 - ✅ Backend NestJS: PaymentsModule con Clean Architecture
-- ✅ Gateway Mercado Pago con modo mock (desarrollo/tests sin credenciales)
+- ✅ Gateway Mercado Pago con modo mock (desarrollo sin credenciales)
 - ✅ Endpoints: POST/GET `/orders/:id/payment-attempts`, POST `/webhooks/mercadopago`
 - ✅ Worker automático: expira pedidos y libera stock (cron cada 2 minutos)
 - ✅ Frontend Angular: botón pagar, countdown, lista de intentos, estados visuales
 - ✅ Webhook signature verification (HMAC-SHA256 timing-safe)
-- ✅ 8 tests de integración pagos (T5-P01 a T5-P08)
-- ✅ 5 tests de seguridad (T5-S01 a T5-S05)
-- ✅ Tests totales: 63+ (1 unitario + 28 T1-T4 + 17 T5-M + 8 T5-P + 5 T5-S + 4 browser)
+- ✅ 61 tests de integración pasando (T1-T5)
+- ✅ 1 test unitario pasando
+
+**Pruebas Verificadas (12 Nov 2026):**
+- T1 Catálogo: 1/1 ✅
+- T2 Identidad: 6/6 ✅
+- T3 Importación: 12/12 ✅
+- T4 Pedidos: 9/9 ✅
+- T5 Migración: 18/18 ✅ (17 tests + 1 suite)
+- T5 Pagos: 9/9 ✅ (8 tests + 1 suite)
+- T5 Seguridad: 6/6 ✅ (5 tests + 1 suite)
+- Unitaria (pricing): 1/1 ✅
+- **Total: 62 tests aprobados**
+
+**Funcionalidades Verificadas:**
+- Crear intento de pago (preferencia MP mock)
+- Máximo 3 intentos por pedido, 1 activo concurrente
+- Pedidos expirados rechazan nuevos pagos
+- Webhooks con deduplicación (idempotentes)
+- Worker libera stock atómicamente (no duplica liberaciones)
+- Frontend muestra countdown hasta vencimiento
+- Frontend lista intentos con estados y enlaces
+- Modo mock funciona sin credenciales reales
+
+**Fases Completadas:**
+
+**Fase 1: Base de Datos ✅**
+- Migración `005_payments.sql` con tablas, triggers, funciones
+- 18 tests de estructura (T5-M01 a T5-M17 + suite)
+- Compatibilidad T1-T4 verificada (regresión completa)
+
+**Fase 2: Backend NestJS ✅**
+- PaymentsModule: domain, application, infrastructure, presentation
+- MercadoPagoGateway con modo mock (sin credenciales)
+- Endpoints REST: crear intento, listar intentos, webhook
+- Verificación de firma HMAC-SHA256 (timing-safe)
+- 9 tests de integración (T5-P01 a T5-P08 + suite)
+
+**Fase 3: Worker Automático ✅**
+- Script `apps/api/src/workers/expire-orders.cjs`
+- Expira pedidos después de 30 minutos
+- Libera stock atómicamente (idempotente)
+- Maneja pagos pendientes con reconciliación
+- Diseñado para cron cada 2 minutos
+
+**Fase 4: Frontend Angular ✅**
+- Componente de pagos en `apps/web/src/trade.ts`
+- Botón "Pagar" que crea preferencia MP
+- Countdown timer hasta expiración
+- Lista de intentos de pago con estados
+- Redirección a Checkout Pro
+- Mensajes contextuales (pagado/expirado/reconciliación)
+
+**Archivos Implementados (13 archivos):**
+- `database/migrations/005_payments.sql`
+- `apps/api/src/payments/domain/payment.ts`
+- `apps/api/src/payments/application/payments.ts`
+- `apps/api/src/payments/infrastructure/postgres-payments.ts`
+- `apps/api/src/payments/infrastructure/mercadopago-gateway.ts`
+- `apps/api/src/payments/presentation/payments.controller.ts`
+- `apps/api/src/payments/payments.module.ts`
+- `apps/api/src/catalog/catalog.module.ts` (modificado)
+- `apps/api/src/workers/expire-orders.cjs`
+- `apps/api/package.json` (script expire:orders)
+- `apps/web/src/trade.ts` (extendido con pagos)
+- `tests/payments.integration.cjs` (9 tests)
+- `tests/payments-security.integration.cjs` (6 tests)
+
+**Pendientes para Demo Real con Mercado Pago:**
+1. Obtener credenciales test de Mercado Pago:
+   - `MP_ACCESS_TOKEN` (test mode)
+   - `MP_WEBHOOK_SECRET` (para verificar firmas)
+2. Configurar túnel ngrok para webhooks en localhost
+3. Probar flujo completo con Checkout Pro real
+4. Implementar UI de reconciliación administrativa (pagos tardíos)
+5. Pruebas E2E browser (requieren DEMO_PASSWORD configurado)
+
+**Decisiones técnicas implementadas:**
+- **API elegida:** Preferences API (madura, suficiente para MVP)
+- **Modo mock:** Gateway funciona sin credenciales (desarrollo/tests)
+- **Verificación webhook:** HMAC-SHA256 timing-safe, devuelve 200 siempre
+- **Worker:** Idempotente, diseñado para cron, no libera stock dos veces
+- **Frontend:** SPA Angular sin reload, signals para reactividad
+- **Moneda:** PEN con CHECK constraint en DB
+- **Expiración:** 30 minutos desde `created_at`, no renovable
+
+**Próximo paso:**
+- Configurar credenciales MP test para integración real
+- Merge a `main` después de validación final
+- O continuar con T6 (IA proveedores) / T7 (despliegue AWS)
 
 **Decisión D3 (Aprobada 11/11/2026):**
 - **Duración de reserva:** 30 minutos desde `trade_orders.created_at`
@@ -335,16 +422,21 @@
 
 **Rama activa:** `sprint-2/pagos-mercadopago`
 
-**Último commit backend:** `aa748bd` - "Implementación completa de T5 Fase 2: Backend Pagos MP (mock)"
+**Commits locales (5 adelante de origin):**
+- `dd2aa74` (HEAD) - "fix: corregir webhook y tests de seguridad"
+- `1bcb6dc` - "docs: corregir hash final de commit T5"
+- `e329e65` - "docs: actualizar commit hash en CONTEXTO-MAYORISTAPRO"
+- `4b08e5c` - "feat: Completar Fases 3-4 - Worker, frontend, tests seguridad"
+- `aa748bd` - "feat: implementar backend de pagos con Mercado Pago"
 
-**Último commit frontend+worker:** `e329e65` - "Completar Fases 3-4 - Worker expiración, frontend Angular, tests seguridad"
+**Base remota:** `42c45bb` (origin/sprint-2/pagos-mercadopago)
 
-**Estado del working tree:** Limpio (3 commits adelante de origin)
+**Estado del working tree:** Limpio (sin cambios pendientes)
 
 **Ramas principales:**
 - `main` - Integra T1, T2, T3 (estable)
 - `sprint-2/cotizaciones-pedidos` - Contiene T4 implementado, **pendiente de merge a `main`**
-- `sprint-2/pagos-mercadopago` - Contiene T5 backend+worker+frontend, **pendiente de commit y merge**
+- `sprint-2/pagos-mercadopago` - **Contiene T5 COMPLETO (backend+worker+frontend+tests), listo para merge**
 
 ### Reglas de Trabajo con Git
 
