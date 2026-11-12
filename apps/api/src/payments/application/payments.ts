@@ -54,6 +54,17 @@ export interface PaymentStore {
   getAttemptByExternalReference(externalReference: string): Promise<PaymentAttempt | null>;
   markWebhookReceived(notificationId: string, payload: any, signatureVerified: boolean): Promise<void>;
   wasWebhookProcessed(notificationId: string): Promise<boolean>;
+  markWebhookProcessed(notificationId: string): Promise<void>;
+  markWebhookFailed(notificationId: string, error: string): Promise<void>;
+  getPendingWebhooks(limit?: number): Promise<Array<{
+    notification_id: string;
+    data_id: string;
+    action: string;
+    type: string;
+    payload: any;
+    signature_verified: boolean;
+    received_at: Date;
+  }>>;
 }
 
 export const PAYMENT_STORE = Symbol('PAYMENT_STORE');
@@ -129,44 +140,75 @@ export class Payments {
   }): Promise<void> {
     const { notificationId, dataId, type, signatureVerified, payload } = params;
 
-    // 1. Registrar webhook recibido (deduplicación)
+    // 1. Verificar deduplicación
     const wasProcessed = await this.store.wasWebhookProcessed(notificationId);
     if (wasProcessed) {
-      return; // Idempotencia: ya procesado
+      return; // Idempotencia: ya procesado exitosamente
     }
 
+    // 2. Registrar webhook recibido (sin marcar como procesado aún)
     await this.store.markWebhookReceived(notificationId, payload, signatureVerified);
 
-    // 2. Solo procesar notificaciones de pago verificadas
+    // 3. Solo procesar notificaciones de pago verificadas
     rule(signatureVerified, 'INVALID_SIGNATURE', 'Firma de webhook inválida.');
     rule(type === 'payment', 'UNSUPPORTED_TYPE', 'Solo se procesan notificaciones de pago.');
 
-    // 3. Consultar el pago a Mercado Pago (fuente de verdad)
+    // 4. Consultar el pago a Mercado Pago (fuente de verdad)
     const paymentInfo = await this.gateway.getPaymentInfo(dataId);
 
-    // 4. Buscar el intento asociado por external_reference
+    // 5. Buscar el intento asociado por external_reference
     const externalRef = paymentInfo.external_reference;
     rule(externalRef, 'MISSING_REFERENCE', 'El pago no tiene external_reference.');
 
     const attempt = await this.store.getAttemptByExternalReference(externalRef);
     rule(attempt, 'ATTEMPT_NOT_FOUND', `Intento ${externalRef} no encontrado.`);
 
-    // 5. Obtener la orden para validar monto
+    // 6. Obtener la orden para validar monto
     const order = await this.store.getOrder(attempt.order_id, ''); // Sin filtro de empresa (webhook es global)
     rule(order, 'ORDER_NOT_FOUND', `Pedido ${attempt.order_id} no encontrado.`);
 
-    // 6. Validar moneda y monto
+    // 7. Validar moneda y monto
     validateCurrency(paymentInfo.currency_id);
     validateAmount(paymentInfo.transaction_amount, parseFloat(order.total));
 
-    // 7. Mapear estado de MP a nuestro estado
+    // 8. Mapear estado de MP a nuestro estado
     const newState = this.mapMercadoPagoStatus(paymentInfo.status, order.expires_at);
 
-    // 8. Validar transición de estado
+    // 9. Validar transición de estado
     rule(canTransitionTo(attempt.state, newState), 'INVALID_TRANSITION', `Transición inválida de "${attempt.state}" a "${newState}".`);
 
-    // 9. Actualizar estado del intento
+    // 10. Actualizar estado del intento
     await this.store.updateAttemptState(attempt.id, newState, paymentInfo.id, paymentInfo);
+
+    // 11. Marcar webhook como procesado exitosamente
+    await this.store.markWebhookProcessed(notificationId);
+  }
+
+  async retryPendingWebhooks(): Promise<{ processed: number; failed: number }> {
+    const pending = await this.store.getPendingWebhooks(50);
+    let processed = 0;
+    let failed = 0;
+
+    for (const webhook of pending) {
+      try {
+        await this.processWebhookNotification({
+          notificationId: webhook.notification_id,
+          dataId: webhook.data_id,
+          type: webhook.type,
+          action: webhook.action,
+          payload: webhook.payload,
+          signatureVerified: webhook.signature_verified,
+        });
+        processed++;
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Error desconocido';
+        await this.store.markWebhookFailed(webhook.notification_id, errorMsg);
+        failed++;
+        console.error(`[Webhook Recovery] Failed to process ${webhook.notification_id}:`, errorMsg);
+      }
+    }
+
+    return { processed, failed };
   }
 
   private mapMercadoPagoStatus(mpStatus: string, orderExpiresAt: Date): PaymentState {

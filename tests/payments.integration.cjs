@@ -121,10 +121,12 @@ test('T5: Pagos con Mercado Pago (mock)',async t=>{
     null
    );
    
-   // Verificar que el webhook se registró (idempotencia)
-   const dbWebhook=await db.query('SELECT * FROM payment_webhook_events WHERE notification_id=$1',['notif-001']);
+   // Verificar que el webhook se registró
+   const dbWebhook=await db.query('SELECT notification_id, signature_verified, processed, processing_error FROM payment_webhook_events WHERE notification_id=$1',['notif-001']);
    assert.equal(dbWebhook.rows.length,1,'Debe registrar webhook');
-   assert.equal(dbWebhook.rows[0].processed,true,'Debe marcarse como procesado');
+   // Con los cambios de recuperación, el webhook se registra pero NO se marca como procesado si falla
+   assert.equal(dbWebhook.rows[0].processed,false,'Webhook fallido queda pendiente de recuperación');
+   assert.equal(dbWebhook.rows[0].signature_verified,true,'Firma verificada en modo mock');
   });
 
  }finally{await f.close();}

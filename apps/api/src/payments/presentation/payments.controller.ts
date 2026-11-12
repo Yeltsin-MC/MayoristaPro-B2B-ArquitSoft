@@ -107,7 +107,7 @@ export class PaymentsController {
       xRequestId,
     });
 
-    // Procesar webhook (con manejo de errores)
+    // Procesar webhook (con manejo de errores y registro)
     try {
       await this.payments.processWebhookNotification({
         notificationId,
@@ -119,8 +119,16 @@ export class PaymentsController {
       });
     } catch (error) {
       // Webhook registrado pero procesamiento falló
-      // Devolver 200 para que MP no reintente (error ya registrado en DB)
-      console.error('[Webhook] Processing error:', error instanceof Error ? error.message : error);
+      // Registrar error para recuperación posterior
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[Webhook] Processing error:', errorMsg);
+      
+      // Si es error de validación crítica, devolver error para que MP reintente
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      
+      // Para otros errores, devolver 200 (webhook será recuperado por worker)
     }
 
     return { status: 'ok' };

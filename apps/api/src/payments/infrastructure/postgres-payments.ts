@@ -139,8 +139,9 @@ export class PostgresPayments implements PaymentStore, OnModuleDestroy {
   }
 
   async markWebhookReceived(notificationId: string, payload: any, signatureVerified: boolean): Promise<void> {
+    // Registrar evento SIN marcar como procesado (permite recuperación si falla)
     await this.pool.query(
-      'INSERT INTO payment_webhook_events(notification_id, data_id, action, type, payload, signature_verified, processed, received_at) VALUES($1, $2, $3, $4, $5, $6, true, now()) ON CONFLICT (notification_id) DO NOTHING',
+      'INSERT INTO payment_webhook_events(notification_id, data_id, action, type, payload, signature_verified, processed, received_at) VALUES($1, $2, $3, $4, $5, $6, false, now()) ON CONFLICT (notification_id) DO NOTHING',
       [notificationId, payload.data?.id || '', payload.action || '', payload.type || '', payload, signatureVerified]
     );
   }
@@ -151,5 +152,35 @@ export class PostgresPayments implements PaymentStore, OnModuleDestroy {
       [notificationId]
     );
     return result.rows[0]?.processed ?? false;
+  }
+
+  async markWebhookProcessed(notificationId: string): Promise<void> {
+    await this.pool.query(
+      'UPDATE payment_webhook_events SET processed=true, processed_at=now(), processing_error=NULL WHERE notification_id=$1',
+      [notificationId]
+    );
+  }
+
+  async markWebhookFailed(notificationId: string, error: string): Promise<void> {
+    await this.pool.query(
+      'UPDATE payment_webhook_events SET processing_error=$2 WHERE notification_id=$1',
+      [notificationId, error.substring(0, 500)]
+    );
+  }
+
+  async getPendingWebhooks(limit: number = 100): Promise<Array<{
+    notification_id: string;
+    data_id: string;
+    action: string;
+    type: string;
+    payload: any;
+    signature_verified: boolean;
+    received_at: Date;
+  }>> {
+    const result = await this.pool.query(
+      "SELECT notification_id, data_id, action, type, payload, signature_verified, received_at FROM payment_webhook_events WHERE processed=false AND signature_verified=true AND received_at < now()-interval '1 minute' ORDER BY received_at ASC LIMIT $1",
+      [limit]
+    );
+    return result.rows;
   }
 }
