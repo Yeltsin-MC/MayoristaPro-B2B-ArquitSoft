@@ -161,38 +161,94 @@
 
 ---
 
-### ⏸️ T5: Pagos con Mercado Pago (NO Implementado)
+### 🔄 T5: Pagos con Mercado Pago (Phase 1 Completada)
 
-**Estado actual:** Diseño (SDD) en revisión, **pendiente de correcciones y aprobación**
+**Rama:** `sprint-2/pagos-mercadopago`
+**Commit verificado:** `5026a9c`
+**Estado:** Migración de base de datos implementada y probada; endpoints y frontend **pendientes**
 
-**Rama:** Sin rama aún (se creará `sprint-2/pagos-mercadopago`)
+**Fase 1: Migración de Estructura ✅ Completada**
+- ✅ Migración `005_payments.sql` implementada y aplicada
+- ✅ 15 tests de estructura (T5-M01 a T5-M15) aprobados
+- ✅ Compatibilidad T1-T4 verificada (28 tests de regresión pasan)
+- ✅ Tests totales: 44/44 (1 unitario + 28 T1-T4 + 15 T5)
 
-**Propuesta de diseño (no aprobada definitivamente):**
+**Decisión D3 (Aprobada 11/11/2026):**
+- **Duración de reserva:** 30 minutos desde `trade_orders.created_at`
+- **Política de reintentos:** El plazo NO se reinicia con nuevos intentos
+- **Intentos máximos:** 3 por pedido
+- **Moneda:** PEN (Soles Peruanos) con constraint CHECK en DB
+- **Pagos tardíos:** Requieren reconciliación manual (no liberan stock automáticamente)
+- **Alternativas rechazadas:** 15 minutos (muy corto), 2 horas (bloquea inventario innecesariamente)
+
+**Estructura de base de datos implementada:**
+
+1. **Tabla `payment_attempts`:**
+   - IDs de MP: `preference_id`, `payment_id` (UNIQUE)
+   - Estados: `created`, `pending`, `approved`, `approved_late`, `rejected`, `cancelled`, `refunded`
+   - Montos: `amount` NUMERIC(24,2), `currency` TEXT CHECK='PEN'
+   - Respuestas MP completas: `mp_preference_response`, `mp_payment_response` (JSONB)
+   - Timestamps: `created_at`, `updated_at` (trigger automático)
+
+2. **Tabla `payment_webhook_events`:**
+   - Deduplicación: `notification_id` UNIQUE
+   - Verificación: `signature_verified` BOOLEAN
+   - Procesamiento: `processed`, `processed_at`, `processing_error`
+   - Payload completo para auditoría
+
+3. **Tabla `payment_reconciliations`:**
+   - Casos especiales: `approved_late`, `expired_pending_payment`, `webhook_never_arrived`, `amount_mismatch`, `manual_adjustment`
+   - Resolución: `resolved`, `resolved_by`, `resolved_at`, `resolution_notes`
+
+4. **Extensión `trade_orders`:**
+   - Nueva columna: `expires_at` TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '30 minutes')
+   - Nuevos estados: `paid`, `expired`, `expired_pending_payment`, `cancelled`, `requires_reconciliation`
+   - Índice: `idx_trade_orders_expires_at` para worker de expiración
+
+5. **Extensión `stock_reservations`:**
+   - Nuevos estados: `consumed` (pagado), `expired` (expiró), `released` (liberado)
+
+6. **Funciones PostgreSQL:**
+   - `count_active_payment_attempts(order_id)`: Cuenta intentos en `created` o `pending`
+   - `can_create_payment_attempt(order_id)`: Valida si orden permite nuevo intento (máx 3, no expirado, sin intento activo)
+   - `update_payment_attempt_timestamp()`: Trigger para `updated_at`
+
+**Tests de estructura validados:**
+- T5-M01: Columnas de `payment_attempts` con DEFAULT y constraints
+- T5-M02: `payment_webhook_events` con UNIQUE(notification_id)
+- T5-M03: `payment_reconciliations` con foreign keys
+- T5-M04: `expires_at` con DEFAULT +30min
+- T5-M05: Estados extendidos en `trade_orders`
+- T5-M06: Estados extendidos en `stock_reservations`
+- T5-M07-M10: Funciones de validación de intentos
+- T5-M11: Constraint CHECK(currency='PEN')
+- T5-M12: Cálculo correcto de `expires_at`
+- T5-M13: Trigger `updated_at` funciona
+- T5-M14: Foreign keys funcionan
+- T5-M15: Compatibilidad con T1-T4 sin `payment_attempts`
+
+**Fase 2: Endpoints y Frontend (Pendiente)**
 - Integrar Mercado Pago Checkout Pro (Preferences API) en modo test
-- Moneda: PEN (Soles Peruanos)
-- Reservas con vencimiento de 30 minutos desde creación del pedido
-- Máximo 3 intentos de pago por pedido
-- Webhooks con verificación de firma HMAC-SHA256
+- Implementar endpoints NestJS:
+  - `POST /api/v1/orders/:id/payment-attempts` - Crear preferencia MP
+  - `POST /api/v1/webhooks/mercadopago` - Recibir notificaciones
+  - `GET /api/v1/orders/:id/payment-attempts` - Consultar intentos
+- Implementar frontend Angular:
+  - Botón "Pagar" que redirecciona a Checkout Pro
+  - Página de retorno con confirmación/rechazo
+  - Indicador de expiración (countdown 30 min)
+- Webhooks con verificación HMAC-SHA256 contra `x-signature`
+- Worker cron para expirar pedidos (cada 2 min)
+- Reconciliación manual de casos especiales
 - **Nunca llamadas HTTP externas dentro de transacciones PostgreSQL**
-- Reconciliación manual de pagos tardíos o pendientes al vencer
-- Worker cron para liberar reservas expiradas (cada 2 minutos)
 
-**Decisiones pendientes:**
-- Confirmar formato correcto del manifiesto de firma MP
-- Resolver idempotencia de creación de preferencias
-- Definir política de reintentos y recuperación de fallos
-- Verificar inclusión de envío en importe total
-- Evitar liberación duplicada de inventario
-- Revisar permisos por empresa compradora
+**Decisiones técnicas registradas:**
+- **API elegida:** Preferences API (clásica, madura, suficiente para MVP académico)
+- **API descartada:** Orders API (moderna pero más compleja, no necesaria para demo)
+- Credenciales MP test: Pendientes de obtener
+- Webhooks en localhost: Requieren ngrok o simulación en desarrollo
 
-**Riesgos identificados:**
-- SDD de T5 contiene propuestas, NO implementación real
-- No confundir diseño documentado con código ejecutado
-- Migración `005_payments.sql` diseñada pero NO aplicada
-- Credenciales MP test pendientes de obtención
-- Webhooks en localhost requieren ngrok o simulación
-
-**Próximo paso:** Corregir riesgos restantes y aprobar diseño antes de implementar
+**Próximo paso:** Implementar Fase 2 (endpoints + frontend + worker)
 
 ---
 
