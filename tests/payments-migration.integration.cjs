@@ -254,5 +254,46 @@ test('T5 Phase 1: Migración de estructura de pagos (sin integración MP)',async
    assert.ok(exp.rows[0].expires_at,'expires_at debe estar poblado');
   });
 
+  await t.test('T5-M16: índice único parcial impide dos intentos activos concurrentes',async()=>{
+   const {o}=await prepared();
+   const oid=ok(await order(o.id,'t5-concurrent'));
+   
+   // Primera inserción debe funcionar
+   await db.query(`
+    INSERT INTO payment_attempts(order_id, state, amount, currency)
+    VALUES($1, 'pending', 100.00, 'PEN')
+   `,[oid.id]);
+   
+   // Segunda inserción debe fallar por índice único parcial
+   await assert.rejects(
+    db.query(`
+     INSERT INTO payment_attempts(order_id, state, amount, currency)
+     VALUES($1, 'created', 100.00, 'PEN')
+    `,[oid.id]),
+    /unique constraint.*idx_payment_attempts_active_order|duplicate key/i,
+    'Debe rechazar segundo intento activo (pending + created no pueden coexistir)'
+   );
+   
+   // Verificar que solo existe un intento
+   const count=await db.query(`SELECT count(*) FROM payment_attempts WHERE order_id=$1`,[oid.id]);
+   assert.equal(count.rows[0].count,'1','Solo debe haber 1 intento activo');
+  });
+
+  await t.test('T5-M17: expires_at se calcula desde created_at incluso con INSERT explícito',async()=>{
+   // Usar helper de fixture en lugar de INSERT manual
+   const {o}=await prepared();
+   const oid1=ok(await order(o.id,'t5-expires-explicit-1'));
+   
+   // Verificar que trigger calculó expires_at desde created_at
+   const result=await db.query(`
+    SELECT created_at, expires_at,
+           EXTRACT(EPOCH FROM (expires_at - created_at)) AS diff_seconds
+    FROM trade_orders WHERE id=$1
+   `,[oid1.id]);
+   
+   const diff=parseFloat(result.rows[0].diff_seconds);
+   assert.ok(diff>=1799 && diff<=1801,`expires_at debe ser exactly 30min desde created_at (diff=${diff}s, esperado=1800s)`);
+  });
+
  }finally{await f.close();}
 });

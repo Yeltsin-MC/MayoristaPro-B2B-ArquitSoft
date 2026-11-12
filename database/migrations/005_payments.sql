@@ -24,7 +24,9 @@ WHERE expires_at IS NULL;
 ALTER TABLE trade_orders 
 ALTER COLUMN expires_at SET NOT NULL;
 
--- 1.4. Agregar default para nuevos registros
+-- 1.4. Agregar default para nuevos registros (basado en created_at)
+-- Nota: DEFAULT no puede referenciar otras columnas directamente
+-- Se usará trigger para garantizar expires_at = created_at + 30 min
 ALTER TABLE trade_orders 
 ALTER COLUMN expires_at SET DEFAULT (now() + INTERVAL '30 minutes');
 
@@ -120,6 +122,12 @@ CREATE INDEX idx_payment_attempts_pending_stale
 ON payment_attempts(updated_at)
 WHERE state = 'pending';
 
+-- GARANTÍA DE CONCURRENCIA: Solo un intento activo por pedido
+-- Índice único parcial que impide múltiples intentos en estados activos
+CREATE UNIQUE INDEX idx_payment_attempts_active_order
+ON payment_attempts(order_id)
+WHERE state IN ('created', 'pending');
+
 -- =====================================================
 -- 4. Tabla de eventos webhook (deduplicación)
 -- =====================================================
@@ -207,7 +215,25 @@ ON payment_reconciliations(reason)
 WHERE NOT resolved;
 
 -- =====================================================
--- 6. Trigger para updated_at en payment_attempts
+-- 6. Trigger para expires_at en trade_orders
+-- =====================================================
+
+-- Garantizar que expires_at siempre sea created_at + 30 minutos
+CREATE OR REPLACE FUNCTION set_order_expiration()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.expires_at = NEW.created_at + INTERVAL '30 minutes';
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_set_order_expiration
+BEFORE INSERT ON trade_orders
+FOR EACH ROW
+EXECUTE FUNCTION set_order_expiration();
+
+-- =====================================================
+-- 7. Trigger para updated_at en payment_attempts
 -- =====================================================
 
 CREATE OR REPLACE FUNCTION update_payment_attempt_timestamp()
@@ -224,7 +250,7 @@ FOR EACH ROW
 EXECUTE FUNCTION update_payment_attempt_timestamp();
 
 -- =====================================================
--- 7. Función auxiliar: contar intentos activos de un pedido
+-- 8. Función auxiliar: contar intentos activos de un pedido
 -- =====================================================
 
 CREATE OR REPLACE FUNCTION count_active_payment_attempts(p_order_id uuid)
@@ -240,7 +266,7 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 
 -- =====================================================
--- 8. Función auxiliar: verificar si orden puede tener nuevo intento
+-- 9. Función auxiliar: verificar si orden puede tener nuevo intento
 -- =====================================================
 
 CREATE OR REPLACE FUNCTION can_create_payment_attempt(p_order_id uuid)
@@ -291,7 +317,7 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 
 -- =====================================================
--- 9. Verificar integridad
+-- 10. Verificar integridad
 -- =====================================================
 
 -- Confirmar que columnas existen
