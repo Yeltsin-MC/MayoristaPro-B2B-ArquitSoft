@@ -25,8 +25,15 @@ export class CachedProducts implements ProductReader {
 
   listPublished(offset: number, limit: number, filters: CatalogFilters = {}): Promise<PublishedProduct[]> {
     filters = { ...filters, search: filters.search?.trim(), supplier: filters.supplier?.toLowerCase() };
-    const parameters = [offset, limit, filters.search?.trim() || '', filters.category || '',
-      filters.supplier?.toLowerCase() || '', filters.available ?? null, filters.sort || ''];
+    const parameters = [
+      offset,
+      limit,
+      filters.search?.trim() || '',
+      filters.category || '',
+      filters.supplier?.toLowerCase() || '',
+      filters.available ?? null,
+      filters.sort || '',
+    ];
     return this.read('products', parameters, () => this.source.listPublished(offset, limit, filters));
   }
 
@@ -57,7 +64,7 @@ export class CachedProducts implements ProductReader {
       const cached = await this.cache.get(key);
       if (cached !== null) {
         const value = JSON.parse(cached) as T;
-        if (await this.version() === revision) {
+        if ((await this.version()) === revision) {
           this.stats.hits++;
           return value;
         }
@@ -72,7 +79,7 @@ export class CachedProducts implements ProductReader {
     // PostgreSQL failures propagate once, independently of cache failures.
     const value = await this.load(load);
     try {
-      if (await this.version() === revision) {
+      if ((await this.version()) === revision) {
         await this.cache.set(key, JSON.stringify(value), this.ttlSeconds);
         this.stats.fills++;
       }

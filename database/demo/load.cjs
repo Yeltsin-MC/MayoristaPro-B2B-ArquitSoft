@@ -29,14 +29,13 @@ function runExistingScript(file, env) {
 async function withDemoApi(databaseUrl, action) {
   require('reflect-metadata');
   const { NestFactory } = require('@nestjs/core');
-  const { CatalogModule } = require('../../apps/api/dist/catalog/catalog.module');
+  const { AppModule } = require('../../apps/api/dist/app.module.js');
   const previous = process.env.DATABASE_URL;
   let app;
   process.env.DATABASE_URL = databaseUrl;
   try {
-    app = await NestFactory.create(CatalogModule, { logger: false, abortOnError: false });
-    app.setGlobalPrefix('api/v1');
-    app.useStaticAssets(join(ROOT, 'apps/web/dist/catalog/browser'));
+    app = await NestFactory.create(AppModule, { logger: false, abortOnError: false });
+    require('../../apps/api/dist/http-setup.js').configureHttp(app, join(ROOT, 'apps/web/dist/catalog/browser'));
     await app.listen(0, '127.0.0.1');
     return await action((await app.getUrl()) + '/api/v1/');
   } finally {

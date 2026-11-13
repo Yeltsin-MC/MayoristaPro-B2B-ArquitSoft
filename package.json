@@ -21,9 +21,16 @@
     "demo:catalog:load": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/load.cjs",
     "demo:catalog:api": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/serve.cjs",
     "identity:admin": "node --env-file-if-exists=.env database/create-admin.cjs",
-    "demo:catalog:quote": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/quote.cjs"
+    "demo:catalog:quote": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/quote.cjs",
+    "format": "prettier --write apps/api/src apps/web/src",
+    "format:check": "prettier --check apps/api/src apps/web/src",
+    "lint": "eslint apps/api/src apps/web/src"
   },
   "devDependencies": {
-    "@playwright/test": "1.65.0"
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "1.65.0",
+    "eslint": "^9.39.5",
+    "prettier": "^3.10.1",
+    "typescript-eslint": "^8.72.2"
   }
 }

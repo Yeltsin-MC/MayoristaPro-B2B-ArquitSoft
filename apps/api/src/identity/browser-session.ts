@@ -5,7 +5,11 @@ import { TLSSocket } from 'node:tls';
 const NAME = 'mayoristapro_session';
 
 export function browserToken(cookie?: string): string | undefined {
-  const values = cookie?.split(';').map(value => value.trim()).filter(value => value.startsWith(NAME + '=')) ?? [];
+  const values =
+    cookie
+      ?.split(';')
+      .map(value => value.trim())
+      .filter(value => value.startsWith(NAME + '=')) ?? [];
   if (values.length !== 1) return undefined;
   const token = values[0].slice(NAME.length + 1);
   return /^[a-f0-9]{64}$/.test(token) ? token : undefined;
@@ -13,8 +17,10 @@ export function browserToken(cookie?: string): string | undefined {
 
 function secureCookie(request: IncomingMessage): boolean {
   const publicUrl = process.env.FRONTEND_URL ?? process.env.API_URL;
-  return request.socket instanceof TLSSocket || (publicUrl
-    ? new URL(publicUrl).protocol === 'https:' : process.env.NODE_ENV === 'production');
+  return (
+    request.socket instanceof TLSSocket ||
+    (publicUrl ? new URL(publicUrl).protocol === 'https:' : process.env.NODE_ENV === 'production')
+  );
 }
 
 export function sameOrigin(request: IncomingMessage): void {

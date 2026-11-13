@@ -99,7 +99,8 @@ test('EC09-11: imagenes y cantidad mayorista conservada hasta solicitud privada'
         assert.equal((await f.call('quotations/' + quotation.id, 'GET', undefined, 'buyer2')).status, 404);
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
         await page.route('**/images/familias-demo.png', route => route.fulfill({ status: 404, body: 'foto no disponible' }));
-        await page.reload();
+        // La solicitud quedó en /cuenta; las fotos se comprueban de nuevo en el catálogo.
+        await page.goto(f.base.replace('/api/v1/', '/'));
         await expect(card.locator('.photo-fallback')).toBeVisible();
         await card.screenshot({ path: `${folder}/respaldo-${label}.png` });
         await page.unroute('**/images/familias-demo.png');

@@ -28,7 +28,7 @@ export class AiService {
   ) {}
 
   async scoreQuotation(id: string, authorization?: string) {
-    const quotation = await this.trade.detail(id, authorization) as QuotationForScoring;
+    const quotation = (await this.trade.detail(id, authorization)) as QuotationForScoring;
     if (!quotation.isBuyer) {
       throw new ForbiddenException('Solo el comprador propietario puede puntuar esta solicitud.');
     }
@@ -65,16 +65,22 @@ export class AiService {
         this.httpService.post<ScoreOffersResponse>(`${this.serviceUrl}/api/v1/score-offers`, request),
       );
       const scored = response.data?.scored_offers;
-      if (!Array.isArray(scored) || scored.length !== request.offers.length ||
-          new Set(scored.map(offer => offer.offer_id)).size !== scored.length) {
+      if (
+        !Array.isArray(scored) ||
+        scored.length !== request.offers.length ||
+        new Set(scored.map(offer => offer.offer_id)).size !== scored.length
+      ) {
         throw new Error('Respuesta de IA incompleta o duplicada.');
       }
       return scored.map(score => {
         const offer = request.offers.find(item => item.offer_id === score.offer_id);
         const breakdown = score.breakdown;
         const values = [score.score, breakdown?.price_score, breakdown?.delivery_score, breakdown?.reputation_score];
-        if (!offer || score.supplier_id !== offer.supplier_id ||
-            !values.every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100)) {
+        if (
+          !offer ||
+          score.supplier_id !== offer.supplier_id ||
+          !values.every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100)
+        ) {
           throw new Error('Respuesta de IA incompatible con las ofertas autorizadas.');
         }
         return {
@@ -88,7 +94,9 @@ export class AiService {
         };
       });
     } catch (error: unknown) {
-      this.logger.warn(`Servicio de IA no disponible: ${error instanceof Error ? error.message : 'respuesta invalida'}`);
+      this.logger.warn(
+        `Servicio de IA no disponible: ${error instanceof Error ? error.message : 'respuesta invalida'}`,
+      );
       return request.offers.map(offer => ({
         offer_id: offer.offer_id,
         supplier_id: offer.supplier_id,

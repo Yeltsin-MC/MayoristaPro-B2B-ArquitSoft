@@ -54,7 +54,7 @@ export class MercadoPagoGateway implements PaymentGateway {
     const response = await fetch(`${this.baseUrl}/checkout/preferences`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`,
+        Authorization: `Bearer ${this.accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
@@ -89,7 +89,7 @@ export class MercadoPagoGateway implements PaymentGateway {
     const response = await fetch(`${this.baseUrl}/v1/payments/${paymentId}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`,
+        Authorization: `Bearer ${this.accessToken}`,
         'Content-Type': 'application/json',
       },
     });
@@ -156,7 +156,7 @@ export class MercadoPagoGateway implements PaymentGateway {
       id: paymentId,
       status,
       status_detail: 'accredited',
-      transaction_amount: 100.00,
+      transaction_amount: 100.0,
       currency_id: 'PEN',
       external_reference: externalRef,
     });

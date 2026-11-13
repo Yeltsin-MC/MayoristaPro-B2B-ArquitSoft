@@ -1,6 +1,15 @@
 // Application: Payment use cases and coordination
 
-import { rule, PaymentError, validateCurrency, validateAmount, validateOrderForPayment, canCreateAttempt, canTransitionTo, PaymentState } from '../domain/payment';
+import {
+  rule,
+  PaymentError,
+  validateCurrency,
+  validateAmount,
+  validateOrderForPayment,
+  canCreateAttempt,
+  canTransitionTo,
+  PaymentState,
+} from '../domain/payment';
 
 export interface PaymentAttempt {
   id: string;
@@ -50,21 +59,28 @@ export interface PaymentStore {
   getAttempts(orderId: string): Promise<PaymentAttempt[]>;
   createAttempt(orderId: string, amount: number): Promise<{ id: string; attempt: PaymentAttempt }>;
   updateAttemptWithPreference(attemptId: string, preferenceId: string, initPoint: string, response: any): Promise<void>;
-  updateAttemptState(attemptId: string, state: PaymentState, paymentId?: string, paymentResponse?: any): Promise<boolean>;
+  updateAttemptState(
+    attemptId: string,
+    state: PaymentState,
+    paymentId?: string,
+    paymentResponse?: any,
+  ): Promise<boolean>;
   getAttemptByExternalReference(externalReference: string): Promise<PaymentAttempt | null>;
   markWebhookReceived(notificationId: string, payload: any, signatureVerified: boolean): Promise<void>;
   wasWebhookProcessed(notificationId: string): Promise<boolean>;
   markWebhookProcessed(notificationId: string): Promise<void>;
   markWebhookFailed(notificationId: string, error: string): Promise<void>;
-  getPendingWebhooks(limit?: number): Promise<Array<{
-    notification_id: string;
-    data_id: string;
-    action: string;
-    type: string;
-    payload: any;
-    signature_verified: boolean;
-    received_at: Date;
-  }>>;
+  getPendingWebhooks(limit?: number): Promise<
+    Array<{
+      notification_id: string;
+      data_id: string;
+      action: string;
+      type: string;
+      payload: any;
+      signature_verified: boolean;
+      received_at: Date;
+    }>
+  >;
 }
 
 export const PAYMENT_STORE = Symbol('PAYMENT_STORE');
@@ -73,10 +89,13 @@ export const PAYMENT_GATEWAY = Symbol('PAYMENT_GATEWAY');
 export class Payments {
   constructor(
     private readonly store: PaymentStore,
-    private readonly gateway: PaymentGateway
+    private readonly gateway: PaymentGateway,
   ) {}
 
-  async createPaymentAttempt(orderId: string, companyId: string): Promise<{
+  async createPaymentAttempt(
+    orderId: string,
+    companyId: string,
+  ): Promise<{
     attempt_id: string;
     init_point: string;
     expires_at: string;
@@ -98,7 +117,7 @@ export class Payments {
 
     // 5. Crear intento en DB (antes de llamar a MP)
     const total = parseFloat(order.total);
-    const { id: attemptId, attempt } = await this.store.createAttempt(orderId, total);
+    const { id: attemptId } = await this.store.createAttempt(orderId, total);
 
     // 6. Crear preferencia en Mercado Pago (fuera de transacción)
     try {
@@ -110,7 +129,12 @@ export class Payments {
       });
 
       // 7. Actualizar intento con respuesta de MP
-      await this.store.updateAttemptWithPreference(attemptId, preference.preference_id, preference.init_point, preference.response);
+      await this.store.updateAttemptWithPreference(
+        attemptId,
+        preference.preference_id,
+        preference.init_point,
+        preference.response,
+      );
 
       return {
         attempt_id: attemptId,
@@ -120,7 +144,10 @@ export class Payments {
     } catch (error) {
       // Si falla la creación de preferencia, el intento queda en 'created' sin preference_id
       // El frontend puede reintentar o se puede implementar recuperación
-      throw new PaymentError('GATEWAY_ERROR', error instanceof Error ? error.message : 'Error al crear preferencia de pago.');
+      throw new PaymentError(
+        'GATEWAY_ERROR',
+        error instanceof Error ? error.message : 'Error al crear preferencia de pago.',
+      );
     }
   }
 
@@ -175,7 +202,11 @@ export class Payments {
     const newState = this.mapMercadoPagoStatus(paymentInfo.status, order.expires_at);
 
     // 9. Validar transición de estado
-    rule(canTransitionTo(attempt.state, newState), 'INVALID_TRANSITION', `Transición inválida de "${attempt.state}" a "${newState}".`);
+    rule(
+      canTransitionTo(attempt.state, newState),
+      'INVALID_TRANSITION',
+      `Transición inválida de "${attempt.state}" a "${newState}".`,
+    );
 
     // 10. Actualizar estado del intento
     await this.store.updateAttemptState(attempt.id, newState, paymentInfo.id, paymentInfo);

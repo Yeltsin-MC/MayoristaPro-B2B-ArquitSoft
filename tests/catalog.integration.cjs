@@ -4,8 +4,8 @@ const assert = require('node:assert/strict');
 test('el catálogo público consulta PostgreSQL y valida la paginación', async () => {
   require('reflect-metadata');
   const { NestFactory } = require('@nestjs/core');
-  const { CatalogModule } = require('../apps/api/dist/catalog/catalog.module.js');
-  const app = await NestFactory.create(CatalogModule, { logger: false, abortOnError: false });
+  const { AppModule } = require('../apps/api/dist/app.module.js');
+  const app = await NestFactory.create(AppModule, { logger: false, abortOnError: false });
   try {
     app.setGlobalPrefix('api/v1');
     await app.listen(0, '127.0.0.1');

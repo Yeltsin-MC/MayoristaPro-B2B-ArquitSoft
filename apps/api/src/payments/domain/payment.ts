@@ -1,11 +1,8 @@
 // Domain: Payment rules and validation (no external dependencies)
 
-export class PaymentError extends Error {
-  constructor(readonly code: string, message: string) {
-    super(message);
-    this.name = 'PaymentError';
-  }
-}
+import { DomainError } from '../../common/domain-error';
+
+export class PaymentError extends DomainError {}
 
 export function rule(condition: unknown, code: string, message: string): asserts condition {
   if (!condition) throw new PaymentError(code, message);
@@ -21,19 +18,24 @@ export function validateAmount(amount: unknown, expected: number): void {
   rule(diff < 0.01, 'AMOUNT_MISMATCH', `El monto no coincide. Esperado: ${expected}, recibido: ${amount}.`);
 }
 
-export function validateOrderForPayment(order: {
-  state: string;
-  expires_at: Date;
-}): void {
-  rule(order.state === 'pendiente', 'ORDER_NOT_PENDING', `El pedido está en estado "${order.state}" y no puede recibir pagos.`);
-  rule(new Date(order.expires_at) > new Date(), 'ORDER_EXPIRED', 'El pedido ha vencido. Crea una nueva solicitud de cotización.');
+export function validateOrderForPayment(order: { state: string; expires_at: Date }): void {
+  rule(
+    order.state === 'pendiente',
+    'ORDER_NOT_PENDING',
+    `El pedido está en estado "${order.state}" y no puede recibir pagos.`,
+  );
+  rule(
+    new Date(order.expires_at) > new Date(),
+    'ORDER_EXPIRED',
+    'El pedido ha vencido. Crea una nueva solicitud de cotización.',
+  );
 }
 
 export function canCreateAttempt(
   attemptCount: number,
   activeAttempts: number,
   orderState: string,
-  expiresAt: Date
+  expiresAt: Date,
 ): { allowed: boolean; reason?: string } {
   if (orderState !== 'pendiente') {
     return { allowed: false, reason: `El pedido está en estado "${orderState}".` };
@@ -51,21 +53,27 @@ export function canCreateAttempt(
 }
 
 // Payment attempt states from migration
-export type PaymentState = 
-  | 'created'       // Creado, esperando respuesta MP
-  | 'pending'       // MP respondió, pago pendiente
-  | 'approved'      // Aprobado a tiempo
+export type PaymentState =
+  | 'created' // Creado, esperando respuesta MP
+  | 'pending' // MP respondió, pago pendiente
+  | 'approved' // Aprobado a tiempo
   | 'approved_late' // Aprobado después de expiración
-  | 'rejected'      // Rechazado por MP
-  | 'cancelled'     // Cancelado por usuario
-  | 'refunded';     // Reembolsado (futuro)
+  | 'rejected' // Rechazado por MP
+  | 'cancelled' // Cancelado por usuario
+  | 'refunded'; // Reembolsado (futuro)
 
 export function isActiveState(state: PaymentState): boolean {
   return state === 'created' || state === 'pending';
 }
 
 export function isTerminalState(state: PaymentState): boolean {
-  return state === 'approved' || state === 'approved_late' || state === 'rejected' || state === 'cancelled' || state === 'refunded';
+  return (
+    state === 'approved' ||
+    state === 'approved_late' ||
+    state === 'rejected' ||
+    state === 'cancelled' ||
+    state === 'refunded'
+  );
 }
 
 export function canTransitionTo(from: PaymentState, to: PaymentState): boolean {

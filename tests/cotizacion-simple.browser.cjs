@@ -77,6 +77,7 @@ test('UX comprador: papel A4, cantidad, ingreso, envío y comparación compacta 
      await page.locator('.offers-grid').screenshot({path:folder+'/comparacion-'+label+'.png'});
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
      // Ya autenticado: una segunda selección abre de nuevo el mismo formulario compacto.
+     await page.locator('.header-nav').getByRole('link',{name:'Catálogo',exact:true}).click();
      await card.getByRole('spinbutton').fill('6');await card.getByRole('button',{name:'Solicitar cotización',exact:false}).click();
      await expect(page.locator('.compact-quotation').getByLabel('Cantidad de presentaciones',{exact:true})).toHaveValue('6');
      await expect(page.getByRole('button',{name:'Salir',exact:true})).toBeVisible();await expect(page.locator('.auth-layout')).toHaveCount(0);

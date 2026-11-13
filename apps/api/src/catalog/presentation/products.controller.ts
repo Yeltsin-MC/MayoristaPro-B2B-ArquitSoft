@@ -22,19 +22,28 @@ export class ProductsController {
     @Query('available') available?: string,
     @Query('sort') sort?: string,
   ) {
-    if (!Number.isSafeInteger(page) || page < 1 || limit < 1 || limit > 100 ||
-        !Number.isSafeInteger((page - 1) * limit)) {
+    if (
+      !Number.isSafeInteger(page) ||
+      page < 1 ||
+      limit < 1 ||
+      limit > 100 ||
+      !Number.isSafeInteger((page - 1) * limit)
+    ) {
       throw new BadRequestException('Pagina o limite invalidos.');
     }
-    if ((search !== undefined && (typeof search !== 'string' || search.length > 120)) ||
-        (category !== undefined && (typeof category !== 'string' || category.length > 100)) ||
-        (supplier !== undefined && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(supplier)) ||
-        (available !== undefined && available !== 'true' && available !== 'false') ||
-        (sort !== undefined && sort !== 'price-asc' && sort !== 'price-desc')) {
+    if (
+      (search !== undefined && (typeof search !== 'string' || search.length > 120)) ||
+      (category !== undefined && (typeof category !== 'string' || category.length > 100)) ||
+      (supplier !== undefined && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(supplier)) ||
+      (available !== undefined && available !== 'true' && available !== 'false') ||
+      (sort !== undefined && sort !== 'price-asc' && sort !== 'price-desc')
+    ) {
       throw new BadRequestException('Filtros de catalogo invalidos.');
     }
     const filters: CatalogFilters = {
-      search: search?.trim(), category, supplier,
+      search: search?.trim(),
+      category,
+      supplier,
       available: available === undefined ? undefined : available === 'true',
       sort: sort as CatalogFilters['sort'],
     };

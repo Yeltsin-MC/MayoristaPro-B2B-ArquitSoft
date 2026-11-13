@@ -1,95 +1,330 @@
-<a class="skip-link" href="#catalogo">Ir al catálogo</a>
-<div class="top-strip">Compras para empresas · Precios en soles · Demo académica</div>
-<header class="site-header">
-  <div class="header-content">
-    <a class="brand" href="#inicio" aria-label="MayoristaPro, inicio"><span class="brand-mark" aria-hidden="true">m<span>+</span></span><span>Mayorista<span class="brand-pro">Pro</span><small>NEGOCIOS QUE CONECTAN</small></span></a>
-    <form class="search-bar header-search" (ngSubmit)="searchCatalog()" role="search">
-      <span aria-hidden="true" class="search-icon">⌕</span>
-      <input aria-label="Buscar productos" name="search" [(ngModel)]="search" maxlength="120" placeholder="¿Qué necesita tu negocio?">
-      <button type="submit">Buscar <span aria-hidden="true">→</span></button>
-    </form>
-    <a class="account-link" href="#cuenta"><span aria-hidden="true">○</span> Mi cuenta</a>
-  </div>
-  <nav class="header-nav" aria-label="Navegación principal"><a href="#categorias">Categorías <span aria-hidden="true">↓</span></a><a href="#catalogo">Catálogo</a><button type="button" (click)="identity.openQuotes()">Mis cotizaciones</button><span>Librería, oficina y tecnología</span></nav>
-</header>
-<main id="inicio">
+<div id="inicio">
   <section class="catalog-hero" aria-labelledby="catalog-title">
     <div class="hero-copy">
       <p class="eyebrow">COMPRAS MAYORISTAS, NEGOCIOS QUE CRECEN</p>
-      <h1 id="catalog-title">Abastece<br>tu negocio.</h1>
-      <p>De la oficina a tu próxima venta.<br>Encuentra productos por volumen y cotiza con sus proveedores.</p>
+      <h1 id="catalog-title">Abastece<br />tu negocio.</h1>
+      <p>De la oficina a tu próxima venta.<br />Encuentra productos por volumen y cotiza con sus proveedores.</p>
       <a class="button" href="#catalogo">Explorar catálogo <span aria-hidden="true">↗</span></a>
     </div>
-    <img class="hero-photo" src="/images/abastecimiento-demo.png" alt="Cuadernos, papel y equipos de oficina junto a cajas de abastecimiento" width="1536" height="1024" fetchpriority="high">
+    <img
+      class="hero-photo"
+      src="/images/abastecimiento-demo.png"
+      alt="Cuadernos, papel y equipos de oficina junto a cajas de abastecimiento"
+      width="1536"
+      height="1024"
+      fetchpriority="high"
+    />
   </section>
-  @if(categories().length) {
+  @if (categories().length) {
     <section id="categorias" class="categories-section" aria-labelledby="categories-title">
-      <div class="section-heading"><h2 id="categories-title">Qué puedes comprar</h2><a href="#catalogo" (click)="reset()">Ver catálogo completo <span aria-hidden="true">→</span></a></div>
+      <div class="section-heading">
+        <h2 id="categories-title">Qué puedes comprar</h2>
+        <a href="#catalogo" (click)="reset()">Ver catálogo completo <span aria-hidden="true">→</span></a>
+      </div>
       <div class="category-grid">
-        @for(c of categories();track c) {
-          <button class="category-access" type="button" [attr.aria-pressed]="category===c" (click)="selectCategory(c)">
-            <app-catalog-photo aria-hidden="true" [kind]="imageKind(c)" class="family-photo category-photo" /><span>{{c}}</span>
+        @for (c of categories(); track c) {
+          <button
+            class="category-access"
+            type="button"
+            [attr.aria-pressed]="category === c"
+            (click)="selectCategory(c)"
+          >
+            <app-catalog-photo aria-hidden="true" [kind]="imageKind(c)" class="family-photo category-photo" /><span>{{
+              c
+            }}</span>
           </button>
         }
       </div>
     </section>
   }
   <section id="catalogo" class="catalog-section" aria-labelledby="products-title">
-    <div class="section-heading"><div><p class="eyebrow">EL CATÁLOGO DE TU NEGOCIO</p><h2 id="products-title">{{search.trim()?'Resultados de búsqueda':category || 'Productos destacados'}}</h2></div><span class="section-caption">Precio por presentación · Envío por cotizar</span></div>
-    @if(category || search.trim()) {<div class="active-filters" aria-live="polite">@if(category){<span>Categoría activa <strong>{{category}}</strong></span>}@if(search.trim()){<span>Búsqueda <strong>“{{search.trim()}}”</strong></span>}</div>}
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">EL CATÁLOGO DE TU NEGOCIO</p>
+        <h2 id="products-title">
+          {{ searchTerm().trim() ? 'Resultados de búsqueda' : category || 'Productos destacados' }}
+        </h2>
+      </div>
+      <span class="section-caption">Precio por presentación · Envío por cotizar</span>
+    </div>
+    @if (category || searchTerm().trim()) {
+      <div class="active-filters" aria-live="polite">
+        @if (category) {
+          <span
+            >Categoría activa <strong>{{ category }}</strong></span
+          >
+        }
+        @if (searchTerm().trim()) {
+          <span
+            >Búsqueda <strong>“{{ searchTerm().trim() }}”</strong></span
+          >
+        }
+      </div>
+    }
     <div class="catalog-layout">
       <aside class="filters" aria-label="Filtros del catálogo">
-        <div class="filter-heading"><h3>Filtrar productos</h3><button class="text-button" type="button" (click)="reset()">Limpiar</button></div>
-        <label>Categoría<select aria-label="Categoría del catálogo" [(ngModel)]="category" (ngModelChange)="load()"><option value="">Todas las categorías</option>@for(c of options().categories;track c){<option [value]="c">{{c}}</option>}</select></label>
-        <label>Proveedor<select aria-label="Proveedor del catálogo" [(ngModel)]="supplier" (ngModelChange)="load()"><option value="">Todos los proveedores</option>@for(s of options().suppliers;track s.id){<option [value]="s.id">{{s.name}}</option>}</select></label>
-        <label class="check"><input type="checkbox" [(ngModel)]="available" (ngModelChange)="load()">Con disponibilidad</label>
-        <div class="filter-note"><strong>Compra por presentación</strong><p>Revisa el mínimo y el múltiplo de cada producto antes de solicitar una oferta.</p></div>
+        <div class="filter-heading">
+          <h3>Filtrar productos</h3>
+          <button class="text-button" type="button" (click)="reset()">Limpiar</button>
+        </div>
+        <label
+          >Categoría<select aria-label="Categoría del catálogo" [(ngModel)]="category" (ngModelChange)="load()">
+            <option value="">Todas las categorías</option>
+            @for (c of options().categories; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select></label
+        >
+        <label
+          >Proveedor<select aria-label="Proveedor del catálogo" [(ngModel)]="supplier" (ngModelChange)="load()">
+            <option value="">Todos los proveedores</option>
+            @for (s of options().suppliers; track s.id) {
+              <option [value]="s.id">{{ s.name }}</option>
+            }
+          </select></label
+        >
+        <label class="check"
+          ><input type="checkbox" [(ngModel)]="available" (ngModelChange)="load()" />Con disponibilidad</label
+        >
+        <div class="filter-note">
+          <strong>Compra por presentación</strong>
+          <p>Revisa el mínimo y el múltiplo de cada producto antes de solicitar una oferta.</p>
+        </div>
       </aside>
       <div class="catalog-results">
-        <div class="results-toolbar"><p role="status">@if(status()==='ready'){<strong>{{products().length}}</strong> productos en esta página}@else if(status()==='loading'){Consultando catálogo…}@else{Consulta no disponible}</p><label>Ordenar<select aria-label="Orden del catálogo" [(ngModel)]="sort" (ngModelChange)="load()"><option value="">Orden del catálogo</option><option value="price-asc">Menor precio por presentación</option><option value="price-desc">Mayor precio por presentación</option></select></label></div>
-        @if(status()==='loading') {
-          <div class="state-panel" role="status"><span class="loading-dot"></span><h3>Cargando productos</h3><p>Consultando precios y disponibilidad.</p></div>
-        } @else if(status()==='error') {
-          <div class="state-panel error-panel" role="alert"><h3>El catálogo no está disponible</h3><p>No pudimos consultar los productos. Inténtalo de nuevo en un momento.</p><button type="button" (click)="reload()">Reintentar</button></div>
+        <div class="results-toolbar">
+          <p role="status">
+            @if (status() === 'ready') {
+              <strong>{{ products().length }}</strong> productos en esta página
+            } @else if (status() === 'loading') {
+              Consultando catálogo…
+            } @else {
+              Consulta no disponible
+            }
+          </p>
+          <label
+            >Ordenar<select aria-label="Orden del catálogo" [(ngModel)]="sort" (ngModelChange)="load()">
+              <option value="">Orden del catálogo</option>
+              <option value="price-asc">Menor precio por presentación</option>
+              <option value="price-desc">Mayor precio por presentación</option>
+            </select></label
+          >
+        </div>
+        @if (status() === 'loading') {
+          <div class="state-panel" role="status">
+            <span class="loading-dot"></span>
+            <h3>Cargando productos</h3>
+            <p>Consultando precios y disponibilidad.</p>
+          </div>
+        } @else if (status() === 'error') {
+          <div class="state-panel error-panel" role="alert">
+            <h3>El catálogo no está disponible</h3>
+            <p>No pudimos consultar los productos. Inténtalo de nuevo en un momento.</p>
+            <button type="button" (click)="reload()">Reintentar</button>
+          </div>
         } @else {
           <section aria-label="Productos" class="catalog">
-            @for(product of products();track product.id) {
+            @for (product of products(); track product.id) {
               <article class="product-card">
-                <button type="button" class="product-image-link" [attr.aria-label]="'Ver producto '+product.name" (click)="showProduct(product, productDialog)"><app-catalog-photo [description]="'Imagen referencial de '+product.category" [kind]="productImage(product)" class="family-photo product-visual" /><span class="category-tag">{{product.category}}</span><small class="image-caption">Imagen referencial</small></button>
-                <div class="product-content"><p class="supplier">{{product.supplier}}</p><h3><button type="button" class="product-name" (click)="showProduct(product, productDialog)">{{product.name}}</button></h3>
-                  <div class="product-price"><strong>{{product.price | currency:product.currency:'S/ ':'1.2-2'}}</strong><span>por {{packDescription(product)}}</span></div>
-                  <p class="tax-note">{{product.includesTax?'Incluye IGV':'IGV por separado'}}</p>
-                  <dl><div><dt>Mínimo</dt><dd>{{presentations(product.minimum, product.unit)}}</dd></div><div><dt>Múltiplo</dt><dd>{{presentations(product.multiple, product.unit)}}</dd></div></dl>
-                  <p class="stock" [class.unavailable]="!product.available"><span aria-hidden="true">●</span> {{product.available?product.stock+' presentaciones disponibles':'Sin disponibilidad'}}</p>
-                  <label class="quantity-label">Cantidad de {{unitName(product.unit, 2)}}<input type="number" inputmode="numeric" [attr.aria-label]="'Cantidad para '+product.name" [name]="'quantity-'+product.id" [min]="minimumQuantity(product)" [step]="product.multiple" [max]="product.stock" [ngModel]="quantityFor(product)" (ngModelChange)="setQuantity(product, $event)" [attr.aria-invalid]="!!quantityError(product, quantityFor(product))" [attr.aria-describedby]="'quantity-info-'+product.id"></label>
-                  <div [id]="'quantity-info-'+product.id" class="quantity-info" aria-live="polite"><p class="quantity-equivalence">{{quantityEquivalence(product, quantityFor(product))}}</p>@if(quantityError(product, quantityFor(product));as issue){<p class="quantity-error">{{issue}}</p>}</div>
-                  <button type="button" class="quote-button" [disabled]="!product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))" (click)="identity.beginQuote(product, quantityFor(product))">{{product.quoteEnabled?'Solicitar cotización':'Cotización no habilitada'}} <span aria-hidden="true">↗</span></button>
-@if(!product.quoteEnabled){<p class="quote-unavailable">Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.</p>}
-@if(!product.quoteEnabled || !product.available){
- @if(quoteAlternative()){<button class="text-button quote-alternative" type="button" (click)="showAlternative(productDialog)">Ver otra oferta para cotizar</button>}
- @else{<a class="quote-alternative" href="#catalogo" (click)="reset()">Explorar el catálogo</a>}
-}
+                <button
+                  type="button"
+                  class="product-image-link"
+                  [attr.aria-label]="'Ver producto ' + product.name"
+                  (click)="showProduct(product, productDialog)"
+                >
+                  <app-catalog-photo
+                    [description]="'Imagen referencial de ' + product.category"
+                    [kind]="productImage(product)"
+                    class="family-photo product-visual"
+                  /><span class="category-tag">{{ product.category }}</span
+                  ><small class="image-caption">Imagen referencial</small>
+                </button>
+                <div class="product-content">
+                  <p class="supplier">{{ product.supplier }}</p>
+                  <h3>
+                    <button type="button" class="product-name" (click)="showProduct(product, productDialog)">
+                      {{ product.name }}
+                    </button>
+                  </h3>
+                  <div class="product-price">
+                    <strong>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</strong><span
+                      >por {{ packDescription(product) }}</span
+                    >
+                  </div>
+                  <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
+                  <dl>
+                    <div>
+                      <dt>Mínimo</dt>
+                      <dd>{{ presentations(product.minimum, product.unit) }}</dd>
+                    </div>
+                    <div>
+                      <dt>Múltiplo</dt>
+                      <dd>{{ presentations(product.multiple, product.unit) }}</dd>
+                    </div>
+                  </dl>
+                  <p class="stock" [class.unavailable]="!product.available">
+                    <span aria-hidden="true">●</span>
+                    {{ product.available ? product.stock + ' presentaciones disponibles' : 'Sin disponibilidad' }}
+                  </p>
+                  <label class="quantity-label"
+                    >Cantidad de {{ unitName(product.unit, 2)
+                    }}<input
+                      type="number"
+                      inputmode="numeric"
+                      [attr.aria-label]="'Cantidad para ' + product.name"
+                      [name]="'quantity-' + product.id"
+                      [min]="minimumQuantity(product)"
+                      [step]="product.multiple"
+                      [max]="product.stock"
+                      [ngModel]="quantityFor(product)"
+                      (ngModelChange)="setQuantity(product, $event)"
+                      [attr.aria-invalid]="!!quantityError(product, quantityFor(product))"
+                      [attr.aria-describedby]="'quantity-info-' + product.id"
+                  /></label>
+                  <div [id]="'quantity-info-' + product.id" class="quantity-info" aria-live="polite">
+                    <p class="quantity-equivalence">{{ quantityEquivalence(product, quantityFor(product)) }}</p>
+                    @if (quantityError(product, quantityFor(product)); as issue) {
+                      <p class="quantity-error">{{ issue }}</p>
+                    }
+                  </div>
+                  <button
+                    type="button"
+                    class="quote-button"
+                    [disabled]="
+                      !product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))
+                    "
+                    (click)="requestQuote(product, quantityFor(product))"
+                  >
+                    {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
+                    <span aria-hidden="true">↗</span>
+                  </button>
+                  @if (!product.quoteEnabled) {
+                    <p class="quote-unavailable">
+                      Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.
+                    </p>
+                  }
+                  @if (!product.quoteEnabled || !product.available) {
+                    @if (quoteAlternative()) {
+                      <button
+                        class="text-button quote-alternative"
+                        type="button"
+                        (click)="showAlternative(productDialog)"
+                      >
+                        Ver otra oferta para cotizar
+                      </button>
+                    } @else {
+                      <a class="quote-alternative" href="#catalogo" (click)="reset()">Explorar el catálogo</a>
+                    }
+                  }
                 </div>
               </article>
             } @empty {
-              <div class="state-panel"><h3>No encontramos productos</h3><p>Prueba otra búsqueda o cambia los filtros.</p><button class="secondary" type="button" (click)="reset()">Limpiar filtros</button></div>
+              <div class="state-panel">
+                <h3>No encontramos productos</h3>
+                <p>Prueba otra búsqueda o cambia los filtros.</p>
+                <button class="secondary" type="button" (click)="reset()">Limpiar filtros</button>
+              </div>
             }
           </section>
-          <nav class="pagination" aria-label="Páginas del catálogo"><button class="secondary" type="button" [disabled]="page()===1" (click)="load(page()-1)">← Anterior</button><span>Página {{page()}}</span><button class="secondary" type="button" [disabled]="products().length<12" (click)="load(page()+1)">Siguiente →</button></nav>
+          <nav class="pagination" aria-label="Páginas del catálogo">
+            <button class="secondary" type="button" [disabled]="page() === 1" (click)="load(page() - 1)">
+              ← Anterior</button
+            ><span>Página {{ page() }}</span
+            ><button class="secondary" type="button" [disabled]="products().length < 12" (click)="load(page() + 1)">
+              Siguiente →
+            </button>
+          </nav>
         }
       </div>
     </div>
   </section>
-  <dialog #productDialog class="product-dialog" aria-labelledby="product-detail-title" (close)="selectedProduct.set(null)">
-    <form method="dialog" class="dialog-close"><button type="submit" class="secondary" aria-label="Cerrar detalle">×</button></form>
-    @if(selectedProduct();as product) {
-      <div class="product-detail"><app-catalog-photo [kind]="productImage(product)" [description]="'Imagen referencial de '+product.category" class="family-photo detail-photo" /><div class="detail-content"><p class="eyebrow">{{product.category}}</p><h2 id="product-detail-title">{{product.name}}</h2><p class="supplier">{{product.supplier}}</p><div class="product-price"><strong>{{product.price | currency:product.currency:'S/ ':'1.2-2'}}</strong><span>por {{packDescription(product)}}</span></div><p class="tax-note">{{product.includesTax?'Incluye IGV':'IGV por separado'}} · Envío por cotizar</p><dl><div><dt>Mínimo de compra</dt><dd>{{presentations(product.minimum, product.unit)}}</dd></div><div><dt>Múltiplo de compra</dt><dd>{{presentations(product.multiple, product.unit)}}</dd></div></dl><p class="stock">{{product.available?product.stock+' presentaciones disponibles':'Sin disponibilidad'}}</p><label class="quantity-label">Cantidad de {{unitName(product.unit, 2)}}<input type="number" inputmode="numeric" [attr.aria-label]="'Cantidad para '+product.name" [min]="minimumQuantity(product)" [step]="product.multiple" [max]="product.stock" [ngModel]="quantityFor(product)" (ngModelChange)="setQuantity(product, $event)" [attr.aria-invalid]="!!quantityError(product, quantityFor(product))" aria-describedby="detail-quantity-info"></label><div id="detail-quantity-info" class="quantity-info" aria-live="polite"><p class="quantity-equivalence">{{quantityEquivalence(product, quantityFor(product))}}</p>@if(quantityError(product, quantityFor(product));as issue){<p class="quantity-error">{{issue}}</p>}</div><button type="button" class="quote-button" [disabled]="!product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))" (click)="productDialog.close(); identity.beginQuote(product, quantityFor(product))">{{product.quoteEnabled?'Solicitar cotización':'Cotización no habilitada'}} <span aria-hidden="true">↗</span></button>@if(!product.quoteEnabled){<p class="quote-unavailable">Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.</p>}
-@if(!product.quoteEnabled || !product.available){
- @if(quoteAlternative()){<button class="text-button quote-alternative" type="button" (click)="showAlternative(productDialog)">Ver otra oferta para cotizar</button>}
- @else{<a class="quote-alternative" href="#catalogo" (click)="reset()">Explorar el catálogo</a>}
-}<p class="detail-note">Imagen referencial. El proveedor confirma precio, envío y plazo en su oferta privada.</p></div></div>
+  <dialog
+    #productDialog
+    class="product-dialog"
+    aria-labelledby="product-detail-title"
+    (close)="selectedProduct.set(null)"
+  >
+    <form method="dialog" class="dialog-close">
+      <button type="submit" class="secondary" aria-label="Cerrar detalle">×</button>
+    </form>
+    @if (selectedProduct(); as product) {
+      <div class="product-detail">
+        <app-catalog-photo
+          [kind]="productImage(product)"
+          [description]="'Imagen referencial de ' + product.category"
+          class="family-photo detail-photo"
+        />
+        <div class="detail-content">
+          <p class="eyebrow">{{ product.category }}</p>
+          <h2 id="product-detail-title">{{ product.name }}</h2>
+          <p class="supplier">{{ product.supplier }}</p>
+          <div class="product-price">
+            <strong>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</strong><span
+              >por {{ packDescription(product) }}</span
+            >
+          </div>
+          <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }} · Envío por cotizar</p>
+          <dl>
+            <div>
+              <dt>Mínimo de compra</dt>
+              <dd>{{ presentations(product.minimum, product.unit) }}</dd>
+            </div>
+            <div>
+              <dt>Múltiplo de compra</dt>
+              <dd>{{ presentations(product.multiple, product.unit) }}</dd>
+            </div>
+          </dl>
+          <p class="stock">
+            {{ product.available ? product.stock + ' presentaciones disponibles' : 'Sin disponibilidad' }}
+          </p>
+          <label class="quantity-label"
+            >Cantidad de {{ unitName(product.unit, 2)
+            }}<input
+              type="number"
+              inputmode="numeric"
+              [attr.aria-label]="'Cantidad para ' + product.name"
+              [min]="minimumQuantity(product)"
+              [step]="product.multiple"
+              [max]="product.stock"
+              [ngModel]="quantityFor(product)"
+              (ngModelChange)="setQuantity(product, $event)"
+              [attr.aria-invalid]="!!quantityError(product, quantityFor(product))"
+              aria-describedby="detail-quantity-info"
+          /></label>
+          <div id="detail-quantity-info" class="quantity-info" aria-live="polite">
+            <p class="quantity-equivalence">{{ quantityEquivalence(product, quantityFor(product)) }}</p>
+            @if (quantityError(product, quantityFor(product)); as issue) {
+              <p class="quantity-error">{{ issue }}</p>
+            }
+          </div>
+          <button
+            type="button"
+            class="quote-button"
+            [disabled]="!product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))"
+            (click)="productDialog.close(); requestQuote(product, quantityFor(product))"
+          >
+            {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
+            <span aria-hidden="true">↗</span>
+          </button>
+          @if (!product.quoteEnabled) {
+            <p class="quote-unavailable">
+              Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.
+            </p>
+          }
+          @if (!product.quoteEnabled || !product.available) {
+            @if (quoteAlternative()) {
+              <button class="text-button quote-alternative" type="button" (click)="showAlternative(productDialog)">
+                Ver otra oferta para cotizar
+              </button>
+            } @else {
+              <a class="quote-alternative" href="#catalogo" (click)="reset()">Explorar el catálogo</a>
+            }
+          }
+          <p class="detail-note">
+            Imagen referencial. El proveedor confirma precio, envío y plazo en su oferta privada.
+          </p>
+        </div>
+      </div>
     }
   </dialog>
-  <section id="cuenta" class="account-section"><app-identity #identity (catalogChanged)="reload()" /></section>
-</main>
-<footer class="site-footer"><a class="brand" href="#inicio">Mayorista<span class="brand-pro">Pro</span></a><span>Demo académica · Empresas y productos ficticios</span></footer>
+</div>

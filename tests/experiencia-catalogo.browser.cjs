@@ -105,7 +105,7 @@ test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritori
         assert.equal(quotation.items[0].quantity, 2);
         assert.equal(quotation.suppliers[0].id, f.accounts.vendor.supplier);
         assert.equal((await f.call('quotations/' + quotation.id, 'GET', undefined, 'buyer2')).status, 404);
-        await page.locator('.header-nav').getByRole('button', { name: 'Mis cotizaciones', exact: true }).click();
+        await page.locator('.header-nav').getByRole('link', { name: 'Mis cotizaciones', exact: true }).click();
         await expect(page.getByRole('heading', { name: 'Mis cotizaciones', exact: true })).toBeInViewport();
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
         // Cabecera, accesos y búsqueda tienen áreas independientes y al menos 44px.

@@ -1,27 +1,47 @@
-import { IdentityComponent } from './identity';
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
 import { CatalogPhotoComponent } from './catalog-photo';
-import { minimumQuantity, packDescription, presentations, quantityError, quantityEquivalence, unitName } from './wholesale-quantity';
+import { CatalogSearchService } from './catalog-search.service';
+import { SessionService } from './session.service';
+import {
+  minimumQuantity,
+  packDescription,
+  presentations,
+  quantityError,
+  quantityEquivalence,
+  unitName,
+} from './wholesale-quantity';
 
 @Component({
-  selector: 'app-root',
-  imports: [CurrencyPipe, FormsModule, IdentityComponent, CatalogPhotoComponent],
+  selector: 'app-catalog-page',
+  imports: [CurrencyPipe, FormsModule, CatalogPhotoComponent],
   templateUrl: './catalog.html',
 })
 export class CatalogComponent {
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
+  private readonly searchService = inject(CatalogSearchService);
+  /** Texto del buscador del encabezado. */
+  readonly searchTerm = this.searchService.term;
   private requestVersion = 0;
   readonly products = signal<CatalogProduct[]>([]);
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');
   readonly page = signal(1);
-  readonly options = signal<{ categories: string[]; suppliers: { id: string; name: string }[] }>({ categories: [], suppliers: [] });
+  readonly options = signal<{ categories: string[]; suppliers: { id: string; name: string }[] }>({
+    categories: [],
+    suppliers: [],
+  });
   readonly selectedProduct = signal<CatalogProduct | null>(null);
-  readonly categories = computed(() => [...this.options().categories].sort((a, b) =>
-    this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es')));
+  readonly categories = computed(() =>
+    [...this.options().categories].sort(
+      (a, b) => this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es'),
+    ),
+  );
   readonly quantities = signal<Record<string, number | null>>({});
   readonly presentations = presentations;
   readonly packDescription = packDescription;
@@ -29,19 +49,36 @@ export class CatalogComponent {
   readonly minimumQuantity = minimumQuantity;
   readonly quantityError = quantityError;
   readonly quantityEquivalence = quantityEquivalence;
-  search = '';
   category = '';
   supplier = '';
   available = false;
   sort = '';
 
   constructor() {
-    this.load();
     this.loadOptions();
+    let first = true;
+    // Carga inicial y cada búsqueda enviada desde el encabezado.
+    effect(() => {
+      this.searchService.submitted();
+      untracked(() => (first ? this.load() : this.searchCatalog()));
+      first = false;
+    });
+  }
+
+  /** Guarda la selección y lleva a la cuenta, donde se completa la solicitud (o se ingresa). */
+  requestQuote(product: CatalogProduct, quantity: number | null): void {
+    if (quantity === null || quantityError(product, quantity)) return;
+    this.session.message.set('');
+    this.session.failed.set(false);
+    this.session.pendingQuote.set({ product, quantity });
+    void this.router.navigate(['/cuenta']);
   }
 
   imageKind(name: string): string {
-    const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const normalized = name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
     if (/panader|harina|levadura/.test(normalized)) return 'bakery';
     if (/constru|acabados/.test(normalized)) return 'construction';
     if (/redes|router|ethernet|cable|network/.test(normalized)) return 'network';
@@ -79,7 +116,7 @@ export class CatalogComponent {
 
   selectCategory(category: string): void {
     this.category = category;
-    this.search = '';
+    this.searchTerm.set('');
     this.supplier = '';
     this.available = false;
     this.sort = '';
@@ -98,13 +135,18 @@ export class CatalogComponent {
   showAlternative(dialog: HTMLDialogElement): void {
     const alternative = this.quoteAlternative();
     if (!alternative) return;
-    if (quantityError(alternative, this.quantityFor(alternative))) this.setQuantity(alternative, minimumQuantity(alternative));
+    if (quantityError(alternative, this.quantityFor(alternative)))
+      this.setQuantity(alternative, minimumQuantity(alternative));
     this.showProduct(alternative, dialog);
   }
 
   loadOptions(): void {
-    this.http.get<{ categories: string[]; suppliers: { id: string; name: string }[] }>('/api/v1/products/options')
-      .subscribe({ next: options => this.options.set(options), error: () => this.options.set({ categories: [], suppliers: [] }) });
+    this.http
+      .get<{ categories: string[]; suppliers: { id: string; name: string }[] }>('/api/v1/products/options')
+      .subscribe({
+        next: options => this.options.set(options),
+        error: () => this.options.set({ categories: [], suppliers: [] }),
+      });
   }
 
   reload(): void {
@@ -113,7 +155,11 @@ export class CatalogComponent {
   }
 
   reset(): void {
-    this.search = ''; this.category = ''; this.supplier = ''; this.available = false; this.sort = '';
+    this.searchTerm.set('');
+    this.category = '';
+    this.supplier = '';
+    this.available = false;
+    this.sort = '';
     this.load();
   }
 
@@ -121,7 +167,8 @@ export class CatalogComponent {
     const version = ++this.requestVersion;
     this.status.set('loading');
     let params = new HttpParams().set('page', page).set('limit', 12);
-    if (this.search.trim()) params = params.set('q', this.search.trim());
+    const term = this.searchTerm().trim();
+    if (term) params = params.set('q', term);
     if (this.category) params = params.set('category', this.category);
     if (this.supplier) params = params.set('supplier', this.supplier);
     if (this.available) params = params.set('available', 'true');
@@ -133,7 +180,9 @@ export class CatalogComponent {
         this.page.set(page);
         this.status.set('ready');
       },
-      error: () => { if (version === this.requestVersion) this.status.set('error'); },
+      error: () => {
+        if (version === this.requestVersion) this.status.set('error');
+      },
     });
   }
 }
