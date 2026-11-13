@@ -79,11 +79,13 @@ docker compose --env-file .env.demo -f compose.yaml -f compose.demo.yaml down
 Para la demo local compilada, con la DATABASE_URL configurada en `.env`
 
 ```powershell
-npm run build
+# Terminal 1, desde apps/ai-service, con el entorno Python existente:
 $env:AI_HOST = '127.0.0.1'
 $env:AI_PORT = '5055'
-# En otra terminal desde apps/ai-service
-# .\.venv\Scripts\python.exe main.py
+.\.venv\Scripts\python.exe main.py
+
+# Terminal 2, desde la raíz del repositorio:
+npm run build
 $env:AI_SERVICE_URL = 'http://127.0.0.1:5055'
 $env:HOST = '127.0.0.1'
 $env:PORT = '3100'
@@ -114,4 +116,13 @@ La comprobación pendiente de integración conjunta verificará Redis interno li
 | T7-P05 | Solo web publicado; DB, FastAPI y Redis internos | Configuración Compose normalizada comprobada por smoke. |
 | T7-P06 | Compatibilidad con T1–T6 | Job verify existente de GitHub Actions. |
 
-RESULTADOS_T7
+## Resultados reales — 12 de noviembre de 2026
+
+- Base revisada: `main` local y remoto en `9c9f463`. PR #5 abierto; Redis no forma parte de esta rama y su integración conjunta continúa pendiente.
+- Local: compilación Angular y NestJS completada; 3/3 pruebas focalizadas de configuración y empaquetado; 1/1 prueba de arranque real contra PostgreSQL y FastAPI existentes. No se repitió localmente toda la regresión.
+- GitHub Actions [43343548165](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/actions/runs/43343548165), commit probado `825a18dcb6a422ee5eb9f85a19c6ed593ad5d2d5`: jobs `verify` y `deployment` aprobados. Compilación aprobada; Python 11/11, unitarias Node 4/4, integración PostgreSQL 83/83, navegador 8/8 y UX 1/1.
+- El job `deployment` construyó las imágenes y arrancó PostgreSQL, migrador, FastAPI, NestJS, worker y Nginx. Probó puertos internos distintos de los predeterminados (API 3010 y FastAPI 5056). Catálogo 200 con datos, bundle Angular y fallback SPA correctos; proxy conserva errores JSON; NestJS comunica con FastAPI; `.env` bloqueado; solo web publica puerto. Evidencia conservada en [arranque.json](evidencias/preparacion-despliegue/arranque.json).
+- Docker no está instalado en esta laptop: la comprobación del stack Compose se realizó en el runner de CI, además de la comprobación nativa local. No se ejecutaron k6 ni la medición Redis. No se crearon recursos públicos ni se contrataron servicios.
+- Se corrigió el empaquetado de workers copiando los scripts existentes junto a los módulos compilados para mantener sus imports relativos. La prueba focalizada comprueba su contenido y la resolución de dependencias. Las reglas de pedidos y pagos no cambiaron; Mercado Pago con credenciales de prueba sigue pendiente y los pagos de demo permanecen simulados.
+
+Entrega en [PR #6](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/6), sin fusionar. Tras integrar Redis, completar T7-P05 con el perfil `cache` activo y caído según la sección anterior. El despliegue público, HTTPS y la validación k6 de al menos 2.000 usuarios virtuales concurrentes continúan pendientes de sus autorizaciones y tareas.

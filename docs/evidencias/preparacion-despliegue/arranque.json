@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-11-13T01:18:44.184Z",
+  "origin": "http://127.0.0.1:8080",
+  "angular": "HTML y bundle servidos por Nginx; fallback SPA correcto",
+  "catalog": "200 con datos y no-store; límites conservados",
+  "apiRouting": "404 JSON para API inexistente",
+  "fastApi": "NestJS comunica con FastAPI interno",
+  "secrets": "Ruta .env bloqueada",
+  "network": "Solo web publicado; servicios de datos internos",
+  "redis": "Opcional; comprobación de caché pendiente de integrar PR #5"
+}
