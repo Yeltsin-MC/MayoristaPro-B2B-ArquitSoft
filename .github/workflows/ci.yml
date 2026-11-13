@@ -83,6 +83,7 @@ jobs:
             docs/evidencias/demo-mayorista
             docs/evidencias/experiencia-catalogo
             docs/evidencias/cantidad-mayorista
+            docs/evidencias/cotizacion-simple
             docs/evidencias/primera-tanda-ux
             .angular/t4-evidence
             docs/evidencias/redis-catalogo

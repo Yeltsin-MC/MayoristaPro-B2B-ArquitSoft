@@ -42,8 +42,9 @@ test('Demo UX: login, catalogo, cotizacion y comparacion FastAPI en escritorio y
     await page.getByLabel('Correo', { exact: true }).fill(f.accounts.buyer.email);
     await page.getByLabel(/^Contraseña/).fill(f.password);
     await page.locator('form').getByRole('button', { name: 'Ingresar', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'Nueva solicitud de cotización', exact: true })).toBeVisible();
-    await expect(page.getByLabel('Descripción', { exact: true })).toHaveValue('Cuaderno vendor');
+    await expect(page.getByRole('heading', { name: 'Solicitar cotización', exact: true })).toBeVisible();
+    await expect(page.locator('.quotation-product')).toContainText('Cuaderno vendor');
+    await page.getByRole('button', {name:'Añadir otro proveedor',exact:true}).click();
     await expect(page.getByRole('checkbox', { name: 'Proveedor Demo Uno', exact: true })).toBeChecked();
     await page.getByRole('checkbox', { name: 'Proveedor Demo Dos', exact: true }).check();
     const created = page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/quotations');
@@ -55,9 +56,10 @@ test('Demo UX: login, catalogo, cotizacion y comparacion FastAPI en escritorio y
     second.items[0].precioUnitario = '52.00';
     assert.equal((await f.call(`quotations/${quotation.id}/responses`, 'POST', second, 'vendor2')).status, 201);
     await page.getByRole('button', { name: 'Actualizar cotizaciones', exact: true }).click();
-    await page.getByRole('button', { name: 'Abrir solicitud ' + quotation.id, exact: true }).click();
+    await page.locator('[data-request-id="'+quotation.id+'"] ').getByRole('button', {name:'Ver cotización',exact:true}).click();
     await expect(page.locator('.offer')).toHaveCount(2);
     const scoredResponse = page.waitForResponse(r => new URL(r.url()).pathname.endsWith('/score-offers'));
+    await page.locator('.comparison-details > summary').click();
     await page.getByRole('button', { name: 'Calcular puntuación IA', exact: true }).click();
     const result = await (await scoredResponse).json();
     assert.equal(result.ai_service_available, true, JSON.stringify(result));
@@ -86,7 +88,7 @@ test('Demo UX: login, catalogo, cotizacion y comparacion FastAPI en escritorio y
     await expect(page.getByText('Servicio de IA no disponible. Ofertas mostradas sin puntuación.', { exact: true })).toBeVisible();
     await expect(page.getByText('Sin puntuación', { exact: true })).toHaveCount(2);
     await expect(page.locator('.best-offer')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Aceptar oferta de Proveedor Demo Uno', exact: true })).toBeEnabled();
+    await expect(page.locator('.offer').filter({hasText:'Proveedor Demo Uno'}).getByRole('button', { name: 'Aceptar oferta', exact: true })).toBeEnabled();
     await expect(page.locator('.offer-total strong').first()).toHaveText('S/ 96.00');
     await page.locator('.offers-grid').screenshot({ path: artifact + '/comparacion-sin-ia.png' });
     await page.unroute('**/score-offers');
@@ -96,7 +98,7 @@ test('Demo UX: login, catalogo, cotizacion y comparacion FastAPI en escritorio y
     await page.getByLabel(/^Contraseña/).fill(f.password);
     await page.locator('form').getByRole('button', { name: 'Ingresar', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Cotizaciones y pedidos', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Abrir solicitud ' + quotation.id, exact: true })).toHaveCount(0);
+    await expect(page.locator('[data-request-id="'+quotation.id+'"] ').getByRole('button', {name:'Ver cotización',exact:true})).toHaveCount(0);
     const forbidden = await f.call(`quotations/${quotation.id}/score-offers`, 'POST', undefined, 'buyer2');
     assert.equal(forbidden.status, 404);
     await page.getByRole('button', { name: 'Salir', exact: true }).click();

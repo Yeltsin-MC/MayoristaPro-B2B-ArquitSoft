@@ -90,6 +90,7 @@ export class IdentityComponent {
   });
  }
  openQuotes(){
+   if(this.trade()){this.trade()!.showQuotes();return;}
   this.failed.set(false);
   if(!this.token()){
    this.mode='login';

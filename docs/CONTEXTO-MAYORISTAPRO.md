@@ -4,6 +4,12 @@
 
 ---
 
+## Simplificación UX de cotizaciones (13 de noviembre de 2026)
+
+Rama `sprint-2/ux-cotizacion-comprador`, sobre `e4df9c9` del PR #8, dependiente también del PR #7; ambos abiertos al comenzar. Desde producto: resumen compacto, cantidad y envío principal, con proveedores adicionales desplegables; nueva solicitud conserva formulario completo. Confirmación explícita, lista por producto/estado sin UUID visible, total y plazo destacados, desglose/vigencia/IA en detalles. Aceptar no reserva; crear pedido usa la reserva/idempotencia existente. `GET /quotations` añade descripción principal y conteo de ofertas autorizado por empresa; no expone conteos de competidores. [SDD EC15–EC19](sprint-2-experiencia-catalogo.md#simplificación-de-cotizaciones-para-compradores--ec15ec19).
+
+Pruebas focalizadas reales: resumen privado PostgreSQL 4/4 y navegador A4 demo 1/1 en escritorio/móvil, con ingreso conservando cantidad, errores de mínimo/múltiplo/stock, solicitud a dos proveedores, confirmación y comparación S/187.80/2 días frente a S/180.00/5 días. [Capturas y resultados](evidencias/cotizacion-simple/resultado.json). Compilación Angular/NestJS aprobada; regresión completa en el CI del PR UX. Main, fusiones y AWS permanecen pendientes de autorización/revisión.
+
 ## Catálogo mayorista demo de 150 productos (13 de noviembre de 2026)
 
 Rama `sprint-2/catalogo-demo-150`, dependiente del PR #7 abierto, basada en `45b9678`. Cinco proveedores ficticios verificados, 30 productos cada uno y cinco categorías; comprador ficticio habilitado por separado. Carga reproducible por aprobación T2 e importación T3, en esquema aislado `demo_mayoristapro150`, sin alterar `public` ni restablecer stock. [SDD y pasos](sprint-2-catalogo-demo-150.md). Comandos `demo:catalog:load`, `demo:catalog:quote` y `demo:catalog:api`; abre localhost:3300, no la instancia anterior 4200. Credenciales solo en entorno/archivo privado ignorado.

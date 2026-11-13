@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-13T14:33:36.626Z",
+  "results": [
+    {
+      "viewport": "escritorio",
+      "width": 1440,
+      "height": 1000,
+      "preservedQuantity": 4,
+      "invalidMinimum": true,
+      "invalidMultiple": true,
+      "invalidStock": true,
+      "submittedQuantity": 2,
+      "recipients": 2,
+      "confirmation": true,
+      "status": "Esperando ofertas",
+      "comparisonTotals": [
+        "187.80",
+        "180.00"
+      ],
+      "deliveryDays": [
+        2,
+        5
+      ],
+      "detailsAccessible": true,
+      "authenticatedSelection": 6,
+      "fullNewRequest": true,
+      "pageErrors": []
+    },
+    {
+      "viewport": "movil",
+      "width": 390,
+      "height": 844,
+      "preservedQuantity": 4,
+      "invalidMinimum": true,
+      "invalidMultiple": true,
+      "invalidStock": true,
+      "submittedQuantity": 2,
+      "recipients": 2,
+      "confirmation": true,
+      "status": "Esperando ofertas",
+      "comparisonTotals": [
+        "187.80",
+        "180.00"
+      ],
+      "deliveryDays": [
+        2,
+        5
+      ],
+      "detailsAccessible": true,
+      "authenticatedSelection": 6,
+      "fullNewRequest": true,
+      "pageErrors": []
+    }
+  ]
+}
