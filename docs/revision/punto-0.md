@@ -5,7 +5,7 @@ Este archivo marca el punto de partida de las correcciones de estructura sugerid
 | Dato | Valor |
 |---|---|
 | Commit base (`main`) | `8218f54` (Merge pull request #9, sprint-2/ux-cotizacion-comprador) |
-| Etiqueta | `punto-0` (apunta a `8218f54`, si se pudo publicar) |
+| Etiqueta | `punto-0` (apunta a `8218f54`) |
 | Rama de correcciones | `claude/project-thread-bn6flv` |
 
 Estado verificado en el punto 0:
@@ -21,4 +21,4 @@ Estado verificado en el punto 0:
 - Deshacer una corrección concreta: cada corrección está en un commit separado; usar `git revert <commit>`.
 - Si el PR ya se fusionó y se quiere descartar todo: `git revert -m 1 <commit-del-merge>`.
 
-Cada commit posterior a este describe una sola corrección, para poder revisarlas o revertirlas por separado.
+Cada commit posterior describe una sola corrección; el detalle está en [cambios.md](cambios.md).
