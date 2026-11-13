@@ -14,7 +14,7 @@ async function bootstrap(): Promise<void> {
     app.setGlobalPrefix('api/v1');
     app.useStaticAssets(resolve(__dirname, '../../web/dist/catalog/browser'));
     app.enableShutdownHooks();
-    await app.listen(process.env.PORT ?? 3000);
+    await app.listen(Number(process.env.PORT ?? 3000), process.env.HOST ?? '::');
   } catch (error) {
     await app.close();
     throw error;
