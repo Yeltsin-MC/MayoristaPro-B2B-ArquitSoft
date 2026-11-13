@@ -84,7 +84,18 @@ export class CatalogComponent {
 
   showProduct(product: CatalogProduct, dialog: HTMLDialogElement): void {
     this.selectedProduct.set(product);
-    dialog.showModal();
+    if (!dialog.open) dialog.showModal();
+  }
+
+  quoteAlternative(): CatalogProduct | undefined {
+    return this.products().find(product => product.quoteEnabled && product.available);
+  }
+
+  showAlternative(dialog: HTMLDialogElement): void {
+    const alternative = this.quoteAlternative();
+    if (!alternative) return;
+    if (quantityError(alternative, this.quantityFor(alternative))) this.setQuantity(alternative, minimumQuantity(alternative));
+    this.showProduct(alternative, dialog);
   }
 
   loadOptions(): void {

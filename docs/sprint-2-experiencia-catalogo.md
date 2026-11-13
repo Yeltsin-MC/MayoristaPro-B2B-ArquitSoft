@@ -98,3 +98,30 @@ La tarjeta y el formulario explican cantidad vacía, no entera, inferior al mín
 | EC11 | Producto, proveedor y cantidad elegida conservados tras ingreso y solicitud privada real | cantidad-mayorista.browser.cjs, capturas solicitud-*, lectura autorizada de la solicitud y 404 para otra empresa |
 
 Comprobación local de los dos recorridos afectados aprobada con 2/2 pruebas, Angular compilado y Edge sobre PostgreSQL real. En cada viewport se probaron 1 caja inválida por mínimo, 3 inválidas por múltiplo de 2, 4 válidas equivalentes a 48 unidades y un producto con stock inferior al mínimo. El formulario rechaza 3 y conserva 4 al crear la solicitud. Los datos se cargaron por T3 en esquema aislado. Se conservan las capturas y resultado.json en docs/evidencias/cantidad-mayorista/. La regresión completa se ejecuta en GitHub Actions del PR #7 e incluye este recorrido dentro de npm run test:browser.
+## Primera tanda de la auditoría UX
+
+La pérdida de sesión visible se debía a que Angular guardaba el Bearer únicamente en un signal y lo inicializaba vacío al recargar. La sesión correspondiente seguía vigente en PostgreSQL. Se conserva el Bearer en memoria y se introduce una cookie de sesión HttpOnly para recuperar la credencial tras validarla en el servidor. La cookie usa SameSite=Strict, Path=/api/v1/auth y Secure con el origen HTTPS configurado. Login y logout gestionan la cookie, y GET /auth/restore devuelve la cuenta y los permisos actuales con no-store. La sesión conserva su vencimiento original de ocho horas. El servidor rechaza origen ajeno en los endpoints de acceso. Las operaciones de negocio siguen autorizándose con Bearer y sus controles existentes.
+
+Angular muestra la comprobación de sesión antes de habilitar la cuenta. Si la sesión venció, se cerró o perdió su vinculación, limpia el estado y muestra el ingreso. Si el servidor no permite comprobarla, presenta el acceso y un mensaje de recuperación. El cierre se considera completado cuando responde el servidor. El primer ingreso tras actualizar establece la cookie para las siguientes recargas. Se mantiene fuera del almacenamiento local y de sesión de JavaScript cualquier token. La restauración no guarda borradores sin enviar.
+
+El ingreso desde un producto muestra junto al formulario un resumen con nombre, proveedor, presentación y cantidad. En móvil sustituye el texto genérico de la cuenta por la selección y desplaza la vista inmediatamente al resumen. Conserva la cantidad al ingresar y también cuando el comprador ya está autenticado. Los mensajes de acceso se muestran junto al formulario.
+
+### Causa real de las tres acciones deshabilitadas
+
+Consulta de solo lectura de la demo realizada durante este incremento. Los tres registros pertenecen al proveedor de prueba Distribuidora Huamanga, verificado para el catálogo público y sin empresa vinculada. La consulta de cotización exige una empresa habilitada del proveedor.
+
+| Producto público | Stock | Mínimo | Empresa vinculada | Motivo |
+|---|---|---|---|---|
+| Bolígrafo azul | 48 paquetes | 2 paquetes | Ausente | Falta empresa habilitada para recibir cotizaciones |
+| Cuaderno A4 | 20 cajas | 2 cajas | Ausente | Falta empresa habilitada para recibir cotizaciones |
+| Resma de papel A4 | 15 cajas | 1 caja | Ausente | Falta empresa habilitada para recibir cotizaciones |
+
+La tarjeta y el detalle explican el motivo. Ofrecen abrir otra oferta cotizable y disponible de la página consultada. Cuando la página no contiene otra oferta, el enlace Explorar el catálogo restablece los filtros. Los errores de cantidad muestran cómo ajustar mínimo, múltiplo y stock. Se conservan las reglas de publicación, proveedor, empresa y permisos del servidor.
+
+| ID | Criterio | Evidencia |
+|---|---|---|
+| EC12 | Restauración validada, permisos vigentes y limpieza al cerrar, vencer o revocar | browser-session.integration.cjs y continuidad-comprador.browser.cjs |
+| EC13 | Resumen visible en móvil y escritorio y cantidad conservada al ingresar o con sesión iniciada | continuidad-comprador.browser.cjs, ingreso-movil.png e ingreso-escritorio.png |
+| EC14 | Motivo de las tarjetas deshabilitadas y alternativa que abre un producto cotizable | Consulta de demo documentada y continuidad-comprador.browser.cjs |
+
+Compilación local Angular y NestJS aprobada. Pruebas focalizadas de PostgreSQL y navegador completadas con comprador y proveedor ficticios en un esquema aislado. Se comprobaron cookie HttpOnly de sesión y Secure para HTTPS, rechazo de origen ajeno, vencimiento, cierre, cambio de permisos y acceso revocado. En 1440x1000 y 390x844 se crearon solicitudes reales conservando cuatro cajas después del ingreso y se abrió otra solicitud con seis cajas estando autenticado. La recarga recuperó la cuenta y la solicitud guardada. Un fallo 503 simulado en restore mantuvo el acceso sin autorizar el área privada. localStorage y sessionStorage permanecieron vacíos. Capturas y resultado.json en docs/evidencias/primera-tanda-ux/. La regresión completa corresponde al CI del PR #7.

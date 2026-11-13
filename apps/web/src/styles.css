@@ -382,3 +382,15 @@ h1 { font-size: clamp(2.3rem, 4.2vw, 3.8rem); line-height: 1.02; margin-bottom: 
 .quantity-error { color: #983c23; }
 .quantity-label input[aria-invalid='true'] { border-color: #a6472e; }
 .product-content h3, .detail-content h2 { overflow-wrap: anywhere; }
+.quote-selection { padding: 24px; border: 1px solid #c4d4bd; border-radius: 16px; background: #eff3e9; align-self: start; }
+.quote-selection h3 { font-size: 1.35rem; margin-bottom: 12px; overflow-wrap: anywhere; }
+.quote-selection p { margin-bottom: 10px; font-size: .88rem; }
+.quote-selection .eyebrow { font-size: .65rem; }
+.quote-selection strong { display: block; color: var(--green-dark); font-size: 1.15rem; }
+.quote-selection .selection-help { margin: 14px 0 0; color: var(--muted); }
+.quote-unavailable { margin: 10px 0 4px; font-size: .8rem; color: #6c4a30; }
+.quote-alternative { margin-top: 6px; align-self: start; text-align: left; font-size: .8rem; }
+@media (max-width: 740px) {
+ .quote-selection { padding: 18px; }
+ .quote-selection h3 { font-size: 1.15rem; }
+}

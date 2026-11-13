@@ -18,15 +18,18 @@ Propuesta API-First. Base `/api/v1`. Las rutas pertenecen a MayoristaPro. El ada
 
 ### auth
 
-Registro y login públicos. Logout requiere token Bearer. T2 no implementa refresh: al vencer la sesión se inicia sesión otra vez. El registro comprueba formato y unicidad de RUC sin asociar usuarios por coincidencia. D1 aprobada: revisión manual del alta e invitaciones de un uso con vencimiento; administración de plataforma separada. Consulta SUNAT pendiente de confirmación. El contrato implementado y sus cuerpos están en [T2](../sprint-2-identidad.md).
+Registro y login públicos. Logout acepta Bearer o la cookie de sesión del navegador y revoca la sesión en PostgreSQL. Al vencer la sesión se inicia sesión otra vez. El registro comprueba formato y unicidad de RUC sin asociar usuarios por coincidencia. D1 aprobada: revisión manual del alta e invitaciones de un uso con vencimiento; administración de plataforma separada. Consulta SUNAT pendiente de confirmación. El contrato implementado y sus cuerpos están en [T2](../sprint-2-identidad.md).
 
 | Método y ruta |
 |---|
 | `POST /auth/register` |
 | `POST /auth/login` |
 | `GET /auth/session` |
+| `GET /auth/restore` |
 | `GET /auth/me` |
 | `POST /auth/logout` |
+
+`POST /auth/login` conserva `{token,expiresIn}` y emite una cookie de sesión HttpOnly, SameSite=Strict, limitada a `/api/v1/auth`, sin Expires ni Max-Age. `GET /auth/restore` usa esa cookie y valida sesión, vigencia y vinculación actual. Devuelve cuenta, administración y, para usuarios empresariales habilitados, empresa y permisos actuales junto al Bearer que Angular mantiene en memoria. La respuesta usa `Cache-Control: no-store`. La restauración conserva el vencimiento original de ocho horas. Una cookie inválida, sesión vencida o acceso revocado devuelve 401/403 y elimina la cookie. Las operaciones comerciales conservan el requisito Bearer. Login, restore y logout rechazan un Origin ajeno cuando está presente. Secure se activa con HTTPS directo o FRONTEND_URL/API_URL HTTPS del ingreso configurado. El cierre revoca el token y elimina la cookie. Las sesiones anteriores a este incremento requieren un ingreso para establecer la cookie. [Cookie de sesión](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie)
 
 `GET /auth/session` exige Bearer válido y devuelve `{accountId,platformAdmin}` de la cuenta autenticada, sin exigir una vinculación empresarial. Angular consulta este dato para mostrar «Solicitudes (administración)» exclusivamente a administradores. `GET /auth/me` conserva el requisito de vinculación habilitada; publicación y carga masiva requieren además permiso `publish` y proveedor verificado. La visibilidad de controles no sustituye la autorización del backend.
 
