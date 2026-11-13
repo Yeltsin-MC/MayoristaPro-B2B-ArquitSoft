@@ -10,6 +10,8 @@ Cada mejora está en commits separados sobre el [punto 0](punto-0.md) (`78af421`
 | 3 | `feat(web): precios por volumen…` | Escalas en la tarjeta y el detalle del catálogo; precio publicado para la cantidad al cotizar; editor «Precios por volumen de mis productos» para el proveedor; precio propuesto al responder una cotización. |
 | 4 | `feat(web): seguimiento de despacho…` | Estados en español; pasos Pagado → En preparación → Despachado → Entregado con fecha y nota; botones según el rol. |
 | 5 | `docs: …` | Este registro y el contrato REST. |
+| 6 | `feat(web): lista de pedido multiproducto…` | Página `/lista`: productos de varios proveedores agrupados por proveedor; una sola solicitud de cotización por proveedor, con total referencial según precios por volumen. |
+| 7 | `feat(web): rediseño estilo tienda B2B` | Barra superior, acciones «Mi cuenta» y «Lista de pedido», menú de categorías, carrusel, franja de beneficios, proveedores verificados, «Cómo comprar en 4 pasos», tarjetas compactas y pie de página con columnas. Referencias: compy.pe y oster.cl. |
 
 ## Reglas de negocio
 
@@ -27,4 +29,4 @@ Cada mejora está en commits separados sobre el [punto 0](punto-0.md) (`78af421`
 - `npm run format:check` y `npm run lint`: sin errores.
 - `npm run test:unit`: 22 correctas (5 nuevas).
 - `npm run test:integration`: todas correctas con PostgreSQL, Redis y el servicio de IA activos (incluye las nuevas `price-tiers.integration.cjs` y `fulfillment.integration.cjs`).
-- `npm run test:browser`: 12 correctas.
+- `npm run test:browser`: 13 correctas (incluye `lista-pedido.browser.cjs`).
