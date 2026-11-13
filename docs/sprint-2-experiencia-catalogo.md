@@ -25,7 +25,7 @@ Los datos de exposición se entregan como CSV identificado demo y se cargan medi
 
 ## Publicación de este incremento
 
-En el host de demo autorizado, desde el checkout MayoristaPro-Kiro, elegir el commit revisado de esta rama o el main que lo incorpore. Conservar el archivo privado `.env.demo`, el volumen de datos y PUBLIC_BASE_URL del enlace HTTPS. Ejecutar los siguientes comandos en orden.
+En el host de demo autorizado, desde el checkout MayoristaPro-Kiro, elegir el commit revisado de esta rama o el main que lo incorpore. Conservar el archivo privado `.env.demo`, el volumen de datos y PUBLIC_BASE_URL del enlace HTTPS. En PowerShell con Docker Compose y Node disponibles, ejecutar los siguientes comandos en orden.
 
 ```powershell
 git fetch origin
@@ -36,6 +36,21 @@ docker compose --env-file .env.demo -f compose.yaml -f compose.demo.yaml --profi
 $env:DEMO_URL = 'http://127.0.0.1:8080'
 node tests/deployment.smoke.cjs
 ```
+
+Para un host Linux de AWS, mediante SSH en Bash con Docker Compose ya instalado, ejecutar desde el mismo checkout los siguientes comandos. El archivo privado `.env.demo` debe existir antes del arranque, con POSTGRES_PASSWORD y PUBLIC_BASE_URL completos.
+
+```bash
+git fetch origin
+git switch sprint-2/experiencia-catalogo-b2b
+git pull --ff-only origin sprint-2/experiencia-catalogo-b2b
+git log -1 --oneline
+docker compose --env-file .env.demo -f compose.yaml -f compose.demo.yaml --profile cache config --quiet
+docker compose --env-file .env.demo -f compose.yaml -f compose.demo.yaml --profile cache up -d --build
+curl --fail 'http://127.0.0.1:8080/api/v1/products?limit=1'
+curl --fail 'http://127.0.0.1:8080/api/v1/ai/health'
+```
+
+Esperar catálogo con items y salud FastAPI `status=ok`. El volumen PostgreSQL conserva los datos y el migrador aplica únicamente lo pendiente. Usar `WEB_PORT` de `.env.demo` en los curl si se configuró otro puerto. Mantener el ingreso HTTPS apuntando al puerto local de Nginx y abrir el enlace público para comprobar una categoría, el detalle y una solicitud demo. Estos pasos preparan la publicación sobre un host autorizado existente.
 
 En `.env.demo`, REDIS_URL debe ser `redis://redis:6379` para usar la caché. El migrador y los healthchecks existentes determinan el orden. Abrir el enlace HTTPS y comprobar la portada y una solicitud con una cuenta demo. Para exponer las familias de ejemplo, importar `docs/datos-demo/catalogo-exposicion.csv` mediante Carga masiva, revisar y confirmar el lote. Reimportar preserva las existencias según T3. El operador mantiene el túnel HTTPS o ingreso ya configurado.
 
