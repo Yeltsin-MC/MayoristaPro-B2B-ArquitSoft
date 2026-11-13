@@ -82,6 +82,7 @@ jobs:
           path: |
             docs/evidencias/demo-mayorista
             docs/evidencias/experiencia-catalogo
+            docs/evidencias/cantidad-mayorista
             .angular/t4-evidence
             docs/evidencias/redis-catalogo
           retention-days: 14

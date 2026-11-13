@@ -1,5 +1,6 @@
 import { Component, effect, output, signal, untracked, viewChild } from '@angular/core';
 import { CatalogProduct } from './catalog-product';
+import { minimumQuantity, quantityError } from './wholesale-quantity';
 import { FormsModule } from '@angular/forms';
 import { CatalogImportComponent } from './catalog-import';
 import { TradeComponent } from './trade';
@@ -63,7 +64,7 @@ import { TradeComponent } from './trade';
 export class IdentityComponent {
  readonly catalogChanged = output<void>();
  private readonly trade = viewChild(TradeComponent);
- private readonly pendingQuote = signal<CatalogProduct | null>(null);
+ private readonly pendingQuote = signal<{ product: CatalogProduct; quantity: number } | null>(null);
  failed = signal(false);
  mode='login'; email=''; password=''; ruc=''; legalName=''; evidence=''; invitation=new URLSearchParams(location.hash.slice(1)).get('token')??'';
  inviteEmail=''; buy=true; publish=false; productId=''; supplierId='';
@@ -74,7 +75,7 @@ export class IdentityComponent {
    const product=this.pendingQuote();
    const trade=this.trade();
    if(product && trade && this.permissions().includes('buy')){
-    untracked(()=>{this.pendingQuote.set(null);void trade.beginFromCatalog(product);});
+    untracked(()=>{this.pendingQuote.set(null);void trade.beginFromCatalog(product.product, product.quantity);});
    }
   });
  }
@@ -87,12 +88,14 @@ export class IdentityComponent {
   const target=document.getElementById('cotizaciones')??document.getElementById('cuenta');
   target?.scrollIntoView({behavior:'smooth',block:'start'});
  }
- beginQuote(product:CatalogProduct){
+ beginQuote(product:CatalogProduct, quantity:number|null=minimumQuantity(product)){
+  const issue=quantityError(product,quantity);
+  if(quantity===null || issue){this.failed.set(true);this.message.set(issue);return;}
   this.failed.set(false);
   if(this.token() && (this.admin() || !this.permissions().includes('buy'))){
    this.message.set('Tu cuenta necesita permiso de compra para solicitar cotizaciones.');
   }else{
-   this.pendingQuote.set(product);
+   this.pendingQuote.set({product,quantity});
    if(!this.token()){
     this.mode='login';
     this.message.set('Ingresa con tu cuenta compradora para cotizar '+product.name+'. Conservaremos la selección.');

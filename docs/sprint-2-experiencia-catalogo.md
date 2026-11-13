@@ -74,3 +74,27 @@ Prompt de familias
 > Create a 2 by 2 contact sheet of FOUR separate photorealistic unbranded product photographs for a wholesale office and technology website. Exactly four equally sized square quadrants, no gutters, no frames, no text, no logos. Each quadrant has its own light warm ivory seamless studio backdrop, subtle soft shadows, and its objects fully inside that quadrant with generous surrounding margin. TOP LEFT: a neat small stack of three spiral A4 notebooks with muted sage green, light blue and terracotta covers, plus two blue ballpoint pens. TOP RIGHT: a clean stack of white A4 paper reams with plain white unprinted wrapping, one open paper edge visible. BOTTOM LEFT: black computer keyboard and black wireless mouse, fully visible, neatly aligned diagonally. BOTTOM RIGHT: white generic WiFi router with two antennae and one neatly coiled blue ethernet cable. Consistent soft commercial studio lighting, realistic product photography, elevated three-quarter view. Image square, four square photos precisely arranged as quadrants so a website can crop them using CSS. No typography, no numbers, no discounts, no watermarks.
 
 Referencias de jerarquía y navegación consultadas durante el diseño. [PcComponentes](https://www.pccomponentes.com/), [Oster Perú](https://www.oster.com.pe/) y [Compy](https://compy.pe/galeria).
+## Corrección de imágenes y elección de cantidad mayorista
+
+El navegador contra `http://localhost:4200/#inicio` solicitaba `/images/abastecimiento-demo.png` y `/images/familias-demo.png`, ambas con 404 HTML. Los dos PNG existen en la rama y son los mismos archivos generados de esta entrega. El proceso dev:web estaba iniciado con la configuración anterior de assets. Se explicitó la salida `/` de `public` en Angular y se reinició únicamente ese proceso. El proxy antiguo consultaba localhost:3000, cuya API devuelve 404 para `/api/v1/products/options`. La instancia existente localhost:3100 sí ofrece esa ruta. `proxy.conf.cjs` permite seleccionar API_PROXY_TARGET y conserva localhost:3000 como valor habitual. La comprobación local usa la API existente 3100.
+
+Para reproducir el arranque de la web contra esa instancia, desde PowerShell en MayoristaPro-Kiro, ejecutar los siguientes comandos. Reiniciar dev:web al modificar angular.json o el destino del proxy.
+
+```powershell
+$env:API_PROXY_TARGET = 'http://127.0.0.1:3100'
+npm run dev:web
+```
+
+Cada foto de categoría, tarjeta y detalle usa el recurso generado correspondiente a su familia y un rótulo referencial. Si la descarga falla, el componente muestra el respaldo MayoristaPro y el rótulo Imagen referencial. El banner conserva su archivo original. En localhost:4200, ambos PNG devuelven 200 image/png. Se verificaron por separado 1 banner, 2 accesos reales de categoría y 5 tarjetas, con imágenes decodificadas en 1440x1050 y 390x1000. Las URL, estados, dimensiones y capturas están en `docs/evidencias/cantidad-mayorista/imagenes-dev-web.json` y los archivos imagenes-dev-web-* y tarjeta-dev-web-*.
+
+El precio se expresa por presentación y contenido, por ejemplo S/ 48.00 por caja de 12 unidades. Mínimo y múltiplo incluyen el nombre de la presentación. La cantidad comienza en el menor múltiplo válido que alcanza el mínimo. Se puede editar desde la tarjeta o el detalle y se comparte por producto. El formulario conserva producto, proveedor y cantidad al ingresar. Muestra equivalencia en unidades cuando el empaque contiene más de una. Los campos del producto seleccionado se presentan como solo lectura para conservar el significado de la cantidad. Las solicitudes genéricas mantienen sus campos editables.
+
+La tarjeta y el formulario explican cantidad vacía, no entera, inferior al mínimo, incompatible con el múltiplo o superior al stock consultado. Si el stock no alcanza el mínimo, explican la condición y bloquean la acción. El formulario también comprueba la cantidad antes de enviar. Las reglas y los permisos de servidor continúan en sus puntos existentes. La disponibilidad mostrada corresponde a la lectura del catálogo. El pedido vuelve a validar y reservar en su transacción según T4.
+
+| ID | Criterio adicional | Prueba o evidencia |
+|---|---|---|
+| EC09 | Banner, categorías y tarjetas servidos y decodificados en dev:web y compilación, con respaldo visual si falla una foto | imagenes-dev-web.json y cantidad-mayorista.browser.cjs, respuesta 404 simulada para la foto de familia |
+| EC10 | Precio y contenido legibles, cantidad inicial válida y errores visibles de mínimo, múltiplo y stock | cantidad-mayorista.browser.cjs, capturas cantidad-valida-* y cantidad-invalida-* |
+| EC11 | Producto, proveedor y cantidad elegida conservados tras ingreso y solicitud privada real | cantidad-mayorista.browser.cjs, capturas solicitud-*, lectura autorizada de la solicitud y 404 para otra empresa |
+
+Comprobación local de los dos recorridos afectados aprobada con 2/2 pruebas, Angular compilado y Edge sobre PostgreSQL real. En cada viewport se probaron 1 caja inválida por mínimo, 3 inválidas por múltiplo de 2, 4 válidas equivalentes a 48 unidades y un producto con stock inferior al mínimo. El formulario rechaza 3 y conserva 4 al crear la solicitud. Los datos se cargaron por T3 en esquema aislado. Se conservan las capturas y resultado.json en docs/evidencias/cantidad-mayorista/. La regresión completa se ejecuta en GitHub Actions del PR #7 e incluye este recorrido dentro de npm run test:browser.

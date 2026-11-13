@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-13T02:55:06.479Z",
+  "generatedAt": "2026-11-13T03:24:27.987Z",
   "browser": "157.0.4341.46",
   "data": "CSV T3 y 14 filas adicionales en esquema PostgreSQL aislado",
   "results": [
     {
       "viewport": "1440x1050",
-      "quotationId": "206b98fd-e3e1-468e-bd58-3389fe2f4863",
-      "outsideFirstPage": "Cuaderno de oficina 2 (demo)",
+      "quotationId": "c94d87f4-ed37-40c4-9fe7-acbf3a2de9b9",
+      "outsideFirstPage": "Cuaderno de oficina 7 (demo)",
       "categoriesFromCompleteCatalog": true,
       "stockAndPricingVisible": true,
       "headerOverlap": false,
@@ -14,8 +14,8 @@
     },
     {
       "viewport": "390x1000",
-      "quotationId": "0443ec0e-4a0b-4e7b-9b3b-857c281f95a4",
-      "outsideFirstPage": "Cuaderno de oficina 2 (demo)",
+      "quotationId": "909b3951-19aa-4651-99fa-8ce8aa4ba5d9",
+      "outsideFirstPage": "Cuaderno de oficina 7 (demo)",
       "categoriesFromCompleteCatalog": true,
       "stockAndPricingVisible": true,
       "headerOverlap": false,

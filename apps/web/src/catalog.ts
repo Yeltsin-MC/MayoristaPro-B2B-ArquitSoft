@@ -4,10 +4,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
+import { CatalogPhotoComponent } from './catalog-photo';
+import { minimumQuantity, packDescription, presentations, quantityError, quantityEquivalence, unitName } from './wholesale-quantity';
 
 @Component({
   selector: 'app-root',
-  imports: [CurrencyPipe, FormsModule, IdentityComponent],
+  imports: [CurrencyPipe, FormsModule, IdentityComponent, CatalogPhotoComponent],
   templateUrl: './catalog.html',
 })
 export class CatalogComponent {
@@ -20,6 +22,13 @@ export class CatalogComponent {
   readonly selectedProduct = signal<CatalogProduct | null>(null);
   readonly categories = computed(() => [...this.options().categories].sort((a, b) =>
     this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es')));
+  readonly quantities = signal<Record<string, number | null>>({});
+  readonly presentations = presentations;
+  readonly packDescription = packDescription;
+  readonly unitName = unitName;
+  readonly minimumQuantity = minimumQuantity;
+  readonly quantityError = quantityError;
+  readonly quantityEquivalence = quantityEquivalence;
   search = '';
   category = '';
   supplier = '';
@@ -45,10 +54,13 @@ export class CatalogComponent {
     return kind === 'supplies' ? this.imageKind(product.category) : kind;
   }
 
-  presentations(quantity: number, unit: string): string {
-    const name = unit.toLowerCase();
-    const plural = name === 'unidad' ? 'unidades' : name + 's';
-    return quantity + ' ' + (quantity === 1 ? name : plural);
+  quantityFor(product: CatalogProduct): number | null {
+    const quantity = this.quantities()[product.id];
+    return quantity === undefined ? minimumQuantity(product) : quantity;
+  }
+
+  setQuantity(product: CatalogProduct, quantity: number | null): void {
+    this.quantities.update(values => ({ ...values, [product.id]: quantity }));
   }
 
   private categoryPriority(category: string): number {

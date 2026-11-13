@@ -13,12 +13,12 @@
             "browser": "src/main.ts",
             "index": "src/index.html",
             "tsConfig": "tsconfig.json",
-            "styles": ["src/styles.css"],"assets": [{"glob":"**/*","input":"public"}]
+            "styles": ["src/styles.css"],"assets": [{"glob":"**/*","input":"public","output":"/"}]
           }
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-          "options": {"buildTarget": "catalog:build", "proxyConfig": "proxy.conf.json"}
+          "options": {"buildTarget": "catalog:build", "proxyConfig": "proxy.conf.cjs"}
         }
       }
     }

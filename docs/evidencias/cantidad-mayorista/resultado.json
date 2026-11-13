@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-11-13T03:24:14.026Z",
+  "browser": "157.0.4341.46",
+  "results": [
+    {
+      "viewport": "1440x1050",
+      "images": [
+        {
+          "url": "/images/abastecimiento-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "/images/familias-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "/images/abastecimiento-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "/images/familias-demo.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ],
+      "invalidMinimum": 1,
+      "invalidMultiple": 3,
+      "validQuantity": 4,
+      "units": 48,
+      "quotationId": "30b378c0-45ce-4c55-be78-04a58f272362",
+      "supplierPreserved": true,
+      "quantityPreservedAfterLogin": true,
+      "insufficientStockBlocked": true,
+      "photoFallback": "404 simulado en navegador",
+      "errors": []
+    },
+    {
+      "viewport": "390x1000",
+      "images": [
+        {
+          "url": "/images/abastecimiento-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "/images/familias-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "/images/abastecimiento-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "/images/familias-demo.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ],
+      "invalidMinimum": 1,
+      "invalidMultiple": 3,
+      "validQuantity": 4,
+      "units": 48,
+      "quotationId": "f7f6480a-e16b-4b80-b051-f761ae231776",
+      "supplierPreserved": true,
+      "quantityPreservedAfterLogin": true,
+      "insufficientStockBlocked": true,
+      "photoFallback": "404 simulado en navegador",
+      "errors": []
+    }
+  ]
+}

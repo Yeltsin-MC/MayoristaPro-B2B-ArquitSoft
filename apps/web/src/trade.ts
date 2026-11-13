@@ -1,6 +1,8 @@
 import {Component,effect,input,output,signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CatalogProduct} from './catalog-product';
+import { minimumQuantity, presentations, quantityError, quantityEquivalence } from './wholesale-quantity';
+interface RequestItem { descripcion:string; presentacion:string; unidadesPorPresentacion:number; cantidad:number|null; }
 @Component({selector:'app-trade',imports:[FormsModule],template:`
 <section id="cotizaciones" class="trade" aria-label="Cotizaciones y pedidos">
  <div class="workspace-heading"><div><p class="eyebrow">COMPRAS CON MEJOR INFORMACIÓN</p><h3>Cotizaciones y pedidos</h3><p>Solicita ofertas privadas y compara sus condiciones antes de aceptar. El stock se reserva al crear el pedido.</p></div><div class="actions"><button class="secondary" type="button" (click)="refresh()" [disabled]="busy()">Actualizar cotizaciones</button>@if(canBuy()){<button type="button" (click)="newRequest()">Nueva solicitud</button>}</div></div>
@@ -13,15 +15,16 @@ import {CatalogProduct} from './catalog-product';
   </fieldset>
   @for(i of items;track $index;let n=$index) {
    <fieldset><legend>Ítem {{n+1}}</legend>
-    <label>Descripción <input [name]="'description-'+n" required [(ngModel)]="i.descripcion"></label>
-    <label>Presentación <select [name]="'unit-'+n" [(ngModel)]="i.presentacion"><option>unidad</option><option>paquete</option><option>docena</option><option>caja</option><option>saco</option></select></label>
-    <label>Unidades por presentación <input type="number" min="1" [name]="'pack-'+n" required [(ngModel)]="i.unidadesPorPresentacion"></label>
-    <label>Cantidad de presentaciones <input type="number" min="1" [name]="'quantity-'+n" required [(ngModel)]="i.cantidad"></label>
+    <label>Descripción <input [name]="'description-'+n" required [(ngModel)]="i.descripcion" [readOnly]="!!sourceProduct(i)"></label>
+    <label>Presentación <select [name]="'unit-'+n" [(ngModel)]="i.presentacion" [disabled]="!!sourceProduct(i)"><option>unidad</option><option>paquete</option><option>docena</option><option>caja</option><option>saco</option></select></label>
+    <label>Unidades por presentación <input type="number" min="1" [name]="'pack-'+n" required [(ngModel)]="i.unidadesPorPresentacion" [readOnly]="!!sourceProduct(i)"></label>
+    <label>Cantidad de presentaciones <input type="number" inputmode="numeric" [min]="requestMinimum(i)" [step]="requestMultiple(i)" [attr.max]="sourceProduct(i)?.stock??null" [name]="'quantity-'+n" required [(ngModel)]="i.cantidad" [attr.aria-invalid]="!!quantityIssue(i)" [attr.aria-describedby]="'request-quantity-'+n"></label>
+    <div class="quantity-info" [id]="'request-quantity-'+n" aria-live="polite">@if(sourceProduct(i);as product){<p>Mínimo {{presentations(product.minimum, product.unit)}} · Múltiplo {{presentations(product.multiple, product.unit)}}</p><p class="quantity-equivalence">{{quantityEquivalence(product, i.cantidad)}}</p>}@if(quantityIssue(i);as issue){<p class="quantity-error">{{issue}}</p>}</div>
     @if(items.length>1){<button type="button" (click)="items.splice(n,1)">Quitar ítem {{n+1}}</button>}
    </fieldset>
   }
   <button type="button" (click)="addItem()" [disabled]="items.length>=50">Añadir ítem</button>
-  <button [disabled]="busy() || supplierIds.length===0">Enviar solicitud</button>
+  <button [disabled]="busy() || supplierIds.length===0 || invalidQuantities()">Enviar solicitud</button>
  </form>
  }
  <h4>Solicitudes autorizadas</h4>
@@ -101,7 +104,11 @@ export class TradeComponent {
  providers=signal<any[]>([]);products=signal<any[]>([]);requests=signal<any[]>([]);orders=signal<any[]>([]);
  selected=signal<any>(null);currentOrder=signal<any>(null);paymentAttempts=signal<any[]>([]);busy=signal(false);message=signal('');creating=signal(false);
  scoredOffers=signal<any[]>([]);sortByScore=false;
- supplierIds:string[]=[];items=[{descripcion:'',presentacion:'caja',unidadesPorPresentacion:12,cantidad:2}];
+ supplierIds:string[]=[];items:RequestItem[]=[{descripcion:'',presentacion:'caja',unidadesPorPresentacion:12,cantidad:2}];
+ private catalogProduct:CatalogProduct|null=null;
+ private catalogItem:RequestItem|null=null;
+ readonly presentations=presentations;
+ readonly quantityEquivalence=quantityEquivalence;
  responseItems:any[]=[];shipping='0.00';deliveryDays=3;expiresAt=this.future();private keys=new Map<string,string>();
  constructor(){effect(()=>{this.token();this.canBuy();this.canSell();void this.refresh();});}
  future(){return new Date(Date.now()+86400000-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);}
@@ -125,7 +132,18 @@ export class TradeComponent {
   if(this.canSell()){const p=await this.call('trade/products');if(p)this.products.set(p);}
   const r=await this.call('quotations');if(r)this.requests.set(r);const o=await this.call('orders');if(o)this.orders.set(o);
  }
- async beginFromCatalog(product:CatalogProduct){
+ sourceProduct(item:RequestItem):CatalogProduct|null{return item===this.catalogItem?this.catalogProduct:null;}
+ requestMinimum(item:RequestItem):number{const product=this.sourceProduct(item);return product?minimumQuantity(product):1;}
+ requestMultiple(item:RequestItem):number{return this.sourceProduct(item)?.multiple??1;}
+ quantityIssue(item:RequestItem):string{
+  const product=this.sourceProduct(item);
+  if(product)return quantityError(product,item.cantidad);
+  return item.cantidad!==null && Number.isSafeInteger(item.cantidad) && item.cantidad>0?'':'Ingresa una cantidad entera positiva de presentaciones.';
+ }
+ invalidQuantities():boolean{return this.items.some(item=>!!this.quantityIssue(item));}
+ async beginFromCatalog(product:CatalogProduct,quantity:number=minimumQuantity(product)){
+  const issue=quantityError(product,quantity);
+  if(issue){this.message.set(issue);return;}
   if(!this.canBuy())return;
   const providers=await this.call('trade/providers');
   if(!providers)return;
@@ -133,17 +151,19 @@ export class TradeComponent {
   if(!providers.some((provider:any)=>provider.id===product.supplierId)){
    this.message.set('Este proveedor no está disponible para una solicitud de tu empresa.');return;
   }
-  this.supplierIds=[product.supplierId];
-  this.items=[{descripcion:product.name,presentacion:product.unit.toLowerCase(),
-   unidadesPorPresentacion:product.unitsPerPack,cantidad:Math.ceil(product.minimum/product.multiple)*product.multiple}];
   this.newRequest();
+  this.supplierIds=[product.supplierId];
+  this.catalogProduct=product;
+  this.catalogItem={descripcion:product.name,presentacion:product.unit.toLowerCase(),
+   unidadesPorPresentacion:product.unitsPerPack,cantidad:quantity};
+  this.items=[this.catalogItem];
   this.message.set('Producto y proveedor seleccionados. Puedes añadir proveedores para comparar sus ofertas.');
   document.getElementById('cotizaciones')?.scrollIntoView({behavior:'smooth',block:'start'});
  }
- newRequest(){this.selected.set(null);this.currentOrder.set(null);this.creating.set(true);this.scoredOffers.set([]);this.sortByScore=false;this.message.set('Completa una nueva solicitud; la anterior conserva su historial.');}
+ newRequest(){this.catalogProduct=null;this.catalogItem=null;this.selected.set(null);this.currentOrder.set(null);this.creating.set(true);this.scoredOffers.set([]);this.sortByScore=false;this.message.set('Completa una nueva solicitud; la anterior conserva su historial.');}
  toggle(id:string){this.supplierIds=this.supplierIds.includes(id)?this.supplierIds.filter(x=>x!==id):[...this.supplierIds,id];}
  addItem(){this.items.push({descripcion:'',presentacion:'caja',unidadesPorPresentacion:12,cantidad:2});}
- async create(){const q=await this.call('quotations','POST',{proveedorIds:this.supplierIds,items:this.items});if(q){this.selected.set(q);this.creating.set(false);const r=await this.call('quotations');if(r)this.requests.set(r);}}
+ async create(){const issue=this.items.map(item=>this.quantityIssue(item)).find(Boolean);if(issue){this.message.set(issue);return;}const q=await this.call('quotations','POST',{proveedorIds:this.supplierIds,items:this.items});if(q){this.selected.set(q);this.creating.set(false);const r=await this.call('quotations');if(r)this.requests.set(r);}}
  async open(id:string){const q=await this.call('quotations/'+id);if(q){this.selected.set(q);this.currentOrder.set(null);this.creating.set(false);this.expiresAt=this.future();
   this.scoredOffers.set([]);this.sortByScore=false;
   this.responseItems=q.items.map((i:any)=>({solicitudItemId:i.id,productoId:'',cantidad:i.quantity,precioUnitario:''}));}}

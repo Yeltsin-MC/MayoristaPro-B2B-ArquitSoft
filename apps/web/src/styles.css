@@ -302,12 +302,6 @@ h1 { font-size: clamp(2.3rem, 4.2vw, 3.8rem); line-height: 1.02; margin-bottom: 
 .category-access > span:last-child { padding-inline: 5px; overflow-wrap: anywhere; }
 .category-access:hover { background: #eaf0e3; }
 .category-access[aria-pressed='true'] { border-color: var(--green); background: #edf3e6; }
-.family-photo { display: block; background-image: url('/images/familias-demo.png'); background-size: 200% 200%; background-repeat: no-repeat; background-color: #eee8df; }
-.photo-office { background-position: left top; }
-.photo-paper { background-position: right top; }
-.photo-technology { background-position: left bottom; }
-.photo-network { background-position: right bottom; }
-.photo-supplies { background-image: url('/images/abastecimiento-demo.png'); background-size: cover; background-position: center; }
 .category-photo { width: 100%; aspect-ratio: 1.18; border-radius: 13px; }
 .active-filters { display: flex; flex-wrap: wrap; gap: 12px; margin: -5px 0 22px; font-size: .8rem; color: var(--muted); }
 .active-filters span { border-radius: 7px; background: #e8efdf; padding: 8px 12px; }
@@ -370,3 +364,21 @@ h1 { font-size: clamp(2.3rem, 4.2vw, 3.8rem); line-height: 1.02; margin-bottom: 
   .hero-copy { padding: 22px 16px; }
   .product-image-link .product-visual { aspect-ratio: 1.4; }
 }
+.family-photo { display: block; background: #eee8df; }
+.photo-canvas { display: block; position: relative; overflow: hidden; width: 100%; height: 100%; border-radius: inherit; }
+.photo-sprite { display: block; position: absolute; width: 200%; height: 200%; max-width: none; left: 0; top: 0; }
+.photo-sprite[hidden] { display: none; }
+.sprite-paper { left: -100%; }
+.sprite-technology { top: -100%; }
+.sprite-network { left: -100%; top: -100%; }
+.sprite-supplies { width: 100%; height: 100%; object-fit: cover; }
+.photo-fallback { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; height: 100%; background: #e8eddf; color: var(--green-dark); }
+.photo-fallback > span { display: grid; place-items: center; width: 60px; height: 60px; border: 2px solid #a3b5a1; border-radius: 14px; font-size: 1.8rem; font-weight: 750; }
+.quantity-label { margin: 0 0 6px; font-size: .8rem; }
+.quantity-label input { min-height: 46px; }
+.quantity-info { font-size: .77rem; margin-bottom: 14px; }
+.quantity-info p { margin: 5px 0 0; }
+.quantity-equivalence { color: var(--green); }
+.quantity-error { color: #983c23; }
+.quantity-label input[aria-invalid='true'] { border-color: #a6472e; }
+.product-content h3, .detail-content h2 { overflow-wrap: anywhere; }

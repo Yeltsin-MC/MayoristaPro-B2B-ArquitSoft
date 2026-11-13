@@ -47,7 +47,8 @@ test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritori
         await expect(page.locator('.category-access')).toHaveCount(5);
         assert.equal(await page.locator('.category-access').first().textContent(), 'Cuadernos');
         for (const access of await page.locator('.category-access').all()) {
-          assert.equal(await access.locator('span').count(), 2, 'Solo imagen y nombre por acceso');
+          assert.equal(await access.locator(':scope > app-catalog-photo').count(), 1);
+          assert.equal(await access.locator(':scope > span').count(), 1, 'Solo imagen y nombre por acceso');
         }
         const categoryTop = await page.locator('#categorias').evaluate(el => el.getBoundingClientRect().top);
         assert.ok(categoryTop < (label === 'movil' ? 650 : 700), 'Categorias cerca del inicio');
