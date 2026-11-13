@@ -1,17 +1,13 @@
 // Presentation: HTTP REST controllers for payments
 
 import {
-  ArgumentsHost,
   Body,
-  Catch,
   Controller,
-  ExceptionFilter,
   Get,
   Headers,
   Param,
   Post,
   Query,
-  UseFilters,
   HttpCode,
   BadRequestException,
   Inject,
@@ -23,27 +19,7 @@ import { IdentityService } from '../../identity/identity.service';
 import { Pool } from 'pg';
 import { PG_POOL } from '../../database/database.module';
 
-@Catch(PaymentError)
-class PaymentFilter implements ExceptionFilter {
-  catch(error: PaymentError, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse();
-    const statusCode = this.getStatusCode(error.code);
-    response.status(statusCode).json({
-      code: error.code,
-      message: error.message,
-    });
-  }
-
-  private getStatusCode(code: string): number {
-    if (code === 'ORDER_NOT_FOUND') return 404;
-    if (code === 'INVALID_SIGNATURE') return 401;
-    if (code.startsWith('INVALID_')) return 422;
-    return 409;
-  }
-}
-
 @Controller()
-@UseFilters(PaymentFilter)
 export class PaymentsController {
   constructor(
     @Inject(PG_POOL) private readonly pool: Pool,

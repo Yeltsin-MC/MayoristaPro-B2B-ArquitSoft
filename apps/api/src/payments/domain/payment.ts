@@ -1,14 +1,8 @@
 // Domain: Payment rules and validation (no external dependencies)
 
-export class PaymentError extends Error {
-  constructor(
-    readonly code: string,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'PaymentError';
-  }
-}
+import { DomainError } from '../../common/domain-error';
+
+export class PaymentError extends DomainError {}
 
 export function rule(condition: unknown, code: string, message: string): asserts condition {
   if (!condition) throw new PaymentError(code, message);

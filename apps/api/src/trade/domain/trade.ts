@@ -1,11 +1,6 @@
-export class TradeRule extends Error {
-  constructor(
-    readonly code: string,
-    message: string,
-  ) {
-    super(message);
-  }
-}
+import { DomainError } from '../../common/domain-error';
+
+export class TradeRule extends DomainError {}
 export function rule(condition: unknown, code: string, message: string): asserts condition {
   if (!condition) throw new TradeRule(code, message);
 }

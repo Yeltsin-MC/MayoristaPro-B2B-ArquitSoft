@@ -1,31 +1,6 @@
-import {
-  ArgumentsHost,
-  Body,
-  Catch,
-  Controller,
-  ExceptionFilter,
-  Get,
-  Header,
-  Headers,
-  Param,
-  Patch,
-  Post,
-  UseFilters,
-} from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, Param, Patch, Post } from '@nestjs/common';
 import { Trade } from '../application/trade';
-import { TradeRule } from '../domain/trade';
-@Catch(TradeRule)
-class TradeFilter implements ExceptionFilter {
-  catch(error: TradeRule, host: ArgumentsHost) {
-    host
-      .switchToHttp()
-      .getResponse()
-      .status(error.code === 'INVALID_INPUT' ? 422 : 409)
-      .json({ code: error.code, message: error.message });
-  }
-}
 @Controller()
-@UseFilters(TradeFilter)
 export class TradeController {
   constructor(private readonly trade: Trade) {}
   @Get('trade/providers') providers(@Headers('authorization') a?: string) {
