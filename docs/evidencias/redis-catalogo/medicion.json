@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-11-12T23:01:40.769Z",
+  "node": "v24.22.2",
+  "postgres": "17.12 (Debian 17.12-1.pgdg13+1)",
+  "redis": "7.4.12",
+  "scope": "Aplicacion secuencial, esquema sintetico aislado, sin HTTP. Diferente del ensayo k6.",
+  "dataset": {
+    "seededProducts": 1000,
+    "returnedProducts": 100,
+    "responseSha256": "0391069a82e9a76c7a477da41587c2a8156c3715cd084a426fbcb77bdb6a7a3b"
+  },
+  "query": {
+    "page": 1,
+    "limit": 100,
+    "search": "benchmark",
+    "category": "Papeleria",
+    "available": true,
+    "sort": "price-asc"
+  },
+  "ttlSeconds": 30,
+  "postgresOnly": {
+    "samples": 30,
+    "meanMs": 2.411,
+    "p50Ms": 2.264,
+    "p95Ms": 2.697,
+    "minMs": 2.116,
+    "maxMs": 5.554,
+    "counters": {
+      "hits": 0,
+      "misses": 0,
+      "bypasses": 30,
+      "fills": 0,
+      "sourceReads": 30,
+      "revisionReads": 0
+    }
+  },
+  "cold": {
+    "samples": 30,
+    "meanMs": 3.491,
+    "p50Ms": 3.228,
+    "p95Ms": 4.231,
+    "minMs": 2.822,
+    "maxMs": 10.556,
+    "counters": {
+      "hits": 0,
+      "misses": 30,
+      "bypasses": 0,
+      "fills": 30,
+      "sourceReads": 30,
+      "revisionReads": 60
+    }
+  },
+  "warm": {
+    "samples": 30,
+    "meanMs": 0.701,
+    "p50Ms": 0.704,
+    "p95Ms": 0.88,
+    "minMs": 0.457,
+    "maxMs": 1.113,
+    "counters": {
+      "hits": 30,
+      "misses": 0,
+      "bypasses": 0,
+      "fills": 0,
+      "sourceReads": 0,
+      "revisionReads": 60
+    }
+  }
+}

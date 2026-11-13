@@ -22,7 +22,17 @@ jobs:
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
+      REDIS_URL: redis://127.0.0.1:6379
       DATABASE_URL: postgresql://mayorista:mayorista_ci@localhost:5432/mayorista
       AI_SERVICE_URL: http://127.0.0.1:5055
       T6_AI_URL: http://127.0.0.1:5055
@@ -61,6 +71,7 @@ jobs:
       - run: npm run db:migrate
       - run: npm run db:seed
       - run: npm run test:integration
+      - run: node --env-file-if-exists=.env tests/catalog-cache.benchmark.cjs
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
       - run: node --env-file-if-exists=.env --test tests/demo-ux.browser.cjs
@@ -71,6 +82,7 @@ jobs:
           path: |
             docs/evidencias/demo-mayorista
             .angular/t4-evidence
+            docs/evidencias/redis-catalogo
           retention-days: 14
 
   deployment:
