@@ -5,13 +5,13 @@ import { createHash } from 'node:crypto';
 import { IdentityService } from '../../identity/identity.service';
 import { TradeStore } from '../application/trade';
 import {
-  amount,
-  compatible,
-  conditions,
-  money,
+  assertAcceptable,
+  assertCoversRequest,
+  offerLines,
   OfferDraft,
   priceTotal,
   RequestDraft,
+  reservationQuantities,
   rule,
   TradeRule,
 } from '../domain/trade';
@@ -227,39 +227,20 @@ export class PostgresTrade implements TradeStore {
         'La oferta venció. Inicia una nueva solicitud.',
       );
       const requested = (await db.query('SELECT * FROM quotation_items WHERE request_id=$1', [id])).rows;
-      rule(
-        requested.length === input.items.length,
-        'INVALID_INPUT',
-        'La oferta debe cubrir todos los ítems solicitados.',
-      );
+      assertCoversRequest(requested, input.items);
       rule(
         !(await db.query('SELECT 1 FROM quotation_offers WHERE request_id=$1 AND supplier_id=$2', [id, a.supplierId]))
           .rowCount,
         'ALREADY_RESPONDED',
         'El proveedor ya respondió esta solicitud.',
       );
-      const lines = [];
-      for (const i of input.items) {
-        const asked = requested.find(r => r.id === i.solicitudItemId);
-        rule(asked && asked.quantity === i.cantidad, 'INVALID_INPUT', 'Ítem o cantidad no corresponde a la solicitud.');
-        const p = (
-          await db.query('SELECT * FROM products WHERE id=$1 AND supplier_id=$2', [i.productoId, a.supplierId])
-        ).rows[0];
-        rule(p, 'INVALID_INPUT', 'Producto ajeno o inexistente.');
-        const snapshot = conditions(p);
-        compatible(p, snapshot, i.cantidad);
-        rule(
-          snapshot.unit === asked.unit && snapshot.unitsPerPack === asked.units_per_pack,
-          'INVALID_INPUT',
-          'Presentación o equivalencia incompatible con la solicitud.',
-        );
-        rule(
-          p.stock >= i.cantidad,
-          'INSUFFICIENT_STOCK',
-          'Stock insuficiente para ofrecer esa cantidad. Inicia otra solicitud.',
-        );
-        lines.push({ ...i, snapshot, subtotal: amount(money(i.precioUnitario) * BigInt(i.cantidad)) });
-      }
+      const supplierProducts = (
+        await db.query('SELECT * FROM products WHERE id=ANY($1::uuid[]) AND supplier_id=$2', [
+          input.items.map(i => i.productoId),
+          a.supplierId,
+        ])
+      ).rows;
+      const lines = offerLines(requested, input.items, supplierProducts);
       const totals = priceTotal(
         lines.map(l => ({ quantity: l.cantidad, unitPrice: l.precioUnitario })),
         input.costoEnvio,
@@ -315,8 +296,7 @@ export class PostgresTrade implements TradeStore {
       ).rows[0];
       if (!o) throw new NotFoundException();
       if (q.accepted_offer_id === offer) return this.details(db, id, a);
-      rule(o.verified, 'CONDITIONS_CHANGED', 'El proveedor dejó de estar verificado. Inicia una nueva solicitud.');
-      rule(o.valid, 'OFFER_EXPIRED', 'La oferta venció. Inicia una nueva solicitud.');
+      assertAcceptable(o);
       await db.query('UPDATE quotation_requests SET accepted_offer_id=$2 WHERE id=$1', [id, offer]);
       await this.audit(db, a, 'accept-offer', offer);
       return this.details(db, id, a);
@@ -403,23 +383,7 @@ export class PostgresTrade implements TradeStore {
         'OFFER_EXPIRED',
         'La oferta venció. Inicia una nueva solicitud.',
       );
-      const quantities = new Map<string, number>();
-      for (const l of lines) {
-        const p = products.find(p => p.id === l.product_id);
-        rule(
-          p && p.supplier_id === o.supplier_id,
-          'CONDITIONS_CHANGED',
-          'Producto no disponible. Inicia una nueva solicitud.',
-        );
-        compatible(p, l.snapshot, l.quantity);
-        quantities.set(p.id, (quantities.get(p.id) ?? 0) + l.quantity);
-      }
-      for (const p of products)
-        rule(
-          p.stock >= (quantities.get(p.id) ?? 0),
-          'INSUFFICIENT_STOCK',
-          `Stock insuficiente para ${p.sku}. Inicia una nueva solicitud.`,
-        );
+      const quantities = reservationQuantities(lines, products, o.supplier_id);
       const id = (
         await db.query(
           `INSERT INTO trade_orders(request_id,offer_id,buyer_company_id,supplier_id,actor_id,currency,includes_tax,shipping,subtotal,total,delivery_days)
