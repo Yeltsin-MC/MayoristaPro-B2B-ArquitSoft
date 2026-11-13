@@ -1,5 +1,6 @@
-import { ForbiddenException, Injectable, NotFoundException, OnModuleDestroy } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Pool, PoolClient } from 'pg';
+import { PG_POOL } from '../../database/database.module';
 import { createHash } from 'node:crypto';
 import { IdentityService } from '../../identity/identity.service';
 import { TradeStore } from '../application/trade';
@@ -16,12 +17,11 @@ import {
 } from '../domain/trade';
 type Actor = Awaited<ReturnType<IdentityService['tradeIdentity']>>;
 @Injectable()
-export class PostgresTrade implements TradeStore, OnModuleDestroy {
-  private readonly pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  constructor(private readonly identity: IdentityService) {}
-  async onModuleDestroy() {
-    await this.pool.end();
-  }
+export class PostgresTrade implements TradeStore {
+  constructor(
+    @Inject(PG_POOL) private readonly pool: Pool,
+    private readonly identity: IdentityService,
+  ) {}
   private async tx<T>(work: (db: PoolClient) => Promise<T>): Promise<T> {
     for (let attempt = 0; ; attempt++) {
       const db = await this.pool.connect();

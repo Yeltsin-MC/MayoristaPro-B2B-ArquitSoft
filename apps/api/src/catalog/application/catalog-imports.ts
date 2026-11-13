@@ -1,13 +1,14 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
-  OnModuleDestroy,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { Pool, PoolClient } from 'pg';
+import { PG_POOL } from '../../database/database.module';
 import { IdentityService, uuid } from '../../identity/identity.service';
 import { ImportRow, readImportFile } from './import-file';
 
@@ -32,12 +33,11 @@ interface Batch {
 }
 
 @Injectable()
-export class CatalogImports implements OnModuleDestroy {
-  private readonly pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  constructor(private readonly identity: IdentityService) {}
-  async onModuleDestroy() {
-    await this.pool.end();
-  }
+export class CatalogImports {
+  constructor(
+    @Inject(PG_POOL) private readonly pool: Pool,
+    private readonly identity: IdentityService,
+  ) {}
 
   private async tx<T>(action: (db: PoolClient) => Promise<T>): Promise<T> {
     const db = await this.pool.connect();

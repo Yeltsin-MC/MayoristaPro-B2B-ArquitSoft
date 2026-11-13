@@ -14,12 +14,14 @@ import {
   UseFilters,
   HttpCode,
   BadRequestException,
+  Inject,
 } from '@nestjs/common';
 import { Payments } from '../application/payments';
 import { PaymentError } from '../domain/payment';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { IdentityService } from '../../identity/identity.service';
 import { Pool } from 'pg';
+import { PG_POOL } from '../../database/database.module';
 
 @Catch(PaymentError)
 class PaymentFilter implements ExceptionFilter {
@@ -43,9 +45,8 @@ class PaymentFilter implements ExceptionFilter {
 @Controller()
 @UseFilters(PaymentFilter)
 export class PaymentsController {
-  private readonly pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
   constructor(
+    @Inject(PG_POOL) private readonly pool: Pool,
     private readonly payments: Payments,
     private readonly identity: IdentityService,
   ) {}

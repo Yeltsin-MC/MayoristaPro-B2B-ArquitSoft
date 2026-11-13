@@ -1,12 +1,13 @@
 import {
+  Inject,
   BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
-  OnModuleDestroy,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Pool, PoolClient } from 'pg';
+import { PG_POOL } from '../database/database.module';
 import { randomBytes, scrypt as derive, timingSafeEqual, createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 const scrypt = promisify(derive);
@@ -40,11 +41,8 @@ type Actor = {
   permissions: string[];
 };
 @Injectable()
-export class IdentityService implements OnModuleDestroy {
-  private readonly pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  async onModuleDestroy() {
-    await this.pool.end();
-  }
+export class IdentityService {
+  constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
   private async tx<T>(action: (db: PoolClient) => Promise<T>): Promise<T> {
     const db = await this.pool.connect();
     try {

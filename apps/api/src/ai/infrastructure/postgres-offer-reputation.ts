@@ -1,14 +1,11 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Pool } from 'pg';
+import { PG_POOL } from '../../database/database.module';
 import { OfferReputation, SupplierReputation } from '../application/offer-reputation';
 
 @Injectable()
-export class PostgresOfferReputation implements OfferReputation, OnModuleDestroy {
-  private readonly pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    max: 2,
-    connectionTimeoutMillis: 5000,
-  });
+export class PostgresOfferReputation implements OfferReputation {
+  constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
 
   async forSuppliers(supplierIds: string[]): Promise<SupplierReputation[]> {
     const result = await this.pool.query(
@@ -28,9 +25,5 @@ export class PostgresOfferReputation implements OfferReputation, OnModuleDestroy
       completedOrders: Number(row.completed),
       totalOrders: Number(row.total),
     }));
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    await this.pool.end();
   }
 }

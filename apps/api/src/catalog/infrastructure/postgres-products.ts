@@ -4,9 +4,13 @@ import { CatalogFilters, CatalogOptions, ProductReader, PublishedProduct } from 
 
 export class PostgresProducts implements ProductReader, OnModuleDestroy {
   private readonly pool: Pool;
+  /** Solo cierra el pool si lo creó esta clase (uso fuera de Nest, p. ej. pruebas y scripts). */
+  private readonly ownsPool: boolean;
 
-  constructor(databaseUrl: string) {
-    this.pool = new Pool({ connectionString: databaseUrl, connectionTimeoutMillis: 5000 });
+  constructor(source: Pool | string) {
+    this.ownsPool = typeof source === 'string';
+    this.pool =
+      typeof source === 'string' ? new Pool({ connectionString: source, connectionTimeoutMillis: 5000 }) : source;
   }
 
   async revision(): Promise<string> {
@@ -69,6 +73,6 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
   }
 
   async onModuleDestroy(): Promise<void> {
-    await this.pool.end();
+    if (this.ownsPool) await this.pool.end();
   }
 }

@@ -2,11 +2,11 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { resolve } from 'node:path';
-import { CatalogModule } from './catalog/catalog.module';
+import { AppModule } from './app.module';
 import { ListProducts } from './catalog/application/list-products';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create<NestExpressApplication>(CatalogModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   try {
     // Validate the same database query used by the public catalog before
     // advertising a running API. A stopped database must fail at startup.

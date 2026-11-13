@@ -1,17 +1,14 @@
 // Infrastructure: PostgreSQL adapter for payments
 
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Pool, PoolClient } from 'pg';
+import { PG_POOL } from '../../database/database.module';
 import { PaymentStore, PaymentAttempt, Order } from '../application/payments';
 import { PaymentState } from '../domain/payment';
 
 @Injectable()
-export class PostgresPayments implements PaymentStore, OnModuleDestroy {
-  private readonly pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
-  async onModuleDestroy() {
-    await this.pool.end();
-  }
+export class PostgresPayments implements PaymentStore {
+  constructor(@Inject(PG_POOL) private readonly pool: Pool) {}
 
   private async tx<T>(work: (db: PoolClient) => Promise<T>): Promise<T> {
     const db = await this.pool.connect();

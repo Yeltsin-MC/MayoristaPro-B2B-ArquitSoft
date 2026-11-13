@@ -17,7 +17,7 @@ test('T3 cierre: proveedor demo existente descarga Excel, revisa error, confirma
   assert.ok(['localhost','127.0.0.1','[::1]'].includes(databaseUrl.hostname),'Solo se permite una base de desarrollo local.');
   require('reflect-metadata');
   const {NestFactory}=require('@nestjs/core');
-  const {CatalogModule}=require('../apps/api/dist/catalog/catalog.module.js');
+  const { AppModule } = require('../apps/api/dist/app.module.js');
   const db=new Pool({connectionString:process.env.DATABASE_URL});
   const artifactDir=resolve(__dirname,'../.angular/t3-demo-evidence');
   let app,browser;
@@ -32,7 +32,7 @@ test('T3 cierre: proveedor demo existente descarga Excel, revisa error, confirma
     await mkdir(artifactDir,{recursive:true});
     const sku='T3-CIERRE-'+randomBytes(5).toString('hex').toUpperCase();
     const name='Cuaderno demo cierre T3 '+sku.slice(-6);
-    app=await NestFactory.create(CatalogModule,{logger:false,abortOnError:false});
+    app=await NestFactory.create(AppModule,{logger:false,abortOnError:false});
     app.setGlobalPrefix('api/v1');app.useStaticAssets(resolve(__dirname,'../apps/web/dist/catalog/browser'));
     await app.listen(0,'127.0.0.1');
     const base=await app.getUrl();

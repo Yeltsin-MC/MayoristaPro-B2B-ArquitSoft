@@ -8,7 +8,7 @@ const ExcelJS = require('exceljs');
 test('T3: importación CSV/XLSX con PostgreSQL y HTTP reales', async t => {
   require('reflect-metadata');
   const { NestFactory } = require('@nestjs/core');
-  const { CatalogModule } = require('../apps/api/dist/catalog/catalog.module.js');
+  const { AppModule } = require('../apps/api/dist/app.module.js');
   const { passwordHash } = require('../apps/api/dist/identity/identity.service.js');
   const { COLUMNS } = require('../apps/api/dist/catalog/application/import-file.js');
   const original = process.env.DATABASE_URL;
@@ -36,7 +36,7 @@ test('T3: importación CSV/XLSX con PostgreSQL y HTTP reales', async t => {
       await db.query('INSERT INTO memberships(company_id,account_id,permissions) VALUES($1,$2,$3)',[company,account,name==='reader'?['buy']:['publish','buy']]);
       owners[name] = { supplier,company,account };
     }
-    app = await NestFactory.create(CatalogModule,{ logger:false, abortOnError:false });
+    app = await NestFactory.create(AppModule,{ logger:false, abortOnError:false });
     app.setGlobalPrefix('api/v1'); await app.listen(0,'127.0.0.1');
     const base = (await app.getUrl())+'/api/v1/';
     async function json(path, method='GET', body, token, headers={}) {
