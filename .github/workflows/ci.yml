@@ -81,6 +81,7 @@ jobs:
           name: evidencia-demo
           path: |
             docs/evidencias/demo-mayorista
+            docs/evidencias/experiencia-catalogo
             .angular/t4-evidence
             docs/evidencias/redis-catalogo
           retention-days: 14

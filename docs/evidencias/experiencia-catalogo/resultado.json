@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-11-13T02:43:53.663Z",
+  "browser": "157.0.4341.46",
+  "data": "CSV T3 y 14 filas adicionales en esquema PostgreSQL aislado",
+  "results": [
+    {
+      "viewport": "1440x1050",
+      "quotationId": "76ba6cef-ac3e-4d80-b4d7-5f7dc303a5f0",
+      "outsideFirstPage": "Papel A4 para oficina (demo)",
+      "categoriesFromCompleteCatalog": true,
+      "stockAndPricingVisible": true,
+      "headerOverlap": false,
+      "javascriptErrors": []
+    },
+    {
+      "viewport": "390x1000",
+      "quotationId": "16d11b1f-45e8-41c8-a1a4-92a8bcd4e4bf",
+      "outsideFirstPage": "Papel A4 para oficina (demo)",
+      "categoriesFromCompleteCatalog": true,
+      "stockAndPricingVisible": true,
+      "headerOverlap": false,
+      "javascriptErrors": []
+    }
+  ]
+}

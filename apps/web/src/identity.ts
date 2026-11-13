@@ -78,6 +78,15 @@ export class IdentityComponent {
    }
   });
  }
+ openQuotes(){
+  this.failed.set(false);
+  if(!this.token()){
+   this.mode='login';
+   this.message.set('Ingresa con tu cuenta empresarial para ver tus cotizaciones privadas.');
+  }
+  const target=document.getElementById('cotizaciones')??document.getElementById('cuenta');
+  target?.scrollIntoView({behavior:'smooth',block:'start'});
+ }
  beginQuote(product:CatalogProduct){
   this.failed.set(false);
   if(this.token() && (this.admin() || !this.permissions().includes('buy'))){

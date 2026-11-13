@@ -1,7 +1,7 @@
 import { IdentityComponent } from './identity';
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
 
@@ -17,6 +17,9 @@ export class CatalogComponent {
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');
   readonly page = signal(1);
   readonly options = signal<{ categories: string[]; suppliers: { id: string; name: string }[] }>({ categories: [], suppliers: [] });
+  readonly selectedProduct = signal<CatalogProduct | null>(null);
+  readonly categories = computed(() => [...this.options().categories].sort((a, b) =>
+    this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es')));
   search = '';
   category = '';
   supplier = '';
@@ -26,6 +29,50 @@ export class CatalogComponent {
   constructor() {
     this.load();
     this.loadOptions();
+  }
+
+  imageKind(name: string): string {
+    const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (/redes|router|ethernet|cable|network/.test(normalized)) return 'network';
+    if (/perifer|teclado|mouse|comput|tecnolog/.test(normalized)) return 'technology';
+    if (/papel|impres|resma/.test(normalized)) return 'paper';
+    if (/cuaderno|librer|oficina|papeler|boligrafo/.test(normalized)) return 'office';
+    return 'supplies';
+  }
+
+  productImage(product: CatalogProduct): string {
+    const kind = this.imageKind(product.name);
+    return kind === 'supplies' ? this.imageKind(product.category) : kind;
+  }
+
+  presentations(quantity: number, unit: string): string {
+    const name = unit.toLowerCase();
+    const plural = name === 'unidad' ? 'unidades' : name + 's';
+    return quantity + ' ' + (quantity === 1 ? name : plural);
+  }
+
+  private categoryPriority(category: string): number {
+    const kind = this.imageKind(category);
+    return ['office', 'paper', 'technology', 'network', 'supplies'].indexOf(kind);
+  }
+
+  searchCatalog(): void {
+    this.load();
+    document.getElementById('catalogo')?.scrollIntoView({ block: 'start' });
+  }
+
+  selectCategory(category: string): void {
+    this.category = category;
+    this.search = '';
+    this.supplier = '';
+    this.available = false;
+    this.sort = '';
+    this.searchCatalog();
+  }
+
+  showProduct(product: CatalogProduct, dialog: HTMLDialogElement): void {
+    this.selectedProduct.set(product);
+    dialog.showModal();
   }
 
   loadOptions(): void {
