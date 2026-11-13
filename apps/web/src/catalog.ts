@@ -1,12 +1,13 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
 import { CatalogPhotoComponent } from './catalog-photo';
 import { CatalogSearchService } from './catalog-search.service';
 import { SessionService } from './session.service';
+import { OrderListService } from './order-list.service';
 import {
   minimumQuantity,
   packDescription,
@@ -26,6 +27,40 @@ export class CatalogComponent {
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
   private readonly searchService = inject(CatalogSearchService);
+  readonly orderList = inject(OrderListService);
+  readonly slides = [
+    {
+      eyebrow: 'COMPRAS MAYORISTAS, NEGOCIOS QUE CRECEN',
+      title: 'Abastece tu negocio.',
+      text: 'De la oficina a tu próxima venta. Encuentra productos por volumen y cotiza con sus proveedores.',
+      cta: 'Explorar catálogo',
+      href: '#catalogo',
+      image: '/images/abastecimiento-demo.png',
+    },
+    {
+      eyebrow: 'MÁS CANTIDAD, MEJOR PRECIO',
+      title: 'Precios por volumen.',
+      text: 'Los proveedores publican escalas: mientras más presentaciones pides, menos pagas por cada una.',
+      cta: 'Ver productos',
+      href: '#catalogo',
+      image: '/images/familias-demo.png',
+    },
+    {
+      eyebrow: 'UNA LISTA, VARIAS OFERTAS',
+      title: 'Cotiza todo junto.',
+      text: 'Arma tu lista de pedido y envía una sola solicitud por proveedor. Compara ofertas y paga en línea.',
+      cta: 'Cómo comprar',
+      href: '#como-comprar',
+      image: '/images/abastecimiento-demo.png',
+    },
+  ];
+  readonly slide_ = signal(0);
+  readonly benefits = [
+    { icon: '▦', title: 'Precios por volumen', text: 'Escalas publicadas por cada proveedor' },
+    { icon: '✓', title: 'Proveedores verificados', text: 'Empresas revisadas con RUC' },
+    { icon: '◈', title: 'Pago seguro', text: 'Mercado Pago, en soles con IGV' },
+    { icon: '➜', title: 'Seguimiento de despacho', text: 'De la preparación a la entrega' },
+  ];
   /** Texto del buscador del encabezado. */
   readonly searchTerm = this.searchService.term;
   private requestVersion = 0;
@@ -56,12 +91,27 @@ export class CatalogComponent {
 
   constructor() {
     this.loadOptions();
+    // Carrusel: avanza solo si el usuario no pidió reducir el movimiento.
+    const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) {
+      const timer = setInterval(() => this.goSlide(this.slide_() + 1), 7000);
+      inject(DestroyRef).onDestroy(() => clearInterval(timer));
+    }
     let first = true;
     // Carga inicial y cada búsqueda enviada desde el encabezado.
     effect(() => {
       this.searchService.submitted();
       untracked(() => (first ? this.load() : this.searchCatalog()));
       first = false;
+    });
+    // Categoría elegida en el menú del encabezado.
+    effect(() => {
+      const request = this.searchService.categoryRequest();
+      if (!request) return;
+      untracked(() => {
+        this.searchService.categoryRequest.set(null);
+        this.selectCategory(request.name);
+      });
     });
   }
 
@@ -72,6 +122,35 @@ export class CatalogComponent {
     this.session.failed.set(false);
     this.session.pendingQuote.set({ product, quantity });
     void this.router.navigate(['/cuenta']);
+  }
+
+  goSlide(n: number): void {
+    this.slide_.set((n + this.slides.length) % this.slides.length);
+  }
+
+  addToList(product: CatalogProduct): void {
+    const quantity = this.quantityFor(product);
+    if (quantityError(product, quantity)) return;
+    this.orderList.add(product, quantity);
+  }
+
+  selectSupplier(id: string): void {
+    this.category = '';
+    this.searchTerm.set('');
+    this.supplier = id;
+    this.available = false;
+    this.sort = '';
+    this.searchCatalog();
+  }
+
+  initials(name: string): string {
+    return name
+      .replace(/\(.*?\)/g, '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(word => word[0].toUpperCase())
+      .join('');
   }
 
   imageKind(name: string): string {
