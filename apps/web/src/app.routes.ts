@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { CatalogComponent } from './catalog';
 import { IdentityComponent } from './identity';
+import { OrderListComponent } from './order-list';
 
 /**
  * Las vistas de la cuenta son rutas hijas sin componente: IdentityComponent se
@@ -17,6 +18,7 @@ const accountViews: Routes = [
 
 export const routes: Routes = [
   { path: '', component: CatalogComponent, title: 'Catálogo | MayoristaPro B2B' },
+  { path: 'lista', component: OrderListComponent, title: 'Lista de pedido | MayoristaPro B2B' },
   { path: 'cuenta', component: IdentityComponent, title: 'Mi cuenta | MayoristaPro B2B', children: accountViews },
   // Enlace que genera la API para aceptar invitaciones (/accept-invitation#token=…).
   { path: 'accept-invitation', component: IdentityComponent, title: 'Aceptar invitación | MayoristaPro B2B' },

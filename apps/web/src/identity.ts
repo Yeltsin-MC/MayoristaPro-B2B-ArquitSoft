@@ -50,6 +50,12 @@ function accountTarget(url: string): AccountTarget {
             <p>{{ selection.product.supplier }}</p>
             <p>{{ packDescription(selection.product) }}</p>
             <strong>{{ presentations(selection.quantity, selection.product.unit) }}</strong>
+            @if (selection.extra?.length) {
+              <p>
+                y {{ selection.extra!.length }}
+                {{ selection.extra!.length === 1 ? 'producto más' : 'productos más' }} de tu lista de pedido
+              </p>
+            }
             <p class="selection-help">Al ingresar volverás a esta solicitud.</p>
           </aside>
         } @else {
@@ -300,7 +306,7 @@ export class IdentityComponent {
       if (product && trade && this.permissions().includes('buy')) {
         untracked(() => {
           this.pendingQuote.set(null);
-          void trade.beginFromCatalog(product.product, product.quantity);
+          void trade.beginFromCatalog(product.product, product.quantity, product.extra ?? []);
         });
       }
     });

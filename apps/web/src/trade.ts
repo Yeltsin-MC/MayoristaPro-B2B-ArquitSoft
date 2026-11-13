@@ -2,6 +2,7 @@ import { Router } from '@angular/router';
 import { Component, effect, input, output, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
+import { OrderListService } from './order-list.service';
 import {
   minimumQuantity,
   packDescription,
@@ -55,9 +56,13 @@ interface RequestItem {
         <h4>{{ sourceProduct(items[0]) ? 'Solicitar cotización' : 'Nueva solicitud de cotización' }}</h4>
         @if (sourceProduct(items[0]); as product) {
           <div class="quotation-product">
-            <p class="eyebrow">PRODUCTO SELECCIONADO</p>
-            <h5>{{ product.name }}</h5>
-            <p>{{ product.supplier }} · {{ packDescription(product) }}</p>
+            <p class="eyebrow">{{ items.length > 1 ? 'PRODUCTOS DE TU LISTA DE PEDIDO' : 'PRODUCTO SELECCIONADO' }}</p>
+            @if (items.length === 1) {
+              <h5>{{ product.name }}</h5>
+            } @else {
+              <h5>{{ items.length }} productos</h5>
+            }
+            <p>{{ product.supplier }} · {{ items.length === 1 ? packDescription(product) : 'una sola solicitud' }}</p>
           </div>
         }
         @if (!sourceProduct(items[0]) || addingSuppliers()) {
@@ -78,7 +83,15 @@ interface RequestItem {
         }
         @for (i of items; track $index; let n = $index) {
           <fieldset class="request-item">
-            <legend>{{ sourceProduct(i) ? 'Cantidad a cotizar' : 'Ítem ' + (n + 1) }}</legend>
+            <legend>
+              {{
+                sourceProduct(i)
+                  ? items.length > 1
+                    ? sourceProduct(i)!.name
+                    : 'Cantidad a cotizar'
+                  : 'Ítem ' + (n + 1)
+              }}
+            </legend>
             @if (!sourceProduct(i)) {
               <label
                 >Descripción
@@ -491,8 +504,8 @@ export class TradeComponent {
   sent = signal(false);
   supplierIds: string[] = [];
   items: RequestItem[] = [{ descripcion: '', presentacion: 'caja', unidadesPorPresentacion: 12, cantidad: 2 }];
-  private catalogProduct: CatalogProduct | null = null;
-  private catalogItem: RequestItem | null = null;
+  /** Ítems que vienen del catálogo o de la lista de pedido, con su producto publicado. */
+  private catalogItems = new Map<RequestItem, CatalogProduct>();
   readonly packDescription = packDescription;
   readonly presentations = presentations;
   readonly quantityEquivalence = quantityEquivalence;
@@ -513,6 +526,7 @@ export class TradeComponent {
   expiresAt = this.future();
   private keys = new Map<string, string>();
   private readonly router = inject(Router);
+  private readonly orderList = inject(OrderListService);
   constructor() {
     effect(() => {
       this.token();
@@ -640,7 +654,7 @@ export class TradeComponent {
     }
   }
   sourceProduct(item: RequestItem): CatalogProduct | null {
-    return item === this.catalogItem ? this.catalogProduct : null;
+    return this.catalogItems.get(item) ?? null;
   }
   requestMinimum(item: RequestItem): number {
     const product = this.sourceProduct(item);
@@ -659,8 +673,13 @@ export class TradeComponent {
   invalidQuantities(): boolean {
     return this.items.some(item => !!this.quantityIssue(item));
   }
-  async beginFromCatalog(product: CatalogProduct, quantity: number = minimumQuantity(product)) {
-    const issue = quantityError(product, quantity);
+  async beginFromCatalog(
+    product: CatalogProduct,
+    quantity: number = minimumQuantity(product),
+    extra: { product: CatalogProduct; quantity: number }[] = [],
+  ) {
+    const selection = [{ product, quantity }, ...extra.filter(e => e.product.supplierId === product.supplierId)];
+    const issue = selection.map(s => quantityError(s.product, s.quantity)).find(Boolean);
     if (issue) {
       this.message.set(issue);
       return;
@@ -675,20 +694,21 @@ export class TradeComponent {
     }
     this.newRequest();
     this.supplierIds = [product.supplierId];
-    this.catalogProduct = product;
-    this.catalogItem = {
-      descripcion: product.name,
-      presentacion: product.unit.toLowerCase(),
-      unidadesPorPresentacion: product.unitsPerPack,
-      cantidad: quantity,
-    };
-    this.items = [this.catalogItem];
+    this.items = selection.map(({ product: p, quantity: q }) => {
+      const item: RequestItem = {
+        descripcion: p.name,
+        presentacion: p.unit.toLowerCase(),
+        unidadesPorPresentacion: p.unitsPerPack,
+        cantidad: q,
+      };
+      this.catalogItems.set(item, p);
+      return item;
+    });
     this.message.set('');
     document.getElementById('cotizaciones')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   newRequest() {
-    this.catalogProduct = null;
-    this.catalogItem = null;
+    this.catalogItems = new Map();
     this.items = [{ descripcion: '', presentacion: 'caja', unidadesPorPresentacion: 12, cantidad: 2 }];
     this.supplierIds = [];
     this.addingSuppliers.set(false);
@@ -745,6 +765,8 @@ export class TradeComponent {
     }
     const q = await this.call('quotations', 'POST', { proveedorIds: this.supplierIds, items: this.items });
     if (q) {
+      // Lo que se cotizó desde la lista de pedido sale de la lista.
+      for (const product of this.catalogItems.values()) this.orderList.remove(product.id);
       this.selected.set(q);
       this.creating.set(false);
       this.sent.set(true);

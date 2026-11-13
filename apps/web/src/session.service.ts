@@ -4,6 +4,8 @@ import { CatalogProduct } from './catalog-product';
 export interface PendingQuote {
   product: CatalogProduct;
   quantity: number;
+  /** Otros productos del mismo proveedor, traídos desde la lista de pedido. */
+  extra?: { product: CatalogProduct; quantity: number }[];
 }
 
 /**
