@@ -18,7 +18,7 @@ test('EC12-14: sesión validada, selección visible y motivos para cotizar en es
    const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
    try{
     await page.goto(f.base.replace('/api/v1/','/'));
-    await expect(page.getByLabel('Correo',{exact:true})).toBeVisible();
+    await expect(page.locator('.product-card').first()).toBeVisible();
     await expect(page.locator('.quote-unavailable').filter({hasText:'empresa habilitada'})).toHaveCount(3);
     await page.getByRole('button',{name:'Ver otra oferta para cotizar',exact:true}).first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
@@ -49,6 +49,8 @@ test('EC12-14: sesión validada, selección visible y motivos para cotizar en es
     const response=await created;assert.equal(response.status(),201);const quotation=await response.json();
     assert.equal(quotation.items[0].quantity,4);
     assert.equal(quotation.suppliers[0].id,f.accounts.vendor.supplier);
+    // La solicitud se arma en /cuenta; se vuelve al catálogo desde el encabezado.
+    await page.locator('.header-nav').getByRole('link',{name:'Catálogo',exact:true}).click();
     await card.getByRole('spinbutton').fill('6');
     await card.getByRole('button',{name:'Solicitar cotización',exact:false}).click();
     await expect(page.getByLabel('Cantidad de presentaciones',{exact:true})).toHaveValue('6');

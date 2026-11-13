@@ -1,4 +1,5 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { Component, effect, input, output, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
 import {
@@ -256,9 +257,9 @@ interface RequestItem {
                 <summary>Ver detalles</summary>
                 @for (i of o.items; track i.requestItemId) {
                   <p class="offer-line">
-                    <strong>{{ i.snapshot.name }}</strong
-                    ><br />{{ i.quantity }} {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }} · S/
-                    {{ i.unitPrice }} por presentación<br />{{ i.quantity }} × S/ {{ i.unitPrice }} = S/
+                    <strong>{{ i.snapshot.name }}</strong><br />{{ i.quantity }} {{ i.snapshot.unit }} de
+                    {{ i.snapshot.unitsPerPack }} · S/ {{ i.unitPrice }} por presentación<br />{{ i.quantity }} × S/
+                    {{ i.unitPrice }} = S/
                     {{ i.subtotal }}
                   </p>
                 }
@@ -409,6 +410,7 @@ export class TradeComponent {
   deliveryDays = 3;
   expiresAt = this.future();
   private keys = new Map<string, string>();
+  private readonly router = inject(Router);
   constructor() {
     effect(() => {
       this.token();
@@ -538,7 +540,12 @@ export class TradeComponent {
     const count = q.offerCount ?? q.offers?.length ?? 0;
     return count === 0 ? 'Esperando ofertas' : count === 1 ? '1 oferta recibida' : count + ' ofertas recibidas';
   }
+  /** Refleja en la URL la vista abierta, para poder compartirla, recargarla o volver atrás. */
+  private go(url: string) {
+    if (this.router.url.split('#')[0] !== url) void this.router.navigateByUrl(url);
+  }
   showQuotes() {
+    this.go('/cuenta/cotizaciones');
     this.creating.set(false);
     this.sent.set(false);
     requestAnimationFrame(() => {
@@ -548,6 +555,7 @@ export class TradeComponent {
     });
   }
   showOrders() {
+    this.go('/cuenta/pedidos');
     this.creating.set(false);
     this.sent.set(false);
     requestAnimationFrame(() => {
@@ -586,6 +594,7 @@ export class TradeComponent {
     if (q) {
       this.sent.set(false);
       this.selected.set(q);
+      this.go('/cuenta/cotizaciones/' + id);
       this.currentOrder.set(null);
       this.creating.set(false);
       this.expiresAt = this.future();
@@ -677,6 +686,7 @@ export class TradeComponent {
     const o = await this.call('orders/' + id);
     if (o) {
       this.currentOrder.set(o);
+      this.go('/cuenta/pedidos/' + id);
       const attempts = await this.call('orders/' + id + '/payment-attempts');
       if (attempts) this.paymentAttempts.set(attempts);
     }

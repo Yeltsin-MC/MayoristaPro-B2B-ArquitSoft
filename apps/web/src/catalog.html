@@ -1,31 +1,4 @@
-<a class="skip-link" href="#catalogo">Ir al catálogo</a>
-<div class="top-strip">Compras para empresas · Precios en soles · Demo académica</div>
-<header class="site-header">
-  <div class="header-content">
-    <a class="brand" href="#inicio" aria-label="MayoristaPro, inicio"
-      ><span class="brand-mark" aria-hidden="true">m<span>+</span></span
-      ><span>Mayorista<span class="brand-pro">Pro</span><small>NEGOCIOS QUE CONECTAN</small></span></a
-    >
-    <form class="search-bar header-search" (ngSubmit)="searchCatalog()" role="search">
-      <span aria-hidden="true" class="search-icon">⌕</span>
-      <input
-        aria-label="Buscar productos"
-        name="search"
-        [(ngModel)]="search"
-        maxlength="120"
-        placeholder="¿Qué necesita tu negocio?"
-      />
-      <button type="submit">Buscar <span aria-hidden="true">→</span></button>
-    </form>
-    <a class="account-link" href="#cuenta"><span aria-hidden="true">○</span> Mi cuenta</a>
-  </div>
-  <nav class="header-nav" aria-label="Navegación principal">
-    <a href="#categorias">Categorías <span aria-hidden="true">↓</span></a
-    ><a href="#catalogo">Catálogo</a><button type="button" (click)="identity.openQuotes()">Mis cotizaciones</button
-    ><span>Librería, oficina y tecnología</span>
-  </nav>
-</header>
-<main id="inicio">
+<div id="inicio">
   <section class="catalog-hero" aria-labelledby="catalog-title">
     <div class="hero-copy">
       <p class="eyebrow">COMPRAS MAYORISTAS, NEGOCIOS QUE CRECEN</p>
@@ -68,20 +41,22 @@
     <div class="section-heading">
       <div>
         <p class="eyebrow">EL CATÁLOGO DE TU NEGOCIO</p>
-        <h2 id="products-title">{{ search.trim() ? 'Resultados de búsqueda' : category || 'Productos destacados' }}</h2>
+        <h2 id="products-title">
+          {{ searchTerm().trim() ? 'Resultados de búsqueda' : category || 'Productos destacados' }}
+        </h2>
       </div>
       <span class="section-caption">Precio por presentación · Envío por cotizar</span>
     </div>
-    @if (category || search.trim()) {
+    @if (category || searchTerm().trim()) {
       <div class="active-filters" aria-live="polite">
         @if (category) {
           <span
             >Categoría activa <strong>{{ category }}</strong></span
           >
         }
-        @if (search.trim()) {
+        @if (searchTerm().trim()) {
           <span
-            >Búsqueda <strong>“{{ search.trim() }}”</strong></span
+            >Búsqueda <strong>“{{ searchTerm().trim() }}”</strong></span
           >
         }
       </div>
@@ -172,8 +147,9 @@
                     </button>
                   </h3>
                   <div class="product-price">
-                    <strong>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</strong
-                    ><span>por {{ packDescription(product) }}</span>
+                    <strong>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</strong><span
+                      >por {{ packDescription(product) }}</span
+                    >
                   </div>
                   <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
                   <dl>
@@ -217,7 +193,7 @@
                     [disabled]="
                       !product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))
                     "
-                    (click)="identity.beginQuote(product, quantityFor(product))"
+                    (click)="requestQuote(product, quantityFor(product))"
                   >
                     {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
                     <span aria-hidden="true">↗</span>
@@ -283,8 +259,9 @@
           <h2 id="product-detail-title">{{ product.name }}</h2>
           <p class="supplier">{{ product.supplier }}</p>
           <div class="product-price">
-            <strong>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</strong
-            ><span>por {{ packDescription(product) }}</span>
+            <strong>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</strong><span
+              >por {{ packDescription(product) }}</span
+            >
           </div>
           <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }} · Envío por cotizar</p>
           <dl>
@@ -324,7 +301,7 @@
             type="button"
             class="quote-button"
             [disabled]="!product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))"
-            (click)="productDialog.close(); identity.beginQuote(product, quantityFor(product))"
+            (click)="productDialog.close(); requestQuote(product, quantityFor(product))"
           >
             {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
             <span aria-hidden="true">↗</span>
@@ -350,9 +327,4 @@
       </div>
     }
   </dialog>
-  <section id="cuenta" class="account-section"><app-identity #identity (catalogChanged)="reload()" /></section>
-</main>
-<footer class="site-footer">
-  <a class="brand" href="#inicio">Mayorista<span class="brand-pro">Pro</span></a
-  ><span>Demo académica · Empresas y productos ficticios</span>
-</footer>
+</div>

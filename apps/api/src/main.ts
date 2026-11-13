@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { resolve } from 'node:path';
 import { AppModule } from './app.module';
+import { configureHttp } from './http-setup';
 import { ListProducts } from './catalog/application/list-products';
 
 async function bootstrap(): Promise<void> {
@@ -11,8 +12,7 @@ async function bootstrap(): Promise<void> {
     // Validate the same database query used by the public catalog before
     // advertising a running API. A stopped database must fail at startup.
     await app.get(ListProducts).execute(1, 1);
-    app.setGlobalPrefix('api/v1');
-    app.useStaticAssets(resolve(__dirname, '../../web/dist/catalog/browser'));
+    configureHttp(app, resolve(__dirname, '../../web/dist/catalog/browser'));
     app.enableShutdownHooks();
     await app.listen(Number(process.env.PORT ?? 3000), process.env.HOST ?? '::');
   } catch (error) {

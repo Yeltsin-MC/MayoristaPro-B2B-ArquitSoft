@@ -25,7 +25,7 @@ async function tradeFixture(){
   await db.query("UPDATE accounts SET email='buyerpeer@t4.test' WHERE id=$1",[peer]);
   await db.query("INSERT INTO memberships(company_id,account_id,permissions) VALUES($1,$2,ARRAY['buy'])",[accounts.buyer.company,peer]);
   accounts.buyerPeer={...accounts.buyer,account:peer,email:'buyerpeer@t4.test'};
-  app=await NestFactory.create(AppModule,{logger:false,abortOnError:false});app.setGlobalPrefix('api/v1');app.useStaticAssets(resolve('apps/web/dist/catalog/browser'));await app.listen(0,'127.0.0.1');
+  app=await NestFactory.create(AppModule,{logger:false,abortOnError:false});require('../apps/api/dist/http-setup.js').configureHttp(app,resolve('apps/web/dist/catalog/browser'));await app.listen(0,'127.0.0.1');
   const base=(await app.getUrl())+'/api/v1/';
   async function call(path,method='GET',body,who='buyer',headers={}){
    const response=await fetch(base+path,{method,headers:{'Content-Type':'application/json',...(who&&accounts[who]?.token?{Authorization:'Bearer '+accounts[who].token}:{}),...headers},...(body?{body:JSON.stringify(body)}:{})});

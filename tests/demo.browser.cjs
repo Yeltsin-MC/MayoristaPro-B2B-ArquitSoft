@@ -33,7 +33,7 @@ test('T3 cierre: proveedor demo existente descarga Excel, revisa error, confirma
     const sku='T3-CIERRE-'+randomBytes(5).toString('hex').toUpperCase();
     const name='Cuaderno demo cierre T3 '+sku.slice(-6);
     app=await NestFactory.create(AppModule,{logger:false,abortOnError:false});
-    app.setGlobalPrefix('api/v1');app.useStaticAssets(resolve(__dirname,'../apps/web/dist/catalog/browser'));
+    require('../apps/api/dist/http-setup.js').configureHttp(app,resolve(__dirname,'../apps/web/dist/catalog/browser'));
     await app.listen(0,'127.0.0.1');
     const base=await app.getUrl();
     browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});
@@ -41,8 +41,9 @@ test('T3 cierre: proveedor demo existente descarga Excel, revisa error, confirma
     const page=await context.newPage();
     const errors=[];
     page.on('pageerror',error=>errors.push(error.message));
-    page.on('response',response=>{if(response.status()>=400)errors.push(response.status()+' '+new URL(response.url()).pathname);});
-    await page.goto(base);
+    // 401 en /auth/restore es la respuesta normal sin sesión previa (cookie ausente).
+    page.on('response',response=>{const path=new URL(response.url()).pathname;if(response.status()>=400&&!(response.status()===401&&path==='/api/v1/auth/restore'))errors.push(response.status()+' '+path);});
+    await page.goto(new URL('/cuenta',base).href);
     await page.getByLabel('Correo',{exact:true}).fill(email);
     await page.getByLabel(/^Contraseña/).fill(password);
     await page.locator('form').getByRole('button',{name:'Ingresar',exact:true}).click();
@@ -74,11 +75,13 @@ test('T3 cierre: proveedor demo existente descarga Excel, revisa error, confirma
     await page.screenshot({path:resolve(artifactDir,'01-error-precio.png'),fullPage:true});
     values.precio='48.00';await upload();
     await expect(page.getByRole('button',{name:'Confirmar lote completo',exact:true})).toBeVisible();
-    const catalogReload=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/v1/products'&&response.status()===200);
     await page.getByRole('button',{name:'Confirmar lote completo',exact:true}).click();
     await expect(page.getByText(/Lote aplicado: 1 altas y 0 actualizaciones/)).toBeVisible();
-    await catalogReload;
     await page.screenshot({path:resolve(artifactDir,'02-lote-aplicado.png'),fullPage:true});
+    // El catálogo público está en su propia ruta; al entrar se consulta de nuevo.
+    const catalogReload=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/v1/products'&&response.status()===200);
+    await page.locator('.header-nav').getByRole('link',{name:'Catálogo',exact:true}).click();
+    await catalogReload;
     const publicCount=Number((await db.query('SELECT count(*) FROM products p JOIN suppliers s ON s.id=p.supplier_id WHERE p.published AND s.verified')).rows[0].count);
     for(let n=1;await page.getByRole('heading',{name,exact:true}).count()===0&&n<Math.ceil(publicCount/20);n++){
       await page.getByRole('button',{name:'Siguiente',exact:true}).click();
@@ -94,6 +97,7 @@ test('T3 cierre: proveedor demo existente descarga Excel, revisa error, confirma
       invalidPrice:'abc',errorRow:2,confirmedPrice:'48.00',product,consoleErrors:errors,controls:{administration:false,publish:true}};
     await writeFile(resolve(artifactDir,'resultado.json'),JSON.stringify(result,null,2)+'\n');
     console.log(JSON.stringify(result));
+    await page.locator('.account-link').click();
     await page.getByRole('button',{name:'Salir',exact:true}).click();
     await expect(page.getByLabel('Correo',{exact:true})).toBeVisible();
   }finally{if(browser)await browser.close();if(app)await app.close();await db.end();}

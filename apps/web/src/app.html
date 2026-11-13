@@ -1,0 +1,39 @@
+<a class="skip-link" href="#contenido">Ir al contenido</a>
+<div class="top-strip">Compras para empresas · Precios en soles · Demo académica</div>
+<header class="site-header">
+  <div class="header-content">
+    <a class="brand" routerLink="/" aria-label="MayoristaPro, inicio"
+      ><span class="brand-mark" aria-hidden="true">m<span>+</span></span
+      ><span>Mayorista<span class="brand-pro">Pro</span><small>NEGOCIOS QUE CONECTAN</small></span></a
+    >
+    <form class="search-bar header-search" (ngSubmit)="searchCatalog()" role="search">
+      <span aria-hidden="true" class="search-icon">⌕</span>
+      <input
+        aria-label="Buscar productos"
+        name="search"
+        [ngModel]="search.term()"
+        (ngModelChange)="search.term.set($event)"
+        maxlength="120"
+        placeholder="¿Qué necesita tu negocio?"
+      />
+      <button type="submit">Buscar <span aria-hidden="true">→</span></button>
+    </form>
+    <a class="account-link" routerLink="/cuenta" routerLinkActive="active"
+      ><span aria-hidden="true">○</span> {{ session.token() ? 'Mi empresa' : 'Mi cuenta' }}</a
+    >
+  </div>
+  <nav class="header-nav" aria-label="Navegación principal">
+    <a routerLink="/" fragment="categorias">Categorías <span aria-hidden="true">↓</span></a
+    ><a routerLink="/" fragment="catalogo">Catálogo</a
+    ><a routerLink="/cuenta/cotizaciones" routerLinkActive="active">Mis cotizaciones</a
+    ><a routerLink="/cuenta/pedidos" routerLinkActive="active">Mis pedidos</a
+    ><span>Librería, oficina y tecnología</span>
+  </nav>
+</header>
+<main id="contenido">
+  <router-outlet />
+</main>
+<footer class="site-footer">
+  <a class="brand" routerLink="/">Mayorista<span class="brand-pro">Pro</span></a
+  ><span>Demo académica · Empresas y productos ficticios</span>
+</footer>

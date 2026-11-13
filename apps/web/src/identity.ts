@@ -1,9 +1,23 @@
-import { Component, effect, output, signal, untracked, viewChild } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal, untracked, viewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { CatalogProduct } from './catalog-product';
-import { minimumQuantity, packDescription, presentations, quantityError } from './wholesale-quantity';
+import { packDescription, presentations } from './wholesale-quantity';
 import { FormsModule } from '@angular/forms';
 import { CatalogImportComponent } from './catalog-import';
 import { TradeComponent } from './trade';
+import { SessionService } from './session.service';
+
+/** Vista de la cuenta indicada por la URL (/cuenta/cotizaciones/:id, /cuenta/pedidos…). */
+interface AccountTarget {
+  view: 'account' | 'quotes' | 'orders';
+  id?: string;
+}
+function accountTarget(url: string): AccountTarget {
+  const [, section, id] = url.split(/[?#]/)[0].match(/^\/cuenta(?:\/(cotizaciones|pedidos))?(?:\/([^/]+))?/) ?? [];
+  if (section === 'cotizaciones') return { view: 'quotes', id };
+  if (section === 'pedidos' || url.startsWith('/payments/')) return { view: 'orders', id };
+  return { view: 'account' };
+}
 @Component({
   selector: 'app-identity',
   imports: [FormsModule, CatalogImportComponent, TradeComponent],
@@ -136,7 +150,6 @@ import { TradeComponent } from './trade';
             [token]="token()"
             [canBuy]="permissions().includes('buy')"
             [canSell]="permissions().includes('publish') && company().supplier_verified"
-            (catalogChanged)="catalogChanged.emit()"
           />
         }
         @if (permissions().includes('manage')) {
@@ -167,7 +180,7 @@ import { TradeComponent } from './trade';
         }
         @if (permissions().includes('publish')) {
           @if (company().supplier_verified) {
-            <app-catalog-import [token]="token()" (applied)="catalogChanged.emit()" />
+            <app-catalog-import [token]="token()" />
             <form class="management" (ngSubmit)="publishProduct()">
               <h3>Publicación individual</h3>
               <label>ID del producto propio<input name="productId" required [(ngModel)]="productId" /></label
@@ -210,14 +223,22 @@ import { TradeComponent } from './trade';
   </section>`,
 })
 export class IdentityComponent {
-  readonly catalogChanged = output<void>();
+  private readonly session = inject(SessionService);
+  private readonly router = inject(Router);
   private readonly trade = viewChild(TradeComponent);
-  readonly pendingQuote = signal<{ product: CatalogProduct; quantity: number } | null>(null);
-  readonly restoring = signal(true);
+  // Estado de sesión compartido con el resto de páginas (SessionService).
+  readonly token = this.session.token;
+  readonly admin = this.session.admin;
+  readonly company = this.session.company;
+  readonly permissions = this.session.permissions;
+  readonly restoring = this.session.restoring;
+  readonly pendingQuote = this.session.pendingQuote;
+  readonly message = this.session.message;
+  readonly failed = this.session.failed;
+  /** Vista pedida por la URL; se aplica cuando el panel de cotizaciones está listo. */
+  private readonly target = signal<AccountTarget>(accountTarget(this.router.url));
   readonly packDescription = packDescription;
   readonly presentations = presentations;
-  private authVersion = 0;
-  failed = signal(false);
   mode = 'login';
   email = '';
   password = '';
@@ -230,18 +251,49 @@ export class IdentityComponent {
   publish = false;
   productId = '';
   supplierId = '';
-  token = signal('');
   busy = signal(false);
-  message = signal('');
-  company = signal<any>(null);
-  permissions = signal<string[]>([]);
   members = signal<any[]>([]);
   requests = signal<any[]>([]);
-  admin = signal(false);
   link = signal('');
   constructor() {
     if (this.invitation) this.mode = 'accept';
-    void this.restoreSession();
+    const navigation = this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) this.target.set(accountTarget(event.urlAfterRedirects));
+    });
+    inject(DestroyRef).onDestroy(() => navigation.unsubscribe());
+    // Selección traída desde el catálogo: explica qué falta antes de cotizar.
+    effect(() => {
+      const selection = this.pendingQuote();
+      if (!selection || this.restoring()) return;
+      untracked(() => this.explainSelection(selection.product));
+    });
+    // Abre en el panel la vista indicada por la URL.
+    effect(() => {
+      const target = this.target();
+      const trade = this.trade();
+      if (this.restoring()) return;
+      untracked(() => {
+        if (!this.token() && target.view !== 'account') {
+          this.mode = 'login';
+          this.failed.set(false);
+          this.message.set(
+            target.view === 'quotes'
+              ? 'Ingresa con tu cuenta empresarial para ver tus cotizaciones privadas.'
+              : 'Ingresa con tu cuenta empresarial para ver tus pedidos.',
+          );
+        }
+        if (!trade || this.pendingQuote()) return;
+        if (target.view === 'quotes') {
+          if (target.id) {
+            if (trade.selected()?.id !== target.id) void trade.open(target.id);
+          } else trade.showQuotes();
+        } else if (target.view === 'orders') {
+          if (target.id) {
+            if (trade.currentOrder()?.id !== target.id) void trade.openOrder(target.id);
+          } else trade.showOrders();
+        }
+      });
+    });
     effect(() => {
       const product = this.pendingQuote();
       const trade = this.trade();
@@ -253,44 +305,21 @@ export class IdentityComponent {
       }
     });
   }
-  openQuotes() {
-    if (this.trade()) {
-      this.trade()!.showQuotes();
-      return;
-    }
-    this.failed.set(false);
+  private explainSelection(product: CatalogProduct) {
     if (!this.token()) {
       this.mode = 'login';
-      this.message.set('Ingresa con tu cuenta empresarial para ver tus cotizaciones privadas.');
-    }
-    const target = document.getElementById('cotizaciones') ?? document.getElementById('cuenta');
-    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  beginQuote(product: CatalogProduct, quantity: number | null = minimumQuantity(product)) {
-    const issue = quantityError(product, quantity);
-    if (quantity === null || issue) {
-      this.failed.set(true);
-      this.message.set(issue);
-      return;
-    }
-    this.failed.set(false);
-    if (this.token() && (this.admin() || !this.permissions().includes('buy'))) {
-      this.message.set('Tu cuenta necesita permiso de compra para solicitar cotizaciones.');
-    } else {
-      this.pendingQuote.set({ product, quantity });
-      if (!this.token()) {
-        this.mode = 'login';
-        this.message.set(
-          'Ingresa con tu cuenta compradora para cotizar ' + product.name + '. Conservaremos la selección.',
-        );
-      }
-    }
-    if (!this.token())
-      requestAnimationFrame(() =>
-        document.querySelector('.quote-selection')?.scrollIntoView({ behavior: 'auto', block: 'start' }),
+      this.failed.set(false);
+      this.message.set(
+        'Ingresa con tu cuenta compradora para cotizar ' + product.name + '. Conservaremos la selección.',
       );
-    else if (!this.permissions().includes('buy'))
-      document.getElementById('cuenta')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      requestAnimationFrame(() =>
+        document.querySelector('.quote-selection')?.scrollIntoView({ behavior: 'auto', block: 'nearest' }),
+      );
+    } else if (this.admin() || !this.permissions().includes('buy')) {
+      this.pendingQuote.set(null);
+      this.failed.set(false);
+      this.message.set('Tu cuenta necesita permiso de compra para solicitar cotizaciones.');
+    }
   }
   private async call(path: string, method = 'GET', body?: unknown): Promise<any> {
     this.busy.set(true);
@@ -320,7 +349,7 @@ export class IdentityComponent {
     }
   }
   async submit() {
-    ++this.authVersion;
+    this.session.nextAuthVersion();
     if (this.mode === 'login') {
       const result = await this.call('auth/login', 'POST', { email: this.email, password: this.password });
       if (result) {
@@ -402,49 +431,18 @@ export class IdentityComponent {
       this.message.set('Proveedor verificado. Revisado manualmente.');
   }
   async publishProduct() {
-    if (await this.call('products/' + this.productId + '/publish', 'POST')) this.catalogChanged.emit();
+    if (await this.call('products/' + this.productId + '/publish', 'POST'))
+      this.message.set('Producto publicado. Ya aparece en el catálogo.');
   }
   private clearSession(clearSelection = true) {
-    this.token.set('');
-    this.company.set(null);
+    this.session.clear(clearSelection);
     this.requests.set([]);
     this.members.set([]);
-    this.admin.set(false);
     this.link.set('');
-    this.permissions.set([]);
     this.password = '';
-    if (clearSelection) this.pendingQuote.set(null);
-  }
-  private async restoreSession() {
-    const version = ++this.authVersion;
-    try {
-      const response = await fetch('/api/v1/auth/restore', { credentials: 'same-origin', cache: 'no-store' });
-      if (version !== this.authVersion) return;
-      if (!response.ok) {
-        this.clearSession(false);
-        if (response.status !== 401 && response.status !== 403)
-          this.message.set('No pudimos comprobar tu sesión. Ingresa de nuevo.');
-        return;
-      }
-      const session = await response.json();
-      if (version !== this.authVersion) return;
-      this.admin.set(session.platformAdmin === true);
-      this.company.set(session.company ?? null);
-      this.permissions.set(session.permissions ?? []);
-      this.token.set(session.token);
-      if (location.hash === '#cuenta' || location.hash === '#cotizaciones')
-        requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView({ block: 'start' }));
-    } catch {
-      if (version === this.authVersion) {
-        this.clearSession(false);
-        this.message.set('No pudimos comprobar tu sesión. Ingresa de nuevo.');
-      }
-    } finally {
-      if (version === this.authVersion) this.restoring.set(false);
-    }
   }
   async logout() {
-    ++this.authVersion;
+    this.session.nextAuthVersion();
     const result = await this.call('auth/logout', 'POST');
     if (result?.loggedOut) {
       this.clearSession();

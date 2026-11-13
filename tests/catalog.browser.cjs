@@ -37,7 +37,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
         [company,account,name==='reader'?['buy']:['buy','publish']]);
     }
     app = await NestFactory.create(AppModule,{logger:false,abortOnError:false});
-    app.setGlobalPrefix('api/v1');app.useStaticAssets(resolve(__dirname,'../apps/web/dist/catalog/browser'));
+    require('../apps/api/dist/http-setup.js').configureHttp(app,resolve(__dirname,'../apps/web/dist/catalog/browser'));
     await app.listen(0,'127.0.0.1');
     const base = await app.getUrl();
     browser = await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});
@@ -50,7 +50,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
       page.on('pageerror',error=>errors.push(error.message));
       page.on('response',response=>{if(response.status()===403)denied.push(new URL(response.url()).pathname);});
       try {
-        await page.goto(base);
+        await page.goto(new URL('/cuenta',base).href);
         await page.getByLabel('Correo',{exact:true}).fill(name+'@browser.test');
         await page.getByLabel(/^Contraseña/).fill(password);
         await page.locator('form').getByRole('button',{name:'Ingresar',exact:true}).click();
@@ -112,12 +112,14 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
         values.precio='48.00';await upload();
         await page.getByRole('button',{name:'Confirmar lote completo',exact:true}).click();
         await expect(page.getByText(/Lote aplicado: 1 altas y 0 actualizaciones/)).toBeVisible();
-        await expect(page.getByRole('heading',{name:'Cuaderno Browser',exact:true})).toBeVisible();
         const product=(await db.query("SELECT stock,price,published FROM products WHERE sku='BROWSER-CUAD'")).rows[0];
         assert.deepEqual(product,{stock:20,price:'48.00',published:true});
         const downloadPromise=page.waitForEvent('download');
         await page.getByRole('button',{name:'Descargar reporte CSV',exact:true}).click();
         const download=await downloadPromise;assert.match(download.suggestedFilename(),/^reporte-.*\.csv$/);
+        // El catálogo (otra ruta) ya muestra el producto publicado.
+        await page.locator('.header-nav').getByRole('link',{name:'Catálogo',exact:true}).click();
+        await expect(page.getByRole('heading',{name:'Cuaderno Browser',exact:true})).toBeVisible();
       });
     });
   } finally {

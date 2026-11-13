@@ -35,8 +35,7 @@ async function withDemoApi(databaseUrl, action) {
   process.env.DATABASE_URL = databaseUrl;
   try {
     app = await NestFactory.create(AppModule, { logger: false, abortOnError: false });
-    app.setGlobalPrefix('api/v1');
-    app.useStaticAssets(join(ROOT, 'apps/web/dist/catalog/browser'));
+    require('../../apps/api/dist/http-setup.js').configureHttp(app, join(ROOT, 'apps/web/dist/catalog/browser'));
     await app.listen(0, '127.0.0.1');
     return await action((await app.getUrl()) + '/api/v1/');
   } finally {

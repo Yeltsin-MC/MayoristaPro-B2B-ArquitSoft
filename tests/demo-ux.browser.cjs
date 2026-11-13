@@ -102,6 +102,7 @@ test('Demo UX: login, catalogo, cotizacion y comparacion FastAPI en escritorio y
     const forbidden = await f.call(`quotations/${quotation.id}/score-offers`, 'POST', undefined, 'buyer2');
     assert.equal(forbidden.status, 404);
     await page.getByRole('button', { name: 'Salir', exact: true }).click();
+    await page.locator('.header-nav').getByRole('link', { name: 'Catálogo', exact: true }).click();
     await page.getByRole('button', { name: 'Limpiar', exact: true }).click();
     await expect(page.locator('.product-card')).toHaveCount(5);
     await expect(page.getByRole('button', { name: 'Cotización no habilitada', exact: false })).toHaveCount(3);

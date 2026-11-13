@@ -6,7 +6,7 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
   browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});
   const errors=[];
   async function login(who){const page=await browser.newPage({viewport:{width:1440,height:1000}});pages.push(page);page.on('pageerror',e=>errors.push(e.message));
-   await page.goto(f.base.replace('/api/v1/','/'));await page.getByLabel('Correo',{exact:true}).fill(f.accounts[who].email);await page.getByLabel(/^Contraseña/).fill(f.password);
+   await page.goto(f.base.replace('/api/v1/','/cuenta'));await page.getByLabel('Correo',{exact:true}).fill(f.accounts[who].email);await page.getByLabel(/^Contraseña/).fill(f.password);
    await page.locator('form').getByRole('button',{name:'Ingresar',exact:true}).click();await expect(page.getByRole('heading',{name:'Cotizaciones y pedidos',exact:true})).toBeVisible();return page;
   }
   async function open(page,id){await page.getByRole('button',{name:'Actualizar cotizaciones',exact:true}).click();await page.locator('[data-request-id="'+id+'"] ').getByRole('button', {name:'Ver cotización',exact:true}).click();}
@@ -27,6 +27,10 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
     await seller.getByRole('button',{name:'Enviar oferta',exact:true}).click();const result=await(await offered).json();assert.equal(result.offers.length,1);offerIds.push(result.offers[0].id);
    }
    await open(buyer,q.id);
+   // Cada cotización tiene su propia URL: se puede recargar o compartir dentro de la empresa.
+   await expect(buyer).toHaveURL(new RegExp('/cuenta/cotizaciones/'+q.id+'$'));
+   await buyer.reload();
+   await expect(buyer.locator('.selected-request')).toContainText('Cuadernos para demo T4');
    const vendorOffer=buyer.locator('.offer').filter({has:buyer.getByRole('heading',{name:'Oferta de vendor',exact:true})});
    await expect(vendorOffer.locator('.offer-total strong')).toHaveText('S/ 104.00');
    await vendorOffer.getByText('Ver detalles',{exact:true}).click();
