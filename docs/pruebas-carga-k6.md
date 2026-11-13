@@ -42,7 +42,7 @@ El comando lee `DEMO_PASSWORD` de `.env.demo-catalog150` y usa la compradora `de
 
 | Fecha | Perfil | Entorno | p95 catálogo | Errores | Resultado |
 |---|---|---|---|---|---|
-| (pendiente) | humo | Laptop, demo 3300 | | | |
+| 13/11/2026 | humo (5 VU, 1 min, 62 peticiones) | Laptop Windows, demo 3300, k6 2.4.0 | 98,83 ms (cotizaciones 113 ms, pedidos 83 ms, opciones 7,6 ms) | 0 % (60/60 comprobaciones) | ✓ Aprobado |
 | (pendiente) | local | Laptop, demo 3300 | | | |
 | (pendiente) | completo | AWS | | | |
 
