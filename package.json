@@ -18,6 +18,7 @@
     "test:unit": "node --test tests/*.test.cjs",
     "test:browser": "node --env-file-if-exists=.env --test --test-concurrency=1 tests/catalog.browser.cjs tests/quotations.browser.cjs tests/experiencia-catalogo.browser.cjs tests/cantidad-mayorista.browser.cjs tests/continuidad-comprador.browser.cjs tests/cotizacion-simple.browser.cjs tests/lista-pedido.browser.cjs",
     "test:demo": "node --env-file-if-exists=.env --test tests/demo.browser.cjs",
+    "test:carga": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 tests/k6/run.cjs",
     "demo:catalog:load": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/load.cjs",
     "demo:catalog:api": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/serve.cjs",
     "identity:admin": "node --env-file-if-exists=.env database/create-admin.cjs",
