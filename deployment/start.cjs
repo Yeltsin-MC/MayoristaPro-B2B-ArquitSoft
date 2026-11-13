@@ -49,9 +49,9 @@ async function main(mode) {
     process.once('SIGTERM', stop);
     process.once('SIGINT', stop);
     while (!controller.signal.aborted) {
-      await runScript('apps/api/src/workers/expire-orders.cjs');
+      await runScript('apps/api/dist/workers/expire-orders.cjs');
       if (controller.signal.aborted) break;
-      await runScript('apps/api/src/workers/recover-webhooks.cjs');
+      await runScript('apps/api/dist/workers/recover-webhooks.cjs');
       try { await delay(seconds * 1000, undefined, { signal: controller.signal }); }
       catch (error) { if (error.name !== 'AbortError') throw error; }
     }

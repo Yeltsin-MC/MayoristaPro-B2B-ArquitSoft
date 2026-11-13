@@ -84,7 +84,6 @@ jobs:
       POSTGRES_USER: mayorista_demo
       POSTGRES_DB: mayorista_demo_ci
       DEMO_URL: http://127.0.0.1:8080
-      COMPOSE_CONFIG_FILE: ${{ runner.temp }}/compose.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -95,6 +94,7 @@ jobs:
           demo_password="$(openssl rand -hex 24)"
           echo "::add-mask::$demo_password"
           echo "POSTGRES_PASSWORD=$demo_password" >> "$GITHUB_ENV"
+          echo "COMPOSE_CONFIG_FILE=$RUNNER_TEMP/compose.json" >> "$GITHUB_ENV"
           docker compose version
       - name: Validar configuración y aislamiento
         run: |

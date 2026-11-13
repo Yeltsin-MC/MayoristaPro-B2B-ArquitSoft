@@ -6,6 +6,7 @@ COPY apps/web/package.json apps/web/package.json
 RUN npm ci
 COPY apps/api apps/api
 COPY apps/web apps/web
+COPY deployment/copy-workers.cjs deployment/copy-workers.cjs
 RUN npm run build
 
 FROM node:24-bookworm-slim AS api
@@ -16,7 +17,6 @@ COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 RUN npm ci --omit=dev --ignore-scripts --workspace @mayoristapro/api --include-workspace-root
 COPY --from=build /app/apps/api/dist apps/api/dist
-COPY apps/api/src/workers apps/api/src/workers
 COPY database database
 COPY deployment/start.cjs deployment/start.cjs
 USER node

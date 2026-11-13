@@ -17,3 +17,13 @@ test('T7: configuración incompleta o puerto inválido detiene el arranque', () 
   const env = { POSTGRES_HOST: 'db', POSTGRES_USER: 'demo', POSTGRES_PASSWORD: 'synthetic', POSTGRES_DB: 'demo' };
   for (const port of ['0', '70000', 'bad']) assert.throws(() => databaseUrl({ ...env, POSTGRES_PORT: port }), /POSTGRES_PORT/);
 });
+
+test('T7: workers empaquetados resuelven sus módulos JavaScript compilados', () => {
+  const { readFileSync } = require('node:fs');
+  for (const file of ['expire-orders.cjs', 'recover-webhooks.cjs']) {
+    assert.equal(readFileSync('apps/api/dist/workers/' + file, 'utf8'), readFileSync('apps/api/src/workers/' + file, 'utf8'));
+  }
+  assert.ok(require.resolve('../apps/api/dist/payments/application/payments'));
+  assert.ok(require.resolve('../apps/api/dist/payments/infrastructure/postgres-payments'));
+  assert.ok(require.resolve('../apps/api/dist/payments/infrastructure/mercadopago-gateway'));
+});
