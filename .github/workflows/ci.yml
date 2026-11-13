@@ -71,7 +71,7 @@ jobs:
       - run: npm run db:migrate
       - run: npm run db:seed
       - run: npm run test:integration
-      - run: node --env-file-if-exists=.env tests/catalog-cache.benchmark.cjs
+      # Medicion Redis ya registrada en PR #5; no repetir en esta integracion.
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
       - run: node --env-file-if-exists=.env --test tests/demo-ux.browser.cjs
@@ -96,6 +96,7 @@ jobs:
       POSTGRES_USER: mayorista_demo
       POSTGRES_DB: mayorista_demo_ci
       DEMO_URL: http://127.0.0.1:8080
+      REDIS_URL: redis://redis:6379
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -110,18 +111,20 @@ jobs:
           docker compose version
       - name: Validar configuración y aislamiento
         run: |
-          docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml config --quiet
-          docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml config --format json > "$COMPOSE_CONFIG_FILE"
+          docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml --profile cache config --quiet
+          docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml --profile cache config --format json > "$COMPOSE_CONFIG_FILE"
       - name: Construir y arrancar demo
-        run: docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml up -d --build
+        run: docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml --profile cache up -d --build
       - name: Comprobar Angular, proxy, catálogo y FastAPI
         run: node tests/deployment.smoke.cjs
+      - name: Comprobar migracion 007, hit, invalidacion y Redis detenido
+        run: node tests/deployment-cache.smoke.cjs
       - name: Logs de diagnóstico
         if: failure()
-        run: docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml logs --no-color --tail 60
+        run: docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml --profile cache logs --no-color --tail 60
       - name: Detener servicios de prueba
         if: always()
-        run: docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml down
+        run: docker compose --env-file .env.demo.example -f compose.yaml -f compose.demo.yaml --profile cache down
       - uses: actions/upload-artifact@v4
         if: always()
         with:

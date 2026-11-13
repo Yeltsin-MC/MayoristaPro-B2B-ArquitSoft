@@ -1,6 +1,6 @@
 # T7 — Preparación del despliegue público
 
-Rama `sprint-2/preparacion-despliegue`, desde `main` actualizado en `9c9f463`. El PR #5 de Redis sigue abierto con cabeza `851dd10`. La configuración permite su integración posterior mediante un perfil opcional. Las ramas de Redis y T7 conservan sus incrementos separados para revisión.
+Rama `sprint-2/preparacion-despliegue`, desde `main` actualizado en `9c9f463`. El PR #5 de Redis, cabeza revisada `851dd10`, se fusionó con autorización en `eb0796f`. Esta rama incorporó ese main sin conflictos. El perfil cache continúa siendo opcional para el operador.
 
 ## Arranque preparado
 
@@ -97,7 +97,7 @@ Cada terminal necesita sus variables correspondientes. El worker nativo puede in
 
 ## Redis opcional y comprobación posterior al PR #5
 
-Tras incorporar el PR #5, reconstruir las imágenes y aplicar las migraciones, incluida 007. Configurar `REDIS_URL=redis://redis:6379` en `.env.demo` y activar el perfil
+Con el PR #5 incorporado, reconstruir las imágenes y aplicar las migraciones, incluida 007. Configurar `REDIS_URL=redis://redis:6379` en `.env.demo` y activar el perfil
 
 ```powershell
 docker compose --env-file .env.demo -f compose.yaml -f compose.demo.yaml --profile cache up -d --build
@@ -126,3 +126,11 @@ La comprobación pendiente de integración conjunta verificará Redis interno li
 - Se corrigió el empaquetado de workers copiando los scripts existentes junto a los módulos compilados para mantener sus imports relativos. La prueba focalizada comprueba su contenido y la resolución de dependencias. Las reglas de pedidos y pagos no cambiaron; Mercado Pago con credenciales de prueba sigue pendiente y los pagos de demo permanecen simulados.
 
 Entrega en [PR #6](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/6), sin fusionar. Tras integrar Redis, completar T7-P05 con el perfil `cache` activo y caído según la sección anterior. El despliegue público, HTTPS y la validación k6 de al menos 2.000 usuarios virtuales concurrentes continúan pendientes de sus autorizaciones y tareas.
+
+## Integración conjunta autorizada de PR #5 y #6
+
+PR #5 confirmado en `851dd10` con CI aprobado y fusionado en `eb0796f`. Rama #6 actualizada con ese main, sin conflictos. El job deployment activa `--profile cache` y `REDIS_URL=redis://redis:6379` y añade `tests/deployment-cache.smoke.cjs`.
+
+La comprobación registra la migración 007, prueba un hit HTTP de la clave exacta con una marca sintética únicamente en Redis del runner, confirma que un commit de stock avanza la revisión y descarta el valor anterior, detiene realmente Redis y exige HTTP 200 con el siguiente stock de PostgreSQL. Finalmente restaura stock y reinicia Redis. No utiliza cuentas reales ni modifica reglas de negocio. El script puede ejecutarse con `node tests/deployment-cache.smoke.cjs` sobre el Compose aislado de prueba; DEMO_ENV_FILE permite indicar `.env.demo` en vez del ejemplo de CI. Nunca ejecutarlo sobre datos de producción.
+
+La medición Redis anterior se conserva como evidencia y se retiró su ejecución automática de esta integración. k6 permanece pendiente. Resultado conjunto: pendiente de finalizar el CI de esta actualización. No fusionar #6 antes de que verify y deployment aprueben el commit actualizado.

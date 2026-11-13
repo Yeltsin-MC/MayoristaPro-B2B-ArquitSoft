@@ -49,7 +49,7 @@ async function main() {
     catalog: '200 con datos y no-store; límites conservados',
     apiRouting: '404 JSON para API inexistente', fastApi: 'NestJS comunica con FastAPI interno',
     secrets: 'Ruta .env bloqueada', network: process.env.COMPOSE_CONFIG_FILE ? 'Solo web publicado; servicios de datos internos' : 'Sin comprobación Compose',
-    redis: 'Opcional; comprobación de caché pendiente de integrar PR #5' };
+    redis: process.env.REDIS_URL ? 'Perfil cache activo; comprobacion conjunta en redis-conjunto.json' : 'Redis opcional desactivado' };
   await mkdir('docs/evidencias/preparacion-despliegue', { recursive: true });
   await writeFile('docs/evidencias/preparacion-despliegue/arranque.json', JSON.stringify(result, null, 2) + '\n');
   console.log(JSON.stringify(result));
