@@ -16,6 +16,7 @@ import {
   TradeRule,
 } from '../domain/trade';
 import { priceTiers } from '../domain/price-tiers';
+import { assertFulfillment, FulfillmentDraft, FulfillmentRole } from '../domain/fulfillment';
 import { TIERS_JSON } from '../../catalog/infrastructure/price-tiers-sql';
 type Actor = Awaited<ReturnType<IdentityService['tradeIdentity']>>;
 @Injectable()
@@ -344,6 +345,12 @@ export class PostgresTrade implements TradeStore {
         [id],
       )
     ).rows;
+    const events = (
+      await db.query(
+        `SELECT state,note,created_at AS "createdAt" FROM trade_order_events WHERE order_id=$1 ORDER BY created_at,id`,
+        [id],
+      )
+    ).rows;
     return {
       id: o.id,
       requestId: o.request_id,
@@ -355,8 +362,12 @@ export class PostgresTrade implements TradeStore {
       subtotal: o.subtotal,
       total: o.total,
       deliveryDays: o.delivery_days,
+      expiresAt: o.expires_at,
+      isBuyer: a.canBuy && o.buyer_company_id === a.companyId,
+      isSupplier: a.canSell && o.supplier_id === a.supplierId,
       items,
       reservations,
+      events,
     };
   }
   async order(offer: string, key: string, auth?: string) {
@@ -465,5 +476,26 @@ export class PostgresTrade implements TradeStore {
   }
   async orderDetail(id: string, auth?: string) {
     return this.tx(async db => this.orderView(db, id, await this.identity.tradeIdentity(db, auth)));
+  }
+  async fulfill(id: string, input: FulfillmentDraft, auth?: string) {
+    return this.tx(async db => {
+      const a = await this.identity.tradeIdentity(db, auth);
+      const o = (await db.query('SELECT * FROM trade_orders WHERE id=$1 FOR UPDATE', [id])).rows[0];
+      const roles: FulfillmentRole[] = [];
+      if (o && a.canBuy && o.buyer_company_id === a.companyId) roles.push('buyer');
+      if (o && a.canSell && o.supplier_id === a.supplierId) roles.push('supplier');
+      if (!roles.length) throw new NotFoundException();
+      if (assertFulfillment(o.state, input.estado, roles)) {
+        await db.query('UPDATE trade_orders SET state=$2 WHERE id=$1', [id, input.estado]);
+        await db.query('INSERT INTO trade_order_events(order_id,state,actor_id,note) VALUES($1,$2,$3,$4)', [
+          id,
+          input.estado,
+          a.accountId,
+          input.nota,
+        ]);
+        await this.audit(db, a, 'order-' + input.estado, id);
+      }
+      return this.orderView(db, id, a);
+    });
   }
 }

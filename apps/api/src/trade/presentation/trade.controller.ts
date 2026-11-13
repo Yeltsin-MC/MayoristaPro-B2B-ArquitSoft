@@ -58,4 +58,11 @@ export class TradeController {
   ) {
     return this.trade.orderDetail(id, a);
   }
+  @Patch('orders/:id/fulfillment') fulfill(
+    @Param('id') id: string,
+    @Body() b: unknown,
+    @Headers('authorization') a?: string,
+  ) {
+    return this.trade.fulfill(id, b, a);
+  }
 }
