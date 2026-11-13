@@ -394,3 +394,4 @@ h1 { font-size: clamp(2.3rem, 4.2vw, 3.8rem); line-height: 1.02; margin-bottom: 
  .quote-selection { padding: 18px; }
  .quote-selection h3 { font-size: 1.15rem; }
 }
+.photo-category-icon { display: grid; place-items: center; height: 100%; background: #ece8db; color: #52634f; font-size: clamp(3rem, 7vw, 5rem); }

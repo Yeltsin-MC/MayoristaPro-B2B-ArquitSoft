@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-13T09:49:39.928Z",
+  "results": [
+    {
+      "viewport": "escritorio",
+      "width": 1440,
+      "categories": 5,
+      "searchMatches": 2,
+      "belowMinimumDisabled": true,
+      "requestToTwoSuppliers": true,
+      "quantity": 2,
+      "comparisonTotals": [
+        "187.80",
+        "180.00"
+      ],
+      "pageErrors": []
+    },
+    {
+      "viewport": "movil",
+      "width": 390,
+      "categories": 5,
+      "searchMatches": 2,
+      "belowMinimumDisabled": true,
+      "requestToTwoSuppliers": true,
+      "quantity": 2,
+      "comparisonTotals": [
+        "187.80",
+        "180.00"
+      ],
+      "pageErrors": []
+    }
+  ]
+}
