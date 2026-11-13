@@ -8,3 +8,8 @@ __pycache__/
 
 # Entornos virtuales de Python
 .venv/
+
+# Configuración privada por entorno
+.env.*
+!.env.example
+!.env.demo.example

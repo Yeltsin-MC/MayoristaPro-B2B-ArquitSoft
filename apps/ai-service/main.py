@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import uvicorn
+import os
 
 app = FastAPI(title="MayoristaPro AI Service", version="1.0.0")
 
@@ -212,4 +213,4 @@ def score_offers_endpoint(request: ScoreRequest):
 
 if __name__ == "__main__":
     # Para desarrollo local: python apps/ai-service/main.py
-    uvicorn.run(app, host="127.0.0.1", port=5000, log_level="info")
+    uvicorn.run(app, host=os.environ.get("AI_HOST", "127.0.0.1"), port=int(os.environ.get("AI_PORT", "5000")), log_level="info")
