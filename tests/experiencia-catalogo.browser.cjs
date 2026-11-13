@@ -27,7 +27,8 @@ test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritori
     assert.equal(confirmed.status, 201, JSON.stringify(confirmed.body));
     const secondPage = await f.call('products?page=2&limit=12', 'GET', undefined, null);
     assert.equal(secondPage.body.items.length, 12);
-    const outsideFirstPage = secondPage.body.items[0];
+    const outsideFirstPage = secondPage.body.items.find(product => product.name.endsWith('(demo)'));
+    assert.ok(outsideFirstPage, 'La segunda pagina incluye una fila demo con nombre unico');
     await mkdir(artifact, { recursive: true });
     browser = await chromium.launch({ headless: true,
       ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}) });
