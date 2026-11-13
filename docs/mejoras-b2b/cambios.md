@@ -26,5 +26,5 @@ Cada mejora está en commits separados sobre el [punto 0](punto-0.md) (`78af421`
 
 - `npm run format:check` y `npm run lint`: sin errores.
 - `npm run test:unit`: 22 correctas (5 nuevas).
-- `npm run test:integration`: 109 correctas (6 nuevas en `price-tiers.integration.cjs` y `fulfillment.integration.cjs`).
+- `npm run test:integration`: todas correctas con PostgreSQL, Redis y el servicio de IA activos (incluye las nuevas `price-tiers.integration.cjs` y `fulfillment.integration.cjs`).
 - `npm run test:browser`: 12 correctas.
