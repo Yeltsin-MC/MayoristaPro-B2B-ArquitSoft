@@ -43,7 +43,7 @@ El comando lee `DEMO_PASSWORD` de `.env.demo-catalog150` y usa la compradora `de
 | Fecha | Perfil | Entorno | p95 catálogo | Errores | Resultado |
 |---|---|---|---|---|---|
 | 13/11/2026 | humo (5 VU, 1 min, 62 peticiones) | Laptop Windows, demo 3300, k6 2.4.0 | 98,83 ms (cotizaciones 113 ms, pedidos 83 ms, opciones 7,6 ms) | 0 % (60/60 comprobaciones) | ✓ Aprobado |
-| (pendiente) | local | Laptop, demo 3300 | | | |
+| 13/11/2026 | local (hasta 200 VU, 6,5 min, 20 961 peticiones, 53 por segundo) | Laptop Windows, demo 3300, k6 2.4.0 | 11,08 ms (cotizaciones 39,7 ms, pedidos 39 ms, opciones 8,1 ms; p99 global 52 ms) | 0 % (20 959/20 959 comprobaciones) | ✓ Aprobado |
 | (pendiente) | completo | AWS | | | |
 
 Comprobación previa sin k6 (13/11/2026, entorno de desarrollo): 2000 peticiones a `GET /products?page=2&limit=20`, 50 en paralelo, todas con 200, en 3,6 s (unas 550 por segundo, sin Redis). No reemplaza la medición k6.
