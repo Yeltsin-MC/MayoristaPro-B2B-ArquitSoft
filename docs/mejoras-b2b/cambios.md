@@ -12,6 +12,9 @@ Cada mejora está en commits separados sobre el [punto 0](punto-0.md) (`78af421`
 | 5 | `docs: …` | Este registro y el contrato REST. |
 | 6 | `feat(web): lista de pedido multiproducto…` | Página `/lista`: productos de varios proveedores agrupados por proveedor; una sola solicitud de cotización por proveedor, con total referencial según precios por volumen. |
 | 7 | `feat(web): rediseño estilo tienda B2B` | Barra superior, acciones «Mi cuenta» y «Lista de pedido», menú de categorías, carrusel, franja de beneficios, proveedores verificados, «Cómo comprar en 4 pasos», tarjetas compactas y pie de página con columnas. Referencias: compy.pe y oster.cl. |
+| 8 | `feat(demo): 15 empresas ficticias…` | El catálogo demo pasa de 5 a 15 proveedores ficticios (450 productos) con razones sociales realistas, sin «(demo)» en los nombres. Dos de cada tres productos reciben precios por volumen (−5 % y −10 %). La recarga renombra las empresas ya existentes sin tocar stock ni pedidos. |
+| 9 | `feat(web): ilustraciones por categoría` | Ilustraciones SVG por rubro (íconos Lucide, licencia ISC) en lugar del ícono genérico. |
+| 10 | `feat(web): estilo retail…` | Franja naranja, cabecera verde oscuro con buscador blanco, carrusel con temas (incluye «ofertas»), categorías circulares, fila «Ofertas por volumen» con etiquetas rojas de descuento, precios grandes, proveedor verificado, botón naranja «Agregar a la lista» y franja «Registrar mi empresa». |
 
 ## Reglas de negocio
 
