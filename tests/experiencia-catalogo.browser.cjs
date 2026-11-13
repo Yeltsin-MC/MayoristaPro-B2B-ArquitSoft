@@ -92,10 +92,10 @@ test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritori
         await page.getByLabel('Correo', { exact: true }).fill(f.accounts.buyer.email);
         await page.getByLabel(/^Contraseña/).fill(f.password);
         await page.locator('form').getByRole('button', { name: 'Ingresar', exact: true }).click();
-        await expect(page.getByRole('heading', { name: 'Nueva solicitud de cotización', exact: true })).toBeVisible();
-        await expect(page.getByLabel('Descripción', { exact: true })).toHaveValue('Cuaderno A4 espiral (demo)');
+        await expect(page.getByRole('heading', { name: 'Solicitar cotización', exact: true })).toBeVisible();
+        await expect(page.locator('.quotation-product')).toContainText('Cuaderno A4 espiral (demo)');
         await expect(page.getByLabel('Cantidad de presentaciones', { exact: true })).toHaveValue('2');
-        await expect(page.getByRole('checkbox', { name: 'Distribuidora Oficina (demo)', exact: true })).toBeChecked();
+        await expect(page.locator('.quotation-product')).toContainText('Distribuidora Oficina (demo)');
         const sent = page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/quotations');
         await page.getByRole('button', { name: 'Enviar solicitud', exact: true }).click();
         const response = await sent;
@@ -105,8 +105,8 @@ test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritori
         assert.equal(quotation.items[0].quantity, 2);
         assert.equal(quotation.suppliers[0].id, f.accounts.vendor.supplier);
         assert.equal((await f.call('quotations/' + quotation.id, 'GET', undefined, 'buyer2')).status, 404);
-        await page.getByRole('button', { name: 'Mis cotizaciones', exact: true }).click();
-        await expect(page.getByRole('heading', { name: 'Cotizaciones y pedidos', exact: true })).toBeInViewport();
+        await page.locator('.header-nav').getByRole('button', { name: 'Mis cotizaciones', exact: true }).click();
+        await expect(page.getByRole('heading', { name: 'Mis cotizaciones', exact: true })).toBeInViewport();
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
         // Cabecera, accesos y búsqueda tienen áreas independientes y al menos 44px.
         await page.evaluate(() => scrollTo(0, 0));

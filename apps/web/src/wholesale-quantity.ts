@@ -30,10 +30,10 @@ export function quantityError(product: CatalogProduct, quantity: number | null):
 export function quantityEquivalence(product: CatalogProduct, quantity: number | null): string {
   if (quantity === null || !Number.isSafeInteger(quantity) || quantity <= 0 || product.unitsPerPack <= 1) return '';
   const units = quantity * product.unitsPerPack;
-  return Number.isSafeInteger(units) ? presentations(quantity, product.unit) + ' = ' + units + ' unidades' : '';
+  return Number.isSafeInteger(units) ? presentations(quantity, product.unit) + ' = ' + units + (/resmas?/i.test(product.name) ? ' resmas' : ' unidades') : '';
 }
 export function packDescription(product: CatalogProduct): string {
   const unit = product.unit.toLowerCase();
   if (unit === 'unidad' && product.unitsPerPack === 1) return unit;
-  return unit + ' de ' + product.unitsPerPack + ' ' + unitName('unidad', product.unitsPerPack);
+  return unit + ' de ' + product.unitsPerPack + ' ' + (/resmas?/i.test(product.name) ? unitName('resma', product.unitsPerPack) : unitName('unidad', product.unitsPerPack));
 }

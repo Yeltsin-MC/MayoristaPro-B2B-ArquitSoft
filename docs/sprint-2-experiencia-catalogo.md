@@ -125,3 +125,34 @@ La tarjeta y el detalle explican el motivo. Ofrecen abrir otra oferta cotizable 
 | EC14 | Motivo de las tarjetas deshabilitadas y alternativa que abre un producto cotizable | Consulta de demo documentada y continuidad-comprador.browser.cjs |
 
 Compilación local Angular y NestJS aprobada. Pruebas focalizadas de PostgreSQL y navegador completadas con comprador y proveedor ficticios en un esquema aislado. Se comprobaron cookie HttpOnly de sesión y Secure para HTTPS, rechazo de origen ajeno, vencimiento, cierre, cambio de permisos y acceso revocado. En 1440x1000 y 390x844 se crearon solicitudes reales conservando cuatro cajas después del ingreso y se abrió otra solicitud con seis cajas estando autenticado. La recarga recuperó la cuenta y la solicitud guardada. Un fallo 503 simulado en restore mantuvo el acceso sin autorizar el área privada. localStorage y sessionStorage permanecieron vacíos. Capturas y resultado.json en docs/evidencias/primera-tanda-ux/. La regresión completa corresponde al CI del PR #7.
+## Simplificación de cotizaciones para compradores — EC15–EC19
+
+Rama `sprint-2/ux-cotizacion-comprador`, basada en `e4df9c9` del PR #8, que incluye la interfaz del PR #7 (`45b9678`). Ambos PR siguen abiertos al comenzar esta entrega. Este incremento UX se revisa sobre #8; después de integrar las dependencias se deberá revisar contra `main`. No incluye fusión ni AWS.
+
+### Flujo y decisiones
+
+Desde una tarjeta o detalle, se conserva la selección actual y el ingreso validado por el servidor. Al autenticarse aparece un formulario compacto con producto, proveedor, empaque, cantidad y **Enviar solicitud**. Los datos del producto son texto, no campos repetidos de edición. El proveedor de origen permanece seleccionado; **Añadir otro proveedor** despliega los destinatarios adicionales para enviar una sola solicitud. Los mínimos, múltiplos, equivalencia y errores de stock aparecen junto a la cantidad. En A4, se usa el empaque real del catálogo: caja de **5 resmas**, no las diez del ejemplo ilustrativo. Dos cajas equivalen a diez resmas.
+
+**Nueva solicitud** conserva el formulario completo para descripciones libres, presentaciones e ítems múltiples. Iniciarla limpia la selección anterior. Mis pedidos queda accesible mediante navegación separada y fuera del formulario de envío.
+
+El envío correcto muestra **Solicitud enviada** y acceso a **Mis cotizaciones**. La lista usa producto principal, **Esperando ofertas**, **1 oferta recibida**, **N ofertas recibidas** u **Oferta aceptada**, y **Ver cotización**. No muestra UUID en sus etiquetas; los identificadores permanecen internos para API/automatización. Abrir una cotización desplaza el foco a su detalle.
+
+Para evitar descargar todos los detalles al construir la lista, `GET /quotations` agrega `primaryProduct` (mismo orden de ítems que el detalle) y `offerCount`. El comprador autorizado cuenta las ofertas de su solicitud; cada proveedor destinatario cuenta solo sus propias ofertas. No se expone el número de ofertas de competidores ni información de otras empresas. Se mantienen los filtros de autorización y el máximo de 100 solicitudes existentes.
+
+Las tarjetas de comparación destacan proveedor, total PEN con envío y plazo. **Ver detalles** mantiene disponibles antes de aceptar la cantidad, precio, desglose, IGV y vigencia. La puntuación calculada está dentro de los detalles de la oferta; su cálculo y ordenación permanecen en **Ver detalles de comparación e IA**. No se cambia el algoritmo ni se llama a otro modelo.
+
+**Aceptar oferta** conserva su significado: no reserva stock. Luego aparece **Crear pedido y reservar stock**, que usa la transacción/idempotencia existentes de T4. No se cambian precios, permisos, inventario ni pagos.
+
+### Criterios y evidencia
+
+| ID | Criterio | Prueba/comprobación |
+|---|---|---|
+| EC15 | Compacto desde producto, solo cantidad editable, proveedor de origen conservado, segundo proveedor secundario y selección recuperada al ingresar | `cotizacion-simple.browser.cjs`: A4 Cobre, ingreso conservando cuatro cajas, un solo input inicial, dos destinatarios en la solicitud enviada; selección autenticada de seis cajas |
+| EC16 | Mensaje próximo a cantidad inválida y envío bloqueado por mínimo, múltiplo o stock | Mismo navegador: 1 caja, 3 cajas y 42 cajas inválidas; 2 válidas; `aria-invalid` y explicación asociada |
+| EC17 | Confirmación y lista legibles sin UUID; conteo privado de ofertas | Navegador: confirmación, acceso a lista, producto y estado, dos ofertas recibidas; `quotation-summary.integration.cjs`: comprador ve dos, cada proveedor una y empresas ajenas ninguna |
+| EC18 | Total y plazo destacados, desglose/vigencia accesibles en detalles, aceptación y reserva separadas | Navegador A4: S/187.80/2 días y S/180.00/5 días, detalles cerrados/abiertos y aceptación disponible; regresión `quotations.browser.cjs` comprueba aceptar sin descontar, pedido/reserva e idempotencia |
+| EC19 | Pedidos separados del envío y formulario completo para nueva solicitud | Navegador: acceso Mis pedidos, nueva solicitud vacía con descripción y Añadir ítem; regresiones previas adaptadas a etiquetas nuevas |
+
+Comprobación focalizada local con PostgreSQL real: **4/4 resultados de integración** del resumen (tres casos y su contenedor), más **1/1 prueba de navegador** que recorre escritorio 1440×1000 y móvil 390×844. Ambos recorridos enviaron una solicitud real a dos proveedores, conservaron selección al ingresar, comprobaron errores y confirmación, y abrieron la comparación privada con dos ofertas. Sin errores JavaScript ni desbordamiento horizontal. Se usa el catálogo CSV del PR #8 en un esquema aleatorio aislado, eliminado al terminar; no se modifican pedidos ni stock de la demo existente.
+
+Compilación Angular/NestJS comprobada. Capturas y resultado estructurado: [evidencias de cotización simplificada](evidencias/cotizacion-simple/resultado.json), incluidos `formulario-movil.png`, `cantidad-invalida-movil.png`, `confirmacion-movil.png` y `comparacion-movil.png`. La regresión completa se delega al CI del PR de esta rama, que incluye ambas pruebas nuevas y los recorridos existentes adaptados; su enlace y resultado definitivo quedan registrados en el PR.

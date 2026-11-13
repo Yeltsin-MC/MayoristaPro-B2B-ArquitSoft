@@ -9,7 +9,7 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
    await page.goto(f.base.replace('/api/v1/','/'));await page.getByLabel('Correo',{exact:true}).fill(f.accounts[who].email);await page.getByLabel(/^Contraseña/).fill(f.password);
    await page.locator('form').getByRole('button',{name:'Ingresar',exact:true}).click();await expect(page.getByRole('heading',{name:'Cotizaciones y pedidos',exact:true})).toBeVisible();return page;
   }
-  async function open(page,id){await page.getByRole('button',{name:'Actualizar cotizaciones',exact:true}).click();await page.getByRole('button',{name:'Abrir solicitud '+id,exact:true}).click();}
+  async function open(page,id){await page.getByRole('button',{name:'Actualizar cotizaciones',exact:true}).click();await page.locator('[data-request-id="'+id+'"] ').getByRole('button', {name:'Ver cotización',exact:true}).click();}
   await t.test('T4-AC09/10: dos proveedores, total previo y reserva PostgreSQL comprobada',async()=>{
    const buyer=await login('buyer');await buyer.getByRole('button',{name:'Nueva solicitud',exact:true}).click();
    await buyer.getByRole('checkbox',{name:'vendor',exact:true}).check();await buyer.getByRole('checkbox',{name:'vendor2',exact:true}).check();
@@ -29,19 +29,20 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
    await open(buyer,q.id);
    const vendorOffer=buyer.locator('.offer').filter({has:buyer.getByRole('heading',{name:'Oferta de vendor',exact:true})});
    await expect(vendorOffer.locator('.offer-total strong')).toHaveText('S/ 104.00');
+   await vendorOffer.getByText('Ver detalles',{exact:true}).click();
    await expect(vendorOffer.locator('.offer-conditions dd').nth(0)).toHaveText('S/ 96.00');
    await expect(vendorOffer.locator('.offer-conditions dd').nth(1)).toHaveText('S/ 8.00');
-   await buyer.getByRole('button',{name:'Aceptar oferta de vendor',exact:true}).click();
+   await vendorOffer.getByRole('button',{name:'Aceptar oferta',exact:true}).click();
    await expect(buyer.getByText('Oferta aceptada. Aceptar no reserva stock.',{exact:true})).toBeVisible();
    assert.equal((await f.db.query('SELECT stock FROM products WHERE id=$1',[f.products.vendor.id])).rows[0].stock,20);
    const ordered=buyer.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1/orders');
-   await buyer.getByRole('button',{name:'Crear pedido pendiente',exact:true}).click();const response=await ordered;assert.equal(response.status(),201);const order=await response.json();
-   await expect(buyer.getByRole('heading',{name:'Pedido pendiente '+order.id,exact:true})).toBeVisible();
+   await buyer.getByRole('button',{name:'Crear pedido y reservar stock',exact:true}).click();const response=await ordered;assert.equal(response.status(),201);const order=await response.json();
+   await expect(buyer.getByRole('heading',{name:'Pedido pendiente',exact:true})).toBeVisible();
    await expect(buyer.getByText('Reserva activa: 2 presentaciones.',{exact:true})).toBeVisible();
    const stock=(await f.db.query('SELECT stock FROM products WHERE id=$1',[f.products.vendor.id])).rows[0].stock;assert.equal(stock,18);
    const reservations=(await f.db.query('SELECT quantity,state,expires_at FROM stock_reservations WHERE order_id=$1',[order.id])).rows;
    assert.deepEqual(reservations,[{quantity:2,state:'activa',expires_at:null}]);assert.equal(order.total,'104.00');assert.equal(order.state,'pendiente');
-   await buyer.getByRole('button',{name:'Crear pedido pendiente',exact:true}).click();await expect(buyer.getByRole('heading',{name:'Pedido pendiente '+order.id,exact:true})).toBeVisible();
+   await buyer.getByRole('button',{name:'Crear pedido y reservar stock',exact:true}).click();await expect(buyer.getByRole('heading',{name:'Pedido pendiente',exact:true})).toBeVisible();
    assert.equal((await f.db.query('SELECT stock FROM products WHERE id=$1',[f.products.vendor.id])).rows[0].stock,18);
    const seller=pages[1];await open(seller,q.id);await expect(seller.getByText('S/ 108.00',{exact:true})).toHaveCount(0);
    await mkdir('.angular/t4-evidence',{recursive:true});
@@ -56,7 +57,7 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
     if(reason==='OFFER_EXPIRED')await f.db.query("UPDATE quotation_offers SET expires_at=now()-interval '1 second' WHERE id=$1",[o.id]);
     if(reason==='INSUFFICIENT_STOCK')await f.db.query('UPDATE products SET stock=1 WHERE id=$1',[f.products.vendor.id]);
     if(reason==='CONDITIONS_CHANGED')await f.db.query('UPDATE products SET units_per_pack=24 WHERE id=$1',[f.products.vendor.id]);
-    const buyer=await login('buyer');await open(buyer,q.id);await buyer.getByRole('button',{name:'Crear pedido pendiente',exact:true}).click();
+    const buyer=await login('buyer');await open(buyer,q.id);await buyer.getByRole('button',{name:'Crear pedido y reservar stock',exact:true}).click();
     await expect(buyer.getByRole('status').filter({hasText:reason})).toBeVisible();
     await buyer.getByRole('button',{name:'Nueva solicitud',exact:true}).click();await expect(buyer.getByRole('heading',{name:'Nueva solicitud de cotización',exact:true})).toBeVisible();
     assert.equal((await f.db.query('SELECT count(*) FROM trade_orders WHERE offer_id=$1',[o.id])).rows[0].count,'0');

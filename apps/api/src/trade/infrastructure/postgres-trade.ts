@@ -64,7 +64,10 @@ export class PostgresTrade implements TradeStore,OnModuleDestroy {
  });}
  async requests(auth?:string){return this.tx(async db=>{
   const a=await this.identity.tradeIdentity(db,auth);
-  return (await db.query(`SELECT q.id,c.legal_name AS "buyerName",CASE WHEN q.accepted_offer_id IS NULL THEN 'abierta' ELSE 'aceptada' END AS status
+  return (await db.query(`SELECT q.id,c.legal_name AS "buyerName",
+   (SELECT i.description FROM quotation_items i WHERE i.request_id=q.id ORDER BY i.id LIMIT 1) AS "primaryProduct",
+   (SELECT count(*)::int FROM quotation_offers o WHERE o.request_id=q.id AND (($1 AND q.buyer_company_id=$2) OR ($3 AND o.supplier_id=$4))) AS "offerCount",
+   CASE WHEN q.accepted_offer_id IS NULL THEN 'abierta' ELSE 'aceptada' END AS status
    FROM quotation_requests q JOIN companies c ON c.id=q.buyer_company_id
    WHERE ($1 AND q.buyer_company_id=$2) OR ($3 AND EXISTS(SELECT 1 FROM quotation_recipients r WHERE r.request_id=q.id AND r.supplier_id=$4))
    ORDER BY q.created_at DESC LIMIT 100`,[a.canBuy,a.companyId,a.canSell,a.supplierId])).rows;

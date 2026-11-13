@@ -199,3 +199,7 @@ El perfil Checkout Pro y sus campos se verificarán con las credenciales de prue
 La cabecera Idempotency-Key identifica el intento de creación. El servidor obtiene comprador, proveedor, productos y precios de fuentes autorizadas; no recibe el total como importe confiable.
 
 **Pendientes para Sprint 02:** OpenAPI completo, esquemas de validación, matriz de permisos y prueba del perfil Checkout Pro. Véanse las [invariantes y decisiones pendientes](flujo-comercial-sprint-2.md).
+
+### Resumen de solicitudes en el área privada
+
+El incremento UX del comprador agrega a cada fila de `GET /quotations` los campos aditivos `primaryProduct` (descripción del primer ítem en el orden del detalle) y `offerCount` (entero). Solo el comprador autorizado ve el conteo de todas las ofertas de su solicitud; un proveedor destinatario ve únicamente el conteo de sus propias respuestas. Las otras empresas continúan sin acceso. Se conservan los campos `id`, `buyerName`, `status`, el límite existente y las validaciones comerciales. La interfaz muestra producto/estado y mantiene los identificadores internos fuera de las etiquetas visibles. Criterios EC15–EC19 en [SDD de experiencia](../sprint-2-experiencia-catalogo.md).

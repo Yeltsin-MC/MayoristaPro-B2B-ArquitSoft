@@ -72,11 +72,11 @@ test('EC09-11: imagenes y cantidad mayorista conservada hasta solicitud privada'
         await page.getByLabel('Correo', { exact: true }).fill(f.accounts.buyer.email);
         await page.getByLabel(/^Contraseña/).fill(f.password);
         await page.locator('form').getByRole('button', { name: 'Ingresar', exact: true }).click();
-        const request = page.locator('.trade form').filter({ has: page.getByRole('heading', { name: 'Nueva solicitud de cotización', exact: true }) });
+        const request = page.locator('.trade form').filter({ has: page.getByRole('heading', { name: 'Solicitar cotización', exact: true }) });
         const requested = request.getByLabel('Cantidad de presentaciones', { exact: true });
         await expect(requested).toHaveValue('4');
-        await expect(request.getByLabel('Descripción', { exact: true })).toHaveValue('Cuaderno A4 espiral (demo)');
-        await expect(request.getByRole('checkbox', { name: 'vendor', exact: true })).toBeChecked();
+        await expect(request.locator('.quotation-product')).toContainText('Cuaderno A4 espiral (demo)');
+        await expect(request.locator('.quotation-product')).toContainText('vendor');
         const send = request.getByRole('button', { name: 'Enviar solicitud', exact: true });
         await requested.fill('3');
         await expect(request.locator('.quantity-error')).toContainText('múltiplo');

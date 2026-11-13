@@ -42,8 +42,8 @@ test('EC12-14: sesión validada, selección visible y motivos para cotizar en es
     }
     await login();
     await expect(page.getByLabel('Cantidad de presentaciones',{exact:true})).toHaveValue('4');
-    await expect(page.getByLabel('Descripción',{exact:true})).toHaveValue('Cuaderno A4 (demo)');
-    await expect(page.getByRole('checkbox',{name:'Oficina Central (demo)',exact:true})).toBeChecked();
+    await expect(page.locator('.quotation-product')).toContainText('Cuaderno A4 (demo)');
+    await expect(page.locator('.quotation-product')).toContainText('Oficina Central (demo)');
     const created=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1/quotations');
     await page.getByRole('button',{name:'Enviar solicitud',exact:true}).click();
     const response=await created;assert.equal(response.status(),201);const quotation=await response.json();
@@ -55,7 +55,7 @@ test('EC12-14: sesión validada, selección visible y motivos para cotizar en es
     await expect(page.getByLabel('Correo',{exact:true})).toHaveCount(0);
     await page.reload();
     await expect(page.getByRole('button',{name:'Salir',exact:true})).toBeVisible();
-    await expect(page.getByRole('button',{name:'Abrir solicitud '+quotation.id,exact:true})).toBeVisible();
+    await expect(page.locator('[data-request-id="'+quotation.id+'"] ').getByRole('button', {name:'Ver cotización',exact:true})).toBeVisible();
     const cookie=(await context.cookies()).find(c=>c.name==='mayoristapro_session');
     assert.ok(cookie?.httpOnly);assert.equal(cookie.sameSite,'Strict');assert.equal(cookie.expires,-1);
     const storage=await page.evaluate(()=>({local:Object.keys(localStorage),session:Object.keys(sessionStorage),cookies:document.cookie}));
