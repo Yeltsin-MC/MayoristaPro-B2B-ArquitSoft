@@ -24,7 +24,9 @@
     "demo:catalog:quote": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/quote.cjs",
     "format": "prettier --write apps/api/src apps/web/src",
     "format:check": "prettier --check apps/api/src apps/web/src",
-    "lint": "eslint apps/api/src apps/web/src"
+    "lint": "eslint apps/api/src apps/web/src",
+    "puertos:ver": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/puertos.ps1 ver",
+    "puertos:liberar": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/puertos.ps1 liberar"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
