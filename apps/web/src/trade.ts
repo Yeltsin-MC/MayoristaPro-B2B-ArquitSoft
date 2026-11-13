@@ -390,12 +390,13 @@ interface RequestItem {
       <h4 id="mis-pedidos" tabindex="-1">Mis pedidos</h4>
       @for (o of orders(); track o.id) {
         <p [attr.data-order-id]="o.id">
-          Pedido · {{ o.state }} · S/ {{ o.total }} <button type="button" (click)="openOrder(o.id)">Ver pedido</button>
+          Pedido · {{ stateLabel(o.state) }} · S/ {{ o.total }}
+          <button type="button" (click)="openOrder(o.id)">Ver pedido</button>
         </p>
       }
       @if (currentOrder(); as o) {
         <article aria-label="Detalle del pedido">
-          <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido' }}</h4>
+          <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido · ' + stateLabel(o.state) }}</h4>
           @for (i of o.items; track $index) {
             <p>
               {{ i.snapshot.name }} · {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }} · {{ i.quantity }} × S/
@@ -410,7 +411,34 @@ interface RequestItem {
           @for (r of o.reservations; track r.productId) {
             <p>Reserva {{ r.state }}: {{ r.quantity }} presentaciones.</p>
           }
-          <p>Estado: {{ o.state }}.</p>
+          <p>Estado: {{ stateLabel(o.state) }}.</p>
+          @if (inFulfillment(o.state)) {
+            <ol class="fulfillment-steps" aria-label="Seguimiento del despacho">
+              @for (step of fulfillmentSteps; track step.state) {
+                <li [class.done]="stepDone(o, step.state)">
+                  <strong>{{ step.label }}</strong>
+                  @if (stepEvent(o, step.state); as e) {
+                    <span>{{ formatDate(e.createdAt) }}{{ e.note ? ' · ' + e.note : '' }}</span>
+                  }
+                </li>
+              }
+            </ol>
+          }
+          @if (o.isSupplier && o.state === 'paid') {
+            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'preparing')">
+              Marcar en preparación
+            </button>
+          }
+          @if (o.isSupplier && o.state === 'preparing') {
+            <label
+              >Guía de remisión o transportista (opcional)
+              <input name="dispatchNote" maxlength="300" [(ngModel)]="dispatchNote"
+            /></label>
+            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'dispatched')">Marcar despachado</button>
+          }
+          @if (o.isBuyer && o.state === 'dispatched') {
+            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'delivered')">Confirmar recepción</button>
+          }
           @if (o.state === 'pendiente') {
             <p>
               <strong>Pagar antes de: {{ expiresIn(o.expiresAt) }}</strong>
@@ -418,7 +446,7 @@ interface RequestItem {
             <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar con Mercado Pago</button>
           }
           @if (o.state === 'paid') {
-            <p class="success">✓ Pago confirmado. Pedido procesándose.</p>
+            <p class="success">✓ Pago confirmado. El proveedor preparará el pedido.</p>
           }
           @if (o.state === 'expired') {
             <p class="error">✗ Pedido vencido sin pago. Stock liberado.</p>
@@ -473,6 +501,13 @@ export class TradeComponent {
   tierProductId = '';
   tierDraft: { desde: number | null; precioUnitario: string }[] = [];
   responseItems: any[] = [];
+  dispatchNote = '';
+  readonly fulfillmentSteps = [
+    { state: 'paid', label: 'Pagado' },
+    { state: 'preparing', label: 'En preparación' },
+    { state: 'dispatched', label: 'Despachado' },
+    { state: 'delivered', label: 'Entregado' },
+  ];
   shipping = '0.00';
   deliveryDays = 3;
   expiresAt = this.future();
@@ -568,6 +603,40 @@ export class TradeComponent {
       this.tierDraft = result.priceTiers.map((t: any) => ({ ...t }));
       this.message.set('Precios por volumen guardados.');
       this.catalogChanged.emit();
+    }
+  }
+  stateLabel(state: string): string {
+    const labels: Record<string, string> = {
+      pendiente: 'pendiente de pago',
+      paid: 'pagado',
+      preparing: 'en preparación',
+      dispatched: 'despachado',
+      delivered: 'entregado',
+      expired: 'vencido',
+      expired_pending_payment: 'vencido con pago pendiente',
+      cancelled: 'cancelado',
+      requires_reconciliation: 'requiere reconciliación',
+    };
+    return labels[state] ?? state;
+  }
+  inFulfillment(state: string): boolean {
+    return ['paid', 'preparing', 'dispatched', 'delivered'].includes(state);
+  }
+  stepDone(order: any, state: string): boolean {
+    const steps = this.fulfillmentSteps.map(s => s.state);
+    return steps.indexOf(order.state) >= steps.indexOf(state);
+  }
+  stepEvent(order: any, state: string): any {
+    return (order.events ?? []).find((e: any) => e.state === state) ?? null;
+  }
+  async fulfill(orderId: string, estado: string) {
+    const body = estado === 'dispatched' && this.dispatchNote.trim() ? { estado, nota: this.dispatchNote } : { estado };
+    const o = await this.call('orders/' + orderId + '/fulfillment', 'PATCH', body);
+    if (o) {
+      this.currentOrder.set(o);
+      this.dispatchNote = '';
+      const list = await this.call('orders');
+      if (list) this.orders.set(list);
     }
   }
   sourceProduct(item: RequestItem): CatalogProduct | null {
