@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-11-13T06:40:35.950Z",
+  "data": "Comprador y proveedor demo en esquema PostgreSQL aislado",
+  "results": [
+    {
+      "viewport": "1440x1000",
+      "selectionVisible": true,
+      "quantityAfterLogin": 4,
+      "quantityAlreadyLoggedIn": 6,
+      "liveSessionRestored": true,
+      "logoutCleared": true,
+      "expiredSessionRejected": true,
+      "serverPermissionsRechecked": true,
+      "persistentTokenStorage": false,
+      "disabledProductsExplained": 3,
+      "functionalAlternative": true,
+      "javascriptErrors": []
+    },
+    {
+      "viewport": "390x844",
+      "selectionVisible": true,
+      "quantityAfterLogin": 4,
+      "quantityAlreadyLoggedIn": 6,
+      "liveSessionRestored": true,
+      "logoutCleared": true,
+      "expiredSessionRejected": true,
+      "serverPermissionsRechecked": true,
+      "persistentTokenStorage": false,
+      "disabledProductsExplained": 3,
+      "functionalAlternative": true,
+      "javascriptErrors": []
+    }
+  ]
+}

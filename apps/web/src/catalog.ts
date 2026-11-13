@@ -1,13 +1,15 @@
 import { IdentityComponent } from './identity';
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
+import { CatalogPhotoComponent } from './catalog-photo';
+import { minimumQuantity, packDescription, presentations, quantityError, quantityEquivalence, unitName } from './wholesale-quantity';
 
 @Component({
   selector: 'app-root',
-  imports: [CurrencyPipe, FormsModule, IdentityComponent],
+  imports: [CurrencyPipe, FormsModule, IdentityComponent, CatalogPhotoComponent],
   templateUrl: './catalog.html',
 })
 export class CatalogComponent {
@@ -17,6 +19,16 @@ export class CatalogComponent {
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');
   readonly page = signal(1);
   readonly options = signal<{ categories: string[]; suppliers: { id: string; name: string }[] }>({ categories: [], suppliers: [] });
+  readonly selectedProduct = signal<CatalogProduct | null>(null);
+  readonly categories = computed(() => [...this.options().categories].sort((a, b) =>
+    this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es')));
+  readonly quantities = signal<Record<string, number | null>>({});
+  readonly presentations = presentations;
+  readonly packDescription = packDescription;
+  readonly unitName = unitName;
+  readonly minimumQuantity = minimumQuantity;
+  readonly quantityError = quantityError;
+  readonly quantityEquivalence = quantityEquivalence;
   search = '';
   category = '';
   supplier = '';
@@ -26,6 +38,64 @@ export class CatalogComponent {
   constructor() {
     this.load();
     this.loadOptions();
+  }
+
+  imageKind(name: string): string {
+    const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (/redes|router|ethernet|cable|network/.test(normalized)) return 'network';
+    if (/perifer|teclado|mouse|comput|tecnolog/.test(normalized)) return 'technology';
+    if (/papel|impres|resma/.test(normalized)) return 'paper';
+    if (/cuaderno|librer|oficina|papeler|boligrafo/.test(normalized)) return 'office';
+    return 'supplies';
+  }
+
+  productImage(product: CatalogProduct): string {
+    const kind = this.imageKind(product.name);
+    return kind === 'supplies' ? this.imageKind(product.category) : kind;
+  }
+
+  quantityFor(product: CatalogProduct): number | null {
+    const quantity = this.quantities()[product.id];
+    return quantity === undefined ? minimumQuantity(product) : quantity;
+  }
+
+  setQuantity(product: CatalogProduct, quantity: number | null): void {
+    this.quantities.update(values => ({ ...values, [product.id]: quantity }));
+  }
+
+  private categoryPriority(category: string): number {
+    const kind = this.imageKind(category);
+    return ['office', 'paper', 'technology', 'network', 'supplies'].indexOf(kind);
+  }
+
+  searchCatalog(): void {
+    this.load();
+    document.getElementById('catalogo')?.scrollIntoView({ block: 'start' });
+  }
+
+  selectCategory(category: string): void {
+    this.category = category;
+    this.search = '';
+    this.supplier = '';
+    this.available = false;
+    this.sort = '';
+    this.searchCatalog();
+  }
+
+  showProduct(product: CatalogProduct, dialog: HTMLDialogElement): void {
+    this.selectedProduct.set(product);
+    if (!dialog.open) dialog.showModal();
+  }
+
+  quoteAlternative(): CatalogProduct | undefined {
+    return this.products().find(product => product.quoteEnabled && product.available);
+  }
+
+  showAlternative(dialog: HTMLDialogElement): void {
+    const alternative = this.quoteAlternative();
+    if (!alternative) return;
+    if (quantityError(alternative, this.quantityFor(alternative))) this.setQuantity(alternative, minimumQuantity(alternative));
+    this.showProduct(alternative, dialog);
   }
 
   loadOptions(): void {

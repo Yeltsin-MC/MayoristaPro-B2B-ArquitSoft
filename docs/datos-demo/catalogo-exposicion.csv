@@ -1,0 +1,9 @@
+sku,nombre,categoria,presentacion,unidades_por_presentacion,precio,moneda,incluye_igv,minimo,multiplo,stock,publicado
+DEMO-CUA-01,Cuaderno A4 espiral (demo),Cuadernos,caja,12,48.00,PEN,true,2,1,40,true
+DEMO-CUA-02,Cuaderno de notas A5 (demo),Cuadernos,paquete,6,26.00,PEN,true,2,2,36,true
+DEMO-PAP-01,Papel A4 blanco (demo),Papel e impresión,caja,5,89.90,PEN,true,1,1,30,true
+DEMO-PAP-02,Papel A4 para oficina (demo),Papel e impresión,paquete,1,18.50,PEN,true,5,5,100,true
+DEMO-PER-01,Kit teclado y mouse (demo),Periféricos,caja,6,168.00,PEN,true,1,1,24,true
+DEMO-PER-02,Mouse inalámbrico (demo),Periféricos,caja,12,144.00,PEN,true,1,1,18,true
+DEMO-RED-01,Router WiFi para oficina (demo),Redes,caja,4,280.00,PEN,true,1,1,12,true
+DEMO-RED-02,Cable de red (demo),Redes,paquete,10,45.00,PEN,true,2,1,50,true

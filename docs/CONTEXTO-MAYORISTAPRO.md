@@ -4,7 +4,23 @@
 
 ---
 
-## Estado vigente tras la integración del PR #4
+## Estado vigente de catálogo y preparación pública
+
+Actualizado el 12 de noviembre de 2026. Base verificada `062cc0b311996154f6567a25105341bf695ddfae` en main local y remoto. PR #5 Redis y PR #6 preparación de despliegue están fusionados. La comprobación conjunta de migración 007, hit, invalidación por stock y catálogo con Redis detenido fue aprobada en [CI 43351282758](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/actions/runs/43351282758), con 95 resultados de integración, 10 unitarias Node, 11 Python y 9 de navegador. Las secciones siguientes conservan el historial de PR #4.
+
+Primera tanda de auditoría UX implementada en el PR #7. Recuperación de sesión mediante cookie HttpOnly de sesión y validación de vigencia, vinculación y permisos actuales en GET /auth/restore. El Bearer permanece en memoria. Cierre, vencimiento o acceso revocado limpian el estado visible. Se muestra la selección junto al ingreso y se conserva la cantidad después de autenticar. La demo tiene tres productos de Distribuidora Huamanga sin empresa vinculada, causa de quoteEnabled=false. Ahora se explica el motivo y se abre otra oferta disponible cuando existe en la página. Pruebas focalizadas con PostgreSQL real y comprador demo aislado aprobadas. Capturas en docs/evidencias/primera-tanda-ux/. Contrato REST y SDD actualizados con EC12–EC14. La regresión completa se registra en el CI del PR.
+
+Actualización del PR #7 en la misma rama. Se corrigió el servicio de imágenes de dev:web con salida pública explícita y reinicio de ese proceso. El proxy de desarrollo es configurable con API_PROXY_TARGET y en esta laptop apunta a la API existente 3100, que ofrece categorías. El navegador comprobó 200 image/png y decodificación de banner, categorías y tarjetas en escritorio y móvil. El componente de foto referencial ofrece respaldo visible ante fallo de descarga.
+
+La tarjeta y el detalle permiten elegir cantidad mayorista, muestran precio por presentación y empaque, mínimo, múltiplo y equivalencia en unidades. Producto, proveedor y cantidad se conservan al ingresar y abrir la solicitud. El formulario impide cantidades inválidas y mantiene los datos del producto seleccionado como solo lectura. Compilación Angular y dos pruebas focalizadas con PostgreSQL real aprobadas. Capturas, URL de imágenes y resultados en docs/evidencias/cantidad-mayorista/. La SDD del incremento incorpora EC09–EC11 y el CI del PR registra la regresión completa.
+
+Incremento de experiencia del catálogo en `sprint-2/experiencia-catalogo-b2b`, preparado para PR con fusión sujeta a revisión. Cabecera con búsqueda y cuenta, banner generado, accesos a categorías reales del catálogo completo, productos detallados y diálogo conectado a cotización privada. Se reutilizan los filtros paginados de PostgreSQL y los permisos T2/T4. Las categorías de oficina y tecnología se priorizan cuando tienen productos publicados. El CSV demo opcional se carga por T3.
+
+Compilación local Angular y NestJS aprobada. Recorrido focalizado con navegador Edge y PostgreSQL real aprobado en escritorio 1440px y móvil 390px, con comprobación adicional de 320px. Se enviaron dos solicitudes reales en un esquema aislado y se comprobó un resultado fuera de la primera página. Capturas y resultados en `docs/evidencias/experiencia-catalogo/`. La regresión completa se registra en GitHub Actions del PR. [SDD y publicación del incremento](sprint-2-experiencia-catalogo.md)
+
+La siguiente acción es revisar el PR de experiencia y su CI, y luego publicar el commit aprobado con el Compose integrado. La SDD incluye el comando exacto de reconstrucción conservando el volumen y `.env.demo`. El despliegue público, HTTPS estable, evidencia DNS/CDN, recuperación y k6 con al menos 2.000 usuarios virtuales continúan pendientes. Antes de aprovisionar se comprueban cobertura y vigencia de los US$100 promocionales y presupuesto personal aproximado S/65. Recursos facturables y dominio requieren autorización. Mercado Pago se mantiene en demo simulada, sandbox real pendiente. Se conserva el comparador FastAPI y el modelo externo se deja para después.
+
+## Estado histórico tras la integración del PR #4
 
 Actualizado el 12 de noviembre de 2026 para el chat de auditoría. Esta sección registra el cierre de integración. Las secciones por incremento documentan también resultados históricos.
 

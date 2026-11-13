@@ -1,0 +1,146 @@
+{
+  "before": {
+    "bannerStatus": 404,
+    "familiesStatus": 404,
+    "optionsStatus": 404
+  },
+  "after": [
+    {
+      "viewport": "1440x1050",
+      "responses": [
+        {
+          "url": "http://localhost:4200/images/abastecimiento-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://localhost:4200/api/v1/products/options",
+          "status": 200,
+          "type": "application/json; charset=utf-8"
+        },
+        {
+          "url": "http://localhost:4200/images/familias-demo.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ],
+      "groups": {
+        "banner": [
+          {
+            "url": "http://localhost:4200/images/abastecimiento-demo.png",
+            "width": 1536,
+            "height": 1024
+          }
+        ],
+        "categorias": [
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/abastecimiento-demo.png",
+            "width": 1536,
+            "height": 1024
+          }
+        ],
+        "tarjetas": [
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          }
+        ]
+      }
+    },
+    {
+      "viewport": "390x1000",
+      "responses": [
+        {
+          "url": "http://localhost:4200/images/abastecimiento-demo.png",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://localhost:4200/api/v1/products/options",
+          "status": 200,
+          "type": "application/json; charset=utf-8"
+        },
+        {
+          "url": "http://localhost:4200/images/familias-demo.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ],
+      "groups": {
+        "banner": [
+          {
+            "url": "http://localhost:4200/images/abastecimiento-demo.png",
+            "width": 1536,
+            "height": 1024
+          }
+        ],
+        "categorias": [
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/abastecimiento-demo.png",
+            "width": 1536,
+            "height": 1024
+          }
+        ],
+        "tarjetas": [
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          },
+          {
+            "url": "http://localhost:4200/images/familias-demo.png",
+            "width": 1254,
+            "height": 1254
+          }
+        ]
+      }
+    }
+  ],
+  "apiProxy": "http://127.0.0.1:3100"
+}
