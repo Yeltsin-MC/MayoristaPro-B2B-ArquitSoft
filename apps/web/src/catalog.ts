@@ -42,6 +42,8 @@ export class CatalogComponent {
 
   imageKind(name: string): string {
     const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (/panader|harina|levadura/.test(normalized)) return 'bakery';
+    if (/constru|acabados/.test(normalized)) return 'construction';
     if (/redes|router|ethernet|cable|network/.test(normalized)) return 'network';
     if (/perifer|teclado|mouse|comput|tecnolog/.test(normalized)) return 'technology';
     if (/papel|impres|resma/.test(normalized)) return 'paper';
@@ -50,6 +52,8 @@ export class CatalogComponent {
   }
 
   productImage(product: CatalogProduct): string {
+    const category = this.imageKind(product.category);
+    if (category === 'bakery' || category === 'construction') return category;
     const kind = this.imageKind(product.name);
     return kind === 'supplies' ? this.imageKind(product.category) : kind;
   }
@@ -65,7 +69,7 @@ export class CatalogComponent {
 
   private categoryPriority(category: string): number {
     const kind = this.imageKind(category);
-    return ['office', 'paper', 'technology', 'network', 'supplies'].indexOf(kind);
+    return ['office', 'paper', 'technology', 'network', 'bakery', 'construction', 'supplies'].indexOf(kind);
   }
 
   searchCatalog(): void {

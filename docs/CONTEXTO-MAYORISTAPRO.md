@@ -4,6 +4,12 @@
 
 ---
 
+## Catálogo mayorista demo de 150 productos (13 de noviembre de 2026)
+
+Rama `sprint-2/catalogo-demo-150`, dependiente del PR #7 abierto, basada en `45b9678`. Cinco proveedores ficticios verificados, 30 productos cada uno y cinco categorías; comprador ficticio habilitado por separado. Carga reproducible por aprobación T2 e importación T3, en esquema aislado `demo_mayoristapro150`, sin alterar `public` ni restablecer stock. [SDD y pasos](sprint-2-catalogo-demo-150.md). Comandos `demo:catalog:load`, `demo:catalog:quote` y `demo:catalog:api`; abre localhost:3300, no la instancia anterior 4200. Credenciales solo en entorno/archivo privado ignorado.
+
+Compilación Angular/NestJS y prueba focalizada PostgreSQL 7/7 aprobadas: conteos, búsqueda/categorías paginadas, dos ofertas privadas, mínimo rechazado con 422, pedido y reimportación conservando stock 22/24. Edge escritorio 1440 y móvil 390: categorías, respaldo visual, búsqueda A4, mínimo inválido, ingreso con selección, solicitud a dos proveedores y comparación S/187.80 frente a S/180.00; sin errores JS ni desbordamiento. [Evidencia](evidencias/catalogo-demo-150/resultado.json). Regresión completa delegada al CI del nuevo PR. Fusiones y AWS pendientes; permanecen k6 con 2.000 usuarios, Mercado Pago sandbox y modelo externo.
+
 ## Estado vigente de catálogo y preparación pública
 
 Actualizado el 12 de noviembre de 2026. Base verificada `062cc0b311996154f6567a25105341bf695ddfae` en main local y remoto. PR #5 Redis y PR #6 preparación de despliegue están fusionados. La comprobación conjunta de migración 007, hit, invalidación por stock y catálogo con Redis detenido fue aprobada en [CI 43351282758](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/actions/runs/43351282758), con 95 resultados de integración, 10 unitarias Node, 11 Python y 9 de navegador. Las secciones siguientes conservan el historial de PR #4.

@@ -1,0 +1,71 @@
+{
+  "description": "Empresas y referencias ficticias para demostración académica MayoristaPro B2B",
+  "providers": [
+    {
+      "code": "lirio",
+      "name": "Demo Lirio Papelería (ficticia)",
+      "ruc": "20999000001",
+      "email": "demo-lirio@example.test",
+      "category": "Librería y papelería",
+      "shipping": "8.00",
+      "days": 2,
+      "file": "lirio.csv"
+    },
+    {
+      "code": "cobre",
+      "name": "Demo Cobre Oficina (ficticia)",
+      "ruc": "20999000002",
+      "email": "demo-cobre@example.test",
+      "category": "Suministros de oficina",
+      "shipping": "12.00",
+      "days": 5,
+      "file": "cobre.csv"
+    },
+    {
+      "code": "quilla",
+      "name": "Demo Quilla Tecnología (ficticia)",
+      "ruc": "20999000003",
+      "email": "demo-quilla@example.test",
+      "category": "Tecnología y periféricos",
+      "shipping": "10.00",
+      "days": 3,
+      "file": "quilla.csv"
+    },
+    {
+      "code": "miga",
+      "name": "Demo Miga Insumos (ficticia)",
+      "ruc": "20999000004",
+      "email": "demo-miga@example.test",
+      "category": "Insumos secos de panadería",
+      "shipping": "15.00",
+      "days": 2,
+      "file": "miga.csv"
+    },
+    {
+      "code": "trazo",
+      "name": "Demo Trazo Acabados (ficticia)",
+      "ruc": "20999000005",
+      "email": "demo-trazo@example.test",
+      "category": "Acabados para construcción",
+      "shipping": "18.00",
+      "days": 3,
+      "file": "trazo.csv"
+    }
+  ],
+  "buyer": {
+    "name": "Demo Mostrador Compras (ficticia)",
+    "ruc": "20999000006",
+    "email": "demo-comprador150@example.test"
+  },
+  "comparison": {
+    "codes": [
+      "lirio",
+      "cobre"
+    ],
+    "skuSuffix": "001",
+    "description": "Papel A4 blanco 75 g, caja de 5 resmas (demo)",
+    "unit": "caja",
+    "unitsPerPack": 5,
+    "quantity": 2
+  }
+}
