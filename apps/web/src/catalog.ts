@@ -1,7 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, computed, DestroyRef, effect, inject, signal, untracked } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
 import { CatalogPhotoComponent } from './catalog-photo';
@@ -19,7 +19,7 @@ import {
 
 @Component({
   selector: 'app-catalog-page',
-  imports: [CurrencyPipe, FormsModule, CatalogPhotoComponent],
+  imports: [CurrencyPipe, FormsModule, CatalogPhotoComponent, RouterLink],
   templateUrl: './catalog.html',
 })
 export class CatalogComponent {
@@ -30,6 +30,7 @@ export class CatalogComponent {
   readonly orderList = inject(OrderListService);
   readonly slides = [
     {
+      theme: 'theme-cream',
       eyebrow: 'COMPRAS MAYORISTAS, NEGOCIOS QUE CRECEN',
       title: 'Abastece tu negocio.',
       text: 'De la oficina a tu próxima venta. Encuentra productos por volumen y cotiza con sus proveedores.',
@@ -38,23 +39,27 @@ export class CatalogComponent {
       image: '/images/abastecimiento-demo.png',
     },
     {
-      eyebrow: 'MÁS CANTIDAD, MEJOR PRECIO',
-      title: 'Precios por volumen.',
-      text: 'Los proveedores publican escalas: mientras más presentaciones pides, menos pagas por cada una.',
-      cta: 'Ver productos',
-      href: '#catalogo',
+      theme: 'theme-sale',
+      eyebrow: 'OFERTAS POR VOLUMEN',
+      title: 'Hasta 10% menos por presentación.',
+      text: 'Mientras más compras, menos pagas por cada caja, paquete o saco. Precios publicados por cada proveedor.',
+      cta: 'Ver ofertas',
+      href: '#ofertas',
       image: '/images/familias-demo.png',
     },
     {
+      theme: 'theme-dark',
       eyebrow: 'UNA LISTA, VARIAS OFERTAS',
-      title: 'Cotiza todo junto.',
-      text: 'Arma tu lista de pedido y envía una sola solicitud por proveedor. Compara ofertas y paga en línea.',
+      title: '15 rubros para tu empresa.',
+      text: 'Limpieza, abarrotes, embalaje, ferretería, seguridad y más. Arma tu lista y cotiza todo junto.',
       cta: 'Cómo comprar',
       href: '#como-comprar',
       image: '/images/abastecimiento-demo.png',
     },
   ];
   readonly slide_ = signal(0);
+  /** Productos con mayor descuento por volumen para la fila «Ofertas por volumen». */
+  readonly deals = signal<CatalogProduct[]>([]);
   readonly benefits = [
     { icon: '▦', title: 'Precios por volumen', text: 'Escalas publicadas por cada proveedor' },
     { icon: '✓', title: 'Proveedores verificados', text: 'Empresas revisadas con RUC' },
@@ -91,6 +96,7 @@ export class CatalogComponent {
 
   constructor() {
     this.loadOptions();
+    this.loadDeals();
     // Carrusel: avanza solo si el usuario no pidió reducir el movimiento.
     const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduced) {
@@ -122,6 +128,34 @@ export class CatalogComponent {
     this.session.failed.set(false);
     this.session.pendingQuote.set({ product, quantity });
     void this.router.navigate(['/cuenta']);
+  }
+
+  /** Escala con el menor precio publicado (la última), o null si no hay escalas. */
+  bestTier(product: CatalogProduct) {
+    const tiers = product.priceTiers ?? [];
+    return tiers.length ? tiers[tiers.length - 1] : null;
+  }
+
+  /** Descuento máximo por volumen, en porcentaje entero (0 si no hay escalas). */
+  maxDiscount(product: CatalogProduct): number {
+    const tier = this.bestTier(product);
+    if (!tier) return 0;
+    return Math.round((1 - Number(tier.precioUnitario) / Number(product.price)) * 100);
+  }
+
+  loadDeals(): void {
+    const params = new HttpParams().set('page', 1).set('limit', 100);
+    this.http.get<{ items: CatalogProduct[] }>('/api/v1/products', { params }).subscribe({
+      next: response => {
+        const withTiers = response.items.filter(p => p.available && p.quoteEnabled && this.maxDiscount(p) > 0);
+        // Un producto por proveedor primero, para variedad; luego por descuento.
+        const seen = new Set<string>();
+        const varied = withTiers.filter(p => !seen.has(p.supplierId) && seen.add(p.supplierId));
+        const rest = withTiers.filter(p => !varied.includes(p));
+        this.deals.set([...varied, ...rest].slice(0, 10));
+      },
+      error: () => this.deals.set([]),
+    });
   }
 
   goSlide(n: number): void {
@@ -160,6 +194,16 @@ export class CatalogComponent {
       .toLowerCase();
     if (/panader|harina|levadura/.test(normalized)) return 'bakery';
     if (/constru|acabados/.test(normalized)) return 'construction';
+    if (/limpieza|higiene/.test(normalized)) return 'cleaning';
+    if (/abarrote|bebida/.test(normalized)) return 'groceries';
+    if (/embalaje|empaque/.test(normalized)) return 'packaging';
+    if (/ferreter|herramienta/.test(normalized)) return 'hardware';
+    if (/electric/.test(normalized)) return 'electric';
+    if (/seguridad|epp/.test(normalized)) return 'safety';
+    if (/descartable|cafeter/.test(normalized)) return 'cafeteria';
+    if (/textil|uniforme/.test(normalized)) return 'textile';
+    if (/botiquin|auxilio/.test(normalized)) return 'firstaid';
+    if (/mobiliario|mueble/.test(normalized)) return 'furniture';
     if (/redes|router|ethernet|cable|network/.test(normalized)) return 'network';
     if (/perifer|teclado|mouse|comput|tecnolog/.test(normalized)) return 'technology';
     if (/papel|impres|resma/.test(normalized)) return 'paper';
@@ -169,7 +213,8 @@ export class CatalogComponent {
 
   productImage(product: CatalogProduct): string {
     const category = this.imageKind(product.category);
-    if (category === 'bakery' || category === 'construction') return category;
+    // Los rubros con ilustración usan la de su categoría; los demás, la foto que mejor coincide.
+    if (!['office', 'paper', 'technology', 'network', 'supplies'].includes(category)) return category;
     const kind = this.imageKind(product.name);
     return kind === 'supplies' ? this.imageKind(product.category) : kind;
   }
@@ -185,7 +230,9 @@ export class CatalogComponent {
 
   private categoryPriority(category: string): number {
     const kind = this.imageKind(category);
-    return ['office', 'paper', 'technology', 'network', 'bakery', 'construction', 'supplies'].indexOf(kind);
+    const order = ['office', 'paper', 'technology', 'network', 'furniture', 'cleaning', 'cafeteria', 'groceries'];
+    const index = order.indexOf(kind);
+    return index === -1 ? order.length : index;
   }
 
   searchCatalog(): void {

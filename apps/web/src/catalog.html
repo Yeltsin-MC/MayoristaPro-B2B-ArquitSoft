@@ -2,7 +2,7 @@
   <section class="catalog-hero" aria-labelledby="catalog-title" aria-roledescription="carrusel">
     @for (slide of slides; track slide.title; let n = $index) {
       <div
-        class="hero-slide"
+        [class]="'hero-slide ' + slide.theme"
         [class.active]="n === slide_()"
         [attr.aria-hidden]="n !== slide_()"
         role="group"
@@ -81,6 +81,40 @@
       </div>
     }
   </section>
+  @if (deals().length) {
+    <section id="ofertas" class="deals-section" aria-labelledby="deals-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow sale">AHORRA COMPRANDO MÁS</p>
+          <h2 id="deals-title">Ofertas por volumen</h2>
+        </div>
+        <span class="section-caption">Precio por presentación al comprar desde la cantidad indicada</span>
+      </div>
+      <div class="deals-row" role="list">
+        @for (product of deals(); track product.id) {
+          <button type="button" class="deal-card" role="listitem" (click)="showProduct(product, productDialog)">
+            <span class="deal-media">
+              <app-catalog-photo [kind]="productImage(product)" class="family-photo deal-photo" /><span
+                class="deal-badge"
+                >-{{ maxDiscount(product) }}%</span
+              >
+            </span>
+            <span class="deal-body">
+              <small>{{ product.supplier }}</small>
+              <strong class="deal-name">{{ product.name }}</strong>
+              <span class="deal-prices"
+                ><s>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</s
+                ><strong>{{
+                  bestTier(product)!.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2'
+                }}</strong></span
+              >
+              <small>desde {{ presentations(bestTier(product)!.desde, product.unit) }}</small>
+            </span>
+          </button>
+        }
+      </div>
+    </section>
+  }
   <section id="catalogo" class="catalog-section" aria-labelledby="products-title">
     <div class="section-heading">
       <div>
@@ -181,13 +215,13 @@
                     [kind]="productImage(product)"
                     class="family-photo product-visual"
                   /><span class="category-tag">{{ product.category }}</span>
-                  @if (product.priceTiers?.length) {
-                    <span class="badge-volume">Precio por volumen</span>
+                  @if (maxDiscount(product); as discount) {
+                    <span class="badge-volume">-{{ discount }}% por volumen</span>
                   }
                   <small class="image-caption">Imagen referencial</small>
                 </button>
                 <div class="product-content">
-                  <p class="supplier">{{ product.supplier }}</p>
+                  <p class="supplier"><span class="verified" aria-hidden="true">✔</span> {{ product.supplier }}</p>
                   <h3>
                     <button type="button" class="product-name" (click)="showProduct(product, productDialog)">
                       {{ product.name }}
@@ -199,15 +233,11 @@
                     >
                   </div>
                   <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
-                  @if (product.priceTiers?.length) {
-                    <ul class="volume-prices" aria-label="Precios por volumen">
-                      @for (tier of product.priceTiers; track tier.desde) {
-                        <li>
-                          Desde {{ presentations(tier.desde, product.unit) }}:
-                          <strong>{{ tier.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2' }}</strong>
-                        </li>
-                      }
-                    </ul>
+                  @if (bestTier(product); as tier) {
+                    <p class="volume-best">
+                      <span>Desde {{ presentations(tier.desde, product.unit) }}</span>
+                      <strong>{{ tier.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2' }}</strong>
+                    </p>
                   }
                   <dl>
                     <div>
@@ -327,6 +357,14 @@
       </div>
     </section>
   }
+  <section class="cta-band" aria-labelledby="cta-title">
+    <div>
+      <p class="eyebrow">PARA EMPRESAS CON RUC</p>
+      <h2 id="cta-title">Compra para tu negocio con precios mayoristas</h2>
+      <p>Registra tu empresa, arma tu lista de pedido y recibe ofertas privadas de proveedores verificados.</p>
+    </div>
+    <a class="button cta-button" routerLink="/cuenta">Registrar mi empresa <span aria-hidden="true">→</span></a>
+  </section>
   <section id="como-comprar" class="steps-section" aria-labelledby="steps-title">
     <div class="section-heading">
       <div>
@@ -434,6 +472,16 @@
             {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
             <span aria-hidden="true">↗</span>
           </button>
+          @if (product.quoteEnabled && product.available) {
+            <button
+              type="button"
+              class="secondary add-to-list"
+              [disabled]="!!quantityError(product, quantityFor(product))"
+              (click)="addToList(product)"
+            >
+              {{ orderList.has(product.id) ? '✓ En tu lista · actualizar' : '+ Agregar a la lista de pedido' }}
+            </button>
+          }
           @if (!product.quoteEnabled) {
             <p class="quote-unavailable">
               Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.

@@ -25,7 +25,7 @@ test('Lista de pedido: varios productos de un proveedor en una sola solicitud', 
     await page.goto(f.base.replace('/api/v1/', '/'));
     await page.getByRole('button', { name: 'Agregar a la lista: Cuaderno vendor', exact: true }).click();
     const resma = page.locator('.product-card').filter({ hasText: 'Resma lista vendor' });
-    await expect(resma.locator('.badge-volume')).toHaveText('Precio por volumen');
+    await expect(resma.locator('.badge-volume')).toContainText('por volumen');
     await resma.getByLabel('Cantidad para Resma lista vendor').fill('3');
     await page.getByRole('button', { name: 'Agregar a la lista: Resma lista vendor', exact: true }).click();
     await expect(page.locator('.order-list-link .badge')).toHaveText('2');
