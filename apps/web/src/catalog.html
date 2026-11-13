@@ -152,6 +152,16 @@
                     >
                   </div>
                   <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
+                  @if (product.priceTiers?.length) {
+                    <ul class="volume-prices" aria-label="Precios por volumen">
+                      @for (tier of product.priceTiers; track tier.desde) {
+                        <li>
+                          Desde {{ presentations(tier.desde, product.unit) }}:
+                          <strong>{{ tier.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2' }}</strong>
+                        </li>
+                      }
+                    </ul>
+                  }
                   <dl>
                     <div>
                       <dt>Mínimo</dt>
@@ -264,6 +274,20 @@
             >
           </div>
           <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }} · Envío por cotizar</p>
+          @if (product.priceTiers?.length) {
+            <div class="volume-prices-detail">
+              <h3>Precios por volumen</h3>
+              <ul class="volume-prices">
+                @for (tier of product.priceTiers; track tier.desde) {
+                  <li>
+                    Desde {{ presentations(tier.desde, product.unit) }}:
+                    <strong>{{ tier.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2' }}</strong> por
+                    presentación
+                  </li>
+                }
+              </ul>
+            </div>
+          }
           <dl>
             <div>
               <dt>Mínimo de compra</dt>

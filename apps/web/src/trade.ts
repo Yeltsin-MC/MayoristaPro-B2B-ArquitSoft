@@ -8,6 +8,8 @@ import {
   presentations,
   quantityError,
   quantityEquivalence,
+  tierTotal,
+  tierUnitPrice,
 } from './wholesale-quantity';
 interface RequestItem {
   descripcion: string;
@@ -125,6 +127,12 @@ interface RequestItem {
                   {{ presentations(product.multiple, product.unit) }}
                 </p>
                 <p class="quantity-equivalence">{{ quantityEquivalence(product, i.cantidad) }}</p>
+                @if (!quantityIssue(i)) {
+                  <p class="price-reference">
+                    Precio publicado para esta cantidad: S/ {{ tierUnitPrice(product, i.cantidad) }} por presentación ·
+                    S/ {{ tierTotal(product, i.cantidad) }} sin envío. El proveedor confirma el precio en su oferta.
+                  </p>
+                }
               }
               @if (quantityIssue(i); as issue) {
                 <p class="quantity-error">{{ issue }}</p>
@@ -157,6 +165,50 @@ interface RequestItem {
         }
       </form>
     }
+    @if (!creating() && canSell() && products().length > 0) {
+      <details class="tier-editor">
+        <summary>Precios por volumen de mis productos</summary>
+        <p>
+          Define hasta 5 escalas: desde cierta cantidad de presentaciones, un precio menor por presentación. Se muestran
+          en el catálogo público y como referencia al responder cotizaciones.
+        </p>
+        <label
+          >Producto
+          <select name="tier-product" [ngModel]="tierProductId" (ngModelChange)="selectTierProduct($event)">
+            <option value="">Seleccionar</option>
+            @for (p of products(); track p.id) {
+              <option [value]="p.id">
+                {{ p.sku }} · {{ p.name }} · S/ {{ p.price }} · mínimo {{ p.minimum }} · múltiplo {{ p.multiple }}
+              </option>
+            }
+          </select></label
+        >
+        @if (ownProduct(tierProductId); as p) {
+          @for (tier of tierDraft; track $index; let n = $index) {
+            <div class="tier-row">
+              <label
+                >Desde (presentaciones)
+                <input
+                  type="number"
+                  [name]="'tier-from-' + n"
+                  [min]="p.minimum + 1"
+                  [step]="p.multiple"
+                  [(ngModel)]="tier.desde"
+              /></label>
+              <label
+                >Precio por presentación PEN
+                <input [name]="'tier-price-' + n" inputmode="decimal" [(ngModel)]="tier.precioUnitario"
+              /></label>
+              <button type="button" class="secondary" (click)="tierDraft.splice(n, 1)">Quitar</button>
+            </div>
+          }
+          <button type="button" class="secondary" [disabled]="tierDraft.length >= 5" (click)="addTier()">
+            Añadir escala
+          </button>
+          <button type="button" [disabled]="busy()" (click)="saveTiers(p.id)">Guardar precios por volumen</button>
+        }
+      </details>
+    }
     @if (!creating()) {
       <h4 id="mis-cotizaciones" tabindex="-1">Mis cotizaciones</h4>
       <div class="request-list">
@@ -188,7 +240,12 @@ interface RequestItem {
                 <legend>{{ q.items[n].description }} ({{ line.cantidad }} presentaciones)</legend>
                 <label
                   >Producto propio
-                  <select [name]="'product-' + n" required [(ngModel)]="line.productoId">
+                  <select
+                    [name]="'product-' + n"
+                    required
+                    [(ngModel)]="line.productoId"
+                    (ngModelChange)="suggestPrice(line)"
+                  >
                     <option value="">Seleccionar</option>
                     @for (p of products(); track p.id) {
                       <option [value]="p.id">
@@ -202,6 +259,12 @@ interface RequestItem {
                   >Precio por presentación PEN (IGV incluido)
                   <input [name]="'price-' + n" required [(ngModel)]="line.precioUnitario"
                 /></label>
+                @if (ownProduct(line.productoId); as p) {
+                  <p class="price-reference">
+                    Precio publicado para {{ line.cantidad }}: S/ {{ tierUnitPrice(p, line.cantidad) }} por
+                    presentación{{ p.priceTiers?.length ? ' (con precios por volumen)' : '' }}.
+                  </p>
+                }
               </fieldset>
             }
             <label>Envío final PEN <input name="shipping" required [(ngModel)]="shipping" /></label>
@@ -405,6 +468,10 @@ export class TradeComponent {
   readonly packDescription = packDescription;
   readonly presentations = presentations;
   readonly quantityEquivalence = quantityEquivalence;
+  readonly tierUnitPrice = tierUnitPrice;
+  readonly tierTotal = tierTotal;
+  tierProductId = '';
+  tierDraft: { desde: number | null; precioUnitario: string }[] = [];
   responseItems: any[] = [];
   shipping = '0.00';
   deliveryDays = 3;
@@ -473,6 +540,35 @@ export class TradeComponent {
     if (r) this.requests.set(r);
     const o = await this.call('orders');
     if (o) this.orders.set(o);
+  }
+  ownProduct(id: string): any {
+    return this.products().find(p => p.id === id) ?? null;
+  }
+  /** Al elegir un producto propio, propone el precio publicado (con escalas) si aún no hay precio. */
+  suggestPrice(line: any) {
+    const product = this.ownProduct(line.productoId);
+    if (product && !line.precioUnitario) line.precioUnitario = tierUnitPrice(product, line.cantidad);
+  }
+  selectTierProduct(id: string) {
+    this.tierProductId = id;
+    const product = this.ownProduct(id);
+    this.tierDraft = (product?.priceTiers ?? []).map((t: any) => ({ ...t }));
+    if (product && this.tierDraft.length === 0) this.addTier();
+  }
+  addTier() {
+    this.tierDraft.push({ desde: null, precioUnitario: '' });
+  }
+  async saveTiers(productId: string) {
+    const escalas = this.tierDraft
+      .filter(t => t.desde !== null || t.precioUnitario.trim())
+      .map(t => ({ desde: Number(t.desde), precioUnitario: t.precioUnitario.trim() }));
+    const result = await this.call('trade/products/' + productId + '/price-tiers', 'PUT', { escalas });
+    if (result) {
+      this.products.update(list => list.map(p => (p.id === productId ? { ...p, priceTiers: result.priceTiers } : p)));
+      this.tierDraft = result.priceTiers.map((t: any) => ({ ...t }));
+      this.message.set('Precios por volumen guardados.');
+      this.catalogChanged.emit();
+    }
   }
   sourceProduct(item: RequestItem): CatalogProduct | null {
     return item === this.catalogItem ? this.catalogProduct : null;
