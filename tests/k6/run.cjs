@@ -7,8 +7,8 @@ const env = { ...process.env, PERFIL: perfil };
 env.COMPRADOR_EMAIL ||= 'demo-comprador150@example.test';
 const resumen = path.join('docs', 'evidencias', 'k6', 'resumen-' + perfil + '.json');
 require('node:fs').mkdirSync(path.dirname(resumen), { recursive: true });
-const result = spawnSync('k6', ['run', '--summary-export', resumen, path.join(__dirname, 'catalogo.k6.js')], {
-  stdio: 'inherit', env, shell: process.platform === 'win32',
+const result = spawnSync('k6', ['run', '--summary-export', resumen, path.join('tests', 'k6', 'catalogo.k6.js')], {
+  stdio: 'inherit', env,
 });
 if (result.error) {
   console.error('No se encontró k6. Instálalo con: winget install k6 --source winget (Windows) o desde https://grafana.com/docs/k6/latest/set-up/install-k6/');
