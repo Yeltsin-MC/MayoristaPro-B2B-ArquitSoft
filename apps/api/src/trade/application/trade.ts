@@ -2,6 +2,7 @@ import { identifier, offerDraft, requestDraft, rule, RequestDraft, OfferDraft } 
 export interface TradeStore {
   providers(auth?: string): Promise<unknown>;
   products(auth?: string): Promise<unknown>;
+  setPriceTiers(productId: string, body: unknown, auth?: string): Promise<unknown>;
   create(input: RequestDraft, auth?: string): Promise<unknown>;
   requests(auth?: string): Promise<unknown>;
   detail(id: string, auth?: string): Promise<unknown>;
@@ -19,6 +20,9 @@ export class Trade {
   }
   products(auth?: string) {
     return this.store.products(auth);
+  }
+  setPriceTiers(productId: string, body: unknown, auth?: string) {
+    return this.store.setPriceTiers(identifier(productId), body, auth);
   }
   create(body: unknown, auth?: string) {
     return this.store.create(requestDraft(body), auth);

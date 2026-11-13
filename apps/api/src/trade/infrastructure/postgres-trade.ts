@@ -15,6 +15,8 @@ import {
   rule,
   TradeRule,
 } from '../domain/trade';
+import { priceTiers } from '../domain/price-tiers';
+import { TIERS_JSON } from '../../catalog/infrastructure/price-tiers-sql';
 type Actor = Awaited<ReturnType<IdentityService['tradeIdentity']>>;
 @Injectable()
 export class PostgresTrade implements TradeStore {
@@ -149,10 +151,34 @@ export class PostgresTrade implements TradeStore {
       this.access(actor, 'sell');
       return (
         await db.query(
-          `SELECT id,sku,name,unit,units_per_pack AS "unitsPerPack",minimum,multiple,stock,price FROM products WHERE supplier_id=$1 AND published ORDER BY name`,
+          `SELECT p.id,p.sku,p.name,p.unit,p.units_per_pack AS "unitsPerPack",p.minimum,p.multiple,p.stock,p.price,${TIERS_JSON} AS "priceTiers"
+   FROM products p WHERE p.supplier_id=$1 AND p.published ORDER BY p.name`,
           [actor.supplierId],
         )
       ).rows;
+    });
+  }
+  async setPriceTiers(productId: string, body: unknown, auth?: string) {
+    return this.tx(async db => {
+      const actor = await this.identity.tradeIdentity(db, auth);
+      this.access(actor, 'sell');
+      const product = (
+        await db.query(
+          'SELECT id,price::text,minimum,multiple FROM products WHERE id=$1 AND supplier_id=$2 FOR UPDATE',
+          [productId, actor.supplierId],
+        )
+      ).rows[0];
+      if (!product) throw new NotFoundException();
+      const tiers = priceTiers(body, product);
+      await db.query('DELETE FROM product_price_tiers WHERE product_id=$1', [productId]);
+      for (const tier of tiers)
+        await db.query('INSERT INTO product_price_tiers(product_id,min_quantity,unit_price) VALUES($1,$2,$3)', [
+          productId,
+          tier.desde,
+          tier.precioUnitario,
+        ]);
+      await this.audit(db, actor, 'set-price-tiers', productId);
+      return { productId, priceTiers: tiers };
     });
   }
   async create(input: RequestDraft, auth?: string) {
