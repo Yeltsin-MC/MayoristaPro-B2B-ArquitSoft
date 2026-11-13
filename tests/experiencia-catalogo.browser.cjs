@@ -25,6 +25,8 @@ test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritori
     const confirmed = await f.call('products/imports/' + batch.id + '/confirm', 'POST', { previewHash: batch.previewHash },
       'vendor', { 'Idempotency-Key': 'experiencia-' + batch.id });
     assert.equal(confirmed.status, 201, JSON.stringify(confirmed.body));
+    const firstPage = await f.call('products?page=1&limit=12', 'GET', undefined, null);
+    const firstPageNames = firstPage.body.items.map(product => product.name);
     const secondPage = await f.call('products?page=2&limit=12', 'GET', undefined, null);
     assert.equal(secondPage.body.items.length, 12);
     const outsideFirstPage = secondPage.body.items.find(product => product.name.endsWith('(demo)'));
@@ -59,7 +61,7 @@ test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritori
         await expect(page.locator('.product-card')).toHaveCount(12);
         for (const tag of await page.locator('.product-card .category-tag').allTextContents()) assert.equal(tag, 'Cuadernos');
         await page.getByRole('button', { name: 'Limpiar', exact: true }).click();
-        await expect(page.locator('.product-card')).toHaveCount(12);
+        await expect(page.locator('.product-card h3')).toHaveText(firstPageNames);
         assert.ok(!(await page.locator('.product-card h3').allTextContents()).includes(outsideFirstPage.name));
         await page.getByLabel('Buscar productos', { exact: true }).fill(outsideFirstPage.name);
         const searched = page.waitForResponse(r => new URL(r.url()).pathname === '/api/v1/products' &&

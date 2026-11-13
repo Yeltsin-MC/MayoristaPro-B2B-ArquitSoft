@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-13T02:43:53.663Z",
+  "generatedAt": "2026-11-13T02:55:06.479Z",
   "browser": "157.0.4341.46",
   "data": "CSV T3 y 14 filas adicionales en esquema PostgreSQL aislado",
   "results": [
     {
       "viewport": "1440x1050",
-      "quotationId": "76ba6cef-ac3e-4d80-b4d7-5f7dc303a5f0",
-      "outsideFirstPage": "Papel A4 para oficina (demo)",
+      "quotationId": "206b98fd-e3e1-468e-bd58-3389fe2f4863",
+      "outsideFirstPage": "Cuaderno de oficina 2 (demo)",
       "categoriesFromCompleteCatalog": true,
       "stockAndPricingVisible": true,
       "headerOverlap": false,
@@ -14,8 +14,8 @@
     },
     {
       "viewport": "390x1000",
-      "quotationId": "16d11b1f-45e8-41c8-a1a4-92a8bcd4e4bf",
-      "outsideFirstPage": "Papel A4 para oficina (demo)",
+      "quotationId": "0443ec0e-4a0b-4e7b-9b3b-857c281f95a4",
+      "outsideFirstPage": "Cuaderno de oficina 2 (demo)",
       "categoriesFromCompleteCatalog": true,
       "stockAndPricingVisible": true,
       "headerOverlap": false,
