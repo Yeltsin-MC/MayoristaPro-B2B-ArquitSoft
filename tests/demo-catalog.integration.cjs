@@ -13,16 +13,20 @@ test('Demo150: carga real, búsqueda, comparación y recarga que preserva reserv
   const db = new Pool({ connectionString: databaseUrl });
   let reservedProduct;
   try {
-    await t.test('cinco proveedores aprobados y verificados, 30 productos por proveedor', async () => {
+    await t.test('quince proveedores aprobados y verificados, 30 productos por proveedor', async () => {
       const result = await loadDemo(config);
-      assert.equal(result.suppliers, 5); assert.equal(result.products, 150);
-      assert.equal(result.categories, 5); assert.equal(result.quotable, 150);
+      const providers = manifest.providers.length;
+      assert.equal(providers, 15);
+      assert.equal(result.suppliers, providers); assert.equal(result.products, providers * 30);
+      assert.equal(result.categories, providers); assert.equal(result.quotable, providers * 30);
       assert.ok(result.imports.every(p => p.products === 30 && p.created === 30 && p.updated === 0));
+      // Dos de cada tres productos llevan precios por volumen de demostración.
+      assert.ok(result.imports.every(p => p.tiers === 20));
     });
     await withDemoApi(databaseUrl, async base => {
-      await t.test('búsqueda y cinco filtros recorren el catálogo completo paginado', async () => {
+      await t.test('búsqueda y filtros por categoría recorren el catálogo completo paginado', async () => {
         const options = await apiCall(base, 'products/options');
-        assert.equal(options.suppliers.length, 5);
+        assert.equal(options.suppliers.length, manifest.providers.length);
         assert.deepEqual([...options.categories].sort(), manifest.providers.map(p => p.category).sort());
         const matches = (await apiCall(base, 'products?q=Papel%20A4&limit=100')).items;
         assert.equal(matches.length, 2);
@@ -66,9 +70,9 @@ test('Demo150: carga real, búsqueda, comparación y recarga que preserva reserv
         assert.equal((await db.query('SELECT stock FROM products WHERE id=$1', [reservedProduct])).rows[0].stock, 22);
       });
     });
-    await t.test('repetir las cinco importaciones no duplica productos ni repone el stock reservado', async () => {
+    await t.test('repetir las importaciones no duplica productos ni repone el stock reservado', async () => {
       const result = await loadDemo(config);
-      assert.equal(result.products, 150);
+      assert.equal(result.products, manifest.providers.length * 30);
       assert.ok(result.imports.every(p => p.created === 0 && p.updated === 30));
       assert.equal((await db.query('SELECT stock FROM products WHERE id=$1', [reservedProduct])).rows[0].stock, 22);
       assert.equal((await db.query('SELECT count(*)::int AS n FROM trade_orders')).rows[0].n, 1);

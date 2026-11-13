@@ -1,9 +1,9 @@
 {
-  "description": "Empresas y referencias ficticias para demostración académica MayoristaPro B2B",
+  "description": "Empresas, RUC y productos ficticios para la demostración académica de MayoristaPro B2B",
   "providers": [
     {
       "code": "lirio",
-      "name": "Demo Lirio Papelería (ficticia)",
+      "name": "Papelera Lirio S.A.C.",
       "ruc": "20999000001",
       "email": "demo-lirio@example.test",
       "category": "Librería y papelería",
@@ -13,7 +13,7 @@
     },
     {
       "code": "cobre",
-      "name": "Demo Cobre Oficina (ficticia)",
+      "name": "Cobre Suministros de Oficina E.I.R.L.",
       "ruc": "20999000002",
       "email": "demo-cobre@example.test",
       "category": "Suministros de oficina",
@@ -23,7 +23,7 @@
     },
     {
       "code": "quilla",
-      "name": "Demo Quilla Tecnología (ficticia)",
+      "name": "Quilla Tecnología S.A.C.",
       "ruc": "20999000003",
       "email": "demo-quilla@example.test",
       "category": "Tecnología y periféricos",
@@ -33,7 +33,7 @@
     },
     {
       "code": "miga",
-      "name": "Demo Miga Insumos (ficticia)",
+      "name": "Miga Insumos Panaderos S.A.C.",
       "ruc": "20999000004",
       "email": "demo-miga@example.test",
       "category": "Insumos secos de panadería",
@@ -43,17 +43,117 @@
     },
     {
       "code": "trazo",
-      "name": "Demo Trazo Acabados (ficticia)",
+      "name": "Trazo Acabados S.A.C.",
       "ruc": "20999000005",
       "email": "demo-trazo@example.test",
       "category": "Acabados para construcción",
       "shipping": "18.00",
       "days": 3,
       "file": "trazo.csv"
+    },
+    {
+      "code": "nube",
+      "name": "Nube Clean Perú S.A.C.",
+      "ruc": "20999000007",
+      "email": "demo-nube@example.test",
+      "category": "Limpieza e higiene",
+      "shipping": "9.00",
+      "days": 2,
+      "file": "nube.csv"
+    },
+    {
+      "code": "alba",
+      "name": "Distribuidora Alba Abarrotes E.I.R.L.",
+      "ruc": "20999000008",
+      "email": "demo-alba@example.test",
+      "category": "Abarrotes y bebidas",
+      "shipping": "12.00",
+      "days": 2,
+      "file": "alba.csv"
+    },
+    {
+      "code": "pliego",
+      "name": "Pliego Empaques S.A.C.",
+      "ruc": "20999000009",
+      "email": "demo-pliego@example.test",
+      "category": "Embalaje y empaques",
+      "shipping": "10.00",
+      "days": 3,
+      "file": "pliego.csv"
+    },
+    {
+      "code": "yunque",
+      "name": "Ferretería El Yunque Andino S.A.C.",
+      "ruc": "20999000010",
+      "email": "demo-yunque@example.test",
+      "category": "Ferretería y herramientas",
+      "shipping": "15.00",
+      "days": 3,
+      "file": "yunque.csv"
+    },
+    {
+      "code": "voltio",
+      "name": "Voltio Materiales Eléctricos S.A.C.",
+      "ruc": "20999000011",
+      "email": "demo-voltio@example.test",
+      "category": "Material eléctrico",
+      "shipping": "12.00",
+      "days": 3,
+      "file": "voltio.csv"
+    },
+    {
+      "code": "escudo",
+      "name": "Escudo Seguridad Industrial E.I.R.L.",
+      "ruc": "20999000012",
+      "email": "demo-escudo@example.test",
+      "category": "Seguridad industrial",
+      "shipping": "10.00",
+      "days": 2,
+      "file": "escudo.csv"
+    },
+    {
+      "code": "taza",
+      "name": "Taza Llena Descartables S.A.C.",
+      "ruc": "20999000013",
+      "email": "demo-taza@example.test",
+      "category": "Descartables y cafetería",
+      "shipping": "8.00",
+      "days": 1,
+      "file": "taza.csv"
+    },
+    {
+      "code": "hilo",
+      "name": "Hilo Fino Uniformes S.A.C.",
+      "ruc": "20999000014",
+      "email": "demo-hilo@example.test",
+      "category": "Textil y uniformes",
+      "shipping": "10.00",
+      "days": 5,
+      "file": "hilo.csv"
+    },
+    {
+      "code": "vital",
+      "name": "Vital Botiquín Distribuciones S.A.C.",
+      "ruc": "20999000015",
+      "email": "demo-vital@example.test",
+      "category": "Botiquín y primeros auxilios",
+      "shipping": "9.00",
+      "days": 2,
+      "file": "vital.csv"
+    },
+    {
+      "code": "tablero",
+      "name": "Tablero Mobiliario Corporativo S.A.C.",
+      "ruc": "20999000016",
+      "email": "demo-tablero@example.test",
+      "category": "Mobiliario de oficina",
+      "shipping": "45.00",
+      "days": 5,
+      "file": "tablero.csv"
     }
   ],
   "buyer": {
-    "name": "Demo Mostrador Compras (ficticia)",
+    "name": "Bodega Mostrador Huamanga S.A.C.",
     "ruc": "20999000006",
     "email": "demo-comprador150@example.test"
   },
@@ -63,7 +163,7 @@
       "cobre"
     ],
     "skuSuffix": "001",
-    "description": "Papel A4 blanco 75 g, caja de 5 resmas (demo)",
+    "description": "Papel A4 blanco 75 g, caja de 5 resmas",
     "unit": "caja",
     "unitsPerPack": 5,
     "quantity": 2
