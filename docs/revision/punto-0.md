@@ -5,7 +5,6 @@ Este archivo marca el punto de partida de las correcciones de estructura sugerid
 | Dato | Valor |
 |---|---|
 | Commit base (`main`) | `8218f54` (Merge pull request #9, sprint-2/ux-cotizacion-comprador) |
-| Etiqueta | `punto-0` (apunta a `8218f54`) |
 | Rama de correcciones | `claude/project-thread-bn6flv` |
 
 Estado verificado en el punto 0:
@@ -17,7 +16,7 @@ Estado verificado en el punto 0:
 
 ## Cómo volver al punto 0
 
-- Ver el código tal como estaba: `git checkout 8218f54` (o `git checkout punto-0`).
+- Ver el código tal como estaba: `git checkout 8218f54` .
 - Deshacer una corrección concreta: cada corrección está en un commit separado; usar `git revert <commit>`.
 - Si el PR ya se fusionó y se quiere descartar todo: `git revert -m 1 <commit-del-merge>`.
 
