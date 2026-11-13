@@ -2,6 +2,7 @@ import { Logger, OnModuleDestroy } from '@nestjs/common';
 import { createClient, RedisClientType } from 'redis';
 import { PublicCatalogCache } from '../application/public-catalog-cache';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- firma genérica de node-redis sin módulos.
 type Client = RedisClientType<{}, {}, {}, 2>;
 
 export function cacheInteger(name: string, fallback: number, min: number, max: number): number {
@@ -42,9 +43,14 @@ export class RedisCatalogCache implements PublicCatalogCache, OnModuleDestroy {
       if (!this.warned) this.logger.warn('Redis no disponible. El catálogo utiliza PostgreSQL.');
       this.warned = true;
     });
-    client.on('ready', () => { this.warned = false; });
+    client.on('ready', () => {
+      this.warned = false;
+    });
     const deadline = setTimeout(() => this.discard(client), this.timeoutMs);
-    void client.connect().catch(() => {}).finally(() => clearTimeout(deadline));
+    void client
+      .connect()
+      .catch(() => {})
+      .finally(() => clearTimeout(deadline));
   }
 
   private discard(client: Client): void {

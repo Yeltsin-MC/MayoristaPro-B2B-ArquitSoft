@@ -66,6 +66,8 @@ jobs:
           else:
               raise SystemExit('FastAPI no inició en el puerto 5055')
           PY
+      - run: npm run format:check
+      - run: npm run lint
       - run: npm run build
       - run: npm run test:unit
       - run: npm run db:migrate

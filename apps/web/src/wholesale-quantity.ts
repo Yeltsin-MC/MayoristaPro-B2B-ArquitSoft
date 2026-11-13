@@ -15,14 +15,20 @@ export function minimumQuantity(product: CatalogProduct): number {
 
 export function quantityError(product: CatalogProduct, quantity: number | null): string {
   if (product.stock < minimumQuantity(product)) {
-    return 'Stock disponible: ' + presentations(product.stock, product.unit) +
-      '. No alcanza el mínimo de ' + presentations(minimumQuantity(product), product.unit) + '.';
+    return (
+      'Stock disponible: ' +
+      presentations(product.stock, product.unit) +
+      '. No alcanza el mínimo de ' +
+      presentations(minimumQuantity(product), product.unit) +
+      '.'
+    );
   }
   if (quantity === null || !Number.isSafeInteger(quantity) || quantity <= 0) {
     return 'Ingresa una cantidad entera de presentaciones.';
   }
   if (quantity < product.minimum) return 'El mínimo de compra es ' + presentations(product.minimum, product.unit) + '.';
-  if (quantity % product.multiple !== 0) return 'Elige un múltiplo de ' + presentations(product.multiple, product.unit) + '.';
+  if (quantity % product.multiple !== 0)
+    return 'Elige un múltiplo de ' + presentations(product.multiple, product.unit) + '.';
   if (quantity > product.stock) return 'Solo hay ' + presentations(product.stock, product.unit) + ' disponibles.';
   return '';
 }
@@ -30,10 +36,18 @@ export function quantityError(product: CatalogProduct, quantity: number | null):
 export function quantityEquivalence(product: CatalogProduct, quantity: number | null): string {
   if (quantity === null || !Number.isSafeInteger(quantity) || quantity <= 0 || product.unitsPerPack <= 1) return '';
   const units = quantity * product.unitsPerPack;
-  return Number.isSafeInteger(units) ? presentations(quantity, product.unit) + ' = ' + units + (/resmas?/i.test(product.name) ? ' resmas' : ' unidades') : '';
+  return Number.isSafeInteger(units)
+    ? presentations(quantity, product.unit) + ' = ' + units + (/resmas?/i.test(product.name) ? ' resmas' : ' unidades')
+    : '';
 }
 export function packDescription(product: CatalogProduct): string {
   const unit = product.unit.toLowerCase();
   if (unit === 'unidad' && product.unitsPerPack === 1) return unit;
-  return unit + ' de ' + product.unitsPerPack + ' ' + (/resmas?/i.test(product.name) ? unitName('resma', product.unitsPerPack) : unitName('unidad', product.unitsPerPack));
+  return (
+    unit +
+    ' de ' +
+    product.unitsPerPack +
+    ' ' +
+    (/resmas?/i.test(product.name) ? unitName('resma', product.unitsPerPack) : unitName('unidad', product.unitsPerPack))
+  );
 }

@@ -30,10 +30,13 @@ import { ProductsController } from './presentation/products.controller';
     {
       provide: CachedProducts,
       inject: [PostgresProducts, RedisCatalogCache],
-      useFactory: (reader: PostgresProducts, cache: RedisCatalogCache) => new CachedProducts(
-        reader, cache, catalogNamespace(process.env.DATABASE_URL!),
-        cacheInteger('CATALOG_CACHE_TTL_SECONDS', 30, 1, 86400),
-      ),
+      useFactory: (reader: PostgresProducts, cache: RedisCatalogCache) =>
+        new CachedProducts(
+          reader,
+          cache,
+          catalogNamespace(process.env.DATABASE_URL!),
+          cacheInteger('CATALOG_CACHE_TTL_SECONDS', 30, 1, 86400),
+        ),
     },
     { provide: PRODUCT_READER, useExisting: CachedProducts },
     {

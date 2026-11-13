@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
  * Worker: Recuperación de webhooks fallidos
- * 
+ *
  * Procesa webhooks que fueron recibidos pero fallaron en su procesamiento inicial.
  * Debe ejecutarse periódicamente (ej: cada 5 minutos) mediante cron.
- * 
+ *
  * Uso: node apps/api/src/workers/recover-webhooks.cjs
- * 
+ *
  * Idempotencia garantizada: solo procesa eventos con processed=false y signature_verified=true
  */
 
@@ -32,7 +32,7 @@ async function recoverWebhooks() {
   try {
     // Obtener webhooks pendientes (verificados pero no procesados, con más de 1 minuto de antigüedad)
     const pending = await pool.query(
-      "SELECT notification_id, data_id, action, type, payload, received_at FROM payment_webhook_events WHERE processed=false AND signature_verified=true AND received_at < now()-interval '1 minute' ORDER BY received_at ASC LIMIT 50"
+      "SELECT notification_id, data_id, action, type, payload, received_at FROM payment_webhook_events WHERE processed=false AND signature_verified=true AND received_at < now()-interval '1 minute' ORDER BY received_at ASC LIMIT 50",
     );
 
     if (pending.rowCount === 0) {
@@ -70,12 +70,12 @@ async function recoverWebhooks() {
         console.log(`[Webhook Recovery] ✓ Procesado: ${webhook.notification_id}`);
       } catch (error) {
         const errorMsg = error.message || 'Error desconocido';
-        
+
         // Registrar error en la base de datos
-        await pool.query(
-          'UPDATE payment_webhook_events SET processing_error=$2 WHERE notification_id=$1',
-          [webhook.notification_id, errorMsg.substring(0, 500)]
-        );
+        await pool.query('UPDATE payment_webhook_events SET processing_error=$2 WHERE notification_id=$1', [
+          webhook.notification_id,
+          errorMsg.substring(0, 500),
+        ]);
 
         failed++;
         console.error(`[Webhook Recovery] ✗ Falló: ${webhook.notification_id} - ${errorMsg}`);

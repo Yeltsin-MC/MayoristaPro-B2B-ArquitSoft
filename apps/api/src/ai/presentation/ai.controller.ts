@@ -1,6 +1,13 @@
 import {
-  ArgumentsHost, Catch, Controller, ExceptionFilter, Get, Headers,
-  Param, Post, UseFilters,
+  ArgumentsHost,
+  Catch,
+  Controller,
+  ExceptionFilter,
+  Get,
+  Headers,
+  Param,
+  Post,
+  UseFilters,
 } from '@nestjs/common';
 import { AiService } from '../application/ai.service';
 import { TradeRule } from '../../trade/domain/trade';
@@ -8,10 +15,14 @@ import { TradeRule } from '../../trade/domain/trade';
 @Catch(TradeRule)
 class AiExceptionFilter implements ExceptionFilter {
   catch(error: TradeRule, host: ArgumentsHost) {
-    host.switchToHttp().getResponse().status(error.code === 'INVALID_INPUT' ? 422 : 409).json({
-      code: error.code,
-      message: error.message,
-    });
+    host
+      .switchToHttp()
+      .getResponse()
+      .status(error.code === 'INVALID_INPUT' ? 422 : 409)
+      .json({
+        code: error.code,
+        message: error.message,
+      });
   }
 }
 
@@ -23,7 +34,7 @@ export class AiController {
   @Get('ai/health')
   async health() {
     return {
-      status: await this.aiService.healthCheck() ? 'ok' : 'unavailable',
+      status: (await this.aiService.healthCheck()) ? 'ok' : 'unavailable',
       service: 'ai-scoring',
     };
   }

@@ -5,7 +5,14 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
 import { CatalogPhotoComponent } from './catalog-photo';
-import { minimumQuantity, packDescription, presentations, quantityError, quantityEquivalence, unitName } from './wholesale-quantity';
+import {
+  minimumQuantity,
+  packDescription,
+  presentations,
+  quantityError,
+  quantityEquivalence,
+  unitName,
+} from './wholesale-quantity';
 
 @Component({
   selector: 'app-root',
@@ -18,10 +25,16 @@ export class CatalogComponent {
   readonly products = signal<CatalogProduct[]>([]);
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');
   readonly page = signal(1);
-  readonly options = signal<{ categories: string[]; suppliers: { id: string; name: string }[] }>({ categories: [], suppliers: [] });
+  readonly options = signal<{ categories: string[]; suppliers: { id: string; name: string }[] }>({
+    categories: [],
+    suppliers: [],
+  });
   readonly selectedProduct = signal<CatalogProduct | null>(null);
-  readonly categories = computed(() => [...this.options().categories].sort((a, b) =>
-    this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es')));
+  readonly categories = computed(() =>
+    [...this.options().categories].sort(
+      (a, b) => this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es'),
+    ),
+  );
   readonly quantities = signal<Record<string, number | null>>({});
   readonly presentations = presentations;
   readonly packDescription = packDescription;
@@ -41,7 +54,10 @@ export class CatalogComponent {
   }
 
   imageKind(name: string): string {
-    const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const normalized = name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
     if (/panader|harina|levadura/.test(normalized)) return 'bakery';
     if (/constru|acabados/.test(normalized)) return 'construction';
     if (/redes|router|ethernet|cable|network/.test(normalized)) return 'network';
@@ -98,13 +114,18 @@ export class CatalogComponent {
   showAlternative(dialog: HTMLDialogElement): void {
     const alternative = this.quoteAlternative();
     if (!alternative) return;
-    if (quantityError(alternative, this.quantityFor(alternative))) this.setQuantity(alternative, minimumQuantity(alternative));
+    if (quantityError(alternative, this.quantityFor(alternative)))
+      this.setQuantity(alternative, minimumQuantity(alternative));
     this.showProduct(alternative, dialog);
   }
 
   loadOptions(): void {
-    this.http.get<{ categories: string[]; suppliers: { id: string; name: string }[] }>('/api/v1/products/options')
-      .subscribe({ next: options => this.options.set(options), error: () => this.options.set({ categories: [], suppliers: [] }) });
+    this.http
+      .get<{ categories: string[]; suppliers: { id: string; name: string }[] }>('/api/v1/products/options')
+      .subscribe({
+        next: options => this.options.set(options),
+        error: () => this.options.set({ categories: [], suppliers: [] }),
+      });
   }
 
   reload(): void {
@@ -113,7 +134,11 @@ export class CatalogComponent {
   }
 
   reset(): void {
-    this.search = ''; this.category = ''; this.supplier = ''; this.available = false; this.sort = '';
+    this.search = '';
+    this.category = '';
+    this.supplier = '';
+    this.available = false;
+    this.sort = '';
     this.load();
   }
 
@@ -133,7 +158,9 @@ export class CatalogComponent {
         this.page.set(page);
         this.status.set('ready');
       },
-      error: () => { if (version === this.requestVersion) this.status.set('error'); },
+      error: () => {
+        if (version === this.requestVersion) this.status.set('error');
+      },
     });
   }
 }

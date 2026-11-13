@@ -11,14 +11,17 @@ export class PostgresOfferReputation implements OfferReputation, OnModuleDestroy
   });
 
   async forSuppliers(supplierIds: string[]): Promise<SupplierReputation[]> {
-    const result = await this.pool.query(`
+    const result = await this.pool.query(
+      `
       SELECT supplier_id AS "supplierId",
              COUNT(*) FILTER (WHERE state = 'paid') AS completed,
              COUNT(*) AS total
       FROM trade_orders
       WHERE supplier_id = ANY($1::uuid[])
       GROUP BY supplier_id
-    `, [supplierIds]);
+    `,
+      [supplierIds],
+    );
 
     return result.rows.map(row => ({
       supplierId: row.supplierId,

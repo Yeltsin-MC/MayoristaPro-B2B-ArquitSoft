@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.angular/
+docs/
+img/
+presentaciones/
+database/
+tests/
+deployment/
+package-lock.json
+*.md

@@ -20,7 +20,8 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
   }
 
   async listPublished(offset: number, limit: number, filters: CatalogFilters = {}): Promise<PublishedProduct[]> {
-    const result = await this.pool.query<PublishedProduct>(`
+    const result = await this.pool.query<PublishedProduct>(
+      `
       SELECT p.id, p.name, p.category, (p.stock >= p.minimum) AS available,
              s.name AS supplier, s.id AS "supplierId", p.unit,
              EXISTS(SELECT 1 FROM companies c WHERE c.supplier_id=s.id AND c.status='enabled') AS "quoteEnabled",
@@ -36,8 +37,17 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
       ORDER BY CASE WHEN $7 = 'price-asc' THEN p.price END ASC,
                CASE WHEN $7 = 'price-desc' THEN p.price END DESC, p.id
       LIMIT $1 OFFSET $2
-    `, [limit, offset, filters.search || null, filters.category || null,
-      filters.supplier || null, filters.available ?? null, filters.sort || null]);
+    `,
+      [
+        limit,
+        offset,
+        filters.search || null,
+        filters.category || null,
+        filters.supplier || null,
+        filters.available ?? null,
+        filters.sort || null,
+      ],
+    );
     return result.rows;
   }
 
@@ -50,9 +60,11 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
     `);
     return {
       categories: [...new Set<string>(result.rows.map(row => row.category))],
-      suppliers: [...new Map<string, { id: string; name: string }>(
-        result.rows.map(row => [row.id, { id: row.id, name: row.name }]),
-      ).values()],
+      suppliers: [
+        ...new Map<string, { id: string; name: string }>(
+          result.rows.map(row => [row.id, { id: row.id, name: row.name }]),
+        ).values(),
+      ],
     };
   }
 

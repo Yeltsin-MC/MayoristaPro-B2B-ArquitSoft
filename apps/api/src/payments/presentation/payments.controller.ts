@@ -14,9 +14,8 @@ import {
   UseFilters,
   HttpCode,
   BadRequestException,
-  Inject,
 } from '@nestjs/common';
-import { Payments, PAYMENT_STORE } from '../application/payments';
+import { Payments } from '../application/payments';
 import { PaymentError } from '../domain/payment';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { IdentityService } from '../../identity/identity.service';
@@ -48,14 +47,11 @@ export class PaymentsController {
 
   constructor(
     private readonly payments: Payments,
-    private readonly identity: IdentityService
+    private readonly identity: IdentityService,
   ) {}
 
   @Post('orders/:id/payment-attempts')
-  async createPaymentAttempt(
-    @Param('id') orderId: string,
-    @Headers('authorization') auth?: string
-  ) {
+  async createPaymentAttempt(@Param('id') orderId: string, @Headers('authorization') auth?: string) {
     const db = await this.pool.connect();
     try {
       const actor = await this.identity.tradeIdentity(db, auth);
@@ -69,10 +65,7 @@ export class PaymentsController {
   }
 
   @Get('orders/:id/payment-attempts')
-  async getOrderAttempts(
-    @Param('id') orderId: string,
-    @Headers('authorization') auth?: string
-  ) {
+  async getOrderAttempts(@Param('id') orderId: string, @Headers('authorization') auth?: string) {
     const db = await this.pool.connect();
     try {
       const actor = await this.identity.tradeIdentity(db, auth);
@@ -94,7 +87,7 @@ export class PaymentsController {
     @Query('type') type: string,
     @Body() body: any,
     @Headers('x-signature') xSignature?: string,
-    @Headers('x-request-id') xRequestId?: string
+    @Headers('x-request-id') xRequestId?: string,
   ) {
     if (!notificationId || !dataId) {
       throw new BadRequestException('Missing notification ID or data ID');
@@ -122,23 +115,19 @@ export class PaymentsController {
       // Registrar error para recuperación posterior
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       console.error('[Webhook] Processing error:', errorMsg);
-      
+
       // Si es error de validación crítica, devolver error para que MP reintente
       if (error instanceof BadRequestException) {
         throw error;
       }
-      
+
       // Para otros errores, devolver 200 (webhook será recuperado por worker)
     }
 
     return { status: 'ok' };
   }
 
-  private verifyWebhookSignature(params: {
-    dataId: string;
-    xSignature?: string;
-    xRequestId?: string;
-  }): boolean {
+  private verifyWebhookSignature(params: { dataId: string; xSignature?: string; xRequestId?: string }): boolean {
     const { dataId, xSignature, xRequestId } = params;
     const secret = process.env.MP_WEBHOOK_SECRET;
 
@@ -153,11 +142,14 @@ export class PaymentsController {
 
     try {
       // Parsear x-signature: "ts=1704908010,v1=618c85345..."
-      const parts = xSignature.split(',').reduce((acc, part) => {
-        const [key, value] = part.split('=');
-        acc[key] = value;
-        return acc;
-      }, {} as Record<string, string>);
+      const parts = xSignature.split(',').reduce(
+        (acc, part) => {
+          const [key, value] = part.split('=');
+          acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
 
       const ts = parts.ts;
       const v1 = parts.v1;
@@ -180,10 +172,7 @@ export class PaymentsController {
       const expected = createHmac('sha256', secret).update(manifest).digest('hex');
 
       // Comparación segura (timing-safe)
-      return timingSafeEqual(
-        Buffer.from(expected, 'hex'),
-        Buffer.from(v1, 'hex')
-      );
+      return timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(v1, 'hex'));
     } catch (error) {
       console.error('[Webhook] Signature verification error:', error);
       return false;
