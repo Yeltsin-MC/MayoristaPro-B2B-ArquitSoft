@@ -28,7 +28,7 @@ flowchart LR
 | Frontend | Compilación Angular estática, archivos versionados y CDN para activos públicos. Medir carga y caché de activos. |
 | Backend | Una instancia para la demo. Para comparar escalamiento, probar una y dos réplicas con balanceador, misma versión y base compartida. Evitar depender de estado en memoria entre peticiones. |
 | PostgreSQL | Red privada, migraciones, índices y límites de conexiones. Registrar consultas, conexiones, bloqueos y latencia para la comparación. Evaluar aumentos de capacidad con resultados. |
-| Caché | Redis para catálogo público con claves por filtros y paginación, caducidad e invalidación al publicar cambios. Medir aciertos y degradación. La escritura de pedidos consulta PostgreSQL. |
+| Caché | Redis para catálogo público con claves por filtros, orden y paginación, TTL y revisión confirmada en PostgreSQL. Publicación, importación, visibilidad y cambios de stock invalidan las claves vigentes. Las escrituras transaccionales consultan PostgreSQL. [SDD y medición](../sprint-2-redis-catalogo.md). |
 | Entrega | GitHub Actions para compilar y probar cada cambio. Entorno de despliegue con secretos y verificación de salud. Evidencia de una ejecución, versión y enlace público. |
 | Recuperación | Respaldo y restauración probada en entorno aislado. Evaluar RTO/RPO según EQ-02. |
 

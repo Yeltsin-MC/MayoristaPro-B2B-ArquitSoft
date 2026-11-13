@@ -1,8 +1,73 @@
-> Estado operativo de Codex del 12/11/2026. Rama local `sprint-2/demo-mayorista-t6`, desde `6f88fe4` y los cambios locales existentes. Demo compilada en http://localhost:3100 con FastAPI en 5055. Catálogo, cuenta y comparación rediseñados, integración T6 corregida y verificada. La evidencia actual y los comandos están en [demo mayorista](evidencias/demo-mayorista.md). Las cuentas existentes se comprobaron por PostgreSQL. El recorrido autenticado de navegador usa un fixture sintético aislado, pues faltan las contraseñas de las cuentas demo para automatizar su acceso.
-
 # Contexto Operativo de MayoristaPro B2B
 
 **Memoria persistente para Kiro, Codex y auditor de arquitectura.**
+
+---
+
+## Estado vigente tras la integración del PR #4
+
+Actualizado el 12 de noviembre de 2026 para el chat de auditoría. Esta sección registra el cierre de integración. Las secciones por incremento documentan también resultados históricos.
+
+### Git e incremento integrado
+
+- Rama activa `main`. `main` local, `origin/main` y la referencia remota consultada con `git ls-remote` apuntan a `9c9f463a2f058e8b99f11bdb9b919b14089951ba` (`9c9f463`).
+- PR #4 fusionado desde `sprint-2/demo-mayorista-t6`, preservando el historial de T4, T5, T6 y las mejoras posteriores. La rama incorpora el rediseño `1499c60` y la ampliación de CI `bba49ac`. [PR #4](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/4)
+- T4 integrado con solicitudes a varios proveedores, ofertas privadas, aceptación única, pedido idempotente, condiciones históricas y reserva transaccional de stock.
+- T5 integrado con intentos de pago, expiración, liberación de reservas, recuperación de webhooks y estados de reconciliación. Los pagos se verificaron en modo simulado. Mercado Pago con credenciales de prueba y Checkout Pro real sigue pendiente.
+- T6 integrado con el comparador determinista de FastAPI, reputación PostgreSQL, autorización del comprador, validación del contrato y degradación ante fallo del servicio. Se conserva este comparador y el modelo externo se deja para una etapa posterior.
+- Rediseño integrado de catálogo, búsqueda, filtros PostgreSQL, cuenta empresarial por rol, selección de producto para cotizar y comparación de ofertas. Se verificó escritorio y móvil hasta 320 px.
+- Este cierre modifica únicamente este archivo documental en el árbol local de `main`. El commit de `main` sigue siendo `9c9f463`.
+
+### Evidencia existente de verificación
+
+| Entorno | Resultado comprobado |
+|---|---|
+| Local, antes de la fusión | Angular y NestJS compilados. 82/82 resultados de integración PostgreSQL, 9/9 de navegador por ejecuciones focalizadas y 1/1 unitaria de precios. La evidencia previa de Kiro contiene 11/11 unitarias Python. |
+| GitHub Actions sobre `main` | Ejecución `43312826488` completada con `success`, para el commit `9c9f463a2f058e8b99f11bdb9b919b14089951ba`. Instalación reproducible, compilación, migraciones, seed, 11 pruebas Python, 1 unitaria de precios, 82 de integración y 9 de navegador aprobadas. PostgreSQL 17, Python 3.11 y Chromium en Ubuntu. |
+| Navegador autenticado | Flujo con cuentas sintéticas aisladas desde selección de producto e inicio de sesión hasta cotización y comparación con FastAPI real. Privacidad entre empresas y modo de comparación sin puntuaciones comprobados. |
+| Instancia demo existente | Cuatro cuentas, sus permisos y estados comprobados mediante consultas de solo lectura. Catálogo público con cinco productos y dos acciones de cotización habilitadas. La solicitud existente tiene dos ofertas. Su login automatizado sigue pendiente de las contraseñas elegidas por el usuario. |
+| Pago | Mercado Pago simulado en las pruebas. Validación de sandbox con credenciales de prueba y recorrido real de Checkout Pro pendiente. |
+
+La ejecución sobre `main` y las capturas, comandos y distinción entre recorridos reales y simulados quedan disponibles para auditoría. [GitHub Actions 43312826488](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/actions/runs/43312826488) · [Evidencia local de demo](evidencias/demo-mayorista.md)
+
+### Acuerdos de trabajo, infraestructura e IA
+
+- El flujo acordado utiliza ramas de trabajo, PR y GitHub Actions. La integración se realiza con revisión y CI aprobado. Las pruebas posteriores se eligen según los cambios y la evidencia que falte.
+- Para despliegue, el usuario informa US$ 100 de crédito promocional de AWS y un presupuesto personal aproximado de S/ 65. Antes de aprovisionar, verificar saldo, vigencia, elegibilidad del crédito por servicio y región, cobertura y costo estimado del entorno y de las pruebas de carga.
+- Considerar Cloudflare Free y un enlace gratuito inicial en el diseño presupuestario. La compra de un dominio `.com` sigue pendiente de confirmación. Verificar las condiciones y límites vigentes al seleccionar servicios.
+- Los recursos que puedan generar cargos requieren autorización explícita. Preparar una estimación revisable y controles de consumo antes de solicitar esa autorización.
+- Mantener el comparador FastAPI actual y posponer el modelo externo hasta una etapa posterior. La evaluación de un proveedor de modelo debe precisar alcance académico, costo y privacidad.
+
+### Contraste con Sprint 2 y los 16 criterios del docente
+
+La matriz siguiente contrasta el incremento integrado con el plan del Sprint 2 y registra la evidencia pendiente para evaluación. [Preparación del Sprint 2](05-preparacion-sprint-2.md)
+
+| N.º | Criterio | Avance y evidencia pendiente |
+|---|---|---|
+| 1 | Identificación del problema y requerimientos | Actores, HU y RF documentados. Consolidar trazabilidad hasta los recorridos implementados y su validación académica. |
+| 2 | Análisis y diseño | Contratos, esquema y migraciones disponibles. Alinear los apartados de diseño que aún describen T4–T6 como pendientes. |
+| 3 | Arquitectura de bajo y alto nivel | Monolito modular con Clean Architecture y FastAPI implementados. Actualizar C4/UML y su relación con el entorno de despliegue final. |
+| 4 | Desarrollo basado en SDD | Especificaciones y criterios vinculados a pruebas disponibles por incremento. Completar la trazabilidad del informe final. |
+| 5 | Pruebas unitarias e integración | CI sobre `main` aprobado con Python, dominio de precios y 82 resultados de integración PostgreSQL/FastAPI. |
+| 6 | Pruebas End to End | Nueve resultados de navegador aprobados sobre importación, roles, cotización, comparación y pedido. Pago real de prueba pendiente de credenciales de Mercado Pago. |
+| 7 | Interfaz y experiencia de usuario | Catálogo, cuenta y comparación rediseñados y verificados en escritorio y móvil. Evidencia y limitaciones registradas. |
+| 8 | Escalabilidad frontend/backend | Medición de CDN y comparación de una y dos réplicas backend pendientes. |
+| 9 | Escalabilidad de base de datos | Concurrencia, aislamiento y reserva transaccional comprobados. Mediciones de consultas, conexiones, bloqueos y recuperación pendientes. |
+| 10 | Dominio, DNS y CDN | Despliegue público, HTTPS y evidencia DNS/CDN pendientes. Considerar enlace gratuito inicial y Cloudflare Free. Dominio `.com` por confirmar. |
+| 11 | Implementación de caché | Redis pendiente. Es la siguiente acción prioritaria. |
+| 12 | CI/CD | Ramas, PR y CI ejecutados en GitHub. Entrega automatizada al entorno público pendiente de definir y autorizar infraestructura. |
+| 13 | Pruebas de carga k6 | Pendiente implementar y ejecutar el perfil con al menos 2.000 usuarios virtuales concurrentes, además de la prueba separada de sobreventa. |
+| 14 | Código fuente y base de datos en GitHub | Código, migraciones y seed versionados e integrados en `main` por PR #4. Instalación y migraciones comprobadas en CI. |
+| 15 | Informe final | Evidencias parciales disponibles. Informe consolidado pendiente. |
+| 16 | Presentación y dominio del tema | Demo local funcional disponible. Guion, exposición y explicación de resultados pendientes. |
+
+### Única acción prioritaria siguiente
+
+**Implementar la caché Redis del catálogo público mediante una SDD breve, una rama de trabajo y un PR.** La especificación debe cubrir claves por búsqueda, filtros y página, caducidad, invalidación cuando cambien productos o disponibilidad y continuidad de lectura desde PostgreSQL ante una caída de Redis.
+
+Se dará por terminada con un PR revisable y CI aprobado que aporte pruebas de hit/miss, separación de claves por filtros/página, invalidación tras publicar o importar y tras reservar o liberar stock, y fallback ante Redis indisponible. Adjuntar una medición reproducible de consultas y latencia con y sin caché bajo el mismo escenario, con versión y entorno identificados.
+
+Redis, despliegue y k6 con al menos 2.000 usuarios virtuales concurrentes permanecen visibles en la matriz. La evaluación y autorización de costos corresponde antes de crear infraestructura facturable.
 
 ---
 
@@ -26,7 +91,7 @@
 - **Backend:** NestJS (Node.js/TypeScript)
 - **Base de datos:** PostgreSQL 18.6
 - **Pagos:** Mercado Pago Checkout Pro (modo test)
-- **IA (pendiente):** Python + FastAPI para evaluación de proveedores
+- **Comparación implementada:** Python + FastAPI. Modelo externo de IA diferido.
 - **Caché (pendiente):** Redis
 - **Infraestructura (pendiente):** AWS (EC2, RDS, S3, CloudFront, Route 53), Cloudflare
 
@@ -54,11 +119,12 @@
 - `database/migrations/002_identity.sql` - Identidad empresarial
 - `database/migrations/003_catalog_imports.sql` - Importación masiva CSV/XLSX
 - `database/migrations/004_trade.sql` - Cotizaciones, ofertas, pedidos, reservas
-- `database/migrations/005_payments.sql` - **Pendiente** (T5 no implementado aún)
+- `database/migrations/005_payments.sql` - Pagos T5 integrados en modo simulado
+- `database/migrations/006_add_payment_pending_state.sql` - Estado de reserva pendiente de conciliación
 
 ---
 
-## 3. Estado Real de Implementación
+## 3. Historial de Implementación por Incremento
 
 ### ✅ T1: Catálogo Público (Implementado y Probado)
 
@@ -120,7 +186,7 @@
 
 **Rama:** `sprint-2/cotizaciones-pedidos`
 **Commit verificado:** `dd13ea8`
-**Estado:** Implementado, 37 pruebas aprobadas (1 unitaria + 28 integración + 8 navegador), **pendiente de merge a `main`**
+**Estado:** Integrado en `main` por PR #4 (`9c9f463`). Las 37 pruebas indicadas en este apartado corresponden a la verificación histórica de T4. La evidencia vigente está al inicio del documento.
 
 **Funcionalidad:**
 1. **Solicitud de cotización:** Comprador crea solicitud con ítems y selecciona proveedores destinatarios
@@ -521,40 +587,18 @@ npm start
 - CloudFront como CDN
 - Route 53 para dominio
 - Redis para caché de catálogo
-- Pruebas de carga con k6 (target: 2000 VU)
-- CI/CD con GitHub Actions
+- Pruebas de carga con k6 de al menos 2.000 usuarios virtuales concurrentes
+- CI con GitHub Actions aprobado en main; CD hacia el entorno público pendiente
 
 ---
 
 ## 4. Estado de Git
 
-### Repositorio
+### Estado vigente
 
-**GitHub:** `Yeltsin-MC/MayoristaPro-B2B-ArquitSoft`
+La rama activa es `main`. La referencia local y la referencia remota consultada apuntan a `9c9f463a2f058e8b99f11bdb9b919b14089951ba`. T4, T5, T6 y el rediseño están integrados por el PR #4. La carpeta de trabajo de esta sesión es `D:\2026 II\ARQUITECTURA DE SOFTWARE\LABOS\MayoristaPro-Kiro`.
 
-**Copias locales:**
-- **Kiro:** `d:\2026 II\ARQUITECTURA DE SOFTWARE\LABOS\MayoristaPro-Kiro`
-- **Codex:** Carpeta local diferente (no especificada)
-
-### Estado Actual
-
-**Rama activa:** `sprint-2/pagos-mercadopago`
-
-**Commits locales (5 adelante de origin):**
-- `dd2aa74` (HEAD) - "fix: corregir webhook y tests de seguridad"
-- `1bcb6dc` - "docs: corregir hash final de commit T5"
-- `e329e65` - "docs: actualizar commit hash en CONTEXTO-MAYORISTAPRO"
-- `4b08e5c` - "feat: Completar Fases 3-4 - Worker, frontend, tests seguridad"
-- `aa748bd` - "feat: implementar backend de pagos con Mercado Pago"
-
-**Base remota:** `42c45bb` (origin/sprint-2/pagos-mercadopago)
-
-**Estado del working tree:** Limpio (sin cambios pendientes)
-
-**Ramas principales:**
-- `main` - Integra T1, T2, T3 (estable)
-- `sprint-2/cotizaciones-pedidos` - Contiene T4 implementado, **pendiente de merge a `main`**
-- `sprint-2/pagos-mercadopago` - **Contiene T5 COMPLETO (backend+worker+frontend+tests), listo para merge**
+La actualización de este archivo queda como modificación documental local pendiente de commit y publicación. El cierre documental mantiene el commit de `main` en `9c9f463`. La evidencia y los acuerdos vigentes se detallan al inicio del archivo. [PR #4](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/4)
 
 ### Reglas de Trabajo con Git
 
@@ -652,7 +696,7 @@ npm start
 
 ## 6. Riesgos y Aspectos por Resolver
 
-### Riesgos de T5 (Pagos - Pendiente de Implementación)
+### Aspectos de pagos pendientes de validación real
 
 ⚠️ **Críticos:**
 1. **Formato de firma de webhook MP:** Verificar formato exacto del manifiesto con documentación oficial actualizada (Feb 2024)
@@ -726,7 +770,7 @@ npm start
 
 ---
 
-## 8. Verificación de T1-T4 (Última Ejecución)
+## 8. Evidencia histórica de T1-T4 del 11/11/2026
 
 **Fecha:** 11 de noviembre de 2026
 **Rama:** `sprint-2/cotizaciones-pedidos`
@@ -763,41 +807,11 @@ npm start
 
 ## 9. Estado Actual y Próximo Paso
 
-### Última Tarea Completada
+T4, T5, T6 y el rediseño están integrados en `main` mediante el PR #4, commit `9c9f463`. GitHub Actions sobre ese commit terminó correctamente en la ejecución `43312826488`. Las condiciones verificadas, las limitaciones y los acuerdos se detallan al inicio del documento.
 
-✅ **Verificación local de T1-T4 en commit `dd13ea8`**
-- Instalación de dependencias
-- Compilación Angular + NestJS
-- Ejecución de 37 pruebas (todas aprobadas)
-- Verificación de integridad de base de datos
-- Confirmación de Git limpio
-
-### Trabajo Actual
-
-⏸️ **Revisión del diseño SDD de T5 (Pagos con Mercado Pago)**
-- Documento SDD v2.0 generado (corregido con moneda PEN, tablas reales, compatibilidad T1-T4)
-- Pendiente de aprobación final del usuario
-- Identificados 13 riesgos/aspectos por resolver antes de implementar
-
-### Próximo Paso
-
-🎯 **Aprobar diseño SDD de T5 y resolver aspectos pendientes:**
-1. Confirmar formato correcto de firma de webhook MP (consultar docs oficiales Feb 2024)
-2. Definir estrategia de idempotencia y recuperación de fallos
-3. Verificar inclusión correcta de envío en importe total
-4. Revisar estrategia de concurrencia worker/webhook
-5. Obtener credenciales de prueba de Mercado Pago
-6. Decidir estrategia de testing local de webhooks (ngrok vs mocks)
-
-**Una vez aprobado:**
-7. Crear rama `sprint-2/pagos-mercadopago`
-8. Implementar migración `005_payments.sql`
-9. Implementar módulo `payments/` con Clean Architecture
-10. Ejecutar pruebas T5 + regresión T1-T4
-11. Documentar evidencias
+La única acción prioritaria siguiente es implementar la caché Redis del catálogo público con SDD y pruebas de hit/miss, claves, invalidación y fallback, aportando un PR con CI aprobado y una medición reproducible. Los siguientes pendientes registrados son despliegue, k6 con al menos 2.000 usuarios virtuales concurrentes, Mercado Pago con credenciales de prueba, informe y presentación. El modelo externo de IA queda para una etapa posterior.
 
 ---
-
 ## 10. Notas de Uso de este Documento
 
 ### Para Kiro (Agente IA)
@@ -838,6 +852,6 @@ npm start
 
 ---
 
-**Última actualización:** 2026-11-11
-**Versión del documento:** 1.0
-**Responsable de actualización:** Kiro (agente IA)
+**Última actualización:** 2026-11-12
+**Versión del documento:** 1.1
+**Responsable de actualización:** Codex, cierre documental de integración
