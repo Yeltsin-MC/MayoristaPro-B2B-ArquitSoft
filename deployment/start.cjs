@@ -36,6 +36,14 @@ function runScript(path) {
 
 async function main(mode) {
   process.env.DATABASE_URL = databaseUrl(process.env);
+  if (process.env.DEMO_CATALOG_SCHEMA) {
+    const { demoDatabaseUrl, loadDemo } = require('../database/demo/load.cjs');
+    if (mode === 'load-demo') {
+      await loadDemo();
+      return;
+    }
+    process.env.DATABASE_URL = demoDatabaseUrl(process.env.DATABASE_URL, process.env.DEMO_CATALOG_SCHEMA);
+  }
   if (mode === 'api') {
     require('../apps/api/dist/main.js');
   } else if (mode === 'migrate') {
