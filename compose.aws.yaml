@@ -1,0 +1,30 @@
+x-database: &database
+  DEMO_CATALOG_SCHEMA: demo_mayoristapro150
+  REDIS_URL: redis://redis:6379
+  FRONTEND_URL: ${PUBLIC_BASE_URL:?Configura el origen HTTPS de la demo}
+  API_URL: ${PUBLIC_BASE_URL:?Configura el origen HTTPS de la demo}
+
+x-api: &api
+  build: !reset null
+  image: ${GHCR_IMAGE_PREFIX:?Configura GHCR_IMAGE_PREFIX}-api:${RELEASE_SHA:?Configura RELEASE_SHA}
+
+services:
+  migrate:
+    <<: *api
+    environment:
+      <<: *database
+      DEMO_SEED: "false"
+  api:
+    <<: *api
+    environment: *database
+  worker:
+    <<: *api
+    environment: *database
+  ai:
+    build: !reset null
+    image: ${GHCR_IMAGE_PREFIX}-ai:${RELEASE_SHA}
+  web:
+    build: !reset null
+    image: ${GHCR_IMAGE_PREFIX}-web:${RELEASE_SHA}
+    ports: !override
+      - "127.0.0.1:8080:${WEB_PORT:-8080}"

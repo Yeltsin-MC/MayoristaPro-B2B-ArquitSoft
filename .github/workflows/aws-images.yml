@@ -1,0 +1,54 @@
+name: Preparar imágenes para AWS
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/aws-images.yml'
+      - 'compose*.yaml'
+      - 'deployment/**'
+      - 'database/demo/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir y comprobar las imágenes
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GHCR_IMAGE_PREFIX="ghcr.io/${GITHUB_REPOSITORY,,}"
+          export RELEASE_SHA="$GITHUB_SHA"
+          export PUBLIC_BASE_URL=https://mayoristapro.shop
+          export POSTGRES_PASSWORD="$(openssl rand -hex 24)"
+          export ADMIN_PASSWORD="$(openssl rand -hex 24)"
+          export DEMO_PASSWORD="$(openssl rand -hex 24)"
+          for service in api web; do
+            docker build -f deployment/Dockerfile --target "$service" -t "$GHCR_IMAGE_PREFIX-$service:$RELEASE_SHA" .
+          done
+          docker build -f deployment/ai.Dockerfile -t "$GHCR_IMAGE_PREFIX-ai:$RELEASE_SHA" .
+          compose=(docker compose -f compose.yaml -f compose.demo.yaml -f compose.aws.yaml --profile cache)
+          trap '"${compose[@]}" down -v' EXIT
+          "${compose[@]}" config --quiet
+          "${compose[@]}" up -d --wait db redis
+          "${compose[@]}" run --rm --no-deps -e ADMIN_PASSWORD -e DEMO_PASSWORD migrate node deployment/start.cjs load-demo
+          "${compose[@]}" up -d --no-build --wait
+          DEMO_URL=http://127.0.0.1:8080 node tests/deployment.smoke.cjs
+          count=$("${compose[@]}" exec -T db psql -U mayorista -d mayorista -Atc 'SELECT count(*) FROM demo_mayoristapro150.products')
+          test "$count" = 450
+      - name: Publicar imágenes del commit
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          for service in api web ai; do
+            docker push "ghcr.io/${GITHUB_REPOSITORY,,}-$service:$GITHUB_SHA"
+          done
