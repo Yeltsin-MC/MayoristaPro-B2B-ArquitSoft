@@ -95,6 +95,13 @@ Comprador y proveedor participantes; transiciones según rol.
 | `GET /orders` |
 | `GET /orders/:id` |
 | `PATCH /orders/:id/status` |
+| `PATCH /orders/:id/fulfillment` |
+
+Despacho implementado: `PATCH /orders/:id/fulfillment` con `{estado, nota?}`. El proveedor del pedido pasa `paid → preparing → dispatched` (la nota, hasta 300 caracteres, sirve para guía de remisión o transportista); el comprador confirma `dispatched → delivered`. Repetir el estado actual devuelve el pedido sin cambios. Rol incorrecto: 403; estado fuera de orden: 409 `ORDER_STATE_CONFLICT`. `GET /orders/:id` devuelve además `events` (estado, nota, fecha), `expiresAt`, `isBuyer` e `isSupplier`.
+
+### Precios por volumen
+
+`PUT /trade/products/:id/price-tiers` con `{escalas:[{desde,precioUnitario}]}` reemplaza las escalas de un producto propio (proveedor verificado con permiso `publish`). Hasta 5 escalas; `desde` mayor al mínimo y múltiplo válido; precios decrecientes y menores al precio base. Lista vacía elimina las escalas. `GET /trade/products` y `GET /products` devuelven `priceTiers`, solo con las escalas que mejoran el precio base vigente. Las escalas son referencia pública: el precio final sigue siendo el de la oferta privada.
 
 ### payments
 
@@ -165,6 +172,8 @@ Catálogo y cotizaciones expondrán presentación, unidades por presentación, m
 | PATCH /quotations/:id/responses/:respuestaId/accept | Identificador de respuesta; comprador obtenido de sesión. | 200: aceptación exclusiva de una oferta vigente. No reserva stock todavía. |
 | POST /orders | cotizacionRespuestaId e Idempotency-Key. | 201: pedido pendiente, total, moneda y vencimientoReserva; stock y condiciones revalidados atómicamente. |
 | PATCH /orders/:id/status | estado solicitado y motivo cuando corresponda. | Transición autorizada. No permite al navegador marcar confirmado sin pago verificado. |
+| PATCH /orders/:id/fulfillment | estado (preparing, dispatched, delivered) y nota opcional. | 200: pedido con historial `events`. Solo desde un pedido pagado y en orden. |
+| PUT /trade/products/:id/price-tiers | escalas `{desde, precioUnitario}` de un producto propio. | 200: escalas guardadas, ordenadas por cantidad. |
 | GET /payments/:pedidoId | Pedido visible para el solicitante. | Lista de intentos y su estado; nunca tokens ni credenciales. |
 | POST /payments/:pedidoId/refund | motivo e Idempotency-Key; administrador autorizado. | 202 si se solicita al proveedor de forma asíncrona; reembolsado solo tras confirmación. |
 | GET /ai/recommendations | Cotización propia y preferencia opcional. | `200` con ofertas elegibles, costo/plazo disponibles, explicación y método. El cálculo y el filtrado se ejecutan en el backend. |

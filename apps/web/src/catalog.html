@@ -1,19 +1,53 @@
 <div id="inicio">
-  <section class="catalog-hero" aria-labelledby="catalog-title">
-    <div class="hero-copy">
-      <p class="eyebrow">COMPRAS MAYORISTAS, NEGOCIOS QUE CRECEN</p>
-      <h1 id="catalog-title">Abastece<br />tu negocio.</h1>
-      <p>De la oficina a tu próxima venta.<br />Encuentra productos por volumen y cotiza con sus proveedores.</p>
-      <a class="button" href="#catalogo">Explorar catálogo <span aria-hidden="true">↗</span></a>
+  <section class="catalog-hero" aria-labelledby="catalog-title" aria-roledescription="carrusel">
+    @for (slide of slides; track slide.title; let n = $index) {
+      <div
+        [class]="'hero-slide ' + slide.theme"
+        [class.active]="n === slide_()"
+        [attr.aria-hidden]="n !== slide_()"
+        role="group"
+        aria-roledescription="diapositiva"
+        [attr.aria-label]="n + 1 + ' de ' + slides.length"
+      >
+        <div class="hero-copy">
+          <p class="eyebrow">{{ slide.eyebrow }}</p>
+          @if (n === 0) {
+            <h1 id="catalog-title">Abastece<br />tu negocio.</h1>
+          } @else {
+            <p class="hero-title">{{ slide.title }}</p>
+          }
+          <p>{{ slide.text }}</p>
+          <a class="button" [href]="slide.href" [attr.tabindex]="n === slide_() ? null : -1"
+            >{{ slide.cta }} <span aria-hidden="true">↗</span></a
+          >
+        </div>
+        <img
+          [class]="n === 0 ? 'hero-photo' : 'hero-photo-alt'"
+          [src]="slide.image"
+          [alt]="n === 0 ? 'Cuadernos, papel y equipos de oficina junto a cajas de abastecimiento' : ''"
+          width="1536"
+          height="1024"
+          [attr.fetchpriority]="n === 0 ? 'high' : null"
+          [attr.loading]="n === 0 ? null : 'lazy'"
+        />
+      </div>
+    }
+    <div class="hero-controls">
+      <button type="button" class="hero-arrow" aria-label="Retroceder carrusel" (click)="goSlide(slide_() - 1)">
+        ‹
+      </button>
+      @for (slide of slides; track slide.title; let n = $index) {
+        <button
+          type="button"
+          class="hero-dot"
+          [class.active]="n === slide_()"
+          [attr.aria-label]="'Ver diapositiva ' + (n + 1)"
+          [attr.aria-current]="n === slide_()"
+          (click)="goSlide(n)"
+        ></button>
+      }
+      <button type="button" class="hero-arrow" aria-label="Avanzar carrusel" (click)="goSlide(slide_() + 1)">›</button>
     </div>
-    <img
-      class="hero-photo"
-      src="/images/abastecimiento-demo.png"
-      alt="Cuadernos, papel y equipos de oficina junto a cajas de abastecimiento"
-      width="1536"
-      height="1024"
-      fetchpriority="high"
-    />
   </section>
   @if (categories().length) {
     <section id="categorias" class="categories-section" aria-labelledby="categories-title">
@@ -32,6 +66,50 @@
             <app-catalog-photo aria-hidden="true" [kind]="imageKind(c)" class="family-photo category-photo" /><span>{{
               c
             }}</span>
+          </button>
+        }
+      </div>
+    </section>
+  }
+  <section class="benefits-strip" aria-label="Beneficios de comprar en MayoristaPro">
+    @for (b of benefits; track b.title) {
+      <div class="benefit">
+        <span class="benefit-icon" aria-hidden="true">{{ b.icon }}</span>
+        <p>
+          <strong>{{ b.title }}</strong><span>{{ b.text }}</span>
+        </p>
+      </div>
+    }
+  </section>
+  @if (deals().length) {
+    <section id="ofertas" class="deals-section" aria-labelledby="deals-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow sale">AHORRA COMPRANDO MÁS</p>
+          <h2 id="deals-title">Ofertas por volumen</h2>
+        </div>
+        <span class="section-caption">Precio por presentación al comprar desde la cantidad indicada</span>
+      </div>
+      <div class="deals-row" role="list">
+        @for (product of deals(); track product.id) {
+          <button type="button" class="deal-card" role="listitem" (click)="showProduct(product, productDialog)">
+            <span class="deal-media">
+              <app-catalog-photo [kind]="productImage(product)" class="family-photo deal-photo" /><span
+                class="deal-badge"
+                >-{{ maxDiscount(product) }}%</span
+              >
+            </span>
+            <span class="deal-body">
+              <small>{{ product.supplier }}</small>
+              <strong class="deal-name">{{ product.name }}</strong>
+              <span class="deal-prices"
+                ><s>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</s
+                ><strong>{{
+                  bestTier(product)!.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2'
+                }}</strong></span
+              >
+              <small>desde {{ presentations(bestTier(product)!.desde, product.unit) }}</small>
+            </span>
           </button>
         }
       </div>
@@ -136,11 +214,14 @@
                     [description]="'Imagen referencial de ' + product.category"
                     [kind]="productImage(product)"
                     class="family-photo product-visual"
-                  /><span class="category-tag">{{ product.category }}</span
-                  ><small class="image-caption">Imagen referencial</small>
+                  /><span class="category-tag">{{ product.category }}</span>
+                  @if (maxDiscount(product); as discount) {
+                    <span class="badge-volume">-{{ discount }}% por volumen</span>
+                  }
+                  <small class="image-caption">Imagen referencial</small>
                 </button>
                 <div class="product-content">
-                  <p class="supplier">{{ product.supplier }}</p>
+                  <p class="supplier"><span class="verified" aria-hidden="true">✔</span> {{ product.supplier }}</p>
                   <h3>
                     <button type="button" class="product-name" (click)="showProduct(product, productDialog)">
                       {{ product.name }}
@@ -152,6 +233,12 @@
                     >
                   </div>
                   <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }}</p>
+                  @if (bestTier(product); as tier) {
+                    <p class="volume-best">
+                      <span>Desde {{ presentations(tier.desde, product.unit) }}</span>
+                      <strong>{{ tier.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2' }}</strong>
+                    </p>
+                  }
                   <dl>
                     <div>
                       <dt>Mínimo</dt>
@@ -198,6 +285,19 @@
                     {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
                     <span aria-hidden="true">↗</span>
                   </button>
+                  @if (product.quoteEnabled && product.available) {
+                    <button
+                      type="button"
+                      class="secondary add-to-list"
+                      [disabled]="!!quantityError(product, quantityFor(product))"
+                      [attr.aria-label]="
+                        (orderList.has(product.id) ? 'Actualizar en la lista: ' : 'Agregar a la lista: ') + product.name
+                      "
+                      (click)="addToList(product)"
+                    >
+                      {{ orderList.has(product.id) ? '✓ En tu lista · actualizar' : '+ Agregar a la lista' }}
+                    </button>
+                  }
                   @if (!product.quoteEnabled) {
                     <p class="quote-unavailable">
                       Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.
@@ -238,6 +338,58 @@
       </div>
     </div>
   </section>
+  @if (options().suppliers.length) {
+    <section class="suppliers-section" aria-labelledby="suppliers-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">COMPRA DIRECTO</p>
+          <h2 id="suppliers-title">Proveedores verificados</h2>
+        </div>
+      </div>
+      <div class="supplier-grid">
+        @for (s of options().suppliers; track s.id) {
+          <button type="button" class="supplier-chip" (click)="selectSupplier(s.id)">
+            <span class="supplier-initials" aria-hidden="true">{{ initials(s.name) }}</span><span
+              >{{ s.name }}<small>Ver sus productos</small></span
+            >
+          </button>
+        }
+      </div>
+    </section>
+  }
+  <section class="cta-band" aria-labelledby="cta-title">
+    <div>
+      <p class="eyebrow">PARA EMPRESAS CON RUC</p>
+      <h2 id="cta-title">Compra para tu negocio con precios mayoristas</h2>
+      <p>Registra tu empresa, arma tu lista de pedido y recibe ofertas privadas de proveedores verificados.</p>
+    </div>
+    <a class="button cta-button" routerLink="/cuenta">Registrar mi empresa <span aria-hidden="true">→</span></a>
+  </section>
+  <section id="como-comprar" class="steps-section" aria-labelledby="steps-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">COMPRAS ENTRE EMPRESAS</p>
+        <h2 id="steps-title">Cómo comprar en 4 pasos</h2>
+      </div>
+    </div>
+    <ol class="steps">
+      <li>
+        <strong>Registra tu empresa</strong><span>Con RUC. Administración revisa el alta y habilita tu cuenta.</span>
+      </li>
+      <li>
+        <strong>Arma tu lista de pedido</strong
+        ><span>Agrega productos y cantidades; ves el precio por volumen al instante.</span>
+      </li>
+      <li>
+        <strong>Recibe ofertas privadas</strong
+        ><span>Cada proveedor responde con precio final, envío y plazo. Compara y acepta.</span>
+      </li>
+      <li>
+        <strong>Paga y sigue tu despacho</strong
+        ><span>Paga con Mercado Pago y sigue el pedido hasta confirmar la entrega.</span>
+      </li>
+    </ol>
+  </section>
   <dialog
     #productDialog
     class="product-dialog"
@@ -264,6 +416,20 @@
             >
           </div>
           <p class="tax-note">{{ product.includesTax ? 'Incluye IGV' : 'IGV por separado' }} · Envío por cotizar</p>
+          @if (product.priceTiers?.length) {
+            <div class="volume-prices-detail">
+              <h3>Precios por volumen</h3>
+              <ul class="volume-prices">
+                @for (tier of product.priceTiers; track tier.desde) {
+                  <li>
+                    Desde {{ presentations(tier.desde, product.unit) }}:
+                    <strong>{{ tier.precioUnitario | currency: product.currency : 'S/ ' : '1.2-2' }}</strong> por
+                    presentación
+                  </li>
+                }
+              </ul>
+            </div>
+          }
           <dl>
             <div>
               <dt>Mínimo de compra</dt>
@@ -306,6 +472,16 @@
             {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
             <span aria-hidden="true">↗</span>
           </button>
+          @if (product.quoteEnabled && product.available) {
+            <button
+              type="button"
+              class="secondary add-to-list"
+              [disabled]="!!quantityError(product, quantityFor(product))"
+              (click)="addToList(product)"
+            >
+              {{ orderList.has(product.id) ? '✓ En tu lista · actualizar' : '+ Agregar a la lista de pedido' }}
+            </button>
+          }
           @if (!product.quoteEnabled) {
             <p class="quote-unavailable">
               Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.

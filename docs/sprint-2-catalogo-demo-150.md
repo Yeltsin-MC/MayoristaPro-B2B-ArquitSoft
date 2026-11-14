@@ -8,7 +8,7 @@ Se reutilizan T2 (alta revisada manualmente, aprobación y verificación separad
 
 ## Datos y reglas
 
-Todas las empresas son ficticias; cada producto lleva `(demo)`. Precios ilustrativos en PEN por presentación, con IGV incluido; no representan precios de mercado, descuentos ni relaciones comerciales reales.
+Todas las empresas son ficticias (15 proveedores, 30 productos cada uno: 450 productos). Desde noviembre 2026 los nombres ya no llevan `(demo)`; el pie de página indica que las empresas y productos son ficticios. Precios ilustrativos en PEN por presentación, con IGV incluido; no representan precios de mercado, descuentos ni relaciones comerciales reales.
 
 | Proveedor ficticio | Rubro | CSV | Productos |
 |---|---|---|---|
@@ -42,7 +42,7 @@ npm run demo:catalog:quote
 npm run demo:catalog:api
 ```
 
-Se espera: compilación correcta; resumen `suppliers: 5`, `products: 150`, `categories: 5`, `quotable: 150`; solicitud con dos ofertas; servidor en **http://localhost:3300**. La carga abre una API local transitoria en un puerto libre y la cierra al terminar. No requiere detener la API/Web anterior ni ejecutar `db:seed`.
+Se espera: compilación correcta; resumen `suppliers: 15`, `products: 450`, `categories: 15`, `quotable: 450`; solicitud con dos ofertas; servidor en **http://localhost:3300**. La carga abre una API local transitoria en un puerto libre y la cierra al terminar. No requiere detener la API/Web anterior ni ejecutar `db:seed`.
 
 Opcionalmente, guarda estas variables en **`.env.demo-catalog150`**, ignorado por Git, para reutilizarlas en nuevas terminales. Los scripts lo leen después de `.env`. En esta laptop ya se generó ese archivo privado; no se transcriben sus valores en documentación, capturas ni salida de comandos. Conserva las mismas contraseñas al repetir la carga: no se restablecen cuentas existentes.
 
@@ -76,7 +76,7 @@ Recorrido manual:
 
 | Criterio | Comprobación |
 |---|---|
-| CD01: cinco proveedores habilitados/verificados, 30 productos cada uno | `tests/demo-catalog.integration.cjs`, carga por T2/T3 y conteos 5/150/5/150 |
+| CD01: quince proveedores habilitados/verificados, 30 productos cada uno | `tests/demo-catalog.integration.cjs`, carga por T2/T3 y conteos 15/450/15/450 |
 | CD02: búsqueda y categoría sobre todo el conjunto paginado | Misma prueba: búsqueda A4, cinco categorías, páginas 12+12+6 y página vacía |
 | CD03: cotización a dos proveedores con ofertas comparables | Misma prueba: dos cajas, totales 187.80/180.00 y plazos 2/5; navegador escritorio/móvil |
 | CD04: rechazar cantidad inferior al mínimo | API de respuesta rechaza con HTTP **422**, mensaje de mínimo y cero ofertas guardadas; tarjeta Cobre deshabilitada con una caja |

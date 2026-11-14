@@ -1,4 +1,4 @@
-import { CatalogProduct } from './catalog-product';
+import { CatalogProduct, PriceTier } from './catalog-product';
 
 export function unitName(unit: string, quantity: number): string {
   const name = unit.toLowerCase();
@@ -50,4 +50,28 @@ export function packDescription(product: CatalogProduct): string {
     ' ' +
     (/resmas?/i.test(product.name) ? unitName('resma', product.unitsPerPack) : unitName('unidad', product.unitsPerPack))
   );
+}
+
+function cents(value: string): number {
+  const [whole, fraction = ''] = value.split('.');
+  return Number(whole) * 100 + Number(fraction.padEnd(2, '0').slice(0, 2));
+}
+function soles(value: number): string {
+  return Math.floor(value / 100) + '.' + String(value % 100).padStart(2, '0');
+}
+
+/** Precio por presentación para una cantidad: la escala más alta alcanzada o el precio base. */
+export function tierUnitPrice(product: { price: string; priceTiers?: PriceTier[] }, quantity: number | null): string {
+  let price = cents(product.price);
+  for (const tier of product.priceTiers ?? []) {
+    const tierPrice = cents(tier.precioUnitario);
+    if (quantity !== null && quantity >= tier.desde && tierPrice < price) price = tierPrice;
+  }
+  return soles(price);
+}
+
+/** Total referencial (sin envío) de una cantidad según las escalas publicadas. */
+export function tierTotal(product: { price: string; priceTiers?: PriceTier[] }, quantity: number | null): string {
+  if (quantity === null || !Number.isSafeInteger(quantity) || quantity <= 0) return '';
+  return soles(cents(tierUnitPrice(product, quantity)) * quantity);
 }

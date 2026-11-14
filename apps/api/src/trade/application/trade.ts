@@ -1,7 +1,9 @@
+import { fulfillmentDraft, FulfillmentDraft } from '../domain/fulfillment';
 import { identifier, offerDraft, requestDraft, rule, RequestDraft, OfferDraft } from '../domain/trade';
 export interface TradeStore {
   providers(auth?: string): Promise<unknown>;
   products(auth?: string): Promise<unknown>;
+  setPriceTiers(productId: string, body: unknown, auth?: string): Promise<unknown>;
   create(input: RequestDraft, auth?: string): Promise<unknown>;
   requests(auth?: string): Promise<unknown>;
   detail(id: string, auth?: string): Promise<unknown>;
@@ -10,6 +12,7 @@ export interface TradeStore {
   order(offer: string, key: string, auth?: string): Promise<unknown>;
   orders(auth?: string): Promise<unknown>;
   orderDetail(id: string, auth?: string): Promise<unknown>;
+  fulfill(id: string, input: FulfillmentDraft, auth?: string): Promise<unknown>;
 }
 export const TRADE_STORE = Symbol('TradeStore');
 export class Trade {
@@ -19,6 +22,9 @@ export class Trade {
   }
   products(auth?: string) {
     return this.store.products(auth);
+  }
+  setPriceTiers(productId: string, body: unknown, auth?: string) {
+    return this.store.setPriceTiers(identifier(productId), body, auth);
   }
   create(body: unknown, auth?: string) {
     return this.store.create(requestDraft(body), auth);
@@ -48,5 +54,8 @@ export class Trade {
   }
   orderDetail(id: string, auth?: string) {
     return this.store.orderDetail(identifier(id), auth);
+  }
+  fulfill(id: string, body: unknown, auth?: string) {
+    return this.store.fulfill(identifier(id), fulfillmentDraft(body), auth);
   }
 }

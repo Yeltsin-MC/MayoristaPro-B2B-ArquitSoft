@@ -1,3 +1,7 @@
+export interface PriceTier {
+  desde: number;
+  precioUnitario: string;
+}
 export interface CatalogProduct {
   id: string;
   name: string;
@@ -14,4 +18,6 @@ export interface CatalogProduct {
   price: string;
   currency: 'PEN';
   includesTax: boolean;
+  /** Precios por volumen: desde N presentaciones, precio por presentación. */
+  priceTiers?: PriceTier[];
 }

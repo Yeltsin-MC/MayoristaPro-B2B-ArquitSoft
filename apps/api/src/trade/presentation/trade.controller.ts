@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Headers, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, Param, Patch, Post, Put } from '@nestjs/common';
 import { Trade } from '../application/trade';
 @Controller()
 export class TradeController {
@@ -8,6 +8,13 @@ export class TradeController {
   }
   @Get('trade/products') products(@Headers('authorization') a?: string) {
     return this.trade.products(a);
+  }
+  @Put('trade/products/:id/price-tiers') setPriceTiers(
+    @Param('id') id: string,
+    @Body() b: unknown,
+    @Headers('authorization') a?: string,
+  ) {
+    return this.trade.setPriceTiers(id, b, a);
   }
   @Post('quotations') create(@Body() b: unknown, @Headers('authorization') a?: string) {
     return this.trade.create(b, a);
@@ -50,5 +57,12 @@ export class TradeController {
     @Headers('authorization') a?: string,
   ) {
     return this.trade.orderDetail(id, a);
+  }
+  @Patch('orders/:id/fulfillment') fulfill(
+    @Param('id') id: string,
+    @Body() b: unknown,
+    @Headers('authorization') a?: string,
+  ) {
+    return this.trade.fulfill(id, b, a);
   }
 }

@@ -1,5 +1,14 @@
 <a class="skip-link" href="#contenido">Ir al contenido</a>
-<div class="top-strip">Compras para empresas · Precios en soles · Demo académica</div>
+<div class="top-strip">
+  <div class="top-strip-content">
+    <ul class="top-benefits" aria-label="Beneficios para empresas">
+      <li><span aria-hidden="true">✓</span> Precios por volumen</li>
+      <li><span aria-hidden="true">✓</span> Proveedores verificados</li>
+      <li><span aria-hidden="true">✓</span> Pago seguro con Mercado Pago</li>
+    </ul>
+    <p class="top-contact">Atención a empresas: lun. a sáb. 8:00–18:00 · <span>Demo académica</span></p>
+  </div>
+</div>
 <header class="site-header">
   <div class="header-content">
     <a class="brand" routerLink="/" aria-label="MayoristaPro, inicio"
@@ -14,26 +23,80 @@
         [ngModel]="search.term()"
         (ngModelChange)="search.term.set($event)"
         maxlength="120"
-        placeholder="¿Qué necesita tu negocio?"
+        placeholder="Busca por producto, categoría o proveedor"
       />
       <button type="submit">Buscar <span aria-hidden="true">→</span></button>
     </form>
-    <a class="account-link" routerLink="/cuenta" routerLinkActive="active"
-      ><span aria-hidden="true">○</span> {{ session.token() ? 'Mi empresa' : 'Mi cuenta' }}</a
-    >
+    <div class="header-actions">
+      <a class="account-link" routerLink="/cuenta" routerLinkActive="active"
+        ><span class="action-icon" aria-hidden="true">○</span
+        ><span class="action-text"
+          ><small>{{ session.token() ? 'Hola' : 'Ingresa' }}</small
+          >{{ session.token() ? 'Mi empresa' : 'Mi cuenta' }}</span
+        ></a
+      >
+      <a
+        class="account-link order-list-link"
+        routerLink="/lista"
+        routerLinkActive="active"
+        [attr.aria-label]="
+          'Lista de pedido, ' + orderList.count() + (orderList.count() === 1 ? ' producto' : ' productos')
+        "
+        ><span class="action-icon" aria-hidden="true"
+          >▤<span class="badge" [class.zero]="orderList.count() === 0">{{ orderList.count() }}</span></span
+        ><span class="action-text"><small>Cotiza todo junto</small>Lista de pedido</span></a
+      >
+    </div>
   </div>
   <nav class="header-nav" aria-label="Navegación principal">
-    <a routerLink="/" fragment="categorias">Categorías <span aria-hidden="true">↓</span></a
-    ><a routerLink="/" fragment="catalogo">Catálogo</a
+    <a routerLink="/" fragment="catalogo">Catálogo</a><a routerLink="/" fragment="categorias">Categorías</a
     ><a routerLink="/cuenta/cotizaciones" routerLinkActive="active">Mis cotizaciones</a
-    ><a routerLink="/cuenta/pedidos" routerLinkActive="active">Mis pedidos</a
-    ><span>Librería, oficina y tecnología</span>
+    ><a routerLink="/cuenta/pedidos" routerLinkActive="active">Mis pedidos</a>
   </nav>
+  @if (categories().length) {
+    <nav class="category-bar" aria-label="Categorías destacadas">
+      @for (c of categories(); track c) {
+        <button type="button" class="category-bar-link" (click)="openCategory(c)">{{ c }}</button>
+      }
+    </nav>
+  }
 </header>
 <main id="contenido">
   <router-outlet />
 </main>
 <footer class="site-footer">
-  <a class="brand" routerLink="/">Mayorista<span class="brand-pro">Pro</span></a
-  ><span>Demo académica · Empresas y productos ficticios</span>
+  <div class="footer-columns">
+    <section class="footer-brand" aria-label="MayoristaPro">
+      <a class="brand" routerLink="/">Mayorista<span class="brand-pro">Pro</span></a>
+      <p>Plataforma B2B para que empresas compren por volumen a proveedores verificados, con cotizaciones privadas.</p>
+    </section>
+    <section aria-labelledby="footer-buy">
+      <h2 id="footer-buy">Comprar</h2>
+      <ul>
+        <li><a routerLink="/" fragment="catalogo">Catálogo</a></li>
+        <li><a routerLink="/lista">Lista de pedido</a></li>
+        <li><a routerLink="/cuenta/cotizaciones">Mis cotizaciones</a></li>
+        <li><a routerLink="/cuenta/pedidos">Mis pedidos</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="footer-business">
+      <h2 id="footer-business">Empresas</h2>
+      <ul>
+        <li><a routerLink="/cuenta">Registra tu empresa con RUC</a></li>
+        <li><a routerLink="/cuenta">Vende como proveedor</a></li>
+        <li><a routerLink="/" fragment="como-comprar">Cómo comprar</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="footer-pay">
+      <h2 id="footer-pay">Pagos y despacho</h2>
+      <ul>
+        <li>Mercado Pago (tarjetas y más)</li>
+        <li>Precios en soles con IGV incluido</li>
+        <li>Seguimiento: pagado, en preparación, despachado y entregado</li>
+      </ul>
+    </section>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MayoristaPro</span><span>Demo académica · Empresas y productos ficticios</span>
+  </div>
 </footer>

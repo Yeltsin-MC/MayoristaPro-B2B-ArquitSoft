@@ -57,6 +57,39 @@ async function apiCall(base, path, method = 'GET', body, token, extraHeaders = {
   return data;
 }
 
+/** Actualiza la razón social ficticia de una empresa demo cargada con un nombre anterior (mismo correo y RUC). */
+async function renameDemoCompany(db, entity) {
+  const company = (await db.query(
+    `UPDATE companies c SET legal_name=$3 FROM accounts a JOIN memberships m ON m.account_id=a.id
+     WHERE a.email=$1 AND m.company_id=c.id AND c.ruc=$2 RETURNING c.supplier_id`, [entity.email, entity.ruc, entity.name])).rows[0];
+  if (!company) throw new Error('No se encontró la empresa demo de ' + entity.email + '.');
+  await db.query('UPDATE suppliers SET name=$2 WHERE id=$1', [company.supplier_id, entity.name]);
+}
+
+/** Precio por volumen de demostración: dos escalas (-5% y -10%) en dos de cada tres productos. */
+function demoTiers(product, index) {
+  if (index % 3 === 2) return [];
+  const cents = Math.round(Number(product.price) * 100);
+  const first = Math.max(product.minimum + product.multiple, Math.ceil((product.minimum * 5) / product.multiple) * product.multiple);
+  const second = first * 2;
+  const price = factor => Math.floor(cents * factor);
+  const one = price(0.95), two = price(0.9);
+  if (!(one < cents && two < one && two > 0)) return [];
+  const soles = value => (value / 100).toFixed(2);
+  return [{ desde: first, precioUnitario: soles(one) }, { desde: second, precioUnitario: soles(two) }];
+}
+
+async function applyDemoPriceTiers(base, token, products) {
+  let count = 0;
+  const ordered = [...products].sort((a, b) => a.sku.localeCompare(b.sku));
+  for (const [index, product] of ordered.entries()) {
+    const escalas = demoTiers(product, index);
+    await apiCall(base, 'trade/products/' + product.id + '/price-tiers', 'PUT', { escalas }, token);
+    if (escalas.length) count++;
+  }
+  return count;
+}
+
 async function loadDemo(config = configuration()) {
   const databaseUrl = demoDatabaseUrl(config.source, config.schema);
   for (const [name, password] of [['ADMIN_PASSWORD', config.adminPassword], ['DEMO_PASSWORD', config.demoPassword]]) {
@@ -86,8 +119,10 @@ async function loadDemo(config = configuration()) {
           evidence: 'Empresa, representación y evidencias ficticias para demo académica MayoristaPro. No corresponde a un socio real.',
         });
         const enrollments = await apiCall(base, 'admin/enrollments', 'GET', undefined, adminToken);
-        const enrollment = enrollments.find(row => row.email === entity.email && row.ruc === entity.ruc && row.legal_name === entity.name);
+        const enrollment = enrollments.find(row => row.email === entity.email && row.ruc === entity.ruc);
         if (!enrollment) throw new Error('La cuenta demo existente no coincide con la solicitud prevista.');
+        // Cargas anteriores usaban nombres «Demo … (ficticia)»: se actualiza la razón social ficticia.
+        if (enrollment.legal_name !== entity.name) await renameDemoCompany(db, entity);
         if (!enrollment.approved_at) await apiCall(base, 'admin/enrollments/' + enrollment.id + '/approve', 'POST', undefined, adminToken);
         const token = await login(entity.email, config.demoPassword);
         let me = await apiCall(base, 'auth/me', 'GET', undefined, token);
@@ -106,7 +141,8 @@ async function loadDemo(config = configuration()) {
           { 'Idempotency-Key': 'demo150-' + entity.code + '-' + preview.id });
         const products = await apiCall(base, 'trade/products', 'GET', undefined, token);
         if (products.length !== 30) throw new Error('El proveedor ' + entity.code + ' no tiene exactamente 30 referencias en este esquema.');
-        imports.push({ provider: entity.name, products: products.length, created: result.result.created, updated: result.result.updated });
+        const tiers = await applyDemoPriceTiers(base, token, products);
+        imports.push({ provider: entity.name, products: products.length, created: result.result.created, updated: result.result.updated, tiers });
       }
       const counts = (await db.query(`SELECT
         (SELECT count(*)::int FROM suppliers WHERE verified) AS suppliers,
@@ -114,7 +150,10 @@ async function loadDemo(config = configuration()) {
         (SELECT count(DISTINCT category)::int FROM products) AS categories,
         (SELECT count(*)::int FROM products p JOIN suppliers s ON s.id=p.supplier_id
           JOIN companies c ON c.supplier_id=s.id WHERE p.published AND s.verified AND c.status='enabled') AS quotable`)).rows[0];
-      if (counts.suppliers !== 5 || counts.products !== 150 || counts.categories !== 5 || counts.quotable !== 150) throw new Error('Los conteos de la demo no corresponden a 5 proveedores y 150 productos cotizables.');
+      const expected = manifest.providers.length;
+      const categories = new Set(manifest.providers.map(p => p.category)).size;
+      if (counts.suppliers !== expected || counts.products !== expected * 30 || counts.categories !== categories || counts.quotable !== expected * 30)
+        throw new Error(`Los conteos de la demo no corresponden a ${expected} proveedores y ${expected * 30} productos cotizables.`);
       return { schema: config.schema, ...counts, imports };
     });
   } finally {

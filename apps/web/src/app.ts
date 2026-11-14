@@ -1,8 +1,10 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CatalogSearchService } from './catalog-search.service';
 import { SessionService } from './session.service';
+import { OrderListService } from './order-list.service';
 
 /** Marco común: encabezado con búsqueda y navegación, contenido por ruta y pie. */
 @Component({
@@ -14,6 +16,9 @@ export class AppComponent {
   private readonly router = inject(Router);
   readonly search = inject(CatalogSearchService);
   readonly session = inject(SessionService);
+  readonly orderList = inject(OrderListService);
+  /** Categorías del catálogo publicado para el menú del encabezado. */
+  readonly categories = signal<string[]>([]);
 
   constructor() {
     // Al cambiar de página (catálogo ↔ cuenta) se empieza arriba; dentro de la
@@ -26,10 +31,18 @@ export class AppComponent {
       page = next;
     });
     inject(DestroyRef).onDestroy(() => events.unsubscribe());
+    inject(HttpClient)
+      .get<{ categories: string[] }>('/api/v1/products/options')
+      .subscribe({ next: options => this.categories.set(options.categories.slice(0, 7)), error: () => {} });
   }
 
   private page(url: string): string {
     return url.split(/[/?#]/)[1] ?? '';
+  }
+
+  openCategory(category: string): void {
+    this.search.requestCategory(category);
+    void this.router.navigate(['/'], { fragment: 'catalogo' });
   }
 
   searchCatalog(): void {

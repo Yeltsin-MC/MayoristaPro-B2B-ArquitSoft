@@ -14,6 +14,8 @@ export interface PublishedProduct {
   price: string;
   currency: 'PEN';
   includesTax: boolean;
+  /** Precios por volumen: desde N presentaciones, precio por presentación. */
+  priceTiers: Array<{ desde: number; precioUnitario: string }>;
 }
 
 export interface CatalogFilters {

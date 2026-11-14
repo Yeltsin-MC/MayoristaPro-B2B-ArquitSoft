@@ -2,12 +2,15 @@ import { Router } from '@angular/router';
 import { Component, effect, input, output, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
+import { OrderListService } from './order-list.service';
 import {
   minimumQuantity,
   packDescription,
   presentations,
   quantityError,
   quantityEquivalence,
+  tierTotal,
+  tierUnitPrice,
 } from './wholesale-quantity';
 interface RequestItem {
   descripcion: string;
@@ -53,9 +56,13 @@ interface RequestItem {
         <h4>{{ sourceProduct(items[0]) ? 'Solicitar cotización' : 'Nueva solicitud de cotización' }}</h4>
         @if (sourceProduct(items[0]); as product) {
           <div class="quotation-product">
-            <p class="eyebrow">PRODUCTO SELECCIONADO</p>
-            <h5>{{ product.name }}</h5>
-            <p>{{ product.supplier }} · {{ packDescription(product) }}</p>
+            <p class="eyebrow">{{ items.length > 1 ? 'PRODUCTOS DE TU LISTA DE PEDIDO' : 'PRODUCTO SELECCIONADO' }}</p>
+            @if (items.length === 1) {
+              <h5>{{ product.name }}</h5>
+            } @else {
+              <h5>{{ items.length }} productos</h5>
+            }
+            <p>{{ product.supplier }} · {{ items.length === 1 ? packDescription(product) : 'una sola solicitud' }}</p>
           </div>
         }
         @if (!sourceProduct(items[0]) || addingSuppliers()) {
@@ -76,7 +83,15 @@ interface RequestItem {
         }
         @for (i of items; track $index; let n = $index) {
           <fieldset class="request-item">
-            <legend>{{ sourceProduct(i) ? 'Cantidad a cotizar' : 'Ítem ' + (n + 1) }}</legend>
+            <legend>
+              {{
+                sourceProduct(i)
+                  ? items.length > 1
+                    ? sourceProduct(i)!.name
+                    : 'Cantidad a cotizar'
+                  : 'Ítem ' + (n + 1)
+              }}
+            </legend>
             @if (!sourceProduct(i)) {
               <label
                 >Descripción
@@ -125,6 +140,12 @@ interface RequestItem {
                   {{ presentations(product.multiple, product.unit) }}
                 </p>
                 <p class="quantity-equivalence">{{ quantityEquivalence(product, i.cantidad) }}</p>
+                @if (!quantityIssue(i)) {
+                  <p class="price-reference">
+                    Precio publicado para esta cantidad: S/ {{ tierUnitPrice(product, i.cantidad) }} por presentación ·
+                    S/ {{ tierTotal(product, i.cantidad) }} sin envío. El proveedor confirma el precio en su oferta.
+                  </p>
+                }
               }
               @if (quantityIssue(i); as issue) {
                 <p class="quantity-error">{{ issue }}</p>
@@ -157,6 +178,50 @@ interface RequestItem {
         }
       </form>
     }
+    @if (!creating() && canSell() && products().length > 0) {
+      <details class="tier-editor">
+        <summary>Precios por volumen de mis productos</summary>
+        <p>
+          Define hasta 5 escalas: desde cierta cantidad de presentaciones, un precio menor por presentación. Se muestran
+          en el catálogo público y como referencia al responder cotizaciones.
+        </p>
+        <label
+          >Producto
+          <select name="tier-product" [ngModel]="tierProductId" (ngModelChange)="selectTierProduct($event)">
+            <option value="">Seleccionar</option>
+            @for (p of products(); track p.id) {
+              <option [value]="p.id">
+                {{ p.sku }} · {{ p.name }} · S/ {{ p.price }} · mínimo {{ p.minimum }} · múltiplo {{ p.multiple }}
+              </option>
+            }
+          </select></label
+        >
+        @if (ownProduct(tierProductId); as p) {
+          @for (tier of tierDraft; track $index; let n = $index) {
+            <div class="tier-row">
+              <label
+                >Desde (presentaciones)
+                <input
+                  type="number"
+                  [name]="'tier-from-' + n"
+                  [min]="p.minimum + 1"
+                  [step]="p.multiple"
+                  [(ngModel)]="tier.desde"
+              /></label>
+              <label
+                >Precio por presentación PEN
+                <input [name]="'tier-price-' + n" inputmode="decimal" [(ngModel)]="tier.precioUnitario"
+              /></label>
+              <button type="button" class="secondary" (click)="tierDraft.splice(n, 1)">Quitar</button>
+            </div>
+          }
+          <button type="button" class="secondary" [disabled]="tierDraft.length >= 5" (click)="addTier()">
+            Añadir escala
+          </button>
+          <button type="button" [disabled]="busy()" (click)="saveTiers(p.id)">Guardar precios por volumen</button>
+        }
+      </details>
+    }
     @if (!creating()) {
       <h4 id="mis-cotizaciones" tabindex="-1">Mis cotizaciones</h4>
       <div class="request-list">
@@ -188,7 +253,12 @@ interface RequestItem {
                 <legend>{{ q.items[n].description }} ({{ line.cantidad }} presentaciones)</legend>
                 <label
                   >Producto propio
-                  <select [name]="'product-' + n" required [(ngModel)]="line.productoId">
+                  <select
+                    [name]="'product-' + n"
+                    required
+                    [(ngModel)]="line.productoId"
+                    (ngModelChange)="suggestPrice(line)"
+                  >
                     <option value="">Seleccionar</option>
                     @for (p of products(); track p.id) {
                       <option [value]="p.id">
@@ -202,6 +272,12 @@ interface RequestItem {
                   >Precio por presentación PEN (IGV incluido)
                   <input [name]="'price-' + n" required [(ngModel)]="line.precioUnitario"
                 /></label>
+                @if (ownProduct(line.productoId); as p) {
+                  <p class="price-reference">
+                    Precio publicado para {{ line.cantidad }}: S/ {{ tierUnitPrice(p, line.cantidad) }} por
+                    presentación{{ p.priceTiers?.length ? ' (con precios por volumen)' : '' }}.
+                  </p>
+                }
               </fieldset>
             }
             <label>Envío final PEN <input name="shipping" required [(ngModel)]="shipping" /></label>
@@ -327,12 +403,13 @@ interface RequestItem {
       <h4 id="mis-pedidos" tabindex="-1">Mis pedidos</h4>
       @for (o of orders(); track o.id) {
         <p [attr.data-order-id]="o.id">
-          Pedido · {{ o.state }} · S/ {{ o.total }} <button type="button" (click)="openOrder(o.id)">Ver pedido</button>
+          Pedido · {{ stateLabel(o.state) }} · S/ {{ o.total }}
+          <button type="button" (click)="openOrder(o.id)">Ver pedido</button>
         </p>
       }
       @if (currentOrder(); as o) {
         <article aria-label="Detalle del pedido">
-          <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido' }}</h4>
+          <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido · ' + stateLabel(o.state) }}</h4>
           @for (i of o.items; track $index) {
             <p>
               {{ i.snapshot.name }} · {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }} · {{ i.quantity }} × S/
@@ -347,7 +424,34 @@ interface RequestItem {
           @for (r of o.reservations; track r.productId) {
             <p>Reserva {{ r.state }}: {{ r.quantity }} presentaciones.</p>
           }
-          <p>Estado: {{ o.state }}.</p>
+          <p>Estado: {{ stateLabel(o.state) }}.</p>
+          @if (inFulfillment(o.state)) {
+            <ol class="fulfillment-steps" aria-label="Seguimiento del despacho">
+              @for (step of fulfillmentSteps; track step.state) {
+                <li [class.done]="stepDone(o, step.state)">
+                  <strong>{{ step.label }}</strong>
+                  @if (stepEvent(o, step.state); as e) {
+                    <span>{{ formatDate(e.createdAt) }}{{ e.note ? ' · ' + e.note : '' }}</span>
+                  }
+                </li>
+              }
+            </ol>
+          }
+          @if (o.isSupplier && o.state === 'paid') {
+            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'preparing')">
+              Marcar en preparación
+            </button>
+          }
+          @if (o.isSupplier && o.state === 'preparing') {
+            <label
+              >Guía de remisión o transportista (opcional)
+              <input name="dispatchNote" maxlength="300" [(ngModel)]="dispatchNote"
+            /></label>
+            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'dispatched')">Marcar despachado</button>
+          }
+          @if (o.isBuyer && o.state === 'dispatched') {
+            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'delivered')">Confirmar recepción</button>
+          }
           @if (o.state === 'pendiente') {
             <p>
               <strong>Pagar antes de: {{ expiresIn(o.expiresAt) }}</strong>
@@ -355,7 +459,7 @@ interface RequestItem {
             <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar con Mercado Pago</button>
           }
           @if (o.state === 'paid') {
-            <p class="success">✓ Pago confirmado. Pedido procesándose.</p>
+            <p class="success">✓ Pago confirmado. El proveedor preparará el pedido.</p>
           }
           @if (o.state === 'expired') {
             <p class="error">✗ Pedido vencido sin pago. Stock liberado.</p>
@@ -400,17 +504,29 @@ export class TradeComponent {
   sent = signal(false);
   supplierIds: string[] = [];
   items: RequestItem[] = [{ descripcion: '', presentacion: 'caja', unidadesPorPresentacion: 12, cantidad: 2 }];
-  private catalogProduct: CatalogProduct | null = null;
-  private catalogItem: RequestItem | null = null;
+  /** Ítems que vienen del catálogo o de la lista de pedido, con su producto publicado. */
+  private catalogItems = new Map<RequestItem, CatalogProduct>();
   readonly packDescription = packDescription;
   readonly presentations = presentations;
   readonly quantityEquivalence = quantityEquivalence;
+  readonly tierUnitPrice = tierUnitPrice;
+  readonly tierTotal = tierTotal;
+  tierProductId = '';
+  tierDraft: { desde: number | null; precioUnitario: string }[] = [];
   responseItems: any[] = [];
+  dispatchNote = '';
+  readonly fulfillmentSteps = [
+    { state: 'paid', label: 'Pagado' },
+    { state: 'preparing', label: 'En preparación' },
+    { state: 'dispatched', label: 'Despachado' },
+    { state: 'delivered', label: 'Entregado' },
+  ];
   shipping = '0.00';
   deliveryDays = 3;
   expiresAt = this.future();
   private keys = new Map<string, string>();
   private readonly router = inject(Router);
+  private readonly orderList = inject(OrderListService);
   constructor() {
     effect(() => {
       this.token();
@@ -474,8 +590,71 @@ export class TradeComponent {
     const o = await this.call('orders');
     if (o) this.orders.set(o);
   }
+  ownProduct(id: string): any {
+    return this.products().find(p => p.id === id) ?? null;
+  }
+  /** Al elegir un producto propio, propone el precio publicado (con escalas) si aún no hay precio. */
+  suggestPrice(line: any) {
+    const product = this.ownProduct(line.productoId);
+    if (product && !line.precioUnitario) line.precioUnitario = tierUnitPrice(product, line.cantidad);
+  }
+  selectTierProduct(id: string) {
+    this.tierProductId = id;
+    const product = this.ownProduct(id);
+    this.tierDraft = (product?.priceTiers ?? []).map((t: any) => ({ ...t }));
+    if (product && this.tierDraft.length === 0) this.addTier();
+  }
+  addTier() {
+    this.tierDraft.push({ desde: null, precioUnitario: '' });
+  }
+  async saveTiers(productId: string) {
+    const escalas = this.tierDraft
+      .filter(t => t.desde !== null || t.precioUnitario.trim())
+      .map(t => ({ desde: Number(t.desde), precioUnitario: t.precioUnitario.trim() }));
+    const result = await this.call('trade/products/' + productId + '/price-tiers', 'PUT', { escalas });
+    if (result) {
+      this.products.update(list => list.map(p => (p.id === productId ? { ...p, priceTiers: result.priceTiers } : p)));
+      this.tierDraft = result.priceTiers.map((t: any) => ({ ...t }));
+      this.message.set('Precios por volumen guardados.');
+      this.catalogChanged.emit();
+    }
+  }
+  stateLabel(state: string): string {
+    const labels: Record<string, string> = {
+      pendiente: 'pendiente de pago',
+      paid: 'pagado',
+      preparing: 'en preparación',
+      dispatched: 'despachado',
+      delivered: 'entregado',
+      expired: 'vencido',
+      expired_pending_payment: 'vencido con pago pendiente',
+      cancelled: 'cancelado',
+      requires_reconciliation: 'requiere reconciliación',
+    };
+    return labels[state] ?? state;
+  }
+  inFulfillment(state: string): boolean {
+    return ['paid', 'preparing', 'dispatched', 'delivered'].includes(state);
+  }
+  stepDone(order: any, state: string): boolean {
+    const steps = this.fulfillmentSteps.map(s => s.state);
+    return steps.indexOf(order.state) >= steps.indexOf(state);
+  }
+  stepEvent(order: any, state: string): any {
+    return (order.events ?? []).find((e: any) => e.state === state) ?? null;
+  }
+  async fulfill(orderId: string, estado: string) {
+    const body = estado === 'dispatched' && this.dispatchNote.trim() ? { estado, nota: this.dispatchNote } : { estado };
+    const o = await this.call('orders/' + orderId + '/fulfillment', 'PATCH', body);
+    if (o) {
+      this.currentOrder.set(o);
+      this.dispatchNote = '';
+      const list = await this.call('orders');
+      if (list) this.orders.set(list);
+    }
+  }
   sourceProduct(item: RequestItem): CatalogProduct | null {
-    return item === this.catalogItem ? this.catalogProduct : null;
+    return this.catalogItems.get(item) ?? null;
   }
   requestMinimum(item: RequestItem): number {
     const product = this.sourceProduct(item);
@@ -494,8 +673,13 @@ export class TradeComponent {
   invalidQuantities(): boolean {
     return this.items.some(item => !!this.quantityIssue(item));
   }
-  async beginFromCatalog(product: CatalogProduct, quantity: number = minimumQuantity(product)) {
-    const issue = quantityError(product, quantity);
+  async beginFromCatalog(
+    product: CatalogProduct,
+    quantity: number = minimumQuantity(product),
+    extra: { product: CatalogProduct; quantity: number }[] = [],
+  ) {
+    const selection = [{ product, quantity }, ...extra.filter(e => e.product.supplierId === product.supplierId)];
+    const issue = selection.map(s => quantityError(s.product, s.quantity)).find(Boolean);
     if (issue) {
       this.message.set(issue);
       return;
@@ -510,20 +694,21 @@ export class TradeComponent {
     }
     this.newRequest();
     this.supplierIds = [product.supplierId];
-    this.catalogProduct = product;
-    this.catalogItem = {
-      descripcion: product.name,
-      presentacion: product.unit.toLowerCase(),
-      unidadesPorPresentacion: product.unitsPerPack,
-      cantidad: quantity,
-    };
-    this.items = [this.catalogItem];
+    this.items = selection.map(({ product: p, quantity: q }) => {
+      const item: RequestItem = {
+        descripcion: p.name,
+        presentacion: p.unit.toLowerCase(),
+        unidadesPorPresentacion: p.unitsPerPack,
+        cantidad: q,
+      };
+      this.catalogItems.set(item, p);
+      return item;
+    });
     this.message.set('');
     document.getElementById('cotizaciones')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   newRequest() {
-    this.catalogProduct = null;
-    this.catalogItem = null;
+    this.catalogItems = new Map();
     this.items = [{ descripcion: '', presentacion: 'caja', unidadesPorPresentacion: 12, cantidad: 2 }];
     this.supplierIds = [];
     this.addingSuppliers.set(false);
@@ -580,6 +765,8 @@ export class TradeComponent {
     }
     const q = await this.call('quotations', 'POST', { proveedorIds: this.supplierIds, items: this.items });
     if (q) {
+      // Lo que se cotizó desde la lista de pedido sale de la lista.
+      for (const product of this.catalogItems.values()) this.orderList.remove(product.id);
       this.selected.set(q);
       this.creating.set(false);
       this.sent.set(true);

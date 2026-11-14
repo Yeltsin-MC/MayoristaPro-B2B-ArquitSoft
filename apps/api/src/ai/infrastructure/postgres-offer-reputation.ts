@@ -11,7 +11,7 @@ export class PostgresOfferReputation implements OfferReputation {
     const result = await this.pool.query(
       `
       SELECT supplier_id AS "supplierId",
-             COUNT(*) FILTER (WHERE state = 'paid') AS completed,
+             COUNT(*) FILTER (WHERE state IN ('paid', 'preparing', 'dispatched', 'delivered')) AS completed,
              COUNT(*) AS total
       FROM trade_orders
       WHERE supplier_id = ANY($1::uuid[])
