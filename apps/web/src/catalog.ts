@@ -84,6 +84,12 @@ export class CatalogComponent {
       (a, b) => this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es'),
     ),
   );
+  /** Proveedores: primero solo los principales; el resto con «Ver todos». */
+  readonly supplierPreview = 6;
+  readonly showAllSuppliers = signal(false);
+  readonly visibleSuppliers = computed(() =>
+    this.showAllSuppliers() ? this.options().suppliers : this.options().suppliers.slice(0, this.supplierPreview),
+  );
   readonly quantities = signal<Record<string, number | null>>({});
   readonly presentations = presentations;
   readonly packDescription = packDescription;

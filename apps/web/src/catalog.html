@@ -166,7 +166,7 @@
         <label
           >Proveedor<select aria-label="Proveedor del catálogo" [(ngModel)]="supplier" (ngModelChange)="load()">
             <option value="">Todos los proveedores</option>
-            @for (s of options().suppliers; track s.id) {
+            @for (s of visibleSuppliers(); track s.id) {
               <option [value]="s.id">{{ s.name }}</option>
             }
           </select></label
@@ -353,7 +353,7 @@
         </div>
       </div>
       <div class="supplier-grid">
-        @for (s of options().suppliers; track s.id) {
+        @for (s of visibleSuppliers(); track s.id) {
           <button type="button" class="supplier-chip" (click)="selectSupplier(s.id)">
             <span class="supplier-initials" aria-hidden="true">{{ initials(s.name) }}</span><span
               >{{ s.name }}<small>Ver sus productos</small></span
@@ -361,6 +361,11 @@
           </button>
         }
       </div>
+      @if (options().suppliers.length > supplierPreview) {
+        <button type="button" class="secondary suppliers-more" (click)="showAllSuppliers.set(!showAllSuppliers())">
+          {{ showAllSuppliers() ? 'Ver menos' : 'Ver todos los proveedores (' + options().suppliers.length + ')' }}
+        </button>
+      }
     </section>
   }
   <section class="cta-band" aria-labelledby="cta-title">

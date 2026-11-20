@@ -85,8 +85,8 @@ button:disabled {
   background: #eef3fb;
 }
 :focus-visible {
-  outline: 3px solid #be7625;
-  outline-offset: 4px;
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
 }
 input:not([type='checkbox']):not([type='file']),
 select,
@@ -3082,6 +3082,92 @@ html {
     justify-content: flex-start;
     overflow-x: auto;
     scrollbar-width: none;
+  }
+}
+
+/* Buscador: el anillo azul va en todo el cuadro, sin contorno extra dentro. */
+.header-search input:focus,
+.header-search input:focus-visible {
+  outline: none;
+}
+
+/* Proveedores: tarjetas alineadas y botón «Ver todos». */
+.supplier-chip {
+  justify-content: flex-start;
+}
+.suppliers-more {
+  display: flex;
+  margin: 16px auto 0;
+}
+
+/* Celular: catálogo en 2 columnas con tarjetas compactas (el detalle muestra todo). */
+@media (max-width: 740px) {
+  .catalog {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .catalog .product-image-link .product-visual {
+    height: 120px;
+  }
+  .catalog .product-content {
+    padding: 10px;
+  }
+  .catalog .category-tag,
+  .catalog .tax-note,
+  .catalog .product-content dl,
+  .catalog .stock,
+  .catalog .quantity-equivalence {
+    display: none;
+  }
+  .catalog .supplier {
+    font-size: 0.66rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .catalog .product-content h3 {
+    font-size: 0.82rem;
+  }
+  .catalog .product-price {
+    flex-wrap: wrap;
+    gap: 0 4px;
+  }
+  .catalog .product-price strong {
+    font-size: 1.1rem;
+  }
+  .catalog .product-price span {
+    font-size: 0.66rem;
+  }
+  .catalog .volume-best {
+    flex-direction: column;
+    gap: 0;
+    margin: 4px 0 8px;
+    font-size: 0.64rem;
+  }
+  .catalog .quantity-label {
+    font-size: 0.7rem;
+  }
+  .catalog .quote-button,
+  .catalog .add-to-list {
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 0.72rem;
+    gap: 6px;
+  }
+  .catalog .badge-volume {
+    font-size: 0.62rem;
+  }
+  .supplier-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .supplier-chip {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    padding: 12px 8px;
+    font-size: 0.74rem;
   }
 }
 
