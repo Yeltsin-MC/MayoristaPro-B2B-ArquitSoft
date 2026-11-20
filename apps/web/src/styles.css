@@ -3091,6 +3091,30 @@ html {
   outline: none;
 }
 
+/* Proveedores: tarjetas alineadas y botón «Ver todos». */
+.supplier-chip {
+  justify-content: flex-start;
+}
+.suppliers-more {
+  display: flex;
+  margin: 16px auto 0;
+}
+
+@media (max-width: 740px) {
+  .supplier-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .supplier-chip {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    padding: 12px 8px;
+    font-size: 0.74rem;
+  }
+}
+
 /* Efectos sutiles: las tarjetas se elevan al pasar el mouse. */
 .product-card,
 .deal-card,
