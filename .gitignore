@@ -14,3 +14,4 @@ __pycache__/
 !.env.example
 !.env.demo.example
 coverage/
+dump.rdb
