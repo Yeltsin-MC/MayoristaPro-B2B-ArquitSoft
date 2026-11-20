@@ -1,0 +1,152 @@
+newman
+MayoristaPro API
+❏ 1. Catálogo
+↳ Listar productos (página 1)
+  GET http://localhost:3000/api/v1/products?page=1&limit=5 [200 OK, 1.73kB, 27ms]
+  ✓  200 OK
+  ✓  Estructura { items, page, limit }
+  ✓  Cada producto cumple el esquema Product del contrato
+  ✓  Tiempo de respuesta < 500 ms (EQ-01)
+↳ Buscar y ordenar por precio
+  GET http://localhost:3000/api/v1/products?q=papel&sort=price-asc&limit=20 [200 OK, 1.01kB, 5ms]
+  ✓  200 OK
+  ✓  Orden ascendente por precio
+↳ Opciones de filtro
+  GET http://localhost:3000/api/v1/products/options [200 OK, 463B, 3ms]
+  ✓  200 OK
+  ✓  Categorías y proveedores
+↳ Inválido: límite mayor a 100
+  GET http://localhost:3000/api/v1/products?limit=500 [400 Bad Request, 370B, 2ms]
+  ✓  400 Bad Request
+  ✓  Formato de error { statusCode, code, message }
+↳ Inválido: orden desconocido
+  GET http://localhost:3000/api/v1/products?sort=nombre [400 Bad Request, 374B, 2ms]
+  ✓  400 Bad Request
+  ✓  Formato de error { statusCode, code, message }
+↳ Inválido: proveedor no es UUID
+  GET http://localhost:3000/api/v1/products?supplier=123 [400 Bad Request, 374B, 2ms]
+  ✓  400 Bad Request
+  ✓  Formato de error { statusCode, code, message }
+❏ 2. Identidad
+↳ Login con contraseña incorrecta
+  POST http://localhost:3000/api/v1/auth/login [401 Unauthorized, 346B, 40ms]
+  ✓  401 Unauthorized
+  ✓  Formato de error { statusCode, code, message }
+  ✓  No entrega token
+↳ Login comprador
+  POST http://localhost:3000/api/v1/auth/login [201 Created, 504B, 42ms]
+  ✓  201 Created
+  ✓  Devuelve token y expiración
+↳ Login proveedor
+  POST http://localhost:3000/api/v1/auth/login [201 Created, 504B, 40ms]
+  ✓  201 Created
+↳ Sesión actual del comprador
+  GET http://localhost:3000/api/v1/auth/me [200 OK, 569B, 3ms]
+  ✓  200 OK
+↳ Sin token: pedidos
+  GET http://localhost:3000/api/v1/orders [401 Unauthorized, 335B, 2ms]
+  ✓  401 Unauthorized
+  ✓  Formato de error { statusCode, code, message }
+↳ Registro inválido: RUC de 5 dígitos
+  POST http://localhost:3000/api/v1/auth/register [400 Bad Request, 365B, 2ms]
+  ✓  400 Bad Request
+  ✓  Formato de error { statusCode, code, message }
+❏ 3. Cotizaciones
+↳ Proveedores disponibles
+  GET http://localhost:3000/api/v1/trade/providers [200 OK, 313B, 3ms]
+  ✓  200 OK
+  ✓  Lista no vacía
+↳ Productos del proveedor
+  GET http://localhost:3000/api/v1/trade/products [200 OK, 423B, 3ms]
+  ✓  200 OK
+  ✓  El proveedor tiene productos
+↳ Inválido: cotización sin ítems
+  POST http://localhost:3000/api/v1/quotations [422 Unprocessable Entity, 334B, 2ms]
+  ✓  422 Unprocessable Entity
+  ✓  Formato de error { statusCode, code, message }
+  ✓  Código INVALID_INPUT
+↳ Inválido: docena con 10 unidades
+  POST http://localhost:3000/api/v1/quotations [422 Unprocessable Entity, 335B, 1ms]
+  ✓  422 Unprocessable Entity
+  ✓  Formato de error { statusCode, code, message }
+↳ Crear solicitud de cotización
+  POST http://localhost:3000/api/v1/quotations [201 Created, 608B, 7ms]
+  ✓  201 Created
+  ✓  Solicitud abierta con un ítem
+↳ Consultar solicitud creada
+  GET http://localhost:3000/api/v1/quotations/<uuid> [200 OK, 628B, 4ms]
+  ✓  200 OK
+  ✓  Es la misma solicitud
+↳ Inexistente: solicitud con UUID aleatorio
+  GET http://localhost:3000/api/v1/quotations/<uuid> [404 Not Found, 326B, 3ms]
+  ✓  404 Not Found
+  ✓  Formato de error { statusCode, code, message }
+↳ Inválido: oferta con vigencia sin zona horaria
+  POST http://localhost:3000/api/v1/quotations/<uuid>/responses [422 Unprocessable Entity, 347B, 2ms]
+  ✓  422 Unprocessable Entity
+  ✓  Formato de error { statusCode, code, message }
+↳ Proveedor responde con oferta
+  POST http://localhost:3000/api/v1/quotations/<uuid>/responses [201 Created, 1.17kB, 7ms]
+  ✓  201 Created
+  ✓  La oferta queda registrada
+↳ Prohibido: el proveedor no puede aceptar
+  PATCH http://localhost:3000/api/v1/quotations/<uuid>/responses/<uuid>/accept [403 Forbidden, 370B, 2ms]
+  ✓  403 o 404 (sin permiso)
+  ✓  Formato de error { statusCode, code, message }
+↳ Comprador acepta la oferta
+  PATCH http://localhost:3000/api/v1/quotations/<uuid>/responses/<uuid>/accept [200 OK, 1.2kB, 5ms]
+  ✓  200 OK
+  ✓  Oferta aceptada
+❏ 4. Pedidos
+↳ Inválido: pedido sin Idempotency-Key
+  POST http://localhost:3000/api/v1/orders [422 Unprocessable Entity, 355B, 1ms]
+  ✓  422 Unprocessable Entity
+  ✓  Formato de error { statusCode, code, message }
+↳ Crear pedido
+  POST http://localhost:3000/api/v1/orders [201 Created, 943B, 14ms]
+  ✓  201 Created
+  ✓  Pedido pendiente con total = subtotal + envío
+↳ Repetir pedido con la misma clave (idempotencia)
+  POST http://localhost:3000/api/v1/orders [201 Created, 943B, 5ms]
+  ✓  2xx
+  ✓  Devuelve el mismo pedido, no duplica
+↳ Consultar pedido
+  GET http://localhost:3000/api/v1/orders/<uuid> [200 OK, 963B, 12ms]
+  ✓  200 OK
+  ✓  Es el pedido creado
+↳ Listar pedidos
+  GET http://localhost:3000/api/v1/orders [200 OK, 680B, 3ms]
+  ✓  200 OK
+  ✓  Incluye el pedido creado
+↳ Inválido: despacho de pedido no pagado
+  PATCH http://localhost:3000/api/v1/orders/<uuid>/fulfillment [409 Conflict, 333B, 4ms]
+  ✓  409 o 422 (transición no permitida)
+  ✓  Formato de error { statusCode, code, message }
+❏ 5. Documentación e IA
+↳ Contrato OpenAPI
+  GET http://localhost:3000/api-docs/openapi.json [200 OK, 24.42kB, 1ms]
+  ✓  200 OK
+  ✓  OpenAPI 3 con rutas
+↳ Estado del servicio de IA
+  GET http://localhost:3000/api/v1/ai/health [200 OK, 282B, 3ms]
+  ✓  200 OK
+  ✓  status ok o unavailable
+┌─────────────────────────┬──────────────────┬─────────────────┐
+│                         │         executed │          failed │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              iterations │                1 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│                requests │               31 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│            test-scripts │               31 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│      prerequest-scripts │                2 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              assertions │               64 │               0 │
+├─────────────────────────┴──────────────────┴─────────────────┤
+│ total run duration: 661ms                                    │
+├──────────────────────────────────────────────────────────────┤
+│ total data received: 33.8kB (approx)                         │
+├──────────────────────────────────────────────────────────────┤
+│ average response time: 8ms [min: 1ms, max: 42ms, s.d.: 11ms] │
+└──────────────────────────────────────────────────────────────┘
