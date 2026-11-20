@@ -2,6 +2,35 @@
 
 El entorno público inicial debe permitir la revisión mediante HTTPS hasta la entrega prevista alrededor del 20 de diciembre de 2026. La configuración del dominio y de la API se define por entorno. El C4 completo incluye capacidades de evolución.
 
+## Despliegue implementado (Sprint 3)
+
+La demo está publicada en https://mayoristapro.shop con una sola instancia EC2 que ejecuta toda la pila con Docker Compose. Cloudflare Tunnel publica Nginx sin abrir puertos web. Detalle, procedimiento y guion de demo: [Sprint 3: integración y despliegue](../sprint-3-despliegue.md).
+
+```mermaid
+flowchart LR
+    U[Comprador, proveedor o administrador]
+    CDN[Cloudflare DNS, HTTPS y CDN]
+    subgraph EC2[AWS EC2 mayoristapro-demo]
+      T[cloudflared]
+      WEB[Nginx + Angular]
+      API[NestJS + worker]
+      AI[FastAPI]
+      PG[(PostgreSQL)]
+      CACHE[(Redis)]
+    end
+    U -->|HTTPS mayoristapro.shop| CDN
+    CDN <-->|túnel| T
+    T --> WEB
+    WEB -->|/api/| API
+    API --> PG
+    API --> CACHE
+    API --> AI
+```
+
+La tabla siguiente conserva el diseño de escalabilidad para comparar con la entrega. RDS, ALB y varias réplicas siguen como evolución; no forman parte del despliegue actual.
+
+### Diseño inicial
+
 ```mermaid
 flowchart LR
     U[Comprador, proveedor o administrador]

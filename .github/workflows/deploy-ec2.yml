@@ -1,0 +1,75 @@
+name: Desplegar en EC2
+# Despliegue continuo manual. Requiere las imágenes del mismo commit publicadas
+# antes por "Preparar imágenes para AWS". Ver docs/sprint-3-despliegue.md.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'SHA completo del commit (vacío = commit seleccionado arriba)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-ec2
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar SHA
+        id: sha
+        shell: bash
+        env:
+          INPUT_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          sha="${INPUT_SHA:-$GITHUB_SHA}"
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "SHA inválido: $sha"; exit 1; }
+          echo "value=$sha" >> "$GITHUB_OUTPUT"
+      - name: Desplegar por SSH
+        shell: bash
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_APP_DIR: ${{ vars.EC2_APP_DIR }}
+          RELEASE: ${{ steps.sha.outputs.value }}
+        run: |
+          set -euo pipefail
+          for v in EC2_HOST EC2_USER EC2_SSH_KEY EC2_APP_DIR; do
+            [ -n "${!v}" ] || { echo "Falta configurar $v"; exit 1; }
+          done
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/ec2.pem
+          chmod 600 ~/.ssh/ec2.pem
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/ec2.pem "$EC2_USER@$EC2_HOST" \
+            "APP_DIR=$(printf %q "$EC2_APP_DIR") RELEASE=$RELEASE bash -s" <<'REMOTE'
+          set -euo pipefail
+          cd "$APP_DIR"
+          compose=(docker compose --env-file .env.demo -f compose.yaml -f compose.demo.yaml -f compose.aws.yaml --profile cache)
+          mkdir -p ~/respaldos
+          "${compose[@]}" exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' | gzip > ~/respaldos/mayorista-$(date +%Y%m%d-%H%M%S).sql.gz
+          git fetch --quiet origin
+          git checkout --quiet --detach "$RELEASE"
+          sed -i "s/^RELEASE_SHA=.*/RELEASE_SHA=$RELEASE/" .env.demo
+          grep -q "^RELEASE_SHA=$RELEASE$" .env.demo || echo "RELEASE_SHA=$RELEASE" >> .env.demo
+          "${compose[@]}" config --quiet
+          "${compose[@]}" pull
+          "${compose[@]}" up -d --no-build --wait
+          curl --fail --silent 'http://127.0.0.1:8080/api/v1/products?limit=1' > /dev/null
+          echo "Desplegado $RELEASE"
+          REMOTE
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Prueba de humo sobre la URL pública
+        env:
+          DEMO_URL: https://mayoristapro.shop
+        run: node tests/deployment.smoke.cjs

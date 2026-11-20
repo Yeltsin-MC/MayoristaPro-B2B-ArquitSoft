@@ -2,6 +2,8 @@
 
 **Plataforma propuesta para la comercialización mayorista en Ayacucho**, que conecta proveedores con compradores empresariales e incorpora recomendación de proveedores.
 
+**Demo en línea:** https://mayoristapro.shop · [Despliegue (Sprint 3)](docs/sprint-3-despliegue.md)
+
 ## Información académica
 
 | Campo | Detalle |
@@ -174,7 +176,7 @@ T4 incorpora [cotizaciones, pedidos y reserva de stock](docs/sprint-2-cotizacion
 |---|---|
 | Sprint 01: documentación técnica | Documentación elaborada y revisada para sustentación; evaluación docente pendiente. |
 | Sprint 02: implementación | Base de Angular, NestJS y PostgreSQL con catálogo de prueba. Identidad empresarial, catálogo comercial y pedido con reserva se completan en incrementos posteriores. |
-| Despliegue e integraciones | Diseñados; pendientes de implementación y verificación. |
+| Sprint 03: integración y despliegue | Publicado en https://mayoristapro.shop (AWS EC2 + Docker Compose, Cloudflare DNS/HTTPS/CDN con Tunnel). Ver [despliegue](docs/sprint-3-despliegue.md). Mercado Pago real y modelo externo de IA siguen pendientes. |
 | Pruebas de capacidad | Pendientes; no se afirma soporte demostrado de 2,000 usuarios. |
 
 El repositorio contiene la documentación del diseño. Los árboles de archivos y clases descritos en ella son propuestas para construir el software, no una aplicación terminada.
