@@ -3046,3 +3046,31 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Encabezado fijo: el menú principal se mantiene visible al desplazarse. */
+html {
+  scroll-padding-top: 150px;
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 10px #0000;
+  transition: box-shadow 0.2s;
+}
+.site-header.scrolled {
+  box-shadow: 0 4px 14px #0003;
+}
+.site-header.scrolled .category-bar,
+.site-header.scrolled .brand small {
+  display: none;
+}
+@media (max-width: 740px) {
+  html {
+    scroll-padding-top: 130px;
+  }
+  .site-header.scrolled .header-content {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}

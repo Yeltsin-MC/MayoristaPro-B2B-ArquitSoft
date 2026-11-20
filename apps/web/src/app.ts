@@ -11,6 +11,7 @@ import { OrderListService } from './order-list.service';
   selector: 'app-root',
   imports: [FormsModule, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.html',
+  host: { '(window:scroll)': 'onScroll()' },
 })
 export class AppComponent {
   private readonly router = inject(Router);
@@ -19,6 +20,13 @@ export class AppComponent {
   readonly orderList = inject(OrderListService);
   /** Categorías del catálogo publicado para el menú del encabezado. */
   readonly categories = signal<string[]>([]);
+  /** Al bajar, el encabezado fijo se compacta (oculta lema y categorías) para dejar espacio. */
+  readonly scrolled = signal(false);
+  onScroll() {
+    const y = window.scrollY;
+    if (!this.scrolled() && y > 120) this.scrolled.set(true);
+    else if (this.scrolled() && y < 40) this.scrolled.set(false);
+  }
 
   constructor() {
     // Al cambiar de página (catálogo ↔ cuenta) se empieza arriba; dentro de la
