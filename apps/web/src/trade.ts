@@ -23,21 +23,22 @@ interface RequestItem {
   imports: [FormsModule],
   template: ` <section id="cotizaciones" class="trade" aria-label="Cotizaciones y pedidos">
     <div class="workspace-heading">
-      <div>
-        <p class="eyebrow">COMPRAS CON MEJOR INFORMACIÓN</p>
-        <h3>Cotizaciones y pedidos</h3>
-        <p>
-          Solicita ofertas privadas y compara sus condiciones antes de aceptar. El stock se reserva al crear el pedido.
-        </p>
-      </div>
-      <div class="actions">
-        <button class="secondary" type="button" (click)="showQuotes()">Mis cotizaciones</button
-        ><button class="secondary" type="button" (click)="showOrders()">Mis pedidos</button
-        ><button class="secondary" type="button" (click)="refresh()" [disabled]="busy()">
-          Actualizar cotizaciones
+      <h3>Cotizaciones y pedidos</h3>
+      <div class="actions workspace-tabs">
+        <button class="tab-button" type="button" (click)="showQuotes()">📄 Mis cotizaciones</button
+        ><button class="tab-button" type="button" (click)="showOrders()">📦 Mis pedidos</button
+        ><button
+          class="tab-button icon-only"
+          type="button"
+          (click)="refresh()"
+          [disabled]="busy()"
+          aria-label="Actualizar cotizaciones"
+          title="Actualizar"
+        >
+          ↻
         </button>
         @if (canBuy()) {
-          <button class="secondary" type="button" (click)="newRequest()">Nueva solicitud</button>
+          <button class="tab-button primary-tab" type="button" (click)="newRequest()">Nueva solicitud</button>
         }
       </div>
     </div>
@@ -226,7 +227,7 @@ interface RequestItem {
       <h4 id="mis-cotizaciones" tabindex="-1">Mis cotizaciones</h4>
       <div class="request-list">
         @for (q of requests(); track q.id) {
-          <div class="request-row" [attr.data-request-id]="q.id">
+          <div [class]="'request-row ' + requestTone(q)" [attr.data-request-id]="q.id">
             <p>
               <strong>{{ q.primaryProduct || 'Solicitud de productos' }}</strong>
             </p>
@@ -234,23 +235,31 @@ interface RequestItem {
             <button class="secondary" type="button" (click)="open(q.id)">Ver cotización</button>
           </div>
         } @empty {
-          <p>No tienes solicitudes todavía.</p>
+          <p class="empty-state">📭 No tienes solicitudes todavía.</p>
         }
       </div>
       @if (selected(); as q) {
-        <div class="selected-request" tabindex="-1">
-          <h4>{{ q.items[0]?.description || 'Detalle de cotización' }}</h4>
-          <p>Comprador {{ q.buyerName }} · {{ requestStatus(q) }}</p>
+        <div [class]="'selected-request ' + requestTone(q)" tabindex="-1">
+          <div class="card-head">
+            <h4>{{ q.items[0]?.description || 'Detalle de cotización' }}</h4>
+            <span class="status-pill">{{ requestStatus(q) }}</span>
+          </div>
+          <p class="muted">Comprador {{ q.buyerName }}</p>
           @for (i of q.items; track i.id) {
-            <p>{{ i.description }} · {{ i.unit }} de {{ i.unitsPerPack }} · cantidad {{ i.quantity }}</p>
+            <p class="item-line">
+              {{ i.description }} · {{ i.unit }} de {{ i.unitsPerPack }} · cantidad {{ i.quantity }}
+            </p>
           }
         </div>
         @if (!q.isBuyer && q.status === 'abierta' && q.offers.length === 0 && canSell()) {
-          <form (ngSubmit)="respond()">
+          <form class="response-form" (ngSubmit)="respond()">
             <h4>Responder con productos propios</h4>
             @for (line of responseItems; track line.solicitudItemId; let n = $index) {
               <fieldset>
-                <legend>{{ q.items[n].description }} ({{ line.cantidad }} presentaciones)</legend>
+                <legend>{{ q.items[n].description }} · {{ line.cantidad }} {{ q.items[n].unit }}</legend>
+                @if (line.productoId && line.productoId === matchingProduct(q.items[n])?.id) {
+                  <p class="match-note">✓ Producto encontrado en tu catálogo. Revisa el precio y envía.</p>
+                }
                 <label
                   >Producto propio
                   <select
@@ -262,8 +271,7 @@ interface RequestItem {
                     <option value="">Seleccionar</option>
                     @for (p of products(); track p.id) {
                       <option [value]="p.id">
-                        {{ p.sku }} · {{ p.name }} · {{ p.unit }} de {{ p.unitsPerPack }} · mínimo {{ p.minimum }} ·
-                        múltiplo {{ p.multiple }} · stock {{ p.stock }}
+                        {{ p.name }} · {{ p.unit }} de {{ p.unitsPerPack }} · stock {{ p.stock }}
                       </option>
                     }
                   </select></label
@@ -274,8 +282,8 @@ interface RequestItem {
                 /></label>
                 @if (ownProduct(line.productoId); as p) {
                   <p class="price-reference">
-                    Precio publicado para {{ line.cantidad }}: S/ {{ tierUnitPrice(p, line.cantidad) }} por
-                    presentación{{ p.priceTiers?.length ? ' (con precios por volumen)' : '' }}.
+                    Tu precio publicado: S/ {{ tierUnitPrice(p, line.cantidad)
+                    }}{{ p.priceTiers?.length ? ' (por volumen)' : '' }}
                   </p>
                 }
               </fieldset>
@@ -288,7 +296,7 @@ interface RequestItem {
             <label
               >Vigente hasta <input name="expiresAt" type="datetime-local" required [(ngModel)]="expiresAt"
             /></label>
-            <p>Precios con IGV incluido; envío por importe final. No se calcula desglose fiscal.</p>
+            <p class="muted">Precios con IGV incluido.</p>
             <button [disabled]="busy()">Enviar oferta</button>
           </form>
         }
@@ -401,30 +409,41 @@ interface RequestItem {
         </div>
       }
       <h4 id="mis-pedidos" tabindex="-1">Mis pedidos</h4>
-      @for (o of orders(); track o.id) {
-        <p [attr.data-order-id]="o.id">
-          Pedido · {{ stateLabel(o.state) }} · S/ {{ o.total }}
-          <button type="button" (click)="openOrder(o.id)">Ver pedido</button>
-        </p>
-      }
-      @if (currentOrder(); as o) {
-        <article aria-label="Detalle del pedido">
-          <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido · ' + stateLabel(o.state) }}</h4>
-          @for (i of o.items; track $index) {
+      <div class="request-list">
+        @for (o of orders(); track o.id) {
+          <div [class]="'request-row ' + orderTone(o.state)" [attr.data-order-id]="o.id">
             <p>
-              {{ i.snapshot.name }} · {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }} · {{ i.quantity }} × S/
-              {{ i.unitPrice }} = S/ {{ i.subtotal }}
+              <strong>S/ {{ o.total }}</strong>
+            </p>
+            <p class="status-pill">{{ stateLabel(o.state) }}</p>
+            <button class="secondary" type="button" (click)="openOrder(o.id)">Ver pedido</button>
+          </div>
+        } @empty {
+          <p class="empty-state">📭 Aún no tienes pedidos.</p>
+        }
+      </div>
+      @if (currentOrder(); as o) {
+        <article [class]="'order-card ' + orderTone(o.state)" aria-label="Detalle del pedido">
+          <div class="card-head">
+            <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido · ' + stateLabel(o.state) }}</h4>
+            <strong class="order-total">S/ {{ o.total }}</strong>
+          </div>
+          @for (i of o.items; track $index) {
+            <p class="item-line">
+              {{ i.snapshot.name }} · {{ i.quantity }} {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }}
             </p>
           }
-          <p>
-            Productos: S/ {{ o.subtotal }} · Envío final: S/ {{ o.shipping }} ·
-            <strong>Total: S/ {{ o.total }} PEN</strong>
-          </p>
-          <p>IGV incluido en precios. Plazo: {{ o.deliveryDays }} días.</p>
+          <details class="more-details">
+            <summary>Ver más</summary>
+            @for (i of o.items; track $index) {
+              <p>{{ i.quantity }} × S/ {{ i.unitPrice }} = S/ {{ i.subtotal }}</p>
+            }
+            <p>Productos: S/ {{ o.subtotal }} · Envío: S/ {{ o.shipping }} · IGV incluido</p>
+            <p>Plazo: {{ o.deliveryDays }} días</p>
+          </details>
           @for (r of o.reservations; track r.productId) {
-            <p>Reserva {{ r.state }}: {{ r.quantity }} presentaciones.</p>
+            <p class="muted">Reserva {{ r.state }}: {{ r.quantity }} presentaciones.</p>
           }
-          <p>Estado: {{ stateLabel(o.state) }}.</p>
           @if (inFulfillment(o.state)) {
             <ol class="fulfillment-steps" aria-label="Seguimiento del despacho">
               @for (step of fulfillmentSteps; track step.state) {
@@ -468,15 +487,17 @@ interface RequestItem {
             <p class="warning">⚠ Requiere reconciliación manual (pago tardío).</p>
           }
           @if (paymentAttempts().length > 0) {
-            <h5>Intentos de pago</h5>
-            @for (a of paymentAttempts(); track a.id) {
-              <p>
-                {{ formatDate(a.created_at) }} · {{ a.state }} · S/ {{ a.amount }}
-                @if (a.state === 'created' && a.preference_id) {
-                  <button type="button" (click)="openCheckout(a)">Continuar pago</button>
-                }
-              </p>
-            }
+            <details class="more-details">
+              <summary>Intentos de pago</summary>
+              @for (a of paymentAttempts(); track a.id) {
+                <p>
+                  {{ formatDate(a.created_at) }} · {{ a.state }} · S/ {{ a.amount }}
+                  @if (a.state === 'created' && a.preference_id) {
+                    <button type="button" (click)="openCheckout(a)">Continuar pago</button>
+                  }
+                </p>
+              }
+            </details>
           }
         </article>
       }
@@ -593,10 +614,25 @@ export class TradeComponent {
   ownProduct(id: string): any {
     return this.products().find(p => p.id === id) ?? null;
   }
-  /** Al elegir un producto propio, propone el precio publicado (con escalas) si aún no hay precio. */
+  /** Busca el producto propio que el comprador pidió (mismo nombre; si hay varios, misma presentación). */
+  matchingProduct(item: any): any {
+    const norm = (v: unknown) =>
+      String(v ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+    const byName = this.products().filter(p => norm(p.name) === norm(item.description));
+    if (byName.length <= 1) return byName[0] ?? null;
+    return (
+      byName.find(p => norm(p.unit) === norm(item.unit) && Number(p.unitsPerPack) === Number(item.unitsPerPack)) ??
+      byName[0]
+    );
+  }
+  /** Al elegir un producto propio, propone su precio publicado (con escalas) para esa cantidad. */
   suggestPrice(line: any) {
     const product = this.ownProduct(line.productoId);
-    if (product && !line.precioUnitario) line.precioUnitario = tierUnitPrice(product, line.cantidad);
+    if (product) line.precioUnitario = tierUnitPrice(product, line.cantidad);
   }
   selectTierProduct(id: string) {
     this.tierProductId = id;
@@ -720,6 +756,18 @@ export class TradeComponent {
     this.sortByScore = false;
     this.message.set('');
   }
+  /** Color del borde: ámbar = esperando, azul = hay algo por revisar, verde = listo. */
+  requestTone(q: any): string {
+    if (q.status === 'aceptada') return 'tone-ok';
+    const count = q.offerCount ?? q.offers?.length ?? 0;
+    return count > 0 ? 'tone-action' : 'tone-wait';
+  }
+  orderTone(state: string): string {
+    if (state === 'pendiente') return 'tone-action';
+    if (state === 'delivered') return 'tone-ok';
+    if (['paid', 'preparing', 'dispatched'].includes(state)) return 'tone-progress';
+    return 'tone-bad';
+  }
   requestStatus(q: any): string {
     if (q.status === 'aceptada') return 'Oferta aceptada';
     const count = q.offerCount ?? q.offers?.length ?? 0;
@@ -787,12 +835,15 @@ export class TradeComponent {
       this.expiresAt = this.future();
       this.scoredOffers.set([]);
       this.sortByScore = false;
-      this.responseItems = q.items.map((i: any) => ({
-        solicitudItemId: i.id,
-        productoId: '',
-        cantidad: i.quantity,
-        precioUnitario: '',
-      }));
+      this.responseItems = q.items.map((i: any) => {
+        const match = this.matchingProduct(i);
+        return {
+          solicitudItemId: i.id,
+          productoId: match?.id ?? '',
+          cantidad: i.quantity,
+          precioUnitario: match ? tierUnitPrice(match, i.quantity) : '',
+        };
+      });
       requestAnimationFrame(() => {
         const target = document.querySelector<HTMLElement>('.selected-request');
         target?.scrollIntoView({ block: 'start' });
