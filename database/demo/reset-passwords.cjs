@@ -35,6 +35,6 @@ async function resetPasswords(config = configuration()) {
 }
 
 if (require.main === module) {
-  resetPasswords().then(r => console.log(JSON.stringify(r, null, 2)), e => { console.error(e.message); process.exit(1); });
+  resetPasswords().then(r => console.log(JSON.stringify(r, null, 2)), e => { console.error(e.message || e.code || String(e)); process.exit(1); });
 }
 module.exports = { resetPasswords };
