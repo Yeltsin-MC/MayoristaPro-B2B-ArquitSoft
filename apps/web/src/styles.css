@@ -1926,7 +1926,7 @@ h1 {
 /* Las diapositivas van en fila y la pista se desliza (transform) al cambiar. */
 .catalog-hero {
   overflow: hidden;
-  height: 360px;
+  height: 340px;
   min-height: 0;
 }
 .hero-track {
@@ -2339,7 +2339,7 @@ h1 {
     justify-content: center;
   }
   .catalog-hero {
-    min-height: 300px;
+    min-height: 0;
   }
   .hero-slide {
     grid-template-columns: 1fr 1fr;
@@ -2358,7 +2358,7 @@ h1 {
     font-size: 0.78rem;
   }
   .catalog-hero {
-    height: 330px;
+    height: 280px;
   }
   .hero-slide .hero-image {
     width: 100%;
