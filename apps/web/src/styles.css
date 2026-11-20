@@ -497,7 +497,7 @@ dd {
 }
 .stock {
   font-size: 0.75rem;
-  color: var(--brand);
+  color: var(--muted);
   margin: 15px 0;
 }
 .stock span {
@@ -1615,7 +1615,7 @@ h1 {
   margin: 5px 0 0;
 }
 .quantity-equivalence {
-  color: var(--brand);
+  color: var(--muted);
 }
 .quantity-error {
   color: #983c23;
@@ -2801,7 +2801,7 @@ body {
   }
 }
 
-/* Mi cuenta, cotizaciones y pedidos: estilo minimalista con borde de color según el estado */
+/* Mi cuenta, cotizaciones y pedidos: tarjetas blancas lisas; el estado se marca con un punto de color */
 :root {
   --tone-wait: #d99a1e;
   --tone-action: #2f6fd6;
@@ -2848,7 +2848,6 @@ body {
 .admin-card {
   background: white;
   border: 1px solid var(--border);
-  border-left: 5px solid var(--border);
   border-radius: 12px;
 }
 .request-row {
@@ -2922,12 +2921,11 @@ body {
 }
 .response-form fieldset {
   border: 1px solid var(--border);
-  border-left: 5px solid var(--tone-action);
   border-radius: 12px;
   padding: 14px 16px;
 }
 .match-note {
-  color: var(--tone-ok);
+  color: var(--ink);
   font-size: 0.82rem;
   font-weight: 600;
   margin: 0 0 8px;
@@ -2942,49 +2940,41 @@ body {
   padding: 16px 20px;
   margin-top: 12px;
 }
-.identity article.admin-card {
-  border-left-width: 5px;
-}
 .inline-form {
   display: flex !important;
   align-items: end;
   flex-wrap: wrap;
   gap: 10px !important;
 }
-.tone-wait {
-  border-left-color: var(--tone-wait) !important;
+/* Píldora de estado neutra (gris) con un punto del color del estado. */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--page);
+  color: var(--ink);
 }
-.tone-action {
-  border-left-color: var(--tone-action) !important;
+.status-pill::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
 }
-.tone-progress {
-  border-left-color: var(--tone-progress) !important;
+.tone-wait .status-pill::before {
+  background: var(--tone-wait);
 }
-.tone-ok {
-  border-left-color: var(--tone-ok) !important;
+.tone-action .status-pill::before {
+  background: var(--tone-action);
 }
-.tone-bad {
-  border-left-color: var(--tone-bad) !important;
+.tone-progress .status-pill::before {
+  background: var(--tone-progress);
 }
-.tone-wait .status-pill {
-  background: #fbf0d9;
-  color: #8a5a00;
+.tone-ok .status-pill::before {
+  background: var(--tone-ok);
 }
-.tone-action .status-pill {
-  background: #e3ecfb;
-  color: #1f4f9e;
-}
-.tone-progress .status-pill {
-  background: #eee8fa;
-  color: #553a9e;
-}
-.tone-ok .status-pill {
-  background: #dff1e7;
-  color: #17643f;
-}
-.tone-bad .status-pill {
-  background: #fbe5df;
-  color: #8b2f1a;
+.tone-bad .status-pill::before {
+  background: var(--tone-bad);
 }
 @media (max-width: 740px) {
   .workspace-tabs.actions {
@@ -3022,6 +3012,25 @@ html {
     padding-top: 10px;
     padding-bottom: 10px;
   }
+}
+
+/* Tarjeta de producto más limpia: sin rótulo «Imagen referencial» sobre la foto
+   (el aviso sigue en el detalle del producto), descuento abajo para no tapar la
+   categoría y punto de stock verde. */
+.product-card .image-caption {
+  display: none;
+}
+.product-card .badge-volume {
+  top: auto;
+  bottom: 10px;
+  left: 10px;
+  right: auto;
+}
+.stock span {
+  color: var(--tone-ok);
+}
+.stock.unavailable span {
+  color: var(--tone-bad);
 }
 
 /* Menú de categorías: fila en escritorio; en celular se despliega con un botón. */
