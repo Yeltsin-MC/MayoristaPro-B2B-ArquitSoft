@@ -330,6 +330,7 @@ h1 span {
   grid-template-columns: 225px minmax(0, 1fr);
   gap: 28px;
 }
+/* Filtros fijos: se quedan a la vista bajo el encabezado mientras bajan los productos. */
 .filters {
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -338,6 +339,10 @@ h1 span {
   align-self: start;
   display: grid;
   gap: 22px;
+  position: sticky;
+  top: calc(var(--header-height, 140px) + 16px);
+  max-height: calc(100vh - var(--header-height, 140px) - 32px);
+  overflow-y: auto;
 }
 .filter-heading {
   display: flex;
@@ -357,19 +362,6 @@ h1 span {
 }
 .filters select {
   font-size: 0.78rem;
-}
-.filter-note {
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-.filter-note strong {
-  color: var(--ink);
-  font-size: 0.82rem;
-}
-.filter-note p {
-  margin: 7px 0 0;
 }
 .catalog-results {
   min-width: 0;
@@ -997,12 +989,12 @@ td {
     grid-template-columns: 1fr 1fr;
     gap: 14px;
     padding: 16px;
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
   .filter-heading {
     grid-column: 1 / -1;
-  }
-  .filter-note {
-    display: none;
   }
   .filters .check {
     grid-column: 1 / -1;

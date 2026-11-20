@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -38,7 +38,19 @@ export class AppComponent {
       if (next !== page && !event.urlAfterRedirects.includes('#')) window.scrollTo(0, 0);
       page = next;
     });
-    inject(DestroyRef).onDestroy(() => events.unsubscribe());
+    const destroyRef = inject(DestroyRef);
+    destroyRef.onDestroy(() => events.unsubscribe());
+    // Publica la altura real del encabezado fijo (--header-height) para que los
+    // filtros del catálogo se queden pegados justo debajo de él.
+    afterNextRender(() => {
+      const header = document.querySelector<HTMLElement>('.site-header');
+      if (!header || typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver(() =>
+        document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px'),
+      );
+      observer.observe(header);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
     inject(HttpClient)
       .get<{ categories: string[] }>('/api/v1/products/options')
       .subscribe({ next: options => this.categories.set(options.categories.slice(0, 7)), error: () => {} });
