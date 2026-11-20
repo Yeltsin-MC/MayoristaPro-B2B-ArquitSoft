@@ -7,10 +7,10 @@ const { tradeFixture } = require('./trade-fixture.cjs');
 test('EC09-11: imagenes y cantidad mayorista conservada hasta solicitud privada', { timeout: 120000 }, async () => {
   const f = await tradeFixture();
   let browser;
-  const folder = 'docs/evidencias/cantidad-mayorista';
+  const folder = 'docs/sprint-2/evidencias/cantidad-mayorista';
   const results = [];
   try {
-    const csv = (await readFile('docs/datos-demo/catalogo-exposicion.csv', 'utf8')).trim().split('\n');
+    const csv = (await readFile('docs/sprint-2/datos-demo/catalogo-exposicion.csv', 'utf8')).trim().split('\n');
     const row = csv.find(line => line.startsWith('DEMO-CUA-01,'));
     const form = new FormData();
     form.append('file', new Blob([csv[0] + '\n' + row.replace(',2,1,40,true', ',2,2,10,true')]), 'cantidad-demo.csv');

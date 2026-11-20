@@ -7,7 +7,7 @@ const { tradeFixture } = require('./trade-fixture.cjs');
 
 test('EC12-14: sesión validada, selección visible y motivos para cotizar en escritorio y móvil', {timeout:120000}, async()=>{
  const f=await tradeFixture();let browser;
- const folder='docs/evidencias/primera-tanda-ux';const results=[];
+ const folder='docs/sprint-2/evidencias/primera-tanda-ux';const results=[];
  try{
   await f.db.query("UPDATE suppliers SET name='Oficina Central (demo)' WHERE id=$1",[f.accounts.vendor.supplier]);
   await f.db.query("UPDATE products SET name='Cuaderno A4 (demo)' WHERE id=$1",[f.products.vendor.id]);

@@ -67,8 +67,8 @@ async function main() {
       query: { page: 1, limit: 100, ...filters }, ttlSeconds: 30,
       postgresOnly, cold, warm,
     };
-    await mkdir('docs/evidencias/redis-catalogo', { recursive: true });
-    await writeFile('docs/evidencias/redis-catalogo/medicion.json', JSON.stringify(result, null, 2) + '\n');
+    await mkdir('docs/sprint-2/evidencias/redis-catalogo', { recursive: true });
+    await writeFile('docs/sprint-2/evidencias/redis-catalogo/medicion.json', JSON.stringify(result, null, 2) + '\n');
     console.log(JSON.stringify(result, null, 2));
   } finally {
     try {

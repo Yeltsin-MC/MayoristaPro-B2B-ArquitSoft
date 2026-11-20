@@ -1,5 +1,5 @@
 ﻿# Historias seleccionadas del alcance documentado.
-$s=NewSlide 'Historias de usuario: comprador' 'Las historias expresan la necesidad desde el punto de vista del usuario. Leer actor, acción y beneficio. Se presenta una selección del recorrido principal y se conservan los identificadores del documento. La prioridad alta no implica que ya esté implementada la funcionalidad.' 'docs/01-analisis-de-sistema/02-historias-del-usuario.md'
+$s=NewSlide 'Historias de usuario: comprador' 'Las historias expresan la necesidad desde el punto de vista del usuario. Leer actor, acción y beneficio. Se presenta una selección del recorrido principal y se conservan los identificadores del documento. La prioridad alta no implica que ya esté implementada la funcionalidad.' 'docs/sprint-1/01-analisis-de-sistema/02-historias-del-usuario.md'
 $null=Table $s @('ID','Historia de usuario') @(
     @('HU-09','Como comprador empresarial, quiero buscar productos por nombre, categoría, precio o proveedor, para encontrar lo que necesito rápidamente.'),
     @('HU-11','Como comprador empresarial, quiero solicitar cotización a uno o varios proveedores, para obtener precios y condiciones antes de comprar.'),
@@ -7,7 +7,7 @@ $null=Table $s @('ID','Historia de usuario') @(
 ) 42 115 876 342 22 @(112,764)
 $null=Text $s 'Selección de historias de prioridad alta del alcance general' 42 474 876 28 18 $muted
 
-$s=NewSlide 'Historias de usuario: proveedor y administrador' 'El proveedor publica su oferta y responde solicitudes. El administrador verifica proveedores antes de que operen. Se conservan las historias del alcance general. Las condiciones exactas y los criterios de aceptación se encuentran en la documentación del repositorio.' 'docs/01-analisis-de-sistema/02-historias-del-usuario.md'
+$s=NewSlide 'Historias de usuario: proveedor y administrador' 'El proveedor publica su oferta y responde solicitudes. El administrador verifica proveedores antes de que operen. Se conservan las historias del alcance general. Las condiciones exactas y los criterios de aceptación se encuentran en la documentación del repositorio.' 'docs/sprint-1/01-analisis-de-sistema/02-historias-del-usuario.md'
 $null=Table $s @('ID','Historia de usuario') @(
     @('HU-04','Como administrador, quiero verificar y aprobar proveedores antes de que operen, para garantizar la confianza en la plataforma.'),
     @('HU-08','Como proveedor, quiero cargar mi catálogo por bloques mediante CSV/Excel, revisar errores y confirmar una vista previa, para evitar registrar cada producto manualmente.'),
@@ -15,7 +15,7 @@ $null=Table $s @('ID','Historia de usuario') @(
 ) 42 115 876 342 22 @(112,764)
 $null=Text $s 'Selección de historias de prioridad alta del alcance general' 42 474 876 28 18 $muted
 
-$s=NewSlide 'Requisitos funcionales del proceso de compra' 'Los requisitos describen el comportamiento esperado del sistema. Esta tabla resume el contenido, conservando los identificadores originales. RF-13 y RF-14 concretan la solicitud y respuesta de cotización. RF-18 y RF-19 conectan la oferta aceptada con el pedido y la validación de stock. Presentar las metas de rendimiento aparte, como atributos de calidad.' 'docs/01-analisis-de-sistema/03-requisitos-funcionales.md'
+$s=NewSlide 'Requisitos funcionales del proceso de compra' 'Los requisitos describen el comportamiento esperado del sistema. Esta tabla resume el contenido, conservando los identificadores originales. RF-13 y RF-14 concretan la solicitud y respuesta de cotización. RF-18 y RF-19 conectan la oferta aceptada con el pedido y la validación de stock. Presentar las metas de rendimiento aparte, como atributos de calidad.' 'docs/sprint-1/01-analisis-de-sistema/03-requisitos-funcionales.md'
 $null=Table $s @('ID','Comportamiento esperado') @(
     @('RF-07 / RF-10','Importar el catálogo CSV/Excel con validación, vista previa y confirmación; definir presentación, mínimos y múltiplos.'),
     @('RF-11','Mostrar el catálogo al ingresar y filtrar por producto, categoría, precio y proveedor.'),
@@ -25,7 +25,7 @@ $null=Table $s @('ID','Comportamiento esperado') @(
 ) 42 115 876 330 19 @(185,691)
 $null=Text $s 'Resumen de requisitos documentados. Implementación por etapas' 42 474 876 28 18 $muted
 
-$s=NewSlide 'Requisitos de acceso e integraciones' 'Distinguir alcance general y primera implementación. La autenticación y los permisos pertenecen al núcleo propuesto. Los requisitos de pago, facturación e IA permanecen en la visión documentada, pero su inclusión en el MVP debe validarse con la docente. El registro manual de un pago no cumple por sí solo el requisito de integración con una pasarela.' 'docs/01-analisis-de-sistema/03-requisitos-funcionales.md; README.md'
+$s=NewSlide 'Requisitos de acceso e integraciones' 'Distinguir alcance general y primera implementación. La autenticación y los permisos pertenecen al núcleo propuesto. Los requisitos de pago, facturación e IA permanecen en la visión documentada, pero su inclusión en el MVP debe validarse con la docente. El registro manual de un pago no cumple por sí solo el requisito de integración con una pasarela.' 'docs/sprint-1/01-analisis-de-sistema/03-requisitos-funcionales.md; README.md'
 $null=Table $s @('ID','Comportamiento esperado') @(
     @('RF-03 / RF-04','Autenticar usuarios y asignar permisos según su rol.'),
     @('RF-05','Permitir la verificación y aprobación de proveedores.'),
@@ -36,7 +36,7 @@ $null=Table $s @('ID','Comportamiento esperado') @(
 $null=Text $s 'Pagos, facturación e IA: priorización sujeta al alcance académico acordado' 42 474 876 28 17 $muted
 
 function AddDriversSlide {
-    $s=NewSlide 'Drivers que orientan la arquitectura' 'Un driver es una necesidad que condiciona el diseño. Explicar la relación entre necesidad y decisión técnica. El stock exige transacciones y control de concurrencia. Los permisos requieren autorización por empresa y participación. La mantenibilidad orienta modularidad y capas. El presupuesto limitado exige priorizar el núcleo y medir antes de añadir recursos.' 'docs/01-analisis-de-sistema/06-driver-arquitectonicos.md'
+    $s=NewSlide 'Drivers que orientan la arquitectura' 'Un driver es una necesidad que condiciona el diseño. Explicar la relación entre necesidad y decisión técnica. El stock exige transacciones y control de concurrencia. Los permisos requieren autorización por empresa y participación. La mantenibilidad orienta modularidad y capas. El presupuesto limitado exige priorizar el núcleo y medir antes de añadir recursos.' 'docs/sprint-1/01-analisis-de-sistema/06-driver-arquitectonicos.md'
     $null=Table $s @('Driver','Necesidad','Respuesta de diseño') @(
         @('DA03 / DA11','Mantener pedidos y stock consistentes.','Transacción local y recuperación.'),
         @('DA04','Proteger la información comercial.','Autorización por empresa y rol.'),
