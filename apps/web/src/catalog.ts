@@ -58,6 +58,8 @@ export class CatalogComponent {
     },
   ];
   readonly slide_ = signal(0);
+  /** El carrusel se detiene mientras el mouse o el foco están sobre él. */
+  readonly paused = signal(false);
   /** Productos con mayor descuento por volumen para la fila «Ofertas por volumen». */
   readonly deals = signal<CatalogProduct[]>([]);
   readonly benefits = [
@@ -100,7 +102,9 @@ export class CatalogComponent {
     // Carrusel: avanza solo si el usuario no pidió reducir el movimiento.
     const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduced) {
-      const timer = setInterval(() => this.goSlide(this.slide_() + 1), 7000);
+      const timer = setInterval(() => {
+        if (!this.paused()) this.goSlide(this.slide_() + 1);
+      }, 5000);
       inject(DestroyRef).onDestroy(() => clearInterval(timer));
     }
     let first = true;

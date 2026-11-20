@@ -1,14 +1,4 @@
 <a class="skip-link" href="#contenido">Ir al contenido</a>
-<div class="top-strip">
-  <div class="top-strip-content">
-    <ul class="top-benefits" aria-label="Beneficios para empresas">
-      <li><span aria-hidden="true">✓</span> Precios por volumen</li>
-      <li><span aria-hidden="true">✓</span> Proveedores verificados</li>
-      <li><span aria-hidden="true">✓</span> Pago seguro con Mercado Pago</li>
-    </ul>
-    <p class="top-contact">Atención a empresas: lun. a sáb. 8:00–18:00 · <span>Demo académica</span></p>
-  </div>
-</div>
 <header class="site-header" [class.scrolled]="scrolled()">
   <div class="header-content">
     <a class="brand" routerLink="/" aria-label="MayoristaPro, inicio"
@@ -54,10 +44,21 @@
     ><a routerLink="/cuenta/pedidos" routerLinkActive="active">Mis pedidos</a>
   </nav>
   @if (categories().length) {
-    <nav class="category-bar" aria-label="Categorías destacadas">
+    <nav class="category-bar" [class.open]="menuOpen()" aria-label="Categorías destacadas">
+      <button
+        type="button"
+        class="category-toggle"
+        [attr.aria-expanded]="menuOpen()"
+        (click)="menuOpen.set(!menuOpen())"
+      >
+        <span aria-hidden="true">{{ menuOpen() ? '✕' : '☰' }}</span> Categorías
+      </button>
       @for (c of categories(); track c) {
         <button type="button" class="category-bar-link" (click)="openCategory(c)">{{ c }}</button>
       }
+      <a class="category-bar-link category-bar-all" routerLink="/" fragment="categorias" (click)="menuOpen.set(false)"
+        >Ver todas las categorías</a
+      >
     </nav>
   }
 </header>

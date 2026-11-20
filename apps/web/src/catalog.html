@@ -1,37 +1,47 @@
 <div id="inicio">
-  <section class="catalog-hero" aria-labelledby="catalog-title" aria-roledescription="carrusel">
-    @for (slide of slides; track slide.title; let n = $index) {
-      <div
-        [class]="'hero-slide ' + slide.theme"
-        [class.active]="n === slide_()"
-        [attr.aria-hidden]="n !== slide_()"
-        role="group"
-        aria-roledescription="diapositiva"
-        [attr.aria-label]="n + 1 + ' de ' + slides.length"
-      >
-        <div class="hero-copy">
-          <p class="eyebrow">{{ slide.eyebrow }}</p>
-          @if (n === 0) {
-            <h1 id="catalog-title">Abastece<br />tu negocio.</h1>
-          } @else {
-            <p class="hero-title">{{ slide.title }}</p>
-          }
-          <p>{{ slide.text }}</p>
-          <a class="button" [href]="slide.href" [attr.tabindex]="n === slide_() ? null : -1"
-            >{{ slide.cta }} <span aria-hidden="true">↗</span></a
-          >
+  <section
+    class="catalog-hero"
+    aria-labelledby="catalog-title"
+    aria-roledescription="carrusel"
+    (mouseenter)="paused.set(true)"
+    (mouseleave)="paused.set(false)"
+    (focusin)="paused.set(true)"
+    (focusout)="paused.set(false)"
+  >
+    <div class="hero-track" [style.transform]="'translateX(-' + slide_() * 100 + '%)'">
+      @for (slide of slides; track slide.title; let n = $index) {
+        <div
+          [class]="'hero-slide ' + slide.theme"
+          [class.active]="n === slide_()"
+          [attr.aria-hidden]="n !== slide_()"
+          role="group"
+          aria-roledescription="diapositiva"
+          [attr.aria-label]="n + 1 + ' de ' + slides.length"
+        >
+          <div class="hero-copy">
+            <p class="eyebrow">{{ slide.eyebrow }}</p>
+            @if (n === 0) {
+              <h1 id="catalog-title">Abastece<br />tu negocio.</h1>
+            } @else {
+              <p class="hero-title">{{ slide.title }}</p>
+            }
+            <p>{{ slide.text }}</p>
+            <a class="button" [href]="slide.href" [attr.tabindex]="n === slide_() ? null : -1"
+              >{{ slide.cta }} <span aria-hidden="true">↗</span></a
+            >
+          </div>
+          <img
+            [class]="n === 0 ? 'hero-image hero-photo' : 'hero-image'"
+            [src]="slide.image"
+            [alt]="n === 0 ? 'Cuadernos, papel y equipos de oficina junto a cajas de abastecimiento' : ''"
+            width="1536"
+            height="1024"
+            [attr.fetchpriority]="n === 0 ? 'high' : null"
+            [attr.loading]="n === 0 ? null : 'lazy'"
+          />
         </div>
-        <img
-          [class]="n === 0 ? 'hero-photo' : 'hero-photo-alt'"
-          [src]="slide.image"
-          [alt]="n === 0 ? 'Cuadernos, papel y equipos de oficina junto a cajas de abastecimiento' : ''"
-          width="1536"
-          height="1024"
-          [attr.fetchpriority]="n === 0 ? 'high' : null"
-          [attr.loading]="n === 0 ? null : 'lazy'"
-        />
-      </div>
-    }
+      }
+    </div>
     <div class="hero-controls">
       <button type="button" class="hero-arrow" aria-label="Retroceder carrusel" (click)="goSlide(slide_() - 1)">
         ‹
@@ -164,10 +174,6 @@
         <label class="check"
           ><input type="checkbox" [(ngModel)]="available" (ngModelChange)="load()" />Con disponibilidad</label
         >
-        <div class="filter-note">
-          <strong>Compra por presentación</strong>
-          <p>Revisa el mínimo y el múltiplo de cada producto antes de solicitar una oferta.</p>
-        </div>
       </aside>
       <div class="catalog-results">
         <div class="results-toolbar">
