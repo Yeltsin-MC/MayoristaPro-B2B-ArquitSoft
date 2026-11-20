@@ -136,7 +136,7 @@ function accountTarget(url: string): AccountTarget {
           [class.tone-wait]="!company().supplier_verified"
         >
           <div class="card-head">
-            <h3>🏢 {{ company().legal_name }}</h3>
+            <h3>{{ company().legal_name }}</h3>
             <span class="status-pill">{{
               company().supplier_verified ? '✓ Proveedor verificado' : 'Proveedor por verificar'
             }}</span>
@@ -197,7 +197,7 @@ function accountTarget(url: string): AccountTarget {
               ><button [disabled]="busy()">Publicar producto</button>
             </form>
           } @else {
-            <p class="notice">Para publicar productos, administración debe verificar tu empresa.</p>
+            <p class="notice">La carga masiva y la publicación requieren que administración verifique tu empresa.</p>
           }
         }
       }
