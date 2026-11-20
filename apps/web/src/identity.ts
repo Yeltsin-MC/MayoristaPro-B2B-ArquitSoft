@@ -24,9 +24,10 @@ function accountTarget(url: string): AccountTarget {
   template: ` <section aria-label="Cuenta empresarial" class="identity">
     <div class="account-heading">
       <div>
-        <p class="eyebrow">TU ESPACIO EMPRESARIAL</p>
         <h2>Cuenta empresarial</h2>
-        <p>Demo con empresas y evidencias ficticias. El alta se revisa manualmente; no se consulta SUNAT.</p>
+        @if (!token()) {
+          <p>Demo con empresas ficticias. El alta se revisa manualmente.</p>
+        }
       </div>
       @if (token()) {
         <div class="actions">
@@ -129,14 +130,18 @@ function accountTarget(url: string): AccountTarget {
       </div>
     } @else {
       @if (company()) {
-        <div class="company-summary">
-          <h3>{{ company().legal_name }}</h3>
+        <div
+          class="company-summary"
+          [class.tone-ok]="company().supplier_verified"
+          [class.tone-wait]="!company().supplier_verified"
+        >
+          <div class="card-head">
+            <h3>🏢 {{ company().legal_name }}</h3>
+            <span class="status-pill">{{
+              company().supplier_verified ? '✓ Proveedor verificado' : 'Proveedor por verificar'
+            }}</span>
+          </div>
           <p>RUC {{ company().ruc }} · {{ company().review_label }}</p>
-          <p>
-            Proveedor
-            {{ company().supplier_verified ? 'verificado · revisado manualmente' : 'pendiente de verificación' }}. La
-            compra sigue habilitada con permiso de compra.
-          </p>
           <div class="role-tags">
             @for (permission of permissions(); track permission) {
               <span>{{
@@ -187,20 +192,17 @@ function accountTarget(url: string): AccountTarget {
         @if (permissions().includes('publish')) {
           @if (company().supplier_verified) {
             <app-catalog-import [token]="token()" />
-            <form class="management" (ngSubmit)="publishProduct()">
-              <h3>Publicación individual</h3>
+            <form class="management inline-form" (ngSubmit)="publishProduct()">
               <label>ID del producto propio<input name="productId" required [(ngModel)]="productId" /></label
               ><button [disabled]="busy()">Publicar producto</button>
             </form>
           } @else {
-            <p class="notice">
-              La carga masiva y la publicación requieren que administración verifique primero al proveedor.
-            </p>
+            <p class="notice">Para publicar productos, administración debe verificar tu empresa.</p>
           }
         }
       }
       @for (request of requests(); track request.id) {
-        <article>
+        <article [class]="request.approved_at ? 'admin-card tone-ok' : 'admin-card tone-wait'">
           <h3>{{ request.legal_name }}</h3>
           <p>{{ request.ruc }} · {{ request.email }}</p>
           <p>Evidencia {{ request.evidence }}</p>
