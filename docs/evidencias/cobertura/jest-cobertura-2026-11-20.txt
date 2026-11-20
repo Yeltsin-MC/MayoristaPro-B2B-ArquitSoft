@@ -1,0 +1,81 @@
+Ejecución: npm run test:coverage (Jest 30.5.2, PostgreSQL 16, Redis 7, FastAPI) — 20/11/2026
+
+Test Suites: 27 passed, 27 total
+Tests:       44 passed, 44 total
+
+=============================== Coverage summary ===============================
+Statements   : 89.13% ( 3323/3728 )
+Branches     : 86.94% ( 719/827 )
+Functions    : 92.88% ( 222/239 )
+Lines        : 89.13% ( 3323/3728 )
+================================================================================
+-------------------------------|---------|----------|---------|---------|------------------------------------------------
+File                           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                              
+-------------------------------|---------|----------|---------|---------|------------------------------------------------
+All files                      |   89.13 |    86.94 |   92.88 |   89.13 |                                                
+ src                           |   96.92 |     62.5 |     100 |   96.92 |                                                
+  api-docs.ts                  |     100 |      100 |     100 |     100 |                                                
+  app.module.ts                |     100 |      100 |     100 |     100 |                                                
+  http-setup.ts                |      92 |       50 |     100 |      92 | 20,23                                          
+ src/ai                        |     100 |      100 |     100 |     100 |                                                
+  ai.module.ts                 |     100 |      100 |     100 |     100 |                                                
+ src/ai/application            |   96.94 |    88.57 |     100 |   96.94 |                                                
+  ai.service.ts                |   96.66 |    88.57 |     100 |   96.66 | 73-74,117-118                                  
+  offer-reputation.ts          |     100 |      100 |     100 |     100 |                                                
+ src/ai/domain                 |       0 |      100 |       0 |       0 |                                                
+  scored-offer.ts              |       0 |      100 |       0 |       0 | 1-29                                           
+ src/ai/infrastructure         |     100 |      100 |     100 |     100 |                                                
+  postgres-offer-reputation.ts |     100 |      100 |     100 |     100 |                                                
+ src/ai/presentation           |     100 |       80 |     100 |     100 |                                                
+  ai.controller.ts             |     100 |       80 |     100 |     100 | 11                                             
+ src/catalog                   |     100 |      100 |     100 |     100 |                                                
+  catalog.module.ts            |     100 |      100 |     100 |     100 |                                                
+ src/catalog/application       |   94.47 |    87.93 |      90 |   94.47 |                                                
+  catalog-imports.ts           |   98.81 |    93.97 |     100 |   98.81 | 199-201                                        
+  import-file.ts               |   91.94 |     81.6 |      80 |   91.94 | 49-52,68-70,77-79,84-86,125-128                
+  list-products.ts             |     100 |      100 |     100 |     100 |                                                
+  public-catalog-cache.ts      |       0 |      100 |       0 |       0 | 1-9                                            
+ src/catalog/infrastructure    |   99.27 |     95.5 |     100 |   99.27 |                                                
+  cached-products.ts           |     100 |      100 |     100 |     100 |                                                
+  postgres-products.ts         |     100 |      100 |     100 |     100 |                                                
+  price-tiers-sql.ts           |     100 |      100 |     100 |     100 |                                                
+  redis-catalog-cache.ts       |   98.03 |     86.2 |     100 |   98.03 | 11-12                                          
+ src/catalog/presentation      |     100 |      100 |     100 |     100 |                                                
+  imports.controller.ts        |     100 |      100 |     100 |     100 |                                                
+  products.controller.ts       |     100 |      100 |     100 |     100 |                                                
+ src/common                    |     100 |    81.81 |     100 |     100 |                                                
+  api-exception.filter.ts      |     100 |    63.63 |     100 |     100 | 23-27                                          
+  domain-error.ts              |     100 |      100 |     100 |     100 |                                                
+ src/database                  |     100 |       80 |     100 |     100 |                                                
+  database.module.ts           |     100 |       80 |     100 |     100 | 9                                              
+ src/identity                  |     100 |    86.16 |     100 |     100 |                                                
+  browser-session.ts           |     100 |     91.3 |     100 |     100 | 15,28                                          
+  identity.controller.ts       |     100 |    77.41 |     100 |     100 | 22,31,41-43,60,78,81                           
+  identity.module.ts           |     100 |      100 |     100 |     100 |                                                
+  identity.service.ts          |     100 |    87.61 |     100 |     100 | 17,23,28,33,58,109,148-152,165,205,265,278,297 
+ src/payments                  |     100 |      100 |     100 |     100 |                                                
+  payments.module.ts           |     100 |      100 |     100 |     100 |                                                
+ src/payments/application      |   69.92 |       80 |   71.42 |   69.92 |                                                
+  payments.ts                  |   69.92 |       80 |   71.42 |   69.92 | 145-151,173-174,191-216,219-243,246-265        
+ src/payments/domain           |   59.34 |       80 |    37.5 |   59.34 |                                                
+  payment.ts                   |   59.34 |       80 |    37.5 |   59.34 | 11-13,15-19,41-42,44-45,65-67,69-77,79-91      
+ src/payments/infrastructure   |   57.82 |    58.33 |      80 |   57.82 |                                                
+  mercadopago-gateway.ts       |    62.8 |       50 |     100 |    62.8 | 31-49,62-75,88-115                             
+  postgres-payments.ts         |    53.6 |    63.63 |   71.42 |    53.6 | 22-24,52-53,80-138,164-168,171-175,178-193     
+ src/payments/presentation     |   68.98 |       40 |     100 |   68.98 |                                                
+  payments.controller.ts       |   68.98 |       40 |     100 |   68.98 | 36-37,50-51,70-71,98-99,115-133,135-156        
+ src/trade                     |     100 |      100 |     100 |     100 |                                                
+  trade.module.ts              |     100 |      100 |     100 |     100 |                                                
+ src/trade/application         |   96.72 |      100 |   92.85 |   96.72 |                                                
+  trade.ts                     |   96.72 |      100 |   92.85 |   96.72 | 21-22                                          
+ src/trade/domain              |     100 |     97.1 |     100 |     100 |                                                
+  fulfillment.ts               |     100 |      100 |     100 |     100 |                                                
+  price-tiers.ts               |     100 |      100 |     100 |     100 |                                                
+  trade.ts                     |     100 |    95.45 |     100 |     100 | 90,256                                         
+ src/trade/infrastructure      |    96.4 |    87.27 |      95 |    96.4 |                                                
+  postgres-trade.ts            |    96.4 |    87.27 |      95 |    96.4 | 48,138-148,469-474                             
+ src/trade/presentation        |   97.05 |      100 |   92.85 |   97.05 |                                                
+  trade.controller.ts          |   97.05 |      100 |   92.85 |   97.05 | 7-8                                            
+-------------------------------|---------|----------|---------|---------|------------------------------------------------
+Test Suites: 27 passed, 27 total
+Tests:       44 passed, 44 total

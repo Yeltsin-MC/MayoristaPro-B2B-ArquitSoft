@@ -1,4 +1,3 @@
-const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { NotFoundException } = require('@nestjs/common');
 const { ApiExceptionFilter } = require('../apps/api/dist/common/api-exception.filter');
