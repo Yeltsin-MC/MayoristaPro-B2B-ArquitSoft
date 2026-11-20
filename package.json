@@ -21,6 +21,7 @@
     "test:carga": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 tests/k6/run.cjs",
     "demo:catalog:load": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/load.cjs",
     "demo:catalog:api": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/serve.cjs",
+    "demo:catalog:passwords": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/reset-passwords.cjs",
     "identity:admin": "node --env-file-if-exists=.env database/create-admin.cjs",
     "demo:catalog:quote": "node --env-file-if-exists=.env --env-file-if-exists=.env.demo-catalog150 database/demo/quote.cjs",
     "format": "prettier --write apps/api/src apps/web/src",

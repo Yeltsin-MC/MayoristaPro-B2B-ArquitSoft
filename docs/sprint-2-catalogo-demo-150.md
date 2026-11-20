@@ -86,3 +86,7 @@ Recorrido manual:
 Resultado local real: **7/7 resultados Node aprobados** (seis comprobaciones y su contenedor), PostgreSQL real, aproximadamente 11 segundos. La primera ejecución detectó que la prueba esperaba 400; se ajustó al contrato existente 422 y se repitió correctamente. Compilación Angular y NestJS aprobada. Navegador sin errores JavaScript ni desbordamiento horizontal, en ambas dimensiones. Capturas y resultado estructurado en [evidencias](evidencias/catalogo-demo-150/resultado.json).
 
 La prueba crea y elimina exclusivamente un esquema aleatorio `demo_mayoristapro150_test_*`. CI ya incluye automáticamente el archivo mediante `tests/*.integration.cjs`; la regresión completa se delega a GitHub Actions. Su resultado y enlace se registrarán en el PR. No se repiten Redis/Compose localmente, ni se ejecuta k6, ni se despliega a AWS.
+
+## Cambiar las contraseñas de las cuentas demo
+
+La recarga no restablece cuentas existentes. Para usar contraseñas más fáciles de recordar en un entorno de demostración, escribe en `.env.demo-catalog150` las nuevas `ADMIN_PASSWORD` y `DEMO_PASSWORD` (12 a 128 caracteres) y ejecuta `npm run demo:catalog:passwords`. Solo cambia la cuenta administrativa de la demo y las cuentas `demo-*@example.test` del esquema demo; empresas, productos y pedidos no se modifican. No uses contraseñas simples en un entorno público.
