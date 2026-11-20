@@ -1,4 +1,3 @@
-const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { assertFulfillment, fulfillmentDraft } = require('../apps/api/dist/trade/domain/fulfillment');
 

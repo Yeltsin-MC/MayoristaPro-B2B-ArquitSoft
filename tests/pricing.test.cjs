@@ -1,4 +1,4 @@
-const {test}=require('node:test');const assert=require('node:assert/strict');
+const assert=require('node:assert/strict');
 const {priceTotal,money,offerDraft}=require('../apps/api/dist/trade/domain/trade');
 test('T4-AC09: aritmética exacta, envío final y validación fiscal de demo',()=>{
  assert.deepEqual(priceTotal([{quantity:3,unitPrice:'0.10'}],'0.00'),{subtotal:'0.30',shipping:'0.00',total:'0.30'});

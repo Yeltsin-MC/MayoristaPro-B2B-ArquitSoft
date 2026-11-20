@@ -1,0 +1,744 @@
+openapi: 3.0.3
+info:
+  title: MayoristaPro API
+  version: 1.0.0
+  description: |
+    API REST de MayoristaPro, plataforma B2B de compras mayoristas: catálogo público,
+    identidad y empresas, cotizaciones, pedidos, despacho, pagos y puntaje de ofertas con IA.
+
+    **Autenticación.** Las operaciones privadas usan `Authorization: Bearer <token>`; el token
+    se obtiene con `POST /auth/login`. En el navegador la sesión también viaja en una cookie
+    HttpOnly que `GET /auth/restore` convierte de nuevo en token.
+
+    **Formato de error único** (ApiExceptionFilter): `{ statusCode, code, message }`.
+    Los errores de reglas de negocio usan códigos estables: `INVALID_*` → 422,
+    `*_NOT_FOUND` → 404, `FORBIDDEN` → 403, `INVALID_SIGNATURE` → 401 y el resto
+    (por ejemplo `OFFER_EXPIRED`, `IDEMPOTENCY_CONFLICT`) → 409.
+servers:
+  - url: /api/v1
+    description: Mismo servidor que publica la documentación
+tags:
+  - name: Catálogo
+  - name: Importación
+  - name: Identidad
+  - name: Empresa
+  - name: Administración
+  - name: Proveedor
+  - name: Cotizaciones
+  - name: Pedidos
+  - name: Pagos
+  - name: IA
+
+paths:
+  /products:
+    get:
+      tags: [Catálogo]
+      summary: Listar productos publicados
+      description: Catálogo público paginado con filtros. Usa Redis como caché cuando está disponible.
+      parameters:
+        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { name: q, in: query, description: Texto de búsqueda, schema: { type: string, maxLength: 120 } }
+        - { name: category, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: supplier, in: query, description: Id del proveedor, schema: { type: string, format: uuid } }
+        - { name: available, in: query, schema: { type: string, enum: ['true', 'false'] } }
+        - { name: sort, in: query, schema: { type: string, enum: [price-asc, price-desc] } }
+      responses:
+        '200':
+          description: Página de productos
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, page, limit]
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/Product' } }
+                  page: { type: integer }
+                  limit: { type: integer }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /products/options:
+    get:
+      tags: [Catálogo]
+      summary: Opciones de filtro del catálogo
+      responses:
+        '200':
+          description: Categorías y proveedores con productos publicados
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [categories, suppliers]
+                properties:
+                  categories: { type: array, items: { type: string } }
+                  suppliers:
+                    type: array
+                    items:
+                      type: object
+                      properties: { id: { type: string, format: uuid }, name: { type: string } }
+
+  /products/{id}/publish:
+    post:
+      tags: [Proveedor]
+      summary: Publicar un producto propio
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201': { description: Producto publicado }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /products/imports/template:
+    get:
+      tags: [Importación]
+      summary: Descargar plantilla de carga masiva
+      parameters:
+        - { name: format, in: query, schema: { type: string, enum: [csv, xlsx], default: csv } }
+      responses:
+        '200':
+          description: Plantilla con encabezados y una fila de ejemplo
+          content:
+            text/csv: { schema: { type: string, format: binary } }
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema: { type: string, format: binary }
+
+  /products/imports/preview:
+    post:
+      tags: [Importación]
+      summary: Previsualizar un archivo de carga masiva
+      description: Valida el CSV o XLSX (máximo 5 MB) y devuelve filas válidas, errores y un hash para confirmar.
+      security: [{ bearer: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties: { file: { type: string, format: binary } }
+      responses:
+        '201': { description: Previsualización creada }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /products/imports/{id}/confirm:
+    post:
+      tags: [Importación]
+      summary: Confirmar una carga masiva previsualizada
+      security: [{ bearer: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { $ref: '#/components/parameters/IdempotencyKey' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [previewHash]
+              properties: { previewHash: { type: string } }
+      responses:
+        '201': { description: Importación aplicada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /products/imports/{id}:
+    get:
+      tags: [Importación]
+      summary: Consultar el estado de una importación
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Estado y resumen de la importación }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /auth/register:
+    post:
+      tags: [Identidad]
+      summary: Registrar una empresa (queda pendiente de aprobación)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, ruc, legalName, evidence]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 12, maxLength: 128 }
+                ruc: { type: string, pattern: '^\d{11}$', example: '20123456789' }
+                legalName: { type: string, minLength: 2 }
+                evidence: { type: string, maxLength: 2000, description: Sustento de la empresa }
+      responses:
+        '201': { description: Solicitud de registro creada }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /auth/login:
+    post:
+      tags: [Identidad]
+      summary: Iniciar sesión
+      description: Devuelve un token Bearer y además fija la cookie de sesión del navegador.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, maxLength: 128 }
+      responses:
+        '201':
+          description: Sesión iniciada
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, expiresIn]
+                properties:
+                  token: { type: string }
+                  expiresIn: { type: integer, example: 28800, description: Segundos }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /auth/restore:
+    get:
+      tags: [Identidad]
+      summary: Restaurar la sesión desde la cookie del navegador
+      responses:
+        '200': { description: Cuenta, membresía y token vigentes }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /auth/logout:
+    post:
+      tags: [Identidad]
+      summary: Cerrar sesión
+      security: [{ bearer: [] }]
+      responses:
+        '201': { description: Sesión revocada y cookie eliminada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/me:
+    get:
+      tags: [Identidad]
+      summary: Membresía de la cuenta en su empresa
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Empresa, permisos y estado de verificación }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/session:
+    get:
+      tags: [Identidad]
+      summary: Datos de la sesión actual
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Cuenta de la sesión }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/invitations/accept:
+    post:
+      tags: [Identidad]
+      summary: Aceptar una invitación a una empresa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, email, password]
+              properties:
+                token: { type: string, maxLength: 64 }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 12, maxLength: 128 }
+      responses:
+        '201': { description: Invitación aceptada }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /admin/enrollments:
+    get:
+      tags: [Administración]
+      summary: Solicitudes de registro pendientes
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de solicitudes }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/enrollments/{id}/approve:
+    post:
+      tags: [Administración]
+      summary: Aprobar una solicitud de registro
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201': { description: Empresa aprobada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /providers/{id}/verify:
+    patch:
+      tags: [Administración]
+      summary: Verificar a un proveedor
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Proveedor verificado }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /company/invitations:
+    post:
+      tags: [Empresa]
+      summary: Invitar a un miembro (requiere permiso manage)
+      security: [{ bearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, permissions]
+              properties:
+                email: { type: string, format: email }
+                permissions:
+                  type: array
+                  minItems: 1
+                  items: { type: string, enum: [buy, publish] }
+      responses:
+        '201':
+          description: Invitación creada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  expires_at: { type: string, format: date-time }
+                  link: { type: string, example: '/accept-invitation#token=...' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /company/members:
+    get:
+      tags: [Empresa]
+      summary: Miembros de la empresa
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de miembros }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /company/members/{id}/revoke:
+    post:
+      tags: [Empresa]
+      summary: Revocar el acceso de un miembro
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201': { description: Miembro revocado }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /trade/providers:
+    get:
+      tags: [Cotizaciones]
+      summary: Proveedores verificados a los que se puede cotizar
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de proveedores }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /trade/products:
+    get:
+      tags: [Proveedor]
+      summary: Productos del proveedor autenticado
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de productos propios }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /trade/products/{id}/price-tiers:
+    put:
+      tags: [Proveedor]
+      summary: Definir precios por volumen de un producto
+      description: |
+        Hasta 5 escalas. Cada `desde` supera el mínimo de compra y respeta el múltiplo;
+        cantidades crecientes y precios estrictamente decrecientes y menores al precio base.
+        Una lista vacía elimina las escalas.
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [escalas]
+              properties:
+                escalas:
+                  type: array
+                  maxItems: 5
+                  items: { $ref: '#/components/schemas/PriceTier' }
+      responses:
+        '200': { description: Escalas guardadas }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /quotations:
+    post:
+      tags: [Cotizaciones]
+      summary: Crear una solicitud de cotización
+      security: [{ bearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [proveedorIds, items]
+              properties:
+                proveedorIds:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  uniqueItems: true
+                  items: { type: string, format: uuid }
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required: [descripcion, presentacion, unidadesPorPresentacion, cantidad]
+                    properties:
+                      descripcion: { type: string, minLength: 1, maxLength: 200 }
+                      presentacion: { type: string, enum: [unidad, paquete, docena, caja, saco] }
+                      unidadesPorPresentacion: { type: integer, minimum: 1, description: 'Docena = 12' }
+                      cantidad: { type: integer, minimum: 1 }
+      responses:
+        '201': { description: Solicitud creada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+    get:
+      tags: [Cotizaciones]
+      summary: Solicitudes de cotización de la empresa
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de solicitudes enviadas o recibidas }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /quotations/{id}:
+    get:
+      tags: [Cotizaciones]
+      summary: Detalle de una solicitud de cotización
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Solicitud con ítems, ofertas, reservas y eventos }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /quotations/{id}/responses:
+    post:
+      tags: [Cotizaciones]
+      summary: Responder una cotización con una oferta (proveedor)
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [moneda, precioIncluyeIgv, costoEnvio, diasEntrega, vigenteHasta, items]
+              properties:
+                moneda: { type: string, enum: [PEN] }
+                precioIncluyeIgv: { type: boolean, enum: [true] }
+                costoEnvio: { type: string, example: '15.00' }
+                diasEntrega: { type: integer, minimum: 1 }
+                vigenteHasta: { type: string, format: date-time, example: '2026-12-01T23:59:00-05:00' }
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required: [solicitudItemId, productoId, cantidad, precioUnitario]
+                    properties:
+                      solicitudItemId: { type: string, format: uuid }
+                      productoId: { type: string, format: uuid }
+                      cantidad: { type: integer, minimum: 1 }
+                      precioUnitario: { type: string, example: '48.00' }
+      responses:
+        '201': { description: Oferta registrada y stock reservado }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /quotations/{id}/responses/{offer}/accept:
+    patch:
+      tags: [Cotizaciones]
+      summary: Aceptar una oferta (comprador)
+      security: [{ bearer: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: offer, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Oferta aceptada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /quotations/{id}/score-offers:
+    post:
+      tags: [IA]
+      summary: Puntuar las ofertas de una cotización con el servicio de IA
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201':
+          description: Ofertas puntuadas. Si el servicio de IA no responde, `ai_service_available` es false y los puntajes son null.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quotation_id: { type: string, format: uuid }
+                  scored_offers: { type: array, items: { type: object } }
+                  ai_service_available: { type: boolean }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /orders:
+    post:
+      tags: [Pedidos]
+      summary: Crear un pedido desde una oferta aceptada
+      description: Idempotente por `Idempotency-Key`; repetir la misma clave devuelve el mismo pedido.
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKeyRequired' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cotizacionRespuestaId]
+              properties:
+                cotizacionRespuestaId: { type: string, format: uuid, description: Id de la oferta aceptada }
+      responses:
+        '201': { description: Pedido creado (o el existente para esa clave) }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+    get:
+      tags: [Pedidos]
+      summary: Pedidos de la empresa
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de pedidos }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /orders/{id}:
+    get:
+      tags: [Pedidos]
+      summary: Detalle de un pedido
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Pedido con líneas, totales e historial de despacho }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /orders/{id}/fulfillment:
+    patch:
+      tags: [Pedidos]
+      summary: Avanzar el despacho de un pedido
+      description: 'Transiciones: paid → preparing → dispatched (proveedor) → delivered (comprador).'
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [estado]
+              properties:
+                estado: { type: string, enum: [preparing, dispatched, delivered] }
+                nota: { type: string, nullable: true }
+      responses:
+        '200': { description: Estado actualizado }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /orders/{id}/payment-attempts:
+    post:
+      tags: [Pagos]
+      summary: Iniciar un intento de pago con Mercado Pago
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201': { description: Intento creado con enlace de pago }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    get:
+      tags: [Pagos]
+      summary: Intentos de pago de un pedido
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Lista de intentos }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /webhooks/mercadopago:
+    post:
+      tags: [Pagos]
+      summary: Notificación de Mercado Pago
+      description: Verifica la firma `x-signature` (HMAC-SHA256) cuando `MP_WEBHOOK_SECRET` está configurado.
+      parameters:
+        - { name: id, in: query, required: true, schema: { type: string } }
+        - { name: data.id, in: query, required: true, schema: { type: string } }
+        - { name: topic, in: query, schema: { type: string } }
+        - { name: type, in: query, schema: { type: string } }
+        - { name: x-signature, in: header, schema: { type: string } }
+        - { name: x-request-id, in: header, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        '200':
+          description: Notificación registrada
+          content:
+            application/json:
+              schema: { type: object, properties: { status: { type: string, example: ok } } }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /ai/health:
+    get:
+      tags: [IA]
+      summary: Estado del servicio de IA
+      responses:
+        '200':
+          description: Estado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [ok, unavailable] }
+                  service: { type: string, example: ai-scoring }
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      schema: { type: string, pattern: '^[A-Za-z0-9._-]{1,128}$' }
+    IdempotencyKeyRequired:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, pattern: '^[A-Za-z0-9._-]{1,128}$' }
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, code, message]
+      properties:
+        statusCode: { type: integer, example: 422 }
+        code: { type: string, example: INVALID_INPUT }
+        message:
+          oneOf:
+            - { type: string }
+            - { type: array, items: { type: string } }
+    PriceTier:
+      type: object
+      required: [desde, precioUnitario]
+      properties:
+        desde: { type: integer, minimum: 1, description: Desde cuántas presentaciones aplica }
+        precioUnitario: { type: string, example: '42.50' }
+    Product:
+      type: object
+      required: [id, name, category, available, supplier, supplierId, unit, minimum, multiple, stock, price, currency]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        category: { type: string }
+        available: { type: boolean }
+        quoteEnabled: { type: boolean }
+        supplier: { type: string }
+        supplierId: { type: string, format: uuid }
+        unit: { type: string, example: caja }
+        unitsPerPack: { type: integer }
+        minimum: { type: integer, description: Compra mínima en presentaciones }
+        multiple: { type: integer }
+        stock: { type: integer }
+        price: { type: string, example: '48.00' }
+        currency: { type: string, enum: [PEN] }
+        includesTax: { type: boolean }
+        priceTiers: { type: array, items: { $ref: '#/components/schemas/PriceTier' } }
+  responses:
+    BadRequest:
+      description: Solicitud o datos incorrectos
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unauthorized:
+      description: Sin sesión o token inválido
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Forbidden:
+      description: Sin permiso para la operación
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    NotFound:
+      description: Recurso inexistente
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Conflict:
+      description: Regla de negocio incumplida (estado, vigencia, idempotencia)
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unprocessable:
+      description: Datos que no cumplen las reglas de negocio (INVALID_*)
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    ServerError:
+      description: Error inesperado del servidor
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }

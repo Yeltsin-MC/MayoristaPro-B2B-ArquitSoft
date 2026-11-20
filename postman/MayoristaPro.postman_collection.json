@@ -1,0 +1,1251 @@
+{
+  "info": {
+    "_postman_id": "9bded269-3084-5a5a-8736-cedf0d8ee4b6",
+    "name": "MayoristaPro API",
+    "description": "Pruebas funcionales y de contrato de la API REST de MayoristaPro (Sprint 2). Ejecutar en orden: cada carpeta guarda variables (tokens, ids) que usa la siguiente. Ver postman/README.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Catálogo",
+      "item": [
+        {
+          "name": "Listar productos (página 1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/products?page=1&limit=5",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Estructura { items, page, limit }', () => {",
+                  "  pm.expect(j.items).to.be.an('array');",
+                  "  pm.expect(j.page).to.eql(1);",
+                  "  pm.expect(j.limit).to.eql(5);",
+                  "  pm.expect(j.items.length).to.be.at.most(5);",
+                  "});",
+                  "pm.test('Cada producto cumple el esquema Product del contrato', () => {",
+                  "  j.items.forEach(p => {",
+                  "    pm.expect(p).to.include.keys('id','name','category','available','supplier','supplierId','unit','minimum','multiple','stock','price','currency');",
+                  "    pm.expect(p.price).to.match(/^\\d+\\.\\d{2}$/);",
+                  "    pm.expect(p.currency).to.eql('PEN');",
+                  "  });",
+                  "});",
+                  "pm.test('Tiempo de respuesta < 500 ms (EQ-01)', () => pm.expect(pm.response.responseTime).to.be.below(500));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar y ordenar por precio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/products?q=papel&sort=price-asc&limit=20",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const items = pm.response.json().items;",
+                  "pm.test('Orden ascendente por precio', () => {",
+                  "  for (let i = 1; i < items.length; i++) pm.expect(Number(items[i].price)).to.be.at.least(Number(items[i-1].price));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Opciones de filtro",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/products/options",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Categorías y proveedores', () => {",
+                  "  pm.expect(j.categories).to.be.an('array');",
+                  "  pm.expect(j.suppliers).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inválido: límite mayor a 100",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/products?limit=500",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inválido: orden desconocido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/products?sort=nombre",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inválido: proveedor no es UUID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/products?supplier=123",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Identidad",
+      "item": [
+        {
+          "name": "Login con contraseña incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{compradorEmail}}\",\n  \"password\": \"clave-incorrecta-123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});",
+                  "pm.test('No entrega token', () => pm.expect(pm.response.json()).to.not.have.property('token'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login comprador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{compradorEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const j = pm.response.json();",
+                  "pm.test('Devuelve token y expiración', () => {",
+                  "  pm.expect(j.token).to.be.a('string').and.not.empty;",
+                  "  pm.expect(j.expiresIn).to.be.a('number');",
+                  "});",
+                  "pm.collectionVariables.set('tokenComprador', j.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{proveedorEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('tokenProveedor', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesión actual del comprador",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/auth/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sin token: pedidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/orders",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registro inválido: RUC de 5 dígitos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/register",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuevo-postman@example.test\",\n  \"password\": \"Clave-segura-2026\",\n  \"ruc\": \"12345\",\n  \"legalName\": \"Empresa Postman\",\n  \"evidence\": \"Prueba de validación\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Cotizaciones",
+      "item": [
+        {
+          "name": "Proveedores disponibles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/trade/providers",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const list = pm.response.json();",
+                  "pm.test('Lista no vacía', () => pm.expect(list).to.be.an('array').that.is.not.empty);",
+                  "const wanted = pm.collectionVariables.get('proveedorNombre');",
+                  "const p = list.find(x => x.name === wanted) || list[0];",
+                  "pm.collectionVariables.set('proveedorId', p.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Productos del proveedor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/trade/products",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenProveedor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const list = pm.response.json();",
+                  "pm.test('El proveedor tiene productos', () => pm.expect(list).to.be.an('array').that.is.not.empty);",
+                  "const p = list.find(x => x.stock >= 3 && x.minimum <= 3 && 3 % x.multiple === 0) || list[0];",
+                  "pm.collectionVariables.set('productoId', p.id);",
+                  "pm.collectionVariables.set('productoUnidad', p.unit);",
+                  "pm.collectionVariables.set('productoUnidades', p.unitsPerPack);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inválido: cotización sin ítems",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/quotations",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedorIds\": [\n    \"{{proveedorId}}\"\n  ],\n  \"items\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});",
+                  "pm.test('Código INVALID_INPUT', () => pm.expect(pm.response.json().code).to.eql('INVALID_INPUT'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inválido: docena con 10 unidades",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/quotations",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedorIds\": [\n    \"{{proveedorId}}\"\n  ],\n  \"items\": [\n    {\n      \"descripcion\": \"Lapiceros\",\n      \"presentacion\": \"docena\",\n      \"unidadesPorPresentacion\": 10,\n      \"cantidad\": 2\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear solicitud de cotización",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/quotations",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proveedorIds\": [\n    \"{{proveedorId}}\"\n  ],\n  \"items\": [\n    {\n      \"descripcion\": \"Prueba Postman\",\n      \"presentacion\": \"caja\",\n      \"unidadesPorPresentacion\": {{productoUnidades}},\n      \"cantidad\": 3\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const j = pm.response.json();",
+                  "pm.test('Solicitud abierta con un ítem', () => {",
+                  "  pm.expect(j.status).to.eql('abierta');",
+                  "  pm.expect(j.isBuyer).to.eql(true);",
+                  "  pm.expect(j.items).to.have.lengthOf(1);",
+                  "});",
+                  "pm.collectionVariables.set('cotizacionId', j.id);",
+                  "pm.collectionVariables.set('solicitudItemId', j.items[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar solicitud creada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/quotations/{{cotizacionId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Es la misma solicitud', () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('cotizacionId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inexistente: solicitud con UUID aleatorio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/quotations/{{$randomUUID}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inválido: oferta con vigencia sin zona horaria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/quotations/{{cotizacionId}}/responses",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenProveedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"moneda\": \"PEN\",\n  \"precioIncluyeIgv\": true,\n  \"costoEnvio\": \"8.00\",\n  \"diasEntrega\": 2,\n  \"vigenteHasta\": \"2030-01-01\",\n  \"items\": [\n    {\n      \"solicitudItemId\": \"{{solicitudItemId}}\",\n      \"productoId\": \"{{productoId}}\",\n      \"cantidad\": 3,\n      \"precioUnitario\": \"45.00\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Proveedor responde con oferta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/quotations/{{cotizacionId}}/responses",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenProveedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"moneda\": \"PEN\",\n  \"precioIncluyeIgv\": true,\n  \"costoEnvio\": \"8.00\",\n  \"diasEntrega\": 2,\n  \"vigenteHasta\": \"{{vigenteHasta}}\",\n  \"items\": [\n    {\n      \"solicitudItemId\": \"{{solicitudItemId}}\",\n      \"productoId\": \"{{productoId}}\",\n      \"cantidad\": 3,\n      \"precioUnitario\": \"45.00\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('vigenteHasta', new Date(Date.now() + 2 * 86400000).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const offers = pm.response.json().offers;",
+                  "pm.test('La oferta queda registrada', () => pm.expect(offers).to.be.an('array').that.is.not.empty);",
+                  "pm.collectionVariables.set('ofertaId', offers[offers.length - 1].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Prohibido: el proveedor no puede aceptar",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/quotations/{{cotizacionId}}/responses/{{ofertaId}}/accept",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenProveedor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 o 404 (sin permiso)', () => pm.expect(pm.response.code).to.be.oneOf([403, 404]));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Comprador acepta la oferta",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/quotations/{{cotizacionId}}/responses/{{ofertaId}}/accept",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Oferta aceptada', () => pm.expect(pm.response.json().acceptedOfferId).to.eql(pm.collectionVariables.get('ofertaId')));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Pedidos",
+      "item": [
+        {
+          "name": "Inválido: pedido sin Idempotency-Key",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/orders",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cotizacionRespuestaId\": \"{{ofertaId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 Unprocessable Entity', () => pm.response.to.have.status(422));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/orders",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cotizacionRespuestaId\": \"{{ofertaId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('idempotencyKey', 'postman-' + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const j = pm.response.json();",
+                  "pm.test('Pedido pendiente con total = subtotal + envío', () => {",
+                  "  pm.expect(j.state).to.eql('pendiente');",
+                  "  pm.expect(Number(j.total)).to.be.closeTo(Number(j.subtotal) + Number(j.shipping), 0.001);",
+                  "});",
+                  "pm.collectionVariables.set('pedidoId', j.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Repetir pedido con la misma clave (idempotencia)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/orders",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cotizacionRespuestaId\": \"{{ofertaId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('2xx', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+                  "pm.test('Devuelve el mismo pedido, no duplica', () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('pedidoId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar pedido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/orders/{{pedidoId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Es el pedido creado', () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('pedidoId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar pedidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/orders",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Incluye el pedido creado', () => pm.expect(pm.response.json().map(o => o.id)).to.include(pm.collectionVariables.get('pedidoId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inválido: despacho de pedido no pagado",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/orders/{{pedidoId}}/fulfillment",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenProveedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"dispatched\",\n  \"nota\": \"Intento antes de pagar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 o 422 (transición no permitida)', () => pm.expect(pm.response.code).to.be.oneOf([409, 422]));",
+                  "pm.test('Formato de error { statusCode, code, message }', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('statusCode', pm.response.code);",
+                  "  pm.expect(j).to.have.property('code').that.is.a('string');",
+                  "  pm.expect(j).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Documentación e IA",
+      "item": [
+        {
+          "name": "Contrato OpenAPI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api-docs/openapi.json",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('OpenAPI 3 con rutas', () => {",
+                  "  pm.expect(j.openapi).to.match(/^3\\./);",
+                  "  pm.expect(Object.keys(j.paths).length).to.be.above(20);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estado del servicio de IA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/ai/health",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('status ok o unavailable', () => pm.expect(pm.response.json().status).to.be.oneOf(['ok','unavailable']));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "tokenComprador",
+      "value": ""
+    },
+    {
+      "key": "tokenProveedor",
+      "value": ""
+    },
+    {
+      "key": "proveedorId",
+      "value": ""
+    },
+    {
+      "key": "productoId",
+      "value": ""
+    },
+    {
+      "key": "productoUnidad",
+      "value": ""
+    },
+    {
+      "key": "productoUnidades",
+      "value": ""
+    },
+    {
+      "key": "cotizacionId",
+      "value": ""
+    },
+    {
+      "key": "solicitudItemId",
+      "value": ""
+    },
+    {
+      "key": "ofertaId",
+      "value": ""
+    },
+    {
+      "key": "vigenteHasta",
+      "value": ""
+    },
+    {
+      "key": "idempotencyKey",
+      "value": ""
+    },
+    {
+      "key": "pedidoId",
+      "value": ""
+    }
+  ]
+}

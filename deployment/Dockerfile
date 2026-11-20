@@ -17,6 +17,7 @@ COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 RUN npm ci --omit=dev --ignore-scripts --workspace @mayoristapro/api --include-workspace-root
 COPY --from=build /app/apps/api/dist apps/api/dist
+COPY apps/api/openapi.yaml apps/api/openapi.yaml
 COPY database database
 COPY deployment/start.cjs deployment/start.cjs
 USER node
