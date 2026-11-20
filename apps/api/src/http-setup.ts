@@ -1,6 +1,7 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'node:path';
 import type { NextFunction, Request, Response } from 'express';
+import { configureApiDocs } from './api-docs';
 
 /**
  * Prefijo de la API, archivos de Angular y respaldo de SPA: cualquier GET que no
@@ -9,9 +10,15 @@ import type { NextFunction, Request, Response } from 'express';
  */
 export function configureHttp(app: NestExpressApplication, webRoot: string): void {
   app.setGlobalPrefix('api/v1');
+  configureApiDocs(app);
   app.useStaticAssets(webRoot);
   app.use((request: Request, response: Response, next: NextFunction) => {
-    if (request.method !== 'GET' || request.path.startsWith('/api/') || /\.[a-z0-9]+$/i.test(request.path))
+    if (
+      request.method !== 'GET' ||
+      request.path.startsWith('/api/') ||
+      request.path.startsWith('/api-docs') ||
+      /\.[a-z0-9]+$/i.test(request.path)
+    )
       return next();
     response.sendFile(join(webRoot, 'index.html'));
   });
