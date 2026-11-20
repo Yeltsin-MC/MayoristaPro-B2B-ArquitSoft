@@ -334,10 +334,10 @@
           </section>
           <nav class="pagination" aria-label="Páginas del catálogo">
             <button class="secondary" type="button" [disabled]="page() === 1" (click)="load(page() - 1)">
-              ← Anterior</button
+              <span aria-hidden="true">←</span> Anterior</button
             ><span>Página {{ page() }}</span
             ><button class="secondary" type="button" [disabled]="products().length < 12" (click)="load(page() + 1)">
-              Siguiente →
+              Siguiente <span aria-hidden="true">→</span>
             </button>
           </nav>
         }

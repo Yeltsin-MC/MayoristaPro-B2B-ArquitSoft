@@ -3171,6 +3171,16 @@ html {
   }
 }
 
+/* Controles táctiles de al menos 44 px (revisión con npm run revisar:front). */
+.category-bar-link,
+.results-toolbar select,
+.site-header .brand {
+  min-height: 44px;
+}
+.product-card h3 .product-name {
+  min-height: 44px;
+}
+
 /* Efectos sutiles: las tarjetas se elevan al pasar el mouse. */
 .product-card,
 .deal-card,
