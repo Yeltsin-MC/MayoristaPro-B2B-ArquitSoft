@@ -25,8 +25,10 @@ interface RequestItem {
     <div class="workspace-heading">
       <h3>Cotizaciones y pedidos</h3>
       <div class="actions workspace-tabs">
-        <button class="tab-button" type="button" (click)="showQuotes()">📄 Mis cotizaciones</button
-        ><button class="tab-button" type="button" (click)="showOrders()">📦 Mis pedidos</button
+        <button class="tab-button" type="button" (click)="showQuotes()">
+          <span aria-hidden="true">📄</span> Mis cotizaciones</button
+        ><button class="tab-button" type="button" (click)="showOrders()">
+          <span aria-hidden="true">📦</span> Mis pedidos</button
         ><button
           class="tab-button icon-only"
           type="button"
