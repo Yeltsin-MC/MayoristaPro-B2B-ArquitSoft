@@ -83,7 +83,7 @@ async function main() {
       redisStopped: 'Contenedor detenido; catalogo HTTP 200 con stock actualizado desde PostgreSQL',
       cleanup: 'Stock y contenido de prueba restaurados; Redis reiniciado',
     };
-    await mkdir('docs/evidencias/preparacion-despliegue', { recursive: true });
+    await mkdir('docs/sprint-2/evidencias/preparacion-despliegue', { recursive: true });
     // La evidencia se escribe solo despues de completar tambien el finally.
     return result;
   } finally {
@@ -96,7 +96,7 @@ async function main() {
   }
 }
 main().then(async result => {
-  await writeFile('docs/evidencias/preparacion-despliegue/redis-conjunto.json', JSON.stringify(result, null, 2) + '\n');
+  await writeFile('docs/sprint-2/evidencias/preparacion-despliegue/redis-conjunto.json', JSON.stringify(result, null, 2) + '\n');
   console.log(JSON.stringify(result));
 }).catch(error => {
   // No imprimir stdout/stderr de subprocesos: pueden contener configuracion privada.

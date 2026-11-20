@@ -7,11 +7,11 @@ const { tradeFixture } = require('./trade-fixture.cjs');
 test('EC01-07: portada, filtros paginados, detalle y solicitud real en escritorio y movil', { timeout: 120000 }, async () => {
   const f = await tradeFixture();
   let browser;
-  const artifact = 'docs/evidencias/experiencia-catalogo';
+  const artifact = 'docs/sprint-2/evidencias/experiencia-catalogo';
   const results = [];
   try {
     await f.db.query("UPDATE suppliers SET name='Distribuidora Oficina (demo)' WHERE id=$1", [f.accounts.vendor.supplier]);
-    const example = (await readFile('docs/datos-demo/catalogo-exposicion.csv', 'utf8')).trim();
+    const example = (await readFile('docs/sprint-2/datos-demo/catalogo-exposicion.csv', 'utf8')).trim();
     const rows = Array.from({ length: 14 }, (_, i) =>
       `DEMO-PAG-${i},Cuaderno de oficina ${i + 1} (demo),Cuadernos,caja,12,48.00,PEN,true,2,1,30,true`);
     const form = new FormData();

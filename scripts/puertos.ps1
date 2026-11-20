@@ -1,4 +1,4 @@
-# Ver o liberar los puertos fijos del proyecto (ver docs/puertos.md).
+# Ver o liberar los puertos fijos del proyecto (ver docs/guias/puertos.md).
 # Uso: powershell -File scripts/puertos.ps1 [ver|liberar]
 param([string]$Accion = 'ver')
 $puertos = 3000, 3300, 4200, 5000, 5055, 8080

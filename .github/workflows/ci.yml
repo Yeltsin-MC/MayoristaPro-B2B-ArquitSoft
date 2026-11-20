@@ -94,13 +94,13 @@ jobs:
         with:
           name: evidencia-demo
           path: |
-            docs/evidencias/demo-mayorista
-            docs/evidencias/experiencia-catalogo
-            docs/evidencias/cantidad-mayorista
-            docs/evidencias/cotizacion-simple
-            docs/evidencias/primera-tanda-ux
+            docs/sprint-2/evidencias/demo-mayorista
+            docs/sprint-2/evidencias/experiencia-catalogo
+            docs/sprint-2/evidencias/cantidad-mayorista
+            docs/sprint-2/evidencias/cotizacion-simple
+            docs/sprint-2/evidencias/primera-tanda-ux
             .angular/t4-evidence
-            docs/evidencias/redis-catalogo
+            docs/sprint-2/evidencias/redis-catalogo
           retention-days: 14
 
   deployment:
@@ -147,5 +147,5 @@ jobs:
         if: always()
         with:
           name: evidencia-arranque
-          path: docs/evidencias/preparacion-despliegue
+          path: docs/sprint-2/evidencias/preparacion-despliegue
           retention-days: 14

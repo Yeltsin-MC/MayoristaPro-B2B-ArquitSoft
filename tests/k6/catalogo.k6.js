@@ -1,4 +1,4 @@
-// Prueba de carga k6 de MayoristaPro (criterio AC01/AC03, docs/01-analisis-de-sistema/09-plan-de-medicion-calidad.md).
+// Prueba de carga k6 de MayoristaPro (criterio AC01/AC03, docs/sprint-1/01-analisis-de-sistema/09-plan-de-medicion-calidad.md).
 // Uso: k6 run -e PERFIL=humo tests/k6/catalogo.k6.js   (perfiles: humo, local, completo)
 // Variables: BASE_URL (por defecto http://localhost:3300), COMPRADOR_EMAIL y DEMO_PASSWORD para las lecturas autenticadas.
 import http from 'k6/http';

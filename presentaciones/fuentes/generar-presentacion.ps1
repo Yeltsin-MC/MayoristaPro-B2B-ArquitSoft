@@ -108,7 +108,7 @@ $null=Text $s 'Resultado esperado' 42 404 260 32 23 $teal $true
 $null=Text $s 'Contar con información organizada para decidir la compra y dar seguimiento al pedido, evitando reservar más unidades de las disponibles.' 320 402 598 88 22 $ink
 
 # 04. Actores
-$s=NewSlide 'Actores y funciones principales' 'Distinguir personas de sistemas externos. El proveedor es una empresa que puede tener varios usuarios autorizados. Comprador y proveedor comparten acceso a su pedido, pero no a información privada de otras empresas. El administrador verifica y supervisa.' 'docs/01-analisis-de-sistema/01-actores.md'
+$s=NewSlide 'Actores y funciones principales' 'Distinguir personas de sistemas externos. El proveedor es una empresa que puede tener varios usuarios autorizados. Comprador y proveedor comparten acceso a su pedido, pero no a información privada de otras empresas. El administrador verifica y supervisa.' 'docs/sprint-1/01-analisis-de-sistema/01-actores.md'
 $null=Table $s @('Actor','Funciones principales') @(
     @('Comprador empresarial','Consulta catálogo, solicita cotizaciones y realiza pedidos.'),
     @('Proveedor mayorista','Importa catálogos CSV/Excel, responde cotizaciones y atiende pedidos.'),
@@ -127,7 +127,7 @@ $null=Text $s "Recomendaciones de proveedores`r`rFacturación y avisos externos`
 $null=Text $s 'Pagos e IA: alcance sujeto a los requisitos del curso y validación docente' 42 463 876 35 18 $muted
 
 # Catálogo mayorista
-$s=NewSlide 'Catálogo y ofertas al ingresar' 'El catálogo público muestra ofertas registradas por proveedores verificados. Cada tarjeta del MVP corresponde a un proveedor y una presentación. No se extraen precios de tiendas externas. El precio desde debe indicar el volumen al que aplica; el pedido conserva la cotización aceptada. Un comparador que agrupe varias tiendas requeriría identificar productos equivalentes y no forma parte del núcleo inicial. Solicitar cotización requiere cuenta empresarial.' 'docs/03-diseno-de-software/reglas-comerciales-mayoristas.md'
+$s=NewSlide 'Catálogo y ofertas al ingresar' 'El catálogo público muestra ofertas registradas por proveedores verificados. Cada tarjeta del MVP corresponde a un proveedor y una presentación. No se extraen precios de tiendas externas. El precio desde debe indicar el volumen al que aplica; el pedido conserva la cotización aceptada. Un comparador que agrupe varias tiendas requeriría identificar productos equivalentes y no forma parte del núcleo inicial. Solicitar cotización requiere cuenta empresarial.' 'docs/sprint-1/03-diseno-de-software/reglas-comerciales-mayoristas.md'
 $null=Table $s @('Elemento','Comportamiento propuesto') @(
     @('Inicio público','Productos, imágenes, categorías y buscador antes de iniciar sesión.'),
     @('Oferta visible','Proveedor, precio por presentación, mínimo, múltiplo y disponibilidad.'),
@@ -137,7 +137,7 @@ $null=Table $s @('Elemento','Comportamiento propuesto') @(
 $null=Text $s 'Ejemplo: caja de 12 cuadernos a S/ 48; mínimo 2 cajas = S/ 96, envío aparte' 42 463 876 38 18 $blue $true
 
 # 14. Metas
-$s=NewSlide 'Atributos de calidad prioritarios' 'Todas las cifras son metas propuestas, no resultados. p95 significa que al menos 95% de solicitudes medidas cumple el límite. Los dos mil usuarios son usuarios virtuales activos con pausas, no dos mil solicitudes por segundo. La disponibilidad requiere observación mensual. Para seguridad, la aprobación se limita a la matriz de casos ejecutada.' 'docs/01-analisis-de-sistema/04-atributos-de-calidad.md; docs/01-analisis-de-sistema/08-escenarios-atributos-calidad.md'
+$s=NewSlide 'Atributos de calidad prioritarios' 'Todas las cifras son metas propuestas, no resultados. p95 significa que al menos 95% de solicitudes medidas cumple el límite. Los dos mil usuarios son usuarios virtuales activos con pausas, no dos mil solicitudes por segundo. La disponibilidad requiere observación mensual. Para seguridad, la aprobación se limita a la matriz de casos ejecutada.' 'docs/sprint-1/01-analisis-de-sistema/04-atributos-de-calidad.md; docs/sprint-1/01-analisis-de-sistema/08-escenarios-atributos-calidad.md'
 $null=Table $s @('Atributo','Meta propuesta','Herramienta') @(
     @('Rendimiento','p95 de hasta 500 ms por endpoint local.','k6'),
     @('Escalabilidad','Evaluar hasta 2,000 usuarios virtuales.','k6 + CloudWatch'),
@@ -148,7 +148,7 @@ $null=Table $s @('Atributo','Meta propuesta','Herramienta') @(
 $null=Text $s 'Metas pendientes de validación sobre el software implementado' 42 473 876 28 19 $blue $true
 
 # 15. Medicion
-$s=NewSlide 'Medición después del despliegue' 'Describir el procedimiento y las herramientas. k6 se ejecuta separado del backend. El perfil propone mesetas de cinco minutos en 500, mil y dos mil usuarios, con subidas de dos minutos y pausas de dos segundos. Se evalúa por endpoint y meseta, separando calentamiento. CloudWatch correlaciona recursos y latencia. La prueba de stock usa quinientos compradores distintos, una creación por comprador y cien unidades iniciales. Las respuestas de negocio esperadas se contabilizan aparte de los errores técnicos. Disponibilidad se observa un mes. Guardar versión, configuración, scripts, métricas y consultas. Los casos de desarrollo comienzan antes del despliegue.' 'docs/01-analisis-de-sistema/09-plan-de-medicion-calidad.md'
+$s=NewSlide 'Medición después del despliegue' 'Describir el procedimiento y las herramientas. k6 se ejecuta separado del backend. El perfil propone mesetas de cinco minutos en 500, mil y dos mil usuarios, con subidas de dos minutos y pausas de dos segundos. Se evalúa por endpoint y meseta, separando calentamiento. CloudWatch correlaciona recursos y latencia. La prueba de stock usa quinientos compradores distintos, una creación por comprador y cien unidades iniciales. Las respuestas de negocio esperadas se contabilizan aparte de los errores técnicos. Disponibilidad se observa un mes. Guardar versión, configuración, scripts, métricas y consultas. Los casos de desarrollo comienzan antes del despliegue.' 'docs/sprint-1/01-analisis-de-sistema/09-plan-de-medicion-calidad.md'
 $null=Table $s @('Prueba','Cómo se realizará','Evidencia') @(
     @('Carga con k6',"500, 1,000 y 2,000 usuarios.`rMesetas de 5 min y pausas de 2 s.",'p95 y errores por endpoint y etapa.'),
     @('Stock concurrente',"500 compradores y 100 cajas.`rUna caja de 12 artículos por intento.",'100 aceptados, 400 rechazos y stock 0.'),
@@ -162,7 +162,7 @@ AddDriversSlide
 . (Join-Path $PSScriptRoot 'contenido-tecnologias.ps1')
 
 # 06. Estilos
-$s=NewSlide 'Estilos y decisiones arquitectónicas' 'Explicar que las decisiones corresponden a perspectivas diferentes y se combinan. Cliente-servidor separa navegador y API. El monolito modular reúne los módulos comerciales en un backend desplegable. Clean Architecture separa reglas y tecnología dentro de cada módulo. El procesamiento asíncrono se propone para tareas posteriores si entran en el alcance. Se evita dividir todo el negocio en microservicios por el esfuerzo operativo adicional.' 'docs/02-arquitectura-software/estilo-arquitectonico.md; docs/02-arquitectura-software/enfoque-arquitectonico.md'
+$s=NewSlide 'Estilos y decisiones arquitectónicas' 'Explicar que las decisiones corresponden a perspectivas diferentes y se combinan. Cliente-servidor separa navegador y API. El monolito modular reúne los módulos comerciales en un backend desplegable. Clean Architecture separa reglas y tecnología dentro de cada módulo. El procesamiento asíncrono se propone para tareas posteriores si entran en el alcance. Se evita dividir todo el negocio en microservicios por el esfuerzo operativo adicional.' 'docs/sprint-1/02-arquitectura-software/estilo-arquitectonico.md; docs/sprint-1/02-arquitectura-software/enfoque-arquitectonico.md'
 $null=Table $s @('Decisión','Aplicación','Justificación') @(
     @('Cliente-servidor','Angular consume la API REST.','Separar la interfaz del backend.'),
     @('Monolito modular','Módulos comerciales en NestJS.','Simplificar despliegue y coordinación.'),
@@ -172,7 +172,7 @@ $null=Table $s @('Decisión','Aplicación','Justificación') @(
 $null=Text $s 'Base del núcleo inicial: Angular, NestJS y PostgreSQL' 42 466 876 32 20 $blue $true
 
 # 07. Capas
-$s=NewSlide 'Organización interna del módulo' 'Recorrer el ejemplo: el controlador recibe HTTP, el caso de uso autoriza y coordina, el dominio valida cantidades y estados y los adaptadores ejecutan persistencia e integraciones. Las flechas muestran dependencias del código: infraestructura implementa puertos internos. La composición de NestJS conecta las implementaciones. El dominio no importa el ORM ni SDK de pagos.' 'docs/02-arquitectura-software/enfoque-arquitectonico.md'
+$s=NewSlide 'Organización interna del módulo' 'Recorrer el ejemplo: el controlador recibe HTTP, el caso de uso autoriza y coordina, el dominio valida cantidades y estados y los adaptadores ejecutan persistencia e integraciones. Las flechas muestran dependencias del código: infraestructura implementa puertos internos. La composición de NestJS conecta las implementaciones. El dominio no importa el ORM ni SDK de pagos.' 'docs/sprint-1/02-arquitectura-software/enfoque-arquitectonico.md'
 $null=Box $s 'Presentación' "Controladores HTTP`rValidación de entrada" 42 145 260 118 $blue
 $null=Box $s 'Aplicación' "Casos de uso`rAutorización y coordinación" 350 145 260 118 $teal
 $null=Box $s 'Dominio' "Pedido e ítems`rReglas y contratos" 658 145 260 118 $navy
@@ -184,7 +184,7 @@ Arrow $s 785 350 785 263 'Implementa repositorios' 693 291 225
 $null=Text $s 'Las reglas de negocio permanecen independientes de NestJS y PostgreSQL' 42 474 876 30 18 $muted
 
 # 12. Datos
-$s=NewSlide 'Diseño de datos del flujo principal' 'Modelo resumido del flujo, con relaciones y entidades editables. Cada empresa agrupa usuarios. El proveedor publica productos. Una cotización tiene respuestas y una oferta aceptada origina como máximo un pedido. Los ítems conservan precios históricos y las reservas vinculan pedido y producto. El esquema completo incluye destinatarios, detalles de cotización, pagos y auditoría. Cada pedido corresponde a un comprador y un proveedor.' 'docs/03-diseno-de-software/esquema-base-de-datos.md'
+$s=NewSlide 'Diseño de datos del flujo principal' 'Modelo resumido del flujo, con relaciones y entidades editables. Cada empresa agrupa usuarios. El proveedor publica productos. Una cotización tiene respuestas y una oferta aceptada origina como máximo un pedido. Los ítems conservan precios históricos y las reservas vinculan pedido y producto. El esquema completo incluye destinatarios, detalles de cotización, pagos y auditoría. Cada pedido corresponde a un comprador y un proveedor.' 'docs/sprint-1/03-diseno-de-software/esquema-base-de-datos.md'
 $null=Table $s @('Grupo de datos','Relaciones principales') @(
     @('Empresas y usuarios','Una empresa agrupa usuarios con roles y permisos.'),
     @('Proveedores y productos','Un proveedor publica varios productos y precios por volumen.'),
@@ -195,7 +195,7 @@ $null=Table $s @('Grupo de datos','Relaciones principales') @(
 $null=Text $s 'PostgreSQL: relaciones, restricciones y transacciones para proteger la integridad' 42 472 876 30 18 $muted
 
 # 13. Flujo critico
-$s=NewSlide 'Creación de pedido y reserva de stock' 'Explicar la regla crítica: pedido, ítems, reserva y descuento de stock disponible pertenecen a una misma transacción y conexión. Ante fallo se revierte todo. Bloquear productos de forma ordenada y validar condiciones evita sobreventa. El pago externo sucede después del commit y necesita referencias persistidas, idempotencia y reconciliación. Un timeout de pago conserva incertidumbre y no autoriza liberar automáticamente la reserva.' 'docs/03-diseno-de-software/esquema-base-de-datos.md; docs/04-modelo-c4/Nivel4-Diagrama-de-Codigo.md'
+$s=NewSlide 'Creación de pedido y reserva de stock' 'Explicar la regla crítica: pedido, ítems, reserva y descuento de stock disponible pertenecen a una misma transacción y conexión. Ante fallo se revierte todo. Bloquear productos de forma ordenada y validar condiciones evita sobreventa. El pago externo sucede después del commit y necesita referencias persistidas, idempotencia y reconciliación. Un timeout de pago conserva incertidumbre y no autoriza liberar automáticamente la reserva.' 'docs/sprint-1/03-diseno-de-software/esquema-base-de-datos.md; docs/sprint-1/04-modelo-c4/Nivel4-Diagrama-de-Codigo.md'
 $null=Table $s @('Paso','Responsabilidad') @(
     @('1. Autorizar','Validar comprador y oferta aceptada vigente.'),
     @('2. Iniciar transacción','Revalidar condiciones y bloquear los productos.'),

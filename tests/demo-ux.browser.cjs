@@ -10,7 +10,7 @@ test('Demo UX: login, catalogo, cotizacion y comparacion FastAPI en escritorio y
   process.env.AI_SERVICE_URL = process.env.T6_AI_URL;
   let f, browser;
   const errors = [];
-  const artifact = 'docs/evidencias/demo-mayorista';
+  const artifact = 'docs/sprint-2/evidencias/demo-mayorista';
   try {
     f = await tradeFixture();
     await f.db.query("UPDATE suppliers SET name='Proveedor Demo Uno' WHERE id=$1", [f.accounts.vendor.supplier]);

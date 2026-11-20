@@ -1,6 +1,6 @@
 name: Desplegar en EC2
 # Despliegue continuo manual. Requiere las imágenes del mismo commit publicadas
-# antes por "Preparar imágenes para AWS". Ver docs/sprint-3-despliegue.md.
+# antes por "Preparar imágenes para AWS". Ver docs/sprint-3/despliegue.md.
 on:
   workflow_dispatch:
     inputs:
