@@ -22,6 +22,8 @@ export class AppComponent {
   readonly categories = signal<string[]>([]);
   /** Al bajar, el encabezado fijo se compacta (oculta lema y categorías) para dejar espacio. */
   readonly scrolled = signal(false);
+  /** En celular, el menú de categorías se abre con el botón «Categorías». */
+  readonly menuOpen = signal(false);
   onScroll() {
     const y = window.scrollY;
     if (!this.scrolled() && y > 120) this.scrolled.set(true);
@@ -61,6 +63,7 @@ export class AppComponent {
   }
 
   openCategory(category: string): void {
+    this.menuOpen.set(false);
     this.search.requestCategory(category);
     void this.router.navigate(['/'], { fragment: 'catalogo' });
   }

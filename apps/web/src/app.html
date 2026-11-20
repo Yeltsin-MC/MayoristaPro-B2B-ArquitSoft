@@ -39,15 +39,27 @@
     </div>
   </div>
   <nav class="header-nav" aria-label="Navegación principal">
-    <a routerLink="/" fragment="catalogo">Catálogo</a><a routerLink="/" fragment="categorias">Categorías</a
+    <a routerLink="/" fragment="catalogo">Catálogo</a
+    ><a class="nav-categories" routerLink="/" fragment="categorias">Categorías</a
     ><a routerLink="/cuenta/cotizaciones" routerLinkActive="active">Mis cotizaciones</a
     ><a routerLink="/cuenta/pedidos" routerLinkActive="active">Mis pedidos</a>
   </nav>
   @if (categories().length) {
-    <nav class="category-bar" aria-label="Categorías destacadas">
+    <nav class="category-bar" [class.open]="menuOpen()" aria-label="Categorías destacadas">
+      <button
+        type="button"
+        class="category-toggle"
+        [attr.aria-expanded]="menuOpen()"
+        (click)="menuOpen.set(!menuOpen())"
+      >
+        <span aria-hidden="true">{{ menuOpen() ? '✕' : '☰' }}</span> Categorías
+      </button>
       @for (c of categories(); track c) {
         <button type="button" class="category-bar-link" (click)="openCategory(c)">{{ c }}</button>
       }
+      <a class="category-bar-link category-bar-all" routerLink="/" fragment="categorias" (click)="menuOpen.set(false)"
+        >Ver todas las categorías</a
+      >
     </nav>
   }
 </header>
