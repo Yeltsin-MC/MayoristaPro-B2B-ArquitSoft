@@ -3083,9 +3083,6 @@ html {
     overflow-x: auto;
     scrollbar-width: none;
   }
-  .header-nav .nav-categories {
-    display: none;
-  }
 }
 
 /* Efectos sutiles: las tarjetas se elevan al pasar el mouse. */
