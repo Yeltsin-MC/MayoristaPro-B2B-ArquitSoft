@@ -20,7 +20,9 @@ La imagen representa la visión de evolución. El [despliegue académico](../02-
 
 ## Despliegue y seguridad
 
-API y workers se proponen en EC2, PostgreSQL en RDS y monitoreo en CloudWatch. Cloudflare y ALB pertenecen a la vista de despliegue; no son módulos comerciales. La cantidad de instancias y el hosting de Redis se definirán con presupuesto y pruebas.
+**Implementado en el Sprint 3:** todos los contenedores (Nginx con Angular, NestJS, worker, FastAPI, PostgreSQL y Redis) corren con Docker Compose en una instancia EC2. Cloudflare aporta DNS, HTTPS y CDN, y llega a Nginx mediante Cloudflare Tunnel. Solo Nginx escucha, y solo en `127.0.0.1:8080`. Ver [Sprint 3: integración y despliegue](../sprint-3-despliegue.md).
+
+**Evolución:** PostgreSQL en RDS, ALB con varias réplicas de la API, S3, SQS y CloudWatch quedan para cuando la carga lo justifique.
 
 PostgreSQL, Redis y Python no se exponen directamente a Internet. El acceso requiere red y credenciales autorizadas. Python usa datos comerciales permitidos y no modifica pedidos. El navegador consume la API, salvo el flujo de pago tokenizado/redirigido que se acuerde con el proveedor.
 
