@@ -3181,6 +3181,17 @@ html {
   min-height: 44px;
 }
 
+/* Textos chicos con un mínimo legible (~10.5 px). */
+.eyebrow,
+.hero-copy .eyebrow,
+.catalog .category-tag,
+.catalog .badge-volume {
+  font-size: 0.66rem;
+}
+.site-header .brand small {
+  font-size: 0.63rem;
+}
+
 /* Efectos sutiles: las tarjetas se elevan al pasar el mouse. */
 .product-card,
 .deal-card,
