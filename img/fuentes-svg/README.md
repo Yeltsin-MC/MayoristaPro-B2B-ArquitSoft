@@ -1,6 +1,6 @@
 # Diagramas C4 de MayoristaPro
 
-Los documentos de `docs/04-modelo-c4` muestran los PNG de `img/`. Esta carpeta contiene sus fuentes SVG editables y el generador para reproducirlas.
+Los documentos de `docs/sprint-1/04-modelo-c4` muestran los PNG de `img/`. Esta carpeta contiene sus fuentes SVG editables y el generador para reproducirlas.
 
 | Vista | Fuente | Imagen |
 |---|---|---|

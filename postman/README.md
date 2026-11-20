@@ -16,7 +16,7 @@ Todos los errores se validan contra el formato único `{ statusCode, code, messa
 
 ## Cómo ejecutarla
 
-1. Levanta la demo de 15 empresas en http://localhost:3300 (ver `docs/sprint-2-catalogo-demo-150.md`).
+1. Levanta la demo de 15 empresas en http://localhost:3300 (ver `docs/sprint-2/catalogo-demo-150.md`).
 2. En Postman: **Import** → `MayoristaPro.postman_collection.json` y `demo-3300.postman_environment.json`.
 3. Selecciona el entorno **MayoristaPro demo 3300** y escribe en `password` tu `DEMO_PASSWORD` local
    (no se guarda en el repositorio).
@@ -33,7 +33,7 @@ npx newman run postman/MayoristaPro.postman_collection.json `
 Cada ejecución crea una solicitud de cotización y un pedido pendiente nuevos en la demo,
 igual que un comprador real. El pedido vence solo si no se paga.
 
-Evidencia: [docs/evidencias/postman/ejecucion-local-2026-11-20.txt](../docs/evidencias/postman/ejecucion-local-2026-11-20.txt)
+Evidencia: [docs/sprint-2/evidencias/postman/ejecucion-local-2026-11-20.txt](../docs/sprint-2/evidencias/postman/ejecucion-local-2026-11-20.txt)
 (31 solicitudes, 64 comprobaciones aprobadas, 0 fallos; corrida en la API local con un comprador y un proveedor de prueba).
 
 Swagger UI con el mismo contrato: http://localhost:3300/api-docs/ (o http://localhost:3000/api-docs/ en desarrollo).

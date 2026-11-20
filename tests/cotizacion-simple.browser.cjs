@@ -10,7 +10,7 @@ const {comparison}=require('../database/demo/quote.cjs');
 test('UX comprador: papel A4, cantidad, ingreso, envío y comparación compacta en escritorio/móvil', {timeout:120000},async()=>{
  const schema='demo_mayoristapro150_test_ux_'+randomBytes(5).toString('hex');
  const config={source:process.env.DATABASE_URL,schema,adminEmail:'admin-demo150@example.test',adminPassword:randomBytes(24).toString('hex'),demoPassword:randomBytes(24).toString('hex')};
- const folder='docs/evidencias/cotizacion-simple';const results=[];let browser;
+ const folder='docs/sprint-2/evidencias/cotizacion-simple';const results=[];let browser;
  try{
   await loadDemo(config);await mkdir(folder,{recursive:true});
   browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});

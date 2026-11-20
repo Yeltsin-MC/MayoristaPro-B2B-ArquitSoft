@@ -10,7 +10,7 @@ Cubre catalogo HTTP, login mediante el fixture, rutas, contrato, permisos, revoc
 historial pagado real, ausencia de historial, degradacion y respuestas incompatibles.
 La ultima comprobacion usa FastAPI real solo si se configura T6_AI_URL.
 
-Resultado del 12/11/2026 con PostgreSQL y FastAPI real en 5055, nueve resultados aprobados y cero omitidos. Las compilaciones Angular y NestJS completaron correctamente. Se conserva la evidencia previa de Kiro de 11 pruebas Python. Ver [evidencia de demo](../../../../docs/evidencias/demo-mayorista.md).
+Resultado del 12/11/2026 con PostgreSQL y FastAPI real en 5055, nueve resultados aprobados y cero omitidos. Las compilaciones Angular y NestJS completaron correctamente. Se conserva la evidencia previa de Kiro de 11 pruebas Python. Ver [evidencia de demo](../../../../docs/sprint-2/evidencias/demo-mayorista.md).
 
 Desde la raiz del repositorio, con PostgreSQL disponible y FastAPI en 5055
 
