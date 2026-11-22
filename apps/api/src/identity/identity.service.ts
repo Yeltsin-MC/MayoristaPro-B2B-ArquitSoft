@@ -222,13 +222,17 @@ export class IdentityService {
       permissions = body.permissions;
     if (!Array.isArray(permissions) || !permissions.length || permissions.some(p => !['buy', 'publish'].includes(p)))
       throw new BadRequestException('Permisos inválidos.');
+    // Vigencia del enlace: 1 día por defecto; el dueño puede elegir 7 o 30 días.
+    const days = body.dias === undefined ? 1 : Number(body.dias);
+    if (![1, 7, 30].includes(days)) throw new BadRequestException('La vigencia debe ser 1, 7 o 30 días.');
     return this.tx(async db => {
       const actor = await this.actor(db, auth);
       if (!actor.permissions.includes('manage')) throw new ForbiddenException();
       const token = randomBytes(32).toString('hex');
       const result = await db.query(
-        'INSERT INTO invitations(company_id,email,permissions,token_hash,created_by) VALUES($1,$2,$3,$4,$5) RETURNING id,expires_at',
-        [actor.company_id, mail, permissions, digest(token), actor.membership_id],
+        `INSERT INTO invitations(company_id,email,permissions,token_hash,created_by,expires_at)
+         VALUES($1,$2,$3,$4,$5,now()+make_interval(days => $6)) RETURNING id,expires_at`,
+        [actor.company_id, mail, permissions, digest(token), actor.membership_id, days],
       );
       await this.audit(db, actor, 'invite', result.rows[0].id);
       return { ...result.rows[0], link: '/accept-invitation#token=' + token };

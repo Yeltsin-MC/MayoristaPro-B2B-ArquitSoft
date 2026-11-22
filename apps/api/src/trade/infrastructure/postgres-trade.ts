@@ -217,7 +217,7 @@ export class PostgresTrade implements TradeStore {
       const a = await this.identity.tradeIdentity(db, auth);
       return (
         await db.query(
-          `SELECT q.id,c.legal_name AS "buyerName",
+          `SELECT q.id,c.legal_name AS "buyerName",q.created_at AS "createdAt",($1 AND q.buyer_company_id=$2) AS "isBuyer",
    (SELECT i.description FROM quotation_items i WHERE i.request_id=q.id ORDER BY i.id LIMIT 1) AS "primaryProduct",
    (SELECT count(*)::int FROM quotation_offers o WHERE o.request_id=q.id AND (($1 AND q.buyer_company_id=$2) OR ($3 AND o.supplier_id=$4))) AS "offerCount",
    CASE WHEN q.accepted_offer_id IS NULL THEN 'abierta' ELSE 'aceptada' END AS status
@@ -468,7 +468,11 @@ export class PostgresTrade implements TradeStore {
       const a = await this.identity.tradeIdentity(db, auth);
       return (
         await db.query(
-          `SELECT id,state,total,currency,created_at AS "createdAt" FROM trade_orders WHERE ($1 AND buyer_company_id=$2) OR ($3 AND supplier_id=$4) ORDER BY created_at DESC LIMIT 100`,
+          `SELECT o.id,o.state,o.total,o.currency,o.created_at AS "createdAt",
+   ($1 AND o.buyer_company_id=$2) AS "isBuyer",c.legal_name AS "buyerName",s.name AS "supplierName",
+   (SELECT i.snapshot->>'name' FROM trade_order_items i WHERE i.order_id=o.id ORDER BY i.id LIMIT 1) AS "primaryProduct"
+   FROM trade_orders o JOIN companies c ON c.id=o.buyer_company_id JOIN suppliers s ON s.id=o.supplier_id
+   WHERE ($1 AND o.buyer_company_id=$2) OR ($3 AND o.supplier_id=$4) ORDER BY o.created_at DESC LIMIT 100`,
           [a.canBuy, a.companyId, a.canSell, a.supplierId],
         )
       ).rows;

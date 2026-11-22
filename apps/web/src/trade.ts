@@ -44,6 +44,30 @@ interface RequestItem {
         }
       </div>
     </div>
+    @if (!creating()) {
+      <dl class="company-stats" aria-label="Resumen de la empresa">
+        <div>
+          <dt>Cotizaciones</dt>
+          <dd>{{ requests().length }}</dd>
+        </div>
+        <div>
+          <dt>Pedidos</dt>
+          <dd>{{ orders().length }}</dd>
+        </div>
+        @if (canBuy()) {
+          <div>
+            <dt>Comprado (pagado)</dt>
+            <dd>S/ {{ paidTotal(true) }}</dd>
+          </div>
+        }
+        @if (canSell()) {
+          <div>
+            <dt>Vendido (pagado)</dt>
+            <dd>S/ {{ paidTotal(false) }}</dd>
+          </div>
+        }
+      </dl>
+    }
     @if (message()) {
       <p class="notice" role="status" aria-live="polite">{{ message() }}</p>
     }
@@ -226,283 +250,317 @@ interface RequestItem {
       </details>
     }
     @if (!creating()) {
-      <h4 id="mis-cotizaciones" tabindex="-1">Mis cotizaciones</h4>
-      <div class="request-list">
-        @for (q of requests(); track q.id) {
-          <div [class]="'request-row ' + requestTone(q)" [attr.data-request-id]="q.id">
-            <p>
-              <strong>{{ q.primaryProduct || 'Solicitud de productos' }}</strong>
-            </p>
-            <p class="status-pill">{{ requestStatus(q) }}</p>
-            <button class="secondary" type="button" (click)="open(q.id)">Ver cotización</button>
-          </div>
-        } @empty {
-          <p class="empty-state">📭 No tienes solicitudes todavía.</p>
-        }
-      </div>
-      @if (selected(); as q) {
-        <div [class]="'selected-request ' + requestTone(q)" tabindex="-1">
-          <div class="card-head">
-            <h4>{{ q.items[0]?.description || 'Detalle de cotización' }}</h4>
-            <span class="status-pill">{{ requestStatus(q) }}</span>
-          </div>
-          <p class="muted">Comprador {{ q.buyerName }}</p>
-          @for (i of q.items; track i.id) {
-            <p class="item-line">
-              {{ i.description }} · {{ i.unit }} de {{ i.unitsPerPack }} · cantidad {{ i.quantity }}
-            </p>
-          }
+      <section class="account-panel" aria-labelledby="mis-cotizaciones">
+        <div class="panel-heading">
+          <h4 id="mis-cotizaciones" tabindex="-1">Mis cotizaciones</h4>
+          <span class="panel-count">{{ requests().length }}</span>
         </div>
-        @if (!q.isBuyer && q.status === 'abierta' && q.offers.length === 0 && canSell()) {
-          <form class="response-form" (ngSubmit)="respond()">
-            <h4>Responder con productos propios</h4>
-            @for (line of responseItems; track line.solicitudItemId; let n = $index) {
-              <fieldset>
-                <legend>{{ q.items[n].description }} · {{ line.cantidad }} {{ q.items[n].unit }}</legend>
-                @if (line.productoId && line.productoId === matchingProduct(q.items[n])?.id) {
-                  <p class="match-note">✓ Producto encontrado en tu catálogo. Revisa el precio y envía.</p>
-                }
-                <label
-                  >Producto propio
-                  <select
-                    [name]="'product-' + n"
-                    required
-                    [(ngModel)]="line.productoId"
-                    (ngModelChange)="suggestPrice(line)"
-                  >
-                    <option value="">Seleccionar</option>
-                    @for (p of products(); track p.id) {
-                      <option [value]="p.id">
-                        {{ p.name }} · {{ p.unit }} de {{ p.unitsPerPack }} · stock {{ p.stock }}
-                      </option>
-                    }
-                  </select></label
+        <p class="panel-hint">De la más reciente a la más antigua.</p>
+        <ol class="request-list numbered-list">
+          @for (q of requests(); track q.id; let n = $index) {
+            <li
+              [class]="'request-row ' + requestTone(q)"
+              [class.is-open]="selected()?.id === q.id"
+              [attr.data-request-id]="q.id"
+            >
+              <span class="row-number" aria-hidden="true">#{{ requests().length - n }}</span>
+              <p class="row-main">
+                <strong>{{ q.primaryProduct || 'Solicitud de productos' }}</strong>
+                <span class="row-meta"
+                  >{{ q.createdAt ? shortDate(q.createdAt) : '' }}{{ q.isBuyer ? '' : ' · ' + q.buyerName }}</span
                 >
-                <label
-                  >Precio por presentación PEN (IGV incluido)
-                  <input [name]="'price-' + n" required [(ngModel)]="line.precioUnitario"
-                /></label>
-                @if (ownProduct(line.productoId); as p) {
-                  <p class="price-reference">
-                    Tu precio publicado: S/ {{ tierUnitPrice(p, line.cantidad)
-                    }}{{ p.priceTiers?.length ? ' (por volumen)' : '' }}
-                  </p>
-                }
-              </fieldset>
-            }
-            <label>Envío final PEN <input name="shipping" required [(ngModel)]="shipping" /></label>
-            <label
-              >Plazo de entrega en días
-              <input name="deliveryDays" type="number" min="1" required [(ngModel)]="deliveryDays"
-            /></label>
-            <label
-              >Vigente hasta <input name="expiresAt" type="datetime-local" required [(ngModel)]="expiresAt"
-            /></label>
-            <p class="muted">Precios con IGV incluido.</p>
-            <button [disabled]="busy()">Enviar oferta</button>
-          </form>
-        }
-        <div class="comparison-heading">
-          <h4>Ofertas privadas autorizadas</h4>
-          <span class="section-caption">{{ q.offers.length }} ofertas · PEN · Precio por presentación</span>
-        </div>
-        @if (q.isBuyer && q.offers.length > 1) {
-          <details class="comparison-details">
-            <summary>Ver detalles de comparación e IA</summary>
-            <div class="ai-controls">
-              <button class="secondary" type="button" [disabled]="busy()" (click)="scoreOffers(q.id)">
-                {{ scoredOffers().length > 0 ? 'Actualizar' : 'Calcular' }} puntuación IA
-              </button>
-              @if (scoredOffers().length > 0) {
-                <label class="check"
-                  ><input type="checkbox" [(ngModel)]="sortByScore" (change)="sortOffers()" />Ordenar por
-                  puntuación</label
-                >
-              }
-            </div>
-            <p class="comparison-help">
-              La puntuación compara precio, plazo y reputación. Tú eliges la oferta que se convierte en pedido.
-            </p>
-          </details>
-        }
-        <div class="offers-grid">
-          @for (o of displayedOffers(); track o.id) {
-            <article class="offer" [class.best-offer]="isTopScore(o)">
-              @if (isTopScore(o)) {
-                <span class="best-label">Mayor puntuación de esta comparación</span>
-              }
-              <p class="eyebrow">PROPUESTA DEL PROVEEDOR</p>
-              <h4>Oferta de {{ o.supplierName }}</h4>
-              <div class="offer-total">
-                <span>Total con envío</span><strong>S/ {{ o.total }}</strong>
-              </div>
-              <p class="offer-delivery">
-                Entrega en <strong>{{ o.deliveryDays }} {{ o.deliveryDays === 1 ? 'día' : 'días' }}</strong>
               </p>
-              <details class="offer-details">
-                <summary>Ver detalles</summary>
-                @for (i of o.items; track i.requestItemId) {
-                  <p class="offer-line">
-                    <strong>{{ i.snapshot.name }}</strong><br />{{ i.quantity }} {{ i.snapshot.unit }} de
-                    {{ i.snapshot.unitsPerPack }} · S/ {{ i.unitPrice }} por presentación<br />{{ i.quantity }} × S/
-                    {{ i.unitPrice }} = S/
-                    {{ i.subtotal }}
-                  </p>
-                }
-                <dl class="offer-conditions">
-                  <div>
-                    <dt>Productos</dt>
-                    <dd>S/ {{ o.subtotal }}</dd>
-                  </div>
-                  <div>
-                    <dt>Envío final</dt>
-                    <dd>S/ {{ o.shipping }}</dd>
-                  </div>
-                  <div>
-                    <dt>Plazo de entrega</dt>
-                    <dd>{{ o.deliveryDays }} días</dd>
-                  </div>
-                  <div>
-                    <dt>Vigente hasta</dt>
-                    <dd>{{ date(o.expiresAt) }}</dd>
-                  </div>
-                </dl>
-                <p class="offer-tax">PEN · IGV incluido en precios; no se calcula desglose fiscal.</p>
-                @if (o.score !== undefined) {
-                  <div class="score-info">
-                    <span>Puntuación IA</span
-                    ><strong>{{ o.score !== null ? o.score.toFixed(1) + ' / 100' : 'Sin puntuación' }}</strong>
-                  </div>
-                  @if (o.breakdown && o.score !== null) {
-                    <dl class="score-breakdown">
-                      <div>
-                        <dt>Precio · 50%</dt>
-                        <dd>{{ o.breakdown.price_score.toFixed(1) }}</dd>
-                      </div>
-                      <div>
-                        <dt>Entrega · 30%</dt>
-                        <dd>{{ o.breakdown.delivery_score.toFixed(1) }}</dd>
-                      </div>
-                      <div>
-                        <dt>Reputación · 20%</dt>
-                        <dd>{{ o.breakdown.reputation_score.toFixed(1) }}</dd>
-                      </div>
-                    </dl>
-                  }
-                }
-              </details>
-              @if (q.isBuyer) {
-                @if (!q.acceptedOfferId) {
-                  <button class="offer-action" type="button" [disabled]="busy()" (click)="accept(o.id)">
-                    Aceptar oferta
-                  </button>
-                }
-                @if (q.acceptedOfferId === o.id) {
-                  <p class="notice">Oferta aceptada. Aceptar no reserva stock.</p>
-                  <button class="offer-action" type="button" [disabled]="busy()" (click)="order(o.id)">
-                    Crear pedido y reservar stock
-                  </button>
-                }
-              }
-            </article>
+              <p class="status-pill">{{ requestStatus(q) }}</p>
+              <button class="secondary" type="button" (click)="open(q.id)">Ver cotización</button>
+            </li>
           } @empty {
-            <p class="state-panel">Los proveedores destinatarios todavía no han enviado ofertas.</p>
+            <li class="empty-state"><span aria-hidden="true">📭</span> No tienes solicitudes todavía.</li>
           }
-        </div>
-      }
-      <h4 id="mis-pedidos" tabindex="-1">Mis pedidos</h4>
-      <div class="request-list">
-        @for (o of orders(); track o.id) {
-          <div [class]="'request-row ' + orderTone(o.state)" [attr.data-order-id]="o.id">
-            <p>
-              <strong>S/ {{ o.total }}</strong>
-            </p>
-            <p class="status-pill">{{ stateLabel(o.state) }}</p>
-            <button class="secondary" type="button" (click)="openOrder(o.id)">Ver pedido</button>
-          </div>
-        } @empty {
-          <p class="empty-state">📭 Aún no tienes pedidos.</p>
-        }
-      </div>
-      @if (currentOrder(); as o) {
-        <article [class]="'order-card ' + orderTone(o.state)" aria-label="Detalle del pedido">
-          <div class="card-head">
-            <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido · ' + stateLabel(o.state) }}</h4>
-            <strong class="order-total">S/ {{ o.total }}</strong>
-          </div>
-          @for (i of o.items; track $index) {
-            <p class="item-line">
-              {{ i.snapshot.name }} · {{ i.quantity }} {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }}
-            </p>
-          }
-          <details class="more-details">
-            <summary>Ver más</summary>
-            @for (i of o.items; track $index) {
-              <p>{{ i.quantity }} × S/ {{ i.unitPrice }} = S/ {{ i.subtotal }}</p>
+        </ol>
+        @if (selected(); as q) {
+          <div [class]="'selected-request ' + requestTone(q)" tabindex="-1">
+            <div class="card-head">
+              <h4>{{ q.items[0]?.description || 'Detalle de cotización' }}</h4>
+              <span class="status-pill">{{ requestStatus(q) }}</span>
+            </div>
+            <p class="muted">Comprador {{ q.buyerName }}</p>
+            @for (i of q.items; track i.id) {
+              <p class="item-line">
+                {{ i.description }} · {{ i.unit }} de {{ i.unitsPerPack }} · cantidad {{ i.quantity }}
+              </p>
             }
-            <p>Productos: S/ {{ o.subtotal }} · Envío: S/ {{ o.shipping }} · IGV incluido</p>
-            <p>Plazo: {{ o.deliveryDays }} días</p>
-          </details>
-          @for (r of o.reservations; track r.productId) {
-            <p class="muted">Reserva {{ r.state }}: {{ r.quantity }} presentaciones.</p>
-          }
-          @if (inFulfillment(o.state)) {
-            <ol class="fulfillment-steps" aria-label="Seguimiento del despacho">
-              @for (step of fulfillmentSteps; track step.state) {
-                <li [class.done]="stepDone(o, step.state)">
-                  <strong>{{ step.label }}</strong>
-                  @if (stepEvent(o, step.state); as e) {
-                    <span>{{ formatDate(e.createdAt) }}{{ e.note ? ' · ' + e.note : '' }}</span>
+          </div>
+          @if (!q.isBuyer && q.status === 'abierta' && q.offers.length === 0 && canSell()) {
+            <form class="response-form" (ngSubmit)="respond()">
+              <h4>Responder con productos propios</h4>
+              @for (line of responseItems; track line.solicitudItemId; let n = $index) {
+                <fieldset>
+                  <legend>{{ q.items[n].description }} · {{ line.cantidad }} {{ q.items[n].unit }}</legend>
+                  @if (line.productoId && line.productoId === matchingProduct(q.items[n])?.id) {
+                    <p class="match-note">✓ Producto encontrado en tu catálogo. Revisa el precio y envía.</p>
                   }
-                </li>
-              }
-            </ol>
-          }
-          @if (o.isSupplier && o.state === 'paid') {
-            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'preparing')">
-              Marcar en preparación
-            </button>
-          }
-          @if (o.isSupplier && o.state === 'preparing') {
-            <label
-              >Guía de remisión o transportista (opcional)
-              <input name="dispatchNote" maxlength="300" [(ngModel)]="dispatchNote"
-            /></label>
-            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'dispatched')">Marcar despachado</button>
-          }
-          @if (o.isBuyer && o.state === 'dispatched') {
-            <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'delivered')">Confirmar recepción</button>
-          }
-          @if (o.state === 'pendiente') {
-            <p>
-              <strong>Pagar antes de: {{ expiresIn(o.expiresAt) }}</strong>
-            </p>
-            <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar con Mercado Pago</button>
-          }
-          @if (o.state === 'paid') {
-            <p class="success">✓ Pago confirmado. El proveedor preparará el pedido.</p>
-          }
-          @if (o.state === 'expired') {
-            <p class="error">✗ Pedido vencido sin pago. Stock liberado.</p>
-          }
-          @if (o.state === 'requires_reconciliation') {
-            <p class="warning">⚠ Requiere reconciliación manual (pago tardío).</p>
-          }
-          @if (paymentAttempts().length > 0) {
-            <details class="more-details">
-              <summary>Intentos de pago</summary>
-              @for (a of paymentAttempts(); track a.id) {
-                <p>
-                  {{ formatDate(a.created_at) }} · {{ a.state }} · S/ {{ a.amount }}
-                  @if (a.state === 'created' && a.preference_id) {
-                    <button type="button" (click)="openCheckout(a)">Continuar pago</button>
+                  <label
+                    >Producto propio
+                    <select
+                      [name]="'product-' + n"
+                      required
+                      [(ngModel)]="line.productoId"
+                      (ngModelChange)="suggestPrice(line)"
+                    >
+                      <option value="">Seleccionar</option>
+                      @for (p of products(); track p.id) {
+                        <option [value]="p.id">
+                          {{ p.name }} · {{ p.unit }} de {{ p.unitsPerPack }} · stock {{ p.stock }}
+                        </option>
+                      }
+                    </select></label
+                  >
+                  <label
+                    >Precio por presentación PEN (IGV incluido)
+                    <input [name]="'price-' + n" required [(ngModel)]="line.precioUnitario"
+                  /></label>
+                  @if (ownProduct(line.productoId); as p) {
+                    <p class="price-reference">
+                      Tu precio publicado: S/ {{ tierUnitPrice(p, line.cantidad)
+                      }}{{ p.priceTiers?.length ? ' (por volumen)' : '' }}
+                    </p>
                   }
-                </p>
+                </fieldset>
               }
+              <label>Envío final PEN <input name="shipping" required [(ngModel)]="shipping" /></label>
+              <label
+                >Plazo de entrega en días
+                <input name="deliveryDays" type="number" min="1" required [(ngModel)]="deliveryDays"
+              /></label>
+              <label
+                >Vigente hasta <input name="expiresAt" type="datetime-local" required [(ngModel)]="expiresAt"
+              /></label>
+              <p class="muted">Precios con IGV incluido.</p>
+              <button [disabled]="busy()">Enviar oferta</button>
+            </form>
+          }
+          <div class="comparison-heading">
+            <h4>Ofertas privadas autorizadas</h4>
+            <span class="section-caption">{{ q.offers.length }} ofertas · PEN · Precio por presentación</span>
+          </div>
+          @if (q.isBuyer && q.offers.length > 1) {
+            <details class="comparison-details">
+              <summary>Ver detalles de comparación e IA</summary>
+              <div class="ai-controls">
+                <button class="secondary" type="button" [disabled]="busy()" (click)="scoreOffers(q.id)">
+                  {{ scoredOffers().length > 0 ? 'Actualizar' : 'Calcular' }} puntuación IA
+                </button>
+                @if (scoredOffers().length > 0) {
+                  <label class="check"
+                    ><input type="checkbox" [(ngModel)]="sortByScore" (change)="sortOffers()" />Ordenar por
+                    puntuación</label
+                  >
+                }
+              </div>
+              <p class="comparison-help">
+                La puntuación compara precio, plazo y reputación. Tú eliges la oferta que se convierte en pedido.
+              </p>
             </details>
           }
-        </article>
-      }
+          <div class="offers-grid">
+            @for (o of displayedOffers(); track o.id) {
+              <article class="offer" [class.best-offer]="isTopScore(o)">
+                @if (isTopScore(o)) {
+                  <span class="best-label">Mayor puntuación de esta comparación</span>
+                }
+                <p class="eyebrow">PROPUESTA DEL PROVEEDOR</p>
+                <h4>Oferta de {{ o.supplierName }}</h4>
+                <div class="offer-total">
+                  <span>Total con envío</span><strong>S/ {{ o.total }}</strong>
+                </div>
+                <p class="offer-delivery">
+                  Entrega en <strong>{{ o.deliveryDays }} {{ o.deliveryDays === 1 ? 'día' : 'días' }}</strong>
+                </p>
+                <details class="offer-details">
+                  <summary>Ver detalles</summary>
+                  @for (i of o.items; track i.requestItemId) {
+                    <p class="offer-line">
+                      <strong>{{ i.snapshot.name }}</strong><br />{{ i.quantity }} {{ i.snapshot.unit }} de
+                      {{ i.snapshot.unitsPerPack }} · S/ {{ i.unitPrice }} por presentación<br />{{ i.quantity }} × S/
+                      {{ i.unitPrice }} = S/
+                      {{ i.subtotal }}
+                    </p>
+                  }
+                  <dl class="offer-conditions">
+                    <div>
+                      <dt>Productos</dt>
+                      <dd>S/ {{ o.subtotal }}</dd>
+                    </div>
+                    <div>
+                      <dt>Envío final</dt>
+                      <dd>S/ {{ o.shipping }}</dd>
+                    </div>
+                    <div>
+                      <dt>Plazo de entrega</dt>
+                      <dd>{{ o.deliveryDays }} días</dd>
+                    </div>
+                    <div>
+                      <dt>Vigente hasta</dt>
+                      <dd>{{ date(o.expiresAt) }}</dd>
+                    </div>
+                  </dl>
+                  <p class="offer-tax">PEN · IGV incluido en precios; no se calcula desglose fiscal.</p>
+                  @if (o.score !== undefined) {
+                    <div class="score-info">
+                      <span>Puntuación IA</span
+                      ><strong>{{ o.score !== null ? o.score.toFixed(1) + ' / 100' : 'Sin puntuación' }}</strong>
+                    </div>
+                    @if (o.breakdown && o.score !== null) {
+                      <dl class="score-breakdown">
+                        <div>
+                          <dt>Precio · 50%</dt>
+                          <dd>{{ o.breakdown.price_score.toFixed(1) }}</dd>
+                        </div>
+                        <div>
+                          <dt>Entrega · 30%</dt>
+                          <dd>{{ o.breakdown.delivery_score.toFixed(1) }}</dd>
+                        </div>
+                        <div>
+                          <dt>Reputación · 20%</dt>
+                          <dd>{{ o.breakdown.reputation_score.toFixed(1) }}</dd>
+                        </div>
+                      </dl>
+                    }
+                  }
+                </details>
+                @if (q.isBuyer) {
+                  @if (!q.acceptedOfferId) {
+                    <button class="offer-action" type="button" [disabled]="busy()" (click)="accept(o.id)">
+                      Aceptar oferta
+                    </button>
+                  }
+                  @if (q.acceptedOfferId === o.id) {
+                    <p class="notice">Oferta aceptada. Aceptar no reserva stock.</p>
+                    <button class="offer-action" type="button" [disabled]="busy()" (click)="order(o.id)">
+                      Crear pedido y reservar stock
+                    </button>
+                  }
+                }
+              </article>
+            } @empty {
+              <p class="state-panel">Los proveedores destinatarios todavía no han enviado ofertas.</p>
+            }
+          </div>
+        }
+      </section>
+      <section class="account-panel" aria-labelledby="mis-pedidos">
+        <div class="panel-heading">
+          <h4 id="mis-pedidos" tabindex="-1">Mis pedidos</h4>
+          <span class="panel-count">{{ orders().length }}</span>
+        </div>
+        <p class="panel-hint">De la más reciente a la más antigua.</p>
+        <ol class="request-list numbered-list">
+          @for (o of orders(); track o.id; let n = $index) {
+            <li
+              [class]="'request-row ' + orderTone(o.state)"
+              [class.is-open]="currentOrder()?.id === o.id"
+              [attr.data-order-id]="o.id"
+            >
+              <span class="row-number" aria-hidden="true">#{{ orders().length - n }}</span>
+              <p class="row-main">
+                <strong>{{ o.primaryProduct || 'Pedido' }} · S/ {{ o.total }}</strong>
+                <span class="row-meta"
+                  >{{ o.createdAt ? shortDate(o.createdAt) : '' }} ·
+                  {{ o.isBuyer ? 'Proveedor: ' + o.supplierName : 'Comprador: ' + o.buyerName }}</span
+                >
+              </p>
+              <p class="status-pill">{{ stateLabel(o.state) }}</p>
+              <button class="secondary" type="button" (click)="openOrder(o.id)">Ver pedido</button>
+            </li>
+          } @empty {
+            <li class="empty-state"><span aria-hidden="true">📭</span> Aún no tienes pedidos.</li>
+          }
+        </ol>
+        @if (currentOrder(); as o) {
+          <article [class]="'order-card ' + orderTone(o.state)" aria-label="Detalle del pedido">
+            <div class="card-head">
+              <h4>{{ o.state === 'pendiente' ? 'Pedido pendiente' : 'Pedido · ' + stateLabel(o.state) }}</h4>
+              <strong class="order-total">S/ {{ o.total }}</strong>
+            </div>
+            @for (i of o.items; track $index) {
+              <p class="item-line">
+                {{ i.snapshot.name }} · {{ i.quantity }} {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }}
+              </p>
+            }
+            <details class="more-details">
+              <summary>Ver más</summary>
+              @for (i of o.items; track $index) {
+                <p>{{ i.quantity }} × S/ {{ i.unitPrice }} = S/ {{ i.subtotal }}</p>
+              }
+              <p>Productos: S/ {{ o.subtotal }} · Envío: S/ {{ o.shipping }} · IGV incluido</p>
+              <p>Plazo: {{ o.deliveryDays }} días</p>
+            </details>
+            @for (r of o.reservations; track r.productId) {
+              <p class="muted">Reserva {{ r.state }}: {{ r.quantity }} presentaciones.</p>
+            }
+            @if (inFulfillment(o.state)) {
+              <ol class="fulfillment-steps" aria-label="Seguimiento del despacho">
+                @for (step of fulfillmentSteps; track step.state) {
+                  <li [class.done]="stepDone(o, step.state)">
+                    <strong>{{ step.label }}</strong>
+                    @if (stepEvent(o, step.state); as e) {
+                      <span>{{ formatDate(e.createdAt) }}{{ e.note ? ' · ' + e.note : '' }}</span>
+                    }
+                  </li>
+                }
+              </ol>
+            }
+            @if (o.isSupplier && o.state === 'paid') {
+              <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'preparing')">
+                Marcar en preparación
+              </button>
+            }
+            @if (o.isSupplier && o.state === 'preparing') {
+              <label
+                >Guía de remisión o transportista (opcional)
+                <input name="dispatchNote" maxlength="300" [(ngModel)]="dispatchNote"
+              /></label>
+              <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'dispatched')">Marcar despachado</button>
+            }
+            @if (o.isBuyer && o.state === 'dispatched') {
+              <button type="button" [disabled]="busy()" (click)="fulfill(o.id, 'delivered')">
+                Confirmar recepción
+              </button>
+            }
+            @if (o.state === 'pendiente' && o.isBuyer) {
+              <p>
+                <strong>Pagar antes de: {{ expiresIn(o.expiresAt) }}</strong>
+              </p>
+              <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar con Mercado Pago</button>
+            }
+            @if (o.state === 'pendiente' && !o.isBuyer) {
+              <p class="muted">Esperando el pago del comprador. Vence: {{ expiresIn(o.expiresAt) }}.</p>
+            }
+            @if (o.state === 'paid') {
+              <p class="success">✓ Pago confirmado. El proveedor preparará el pedido.</p>
+            }
+            @if (o.state === 'expired') {
+              <p class="error">✗ Pedido vencido sin pago. Stock liberado.</p>
+            }
+            @if (o.state === 'requires_reconciliation') {
+              <p class="warning">⚠ Requiere reconciliación manual (pago tardío).</p>
+            }
+            @if (paymentAttempts().length > 0) {
+              <details class="more-details">
+                <summary>Intentos de pago</summary>
+                @for (a of paymentAttempts(); track a.id) {
+                  <p>
+                    {{ formatDate(a.created_at) }} · {{ a.state }} · S/ {{ a.amount }}
+                    @if (a.state === 'created' && a.preference_id) {
+                      <button type="button" (click)="openCheckout(a)">Continuar pago</button>
+                    }
+                  </p>
+                }
+              </details>
+            }
+          </article>
+        }
+      </section>
     }
   </section>`,
 })
@@ -769,6 +827,22 @@ export class TradeComponent {
     if (state === 'delivered') return 'tone-ok';
     if (['paid', 'preparing', 'dispatched'].includes(state)) return 'tone-progress';
     return 'tone-bad';
+  }
+  /** Suma de pedidos ya pagados (o en despacho/entregados): como comprador o como proveedor. */
+  paidTotal(asBuyer: boolean): string {
+    const paid = ['paid', 'preparing', 'dispatched', 'delivered'];
+    const cents = this.orders()
+      .filter(o => paid.includes(o.state) && !!o.isBuyer === asBuyer)
+      .reduce((sum, o) => sum + Math.round(Number(o.total) * 100), 0);
+    return (cents / 100).toFixed(2);
+  }
+  shortDate(value: string): string {
+    return new Date(value).toLocaleString('es-PE', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
   requestStatus(q: any): string {
     if (q.status === 'aceptada') return 'Oferta aceptada';

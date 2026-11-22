@@ -3221,3 +3221,227 @@ html {
     transform: none;
   }
 }
+
+/* Mi cuenta: cada parte en su propio bloque (empresa, resumen, cotizaciones,
+   pedidos, usuarios) para que no se pierdan dentro de una sola caja. */
+.identity:has(.company-summary) {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.identity:has(.company-summary) .account-heading {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-bottom: 16px;
+}
+.identity:has(.company-summary) .trade {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+.identity:has(.company-summary) .workspace-heading,
+.account-panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin: 0 0 16px;
+}
+.identity:has(.company-summary) .management {
+  padding-top: 6px;
+}
+.panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panel-heading h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.panel-count {
+  min-width: 26px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+.panel-hint {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin: 4px 0 0;
+}
+/* Lista numerada tipo tabla: número, producto y fecha, estado y botón. */
+.numbered-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 12px 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.numbered-list .request-row {
+  grid-template-columns: 48px minmax(0, 1fr) auto auto;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+}
+.numbered-list .request-row:last-child {
+  border-bottom: 0;
+}
+.numbered-list .request-row:nth-child(even) {
+  background: var(--page);
+}
+.numbered-list .request-row.is-open {
+  background: var(--brand-soft);
+}
+.numbered-list .request-row button {
+  grid-column: auto;
+  min-height: 44px;
+}
+.numbered-list .empty-state {
+  padding: 14px;
+}
+.row-number {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.row-main {
+  display: grid;
+  gap: 2px;
+}
+.row-main strong {
+  overflow-wrap: anywhere;
+}
+.row-meta {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.company-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
+}
+.company-stats div {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.company-stats dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.company-stats dd {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+  font-weight: 750;
+  color: var(--navy);
+}
+@media (max-width: 740px) {
+  .company-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .numbered-list .request-row {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+  .numbered-list .request-row .status-pill {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .numbered-list .request-row button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+/* Los saltos a una sección (#catalogo, #categorias…) quedan justo bajo el encabezado fijo. */
+html {
+  scroll-padding-top: calc(var(--header-height, 140px) + 8px);
+}
+@media (max-width: 740px) {
+  html {
+    scroll-padding-top: calc(var(--header-height, 120px) + 8px);
+  }
+}
+
+/* Celular al bajar: logo, buscador y accesos en una sola fila para que el
+   encabezado ocupe menos y se vean más productos. */
+@media (max-width: 740px) {
+  .site-header.scrolled .header-content {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .site-header.scrolled .brand > span:not(.brand-mark) {
+    display: none;
+  }
+  .site-header.scrolled .header-search {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 3px;
+  }
+  .site-header.scrolled .header-search button {
+    min-width: 44px;
+    font-size: 0;
+  }
+  .site-header.scrolled .header-search button span {
+    font-size: 1rem;
+  }
+  .site-header.scrolled .header-actions {
+    gap: 4px;
+  }
+  .site-header.scrolled .header-nav {
+    padding-bottom: 4px;
+  }
+}
+
+/* Celular: tarjetas de producto más bajas (foto menor, cantidad en una fila y
+   «Agregar a la lista» junto a la cantidad) para ver más productos por pantalla. */
+@media (max-width: 740px) {
+  .catalog .product-image-link .product-visual {
+    height: 92px;
+  }
+  .catalog .product-content {
+    padding: 8px 9px 10px;
+  }
+  .catalog .product-content h3 {
+    margin: 2px 0 4px;
+  }
+  .catalog .product-price {
+    margin-bottom: 0;
+  }
+  .catalog .volume-best {
+    margin: 2px 0 6px;
+  }
+  .catalog .quantity-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin: 0 0 6px;
+  }
+  .catalog .quantity-label input {
+    width: 62px;
+    min-height: 44px;
+    padding: 4px 6px;
+    margin: 0;
+  }
+  .catalog .quantity-info {
+    margin-bottom: 6px;
+  }
+  .catalog .quote-button {
+    margin-bottom: 6px;
+  }
+}
