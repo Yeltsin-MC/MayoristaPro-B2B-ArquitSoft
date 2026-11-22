@@ -131,7 +131,7 @@ function accountTarget(url: string): AccountTarget {
     } @else {
       @if (company()) {
         <div
-          class="company-summary"
+          class="company-summary account-panel"
           [class.tone-ok]="company().supplier_verified"
           [class.tone-wait]="!company().supplier_verified"
         >
@@ -164,14 +164,20 @@ function accountTarget(url: string): AccountTarget {
           />
         }
         @if (permissions().includes('manage')) {
-          <details class="management">
+          <details class="management account-panel">
             <summary>Usuarios y accesos de mi empresa</summary>
             <form (ngSubmit)="invite()">
               <h3>Invitar usuario</h3>
               <label>Correo<input name="inviteEmail" type="email" required [(ngModel)]="inviteEmail" /></label
               ><label class="check"><input name="buy" type="checkbox" [(ngModel)]="buy" />Comprar</label
               ><label class="check"><input name="publish" type="checkbox" [(ngModel)]="publish" />Publicar</label
-              ><button [disabled]="busy()">Crear enlace por 24 horas</button>
+              ><label
+                >Vigencia del enlace<select name="inviteDays" [(ngModel)]="inviteDays">
+                  <option [ngValue]="1">24 horas</option>
+                  <option [ngValue]="7">7 días</option>
+                  <option [ngValue]="30">30 días</option>
+                </select></label
+              ><button [disabled]="busy()">Crear enlace de invitación</button>
             </form>
             @if (link()) {
               <p>
@@ -255,6 +261,7 @@ export class IdentityComponent {
   evidence = '';
   invitation = new URLSearchParams(location.hash.slice(1)).get('token') ?? '';
   inviteEmail = '';
+  inviteDays = 1;
   buy = true;
   publish = false;
   productId = '';
@@ -424,6 +431,7 @@ export class IdentityComponent {
     const result = await this.call('company/invitations', 'POST', {
       email: this.inviteEmail,
       permissions: [...(this.buy ? ['buy'] : []), ...(this.publish ? ['publish'] : [])],
+      dias: this.inviteDays,
     });
     if (result) this.link.set(location.origin + result.link);
   }
