@@ -1,0 +1,27 @@
+# Tareas — Cotizaciones, pedidos, pago y despacho
+
+- [x] 1. Migración `004_trade.sql` con restricciones de unicidad y FK compuestas
+  - _Requisitos: 1.1, 3.1, 3.4_
+- [x] 2. Dominio de dinero exacto en céntimos y reglas de mínimo, múltiplo y presentación
+  - _Requisitos: 2.3_
+- [x] 3. Solicitudes a varios proveedores y Lista de pedido agrupada por proveedor
+  - _Requisitos: 1.1–1.3_
+- [x] 4. Ofertas privadas e inmutables, filtradas por participante
+  - _Requisitos: 2.1, 2.2_
+- [x] 5. Puntaje de ofertas con el servicio FastAPI, con degradación si no responde
+  - _Requisitos: 2.4_
+- [x] 6. Aceptación única con bloqueo y pedido idempotente con reserva atómica
+  - [x] 6.1 Motivos específicos y botón «Nueva solicitud»
+  - [x] 6.2 Prueba de sobreventa con dos compradores simultáneos
+  - _Requisitos: 3.1–3.5_
+- [x] 7. Pagos: migraciones 005 y 006, gateway de Mercado Pago en modo de prueba, intentos, webhook y conciliación
+  - [x] 7.1 Worker de vencimiento a 30 min y de recuperación de webhooks
+  - _Requisitos: 4.1–4.4_
+- [x] 8. Despacho: migración 009, transiciones por rol, nota de guía e historial
+  - _Requisitos: 5.1–5.4_
+- [x] 9. Pantallas Angular de cotizaciones y pedidos con listas numeradas y desglose antes de aceptar
+  - _Requisitos: 2.2, 3.3_
+- [x] 10. Pruebas unitarias, de integración y de navegador
+  - _Requisitos: todos_
+- [ ] 11. Botón «Simular pago aprobado» para la demo y orden de compra en PDF con desglose de IGV (pendiente)
+  - _Requisitos: 4.3_

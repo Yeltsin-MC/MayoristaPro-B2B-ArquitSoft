@@ -1,0 +1,21 @@
+# Tareas — Moderación del administrador
+
+- [x] 1. Migración `011_moderation.sql`: columnas de retiro y suspensión, restricción y tabla `moderation_actions`
+  - _Requisitos: 1.1, 2.1, 3.1_
+- [x] 2. Retirar y restaurar productos con motivo validado y registro en bitácora
+  - [x] 2.1 Rechazar la publicación manual de un producto retirado, con el motivo
+  - [x] 2.2 La carga masiva no republica productos retirados
+  - [x] 2.3 Restaurar publica solo si el stock alcanza el mínimo
+  - _Requisitos: 1.1–1.5_
+- [x] 3. Suspender y reactivar empresas
+  - [x] 3.1 Cerrar las sesiones al suspender
+  - [x] 3.2 Bloquear el inicio de sesión con mensaje y motivo
+  - [x] 3.3 Excluir empresas suspendidas del catálogo y de las opciones de filtro
+  - _Requisitos: 2.1–2.5_
+- [x] 4. Endpoints de listado: empresas, productos retirados y bitácora
+  - _Requisitos: 1.4, 2.5, 3.1_
+- [x] 5. Angular: botón «Retirar producto» en la ficha (solo administrador) y secciones del Panel de administración
+  - _Requisitos: 1.1, 2.1, 3.1_
+- [x] 6. Documentar las rutas en OpenAPI y agregar pruebas de integración
+  - _Requisitos: todos_
+- [ ] 7. Avisar por correo a la empresa afectada (fuera de alcance; hoy el motivo se muestra al ingresar o al publicar)
