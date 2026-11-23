@@ -123,12 +123,17 @@ export class PostgresTrade implements TradeStore {
     const acceptedOfferId = q.isBuyer
       ? q.accepted_offer_id
       : (mapped.find(o => o.id === q.accepted_offer_id)?.id ?? null);
+    // Si el comprador ya creó el pedido, la vista muestra «Ver pedido» en vez de crearlo otra vez.
+    const orderId = q.isBuyer
+      ? ((await db.query('SELECT id FROM trade_orders WHERE request_id=$1', [q.id])).rows[0]?.id ?? null)
+      : null;
     return {
       id: q.id,
       buyerName: q.buyer_name,
       isBuyer: q.isBuyer,
       status: q.accepted_offer_id ? 'aceptada' : 'abierta',
       acceptedOfferId,
+      orderId,
       items,
       suppliers,
       offers: mapped,

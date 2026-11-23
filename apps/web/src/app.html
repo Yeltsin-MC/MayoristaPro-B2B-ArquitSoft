@@ -22,28 +22,35 @@
         ><span class="action-icon" aria-hidden="true">○</span
         ><span class="action-text"
           ><small>{{ session.token() ? 'Hola' : 'Ingresa' }}</small
-          >{{ session.token() ? 'Mi empresa' : 'Mi cuenta' }}</span
+          >{{ session.token() ? (session.admin() ? 'Administración' : 'Mi empresa') : 'Mi cuenta' }}</span
         ></a
       >
-      <a
-        class="account-link order-list-link"
-        routerLink="/lista"
-        routerLinkActive="active"
-        [attr.aria-label]="
-          'Lista de pedido, ' + orderList.count() + (orderList.count() === 1 ? ' producto' : ' productos')
-        "
-        ><span class="action-icon" aria-hidden="true"
-          >▤<span class="badge" [class.zero]="orderList.count() === 0">{{ orderList.count() }}</span></span
-        ><span class="action-text"><small>Cotiza todo junto</small>Lista de pedido</span></a
-      >
+      @if (!session.admin()) {
+        <a
+          class="account-link order-list-link"
+          routerLink="/lista"
+          routerLinkActive="active"
+          [attr.aria-label]="
+            'Lista de pedido, ' + orderList.count() + (orderList.count() === 1 ? ' producto' : ' productos')
+          "
+          ><span class="action-icon" aria-hidden="true"
+            >▤<span class="badge" [class.zero]="orderList.count() === 0">{{ orderList.count() }}</span></span
+          ><span class="action-text"><small>Cotiza todo junto</small>Lista de pedido</span></a
+        >
+      }
     </div>
   </div>
   <nav class="header-nav" aria-label="Navegación principal">
-    <a routerLink="/" fragment="catalogo">Catálogo</a><a routerLink="/" fragment="categorias">Categorías</a
-    ><a routerLink="/cuenta/cotizaciones" routerLinkActive="active">Mis cotizaciones</a
-    ><a routerLink="/cuenta/pedidos" routerLinkActive="active">Mis pedidos</a>
+    @if (session.token() && session.admin()) {
+      <a routerLink="/cuenta" routerLinkActive="active">Panel de administración</a
+      ><a routerLink="/" fragment="catalogo">Catálogo</a>
+    } @else {
+      <a routerLink="/" fragment="catalogo">Catálogo</a><a routerLink="/" fragment="categorias">Categorías</a
+      ><a routerLink="/cuenta/cotizaciones" routerLinkActive="active">Mis cotizaciones</a
+      ><a routerLink="/cuenta/pedidos" routerLinkActive="active">Mis pedidos</a>
+    }
   </nav>
-  @if (categories().length) {
+  @if (categories().length && !onAccount() && !session.admin()) {
     <nav class="category-bar" [class.open]="menuOpen()" aria-label="Categorías destacadas">
       <button
         type="button"

@@ -435,10 +435,15 @@ interface RequestItem {
                     </button>
                   }
                   @if (q.acceptedOfferId === o.id) {
-                    <p class="notice">Oferta aceptada. Aceptar no reserva stock.</p>
-                    <button class="offer-action" type="button" [disabled]="busy()" (click)="order(o.id)">
-                      Crear pedido y reservar stock
-                    </button>
+                    @if (q.orderId) {
+                      <p class="notice">Oferta aceptada. Ya creaste el pedido de esta cotización.</p>
+                      <button class="offer-action" type="button" (click)="openOrder(q.orderId)">Ver pedido</button>
+                    } @else {
+                      <p class="notice">Oferta aceptada. Aceptar no reserva stock.</p>
+                      <button class="offer-action" type="button" [disabled]="busy()" (click)="order(o.id)">
+                        Crear pedido y reservar stock
+                      </button>
+                    }
                   }
                 }
               </article>
@@ -991,6 +996,8 @@ export class TradeComponent {
     const o = await this.call('orders', 'POST', { cotizacionRespuestaId: id }, this.keys.get(id));
     if (o) {
       this.currentOrder.set(o);
+      const q = this.selected();
+      if (q) this.selected.set({ ...q, orderId: o.id });
       this.catalogChanged.emit();
       const list = await this.call('orders');
       if (list) this.orders.set(list);

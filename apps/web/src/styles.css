@@ -3445,3 +3445,124 @@ html {
     margin-bottom: 6px;
   }
 }
+
+/* Mi cuenta: cuenta, empresa, accesos de cotizaciones/pedidos y cifras forman
+   un solo bloque (datos de quién eres); las listas siguen en bloques aparte. */
+.identity:has(.company-summary) .account-heading {
+  border-radius: 16px 16px 0 0;
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 6px;
+}
+.identity:has(.company-summary) .company-summary {
+  background: white;
+  border-radius: 0;
+  border-top: 0;
+  border-bottom: 0;
+  margin: 0;
+  padding: 6px 22px 18px;
+}
+.identity:has(.company-summary) .workspace-heading {
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 0;
+  margin: 0;
+}
+.identity:has(.company-summary) .company-stats {
+  background: white;
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 16px 16px;
+  padding: 0 22px 20px;
+  margin: 0 0 16px;
+}
+.identity:has(.company-summary) .company-stats div {
+  background: var(--page);
+  border: 0;
+}
+.identity:has(.company-summary) .trade:not(:has(.company-stats)) .workspace-heading {
+  border-radius: 0 0 16px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.identity:has(.company-summary):not(:has(.trade)) .company-summary {
+  border-bottom: 1px solid var(--border);
+  border-radius: 0 0 16px 16px;
+  margin-bottom: 16px;
+}
+
+/* Letras más legibles en Mi cuenta (antes 10–13 px). */
+.identity .company-summary h3 {
+  font-size: 1.3rem;
+}
+.identity .company-summary p {
+  font-size: 0.95rem;
+}
+.identity .role-tags span,
+.identity .status-pill {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+}
+.identity .workspace-tabs .tab-button {
+  font-size: 0.92rem;
+}
+.identity .panel-heading h4 {
+  font-size: 1.2rem;
+}
+.identity .panel-hint,
+.identity .row-meta,
+.identity .muted {
+  font-size: 0.86rem;
+}
+.identity .row-main strong,
+.identity .request-row p {
+  font-size: 1rem;
+}
+.identity .row-number {
+  font-size: 0.95rem;
+}
+.identity .numbered-list .request-row button {
+  font-size: 0.88rem;
+}
+.identity .company-stats dt {
+  font-size: 0.85rem;
+}
+.identity .selected-request p,
+.identity .selected-request li,
+.identity .order-card p,
+.identity .item-line,
+.identity .more-details,
+.identity .notice {
+  font-size: 0.95rem;
+}
+.identity .selected-request h4,
+.identity .card-head h3,
+.identity .card-head h4 {
+  font-size: 1.1rem;
+}
+.identity .management summary {
+  font-size: 1.05rem;
+}
+.admin-section-title {
+  font-size: 1.15rem;
+  margin: 8px 0 4px;
+}
+.identity .admin-card h3 {
+  font-size: 1.1rem;
+}
+.identity .admin-card p {
+  font-size: 0.95rem;
+}
+/* Panel del administrador: encabezado y listas en bloques blancos separados. */
+.identity:has(.admin-section-title) {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.identity:has(.admin-section-title) .account-heading {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-bottom: 16px;
+}
