@@ -81,6 +81,12 @@ export class CatalogComponent {
   readonly selectedProduct = signal<CatalogProduct | null>(null);
   /** Foto visible en la galería del detalle. */
   readonly activeImage = signal(0);
+  /** Moderación: solo el administrador ve «Retirar producto» en la ficha. */
+  readonly isAdmin = this.session.admin;
+  readonly retireOpen = signal(false);
+  readonly retireBusy = signal(false);
+  readonly retireMessage = signal('');
+  retireReason = '';
   readonly categories = computed(() =>
     [...this.options().categories].sort(
       (a, b) => this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es'),
@@ -264,7 +270,33 @@ export class CatalogComponent {
   showProduct(product: CatalogProduct, dialog: HTMLDialogElement): void {
     this.selectedProduct.set(product);
     this.activeImage.set(0);
+    this.retireOpen.set(false);
+    this.retireMessage.set('');
+    this.retireReason = '';
     if (!dialog.open) dialog.showModal();
+  }
+
+  async retire(product: CatalogProduct, dialog: HTMLDialogElement): Promise<void> {
+    this.retireBusy.set(true);
+    try {
+      const response = await fetch('/api/v1/admin/products/' + product.id + '/retire', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.session.token() },
+        body: JSON.stringify({ reason: this.retireReason }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        this.retireMessage.set(result.message ?? 'No se pudo retirar el producto.');
+        return;
+      }
+      dialog.close();
+      this.session.message.set('');
+      this.reload();
+    } catch {
+      this.retireMessage.set('No se pudo conectar.');
+    } finally {
+      this.retireBusy.set(false);
+    }
   }
 
   quoteAlternative(): CatalogProduct | undefined {

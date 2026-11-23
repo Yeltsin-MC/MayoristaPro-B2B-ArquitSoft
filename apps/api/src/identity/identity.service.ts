@@ -153,6 +153,18 @@ export class IdentityService {
     const candidate = (await scrypt(password, salt, 64)) as Buffer;
     if (!timingSafeEqual(candidate, Buffer.from(hash, 'hex')) || !row)
       throw new UnauthorizedException('Credenciales inválidas.');
+    const suspended = (
+      await this.pool.query(
+        "SELECT c.suspended_reason FROM memberships m JOIN companies c ON c.id=m.company_id WHERE m.account_id=$1 AND m.active AND c.status='suspended'",
+        [row.id],
+      )
+    ).rows[0];
+    if (suspended)
+      throw new ForbiddenException(
+        'Tu empresa está suspendida por el administrador. Motivo: ' +
+          (suspended.suspended_reason ?? 'sin detalle') +
+          '.',
+      );
     const token = randomBytes(32).toString('hex');
     await this.pool.query('INSERT INTO identity_sessions(token_hash,account_id) VALUES($1,$2)', [
       digest(token),
@@ -309,6 +321,11 @@ export class IdentityService {
     return this.tx(async db => {
       const actor = await this.actor(db, auth);
       if (!actor.permissions.includes('publish')) throw new ForbiddenException();
+      const retired = (
+        await db.query('SELECT retired_reason FROM products WHERE id=$1 AND retired_at IS NOT NULL', [id])
+      ).rows[0];
+      if (retired)
+        throw new ForbiddenException('El administrador retiró este producto. Motivo: ' + retired.retired_reason + '.');
       const result = await db.query(
         'UPDATE products p SET published=true FROM suppliers s,companies c WHERE p.id=$1 AND p.supplier_id=s.id AND c.supplier_id=s.id AND c.id=$2 AND s.verified AND (p.published OR p.stock>=p.minimum) RETURNING p.id',
         [id, actor.company_id],
@@ -316,6 +333,129 @@ export class IdentityService {
       if (!result.rowCount) throw new ForbiddenException('Requiere propiedad y proveedor verificado.');
       await this.audit(db, actor, 'publish-product', id);
       return { published: true };
+    });
+  }
+  // ---- Moderación (solo administrador de la plataforma) ----
+  private reason(value: unknown): string {
+    const result = typeof value === 'string' ? value.trim() : '';
+    if (result.length < 5 || result.length > 500)
+      throw new BadRequestException('Escribe un motivo de 5 a 500 caracteres.');
+    return result;
+  }
+  private async moderation(db: PoolClient, actor: Actor, action: string, id: string, name: string, reason: string) {
+    await db.query(
+      'INSERT INTO moderation_actions(actor_id,action,resource_id,resource_name,reason) VALUES($1,$2,$3,$4,$5)',
+      [actor.id, action, id, name, reason],
+    );
+  }
+  async companies(auth?: string, search?: string) {
+    const term = typeof search === 'string' && search.trim() ? search.trim().slice(0, 100) : null;
+    return this.tx(async db => {
+      await this.actor(db, auth, true);
+      return (
+        await db.query(
+          `SELECT c.id,c.ruc,c.legal_name AS "legalName",c.status,c.suspended_reason AS "suspendedReason",
+             COALESCE(s.verified,false) AS "supplierVerified",
+             (SELECT count(*)::int FROM products p WHERE p.supplier_id=c.supplier_id AND p.published) AS "publishedProducts"
+           FROM companies c LEFT JOIN suppliers s ON s.id=c.supplier_id
+           WHERE $1::text IS NULL OR strpos(lower(c.legal_name || ' ' || c.ruc), lower($1)) > 0
+           ORDER BY c.status='suspended' DESC, c.legal_name LIMIT 100`,
+          [term],
+        )
+      ).rows;
+    });
+  }
+  async suspendCompany(id: string, body: any, auth?: string) {
+    uuid(id);
+    const why = this.reason(body?.reason);
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth, true);
+      const company = (
+        await db.query(
+          "UPDATE companies SET status='suspended',suspended_reason=$2 WHERE id=$1 AND status='enabled' RETURNING legal_name",
+          [id, why],
+        )
+      ).rows[0];
+      if (!company) throw new BadRequestException('Solo se puede suspender una empresa habilitada.');
+      // Cierra las sesiones abiertas de sus usuarios: dejan de operar de inmediato.
+      await db.query(
+        'DELETE FROM identity_sessions WHERE account_id IN (SELECT account_id FROM memberships WHERE company_id=$1)',
+        [id],
+      );
+      await this.moderation(db, actor, 'suspend-company', id, company.legal_name, why);
+      return { status: 'suspended' };
+    });
+  }
+  async reactivateCompany(id: string, body: any, auth?: string) {
+    uuid(id);
+    const why = this.reason(body?.reason);
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth, true);
+      const company = (
+        await db.query(
+          "UPDATE companies SET status='enabled',suspended_reason=NULL WHERE id=$1 AND status='suspended' RETURNING legal_name",
+          [id],
+        )
+      ).rows[0];
+      if (!company) throw new BadRequestException('La empresa no está suspendida.');
+      await this.moderation(db, actor, 'reactivate-company', id, company.legal_name, why);
+      return { status: 'enabled' };
+    });
+  }
+  async retireProduct(id: string, body: any, auth?: string) {
+    uuid(id);
+    const why = this.reason(body?.reason);
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth, true);
+      const product = (
+        await db.query(
+          'UPDATE products SET published=false,retired_at=now(),retired_reason=$2 WHERE id=$1 AND retired_at IS NULL RETURNING name',
+          [id, why],
+        )
+      ).rows[0];
+      if (!product) throw new BadRequestException('El producto no existe o ya fue retirado.');
+      await this.moderation(db, actor, 'retire-product', id, product.name, why);
+      return { retired: true };
+    });
+  }
+  async restoreProduct(id: string, body: any, auth?: string) {
+    uuid(id);
+    const why = this.reason(body?.reason);
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth, true);
+      const product = (
+        await db.query(
+          'UPDATE products SET retired_at=NULL,retired_reason=NULL,published=(stock>=minimum) WHERE id=$1 AND retired_at IS NOT NULL RETURNING name',
+          [id],
+        )
+      ).rows[0];
+      if (!product) throw new BadRequestException('El producto no está retirado.');
+      await this.moderation(db, actor, 'restore-product', id, product.name, why);
+      return { retired: false };
+    });
+  }
+  async retiredProducts(auth?: string) {
+    return this.tx(async db => {
+      await this.actor(db, auth, true);
+      return (
+        await db.query(
+          `SELECT p.id,p.name,s.name AS supplier,p.retired_at AS "retiredAt",p.retired_reason AS reason
+           FROM products p JOIN suppliers s ON s.id=p.supplier_id WHERE p.retired_at IS NOT NULL
+           ORDER BY p.retired_at DESC LIMIT 100`,
+        )
+      ).rows;
+    });
+  }
+  async moderationLog(auth?: string) {
+    return this.tx(async db => {
+      await this.actor(db, auth, true);
+      return (
+        await db.query(
+          `SELECT m.id::text,m.action,m.resource_id AS "resourceId",m.resource_name AS "resourceName",m.reason,
+             m.created_at AS "createdAt",a.email AS actor
+           FROM moderation_actions m JOIN accounts a ON a.id=m.actor_id ORDER BY m.id DESC LIMIT 50`,
+        )
+      ).rows;
     });
   }
 }

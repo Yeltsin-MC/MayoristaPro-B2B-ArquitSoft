@@ -220,7 +220,7 @@ export class CatalogImports {
         if (row.snapshot) {
           const updated = await db.query(
             `UPDATE products SET name=$3,category=$4,unit=$5,units_per_pack=$6,
-            minimum=$7,multiple=$8,price=$9,currency=$10,includes_tax=$11,published=$12
+            minimum=$7,multiple=$8,price=$9,currency=$10,includes_tax=$11,published=($12 AND retired_at IS NULL)
             WHERE supplier_id=$1 AND sku=$2 RETURNING id`,
             values,
           );

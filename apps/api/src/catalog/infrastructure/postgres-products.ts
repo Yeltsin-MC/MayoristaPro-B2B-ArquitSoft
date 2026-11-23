@@ -37,6 +37,7 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
       FROM products p
       JOIN suppliers s ON s.id = p.supplier_id
       WHERE p.published AND s.verified
+        AND NOT EXISTS(SELECT 1 FROM companies c WHERE c.supplier_id=s.id AND c.status='suspended')
         AND ($3::text IS NULL OR strpos(lower(p.name || ' ' || s.name || ' ' || p.category), lower($3)) > 0)
         AND ($4::text IS NULL OR p.category = $4)
         AND ($5::uuid IS NULL OR s.id = $5)
@@ -63,6 +64,7 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
       SELECT DISTINCT p.category, s.id, s.name
       FROM products p JOIN suppliers s ON s.id = p.supplier_id
       WHERE p.published AND s.verified
+        AND NOT EXISTS(SELECT 1 FROM companies c WHERE c.supplier_id=s.id AND c.status='suspended')
       ORDER BY p.category, s.name, s.id
     `);
     return {

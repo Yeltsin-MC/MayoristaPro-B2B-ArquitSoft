@@ -507,33 +507,71 @@
               <p class="quantity-error">{{ issue }}</p>
             }
           </div>
-          <div class="detail-actions">
-            <button
-              type="button"
-              class="quote-button"
-              [disabled]="!product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))"
-              (click)="productDialog.close(); requestQuote(product, quantityFor(product))"
-            >
-              {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
-              <span aria-hidden="true">↗</span>
-            </button>
-            @if (product.quoteEnabled && product.available) {
+          @if (!isAdmin()) {
+            <div class="detail-actions">
               <button
                 type="button"
-                class="secondary add-to-list"
-                [disabled]="!!quantityError(product, quantityFor(product))"
-                (click)="addToList(product)"
+                class="quote-button"
+                [disabled]="
+                  !product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))
+                "
+                (click)="productDialog.close(); requestQuote(product, quantityFor(product))"
               >
-                {{ orderList.has(product.id) ? '✓ En tu lista · actualizar' : '+ Agregar a la lista de pedido' }}
+                {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
+                <span aria-hidden="true">↗</span>
               </button>
-            }
-          </div>
-          @if (!product.quoteEnabled) {
+              @if (product.quoteEnabled && product.available) {
+                <button
+                  type="button"
+                  class="secondary add-to-list"
+                  [disabled]="!!quantityError(product, quantityFor(product))"
+                  (click)="addToList(product)"
+                >
+                  {{ orderList.has(product.id) ? '✓ En tu lista · actualizar' : '+ Agregar a la lista de pedido' }}
+                </button>
+              }
+            </div>
+          }
+          @if (isAdmin()) {
+            <section class="admin-moderation" aria-label="Moderación del producto">
+              @if (!retireOpen()) {
+                <button type="button" class="danger" (click)="retireOpen.set(true)">Retirar producto</button>
+                <p class="muted">
+                  Solo administración ve este botón. El producto deja de mostrarse y queda en la bitácora.
+                </p>
+              } @else {
+                <label
+                  >Motivo del retiro (lo verá el proveedor)<textarea
+                    name="retireReason"
+                    rows="2"
+                    maxlength="500"
+                    [(ngModel)]="retireReason"
+                    placeholder="Ej.: producto prohibido, imagen engañosa…"
+                  ></textarea>
+                </label>
+                <div class="moderation-buttons">
+                  <button
+                    type="button"
+                    class="danger"
+                    [disabled]="retireBusy() || retireReason.trim().length < 5"
+                    (click)="retire(product, productDialog)"
+                  >
+                    Confirmar retiro
+                  </button>
+                  <button type="button" class="secondary" (click)="retireOpen.set(false)">Cancelar</button>
+                </div>
+              }
+              @if (retireMessage()) {
+                <p class="quantity-error" role="alert">{{ retireMessage() }}</p>
+              }
+            </section>
+          }
+          @if (!product.quoteEnabled && !isAdmin()) {
             <p class="quote-unavailable">
               Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.
             </p>
           }
-          @if (!product.quoteEnabled || !product.available) {
+          @if ((!product.quoteEnabled || !product.available) && !isAdmin()) {
             @if (quoteAlternative()) {
               <button class="text-button quote-alternative" type="button" (click)="showAlternative(productDialog)">
                 Ver otra oferta para cotizar

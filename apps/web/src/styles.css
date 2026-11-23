@@ -3746,3 +3746,71 @@ html {
     padding: 8px 10px;
   }
 }
+
+/* Moderación del administrador. */
+button.danger {
+  background: #c62828;
+  color: white;
+}
+button.danger:hover {
+  background: #a31f1f;
+}
+.admin-moderation {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px dashed #c62828;
+  border-radius: 12px;
+  background: #fff7f7;
+}
+.admin-moderation label,
+.admin-card label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+.admin-moderation textarea,
+.admin-card textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  resize: vertical;
+}
+.moderation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.admin-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.admin-search label {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 260px;
+  font-weight: 600;
+}
+.admin-search input {
+  min-height: 46px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.moderation-log {
+  display: grid;
+  gap: 8px;
+  padding: 14px 18px 14px 36px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.moderation-log li span {
+  display: block;
+  font-size: 0.9rem;
+}

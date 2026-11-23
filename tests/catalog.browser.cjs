@@ -24,7 +24,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
     process.env.DATABASE_URL = url.toString();
     db = new Pool({connectionString:process.env.DATABASE_URL});
     for (const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql',
-      'database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/migrations/007_catalog_cache.sql','database/migrations/010_product_media.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
+      'database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/migrations/007_catalog_cache.sql','database/migrations/010_product_media.sql','database/migrations/011_moderation.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
     const hash = await passwordHash(password);
     await db.query("INSERT INTO accounts(email,password_hash,platform_admin) VALUES('admin@browser.test',$1,true)",[hash]);
     for (const [i,name] of ['verified','pending','reader'].entries()) {
@@ -67,6 +67,8 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
         await expect(page.getByRole('button',{name:'Mi empresa',exact:true})).toHaveCount(0);
         await page.getByRole('button',{name:'Solicitudes (administración)',exact:true}).click();
         await expect(page.getByRole('button',{name:'Verificar proveedor por separado',exact:true})).toBeVisible();
+        await expect(page.getByRole('heading',{name:'Empresas registradas',exact:true})).toBeVisible();
+        await expect(page.getByRole('heading',{name:'Bitácora de moderación',exact:true})).toBeVisible();
       });
     });
     await t.test('proveedor pendiente no ve administración, publicación ni carga masiva',async()=>{
