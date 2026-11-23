@@ -17,6 +17,25 @@ import {
   unitName,
 } from './wholesale-quantity';
 
+/** Foto real elegida a mano para cada categoría de «Qué puedes comprar»; sin foto, se usa la ilustración. */
+const CATEGORY_PHOTOS: Record<string, string> = {
+  'Librería y papelería': 'lapiz-1.webp',
+  'Suministros de oficina': 'archivador-1.webp',
+  'Tecnología y periféricos': 'teclado-mouse-1.webp',
+  'Insumos secos de panadería': 'harina-1.webp',
+  'Acabados para construcción': 'pintura-1.webp',
+  'Limpieza e higiene': 'desinfectante-1.webp',
+  'Abarrotes y bebidas': 'arroz-1.webp',
+  'Embalaje y empaques': 'cinta-embalaje-1.webp',
+  'Ferretería y herramientas': 'llaves-1.webp',
+  'Material eléctrico': 'breaker-1.webp',
+  'Seguridad industrial': 'lentes-seguridad-1.webp',
+  'Descartables y cafetería': 'vaso-plastico-1.webp',
+  'Textil y uniformes': 'casaca-2.webp',
+  'Botiquín y primeros auxilios': 'botiquin-1.webp',
+  'Mobiliario de oficina': 'silla-2.webp',
+};
+
 @Component({
   selector: 'app-catalog-page',
   imports: [CurrencyPipe, FormsModule, CatalogPhotoComponent, RouterLink],
@@ -203,6 +222,11 @@ export class CatalogComponent {
       .slice(0, 2)
       .map(word => word[0].toUpperCase())
       .join('');
+  }
+
+  categoryPhoto(category: string): string | undefined {
+    const file = CATEGORY_PHOTOS[category];
+    return file ? '/images/productos/' + file : undefined;
   }
 
   imageKind(name: string): string {

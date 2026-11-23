@@ -73,9 +73,12 @@
             [attr.aria-pressed]="category === c"
             (click)="selectCategory(c)"
           >
-            <app-catalog-photo aria-hidden="true" [kind]="imageKind(c)" class="family-photo category-photo" /><span>{{
-              c
-            }}</span>
+            <app-catalog-photo
+              aria-hidden="true"
+              [kind]="imageKind(c)"
+              [photo]="categoryPhoto(c)"
+              class="family-photo category-photo"
+            /><span>{{ c }}</span>
           </button>
         }
       </div>
