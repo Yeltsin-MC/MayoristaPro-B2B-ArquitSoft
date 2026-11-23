@@ -289,6 +289,122 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
 
+  /admin/companies:
+    get:
+      tags: [Administración]
+      summary: Empresas registradas (moderación)
+      security: [{ bearer: [] }]
+      parameters:
+        - { name: q, in: query, required: false, schema: { type: string, maxLength: 100 }, description: Nombre o RUC }
+      responses:
+        '200': { description: Lista de empresas con su estado }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/companies/{id}/suspend:
+    post:
+      tags: [Administración]
+      summary: Suspender una empresa (no puede ingresar y sus productos se ocultan)
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 5, maxLength: 500 }
+      responses:
+        '201': { description: Empresa suspendida }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/companies/{id}/reactivate:
+    post:
+      tags: [Administración]
+      summary: Reactivar una empresa suspendida
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 5, maxLength: 500 }
+      responses:
+        '201': { description: Empresa reactivada }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/products/retired:
+    get:
+      tags: [Administración]
+      summary: Productos retirados por administración
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de productos retirados }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/products/{id}/retire:
+    post:
+      tags: [Administración]
+      summary: Retirar un producto del catálogo con motivo
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 5, maxLength: 500 }
+      responses:
+        '201': { description: Producto retirado }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/products/{id}/restore:
+    post:
+      tags: [Administración]
+      summary: Restaurar un producto retirado
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, minLength: 5, maxLength: 500 }
+      responses:
+        '201': { description: Producto restaurado }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/moderation:
+    get:
+      tags: [Administración]
+      summary: Bitácora de moderación (quién, qué, cuándo y por qué)
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Últimas 50 acciones }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
   /providers/{id}/verify:
     patch:
       tags: [Administración]

@@ -189,8 +189,9 @@ async function loadDemo(config = configuration()) {
           JOIN companies c ON c.supplier_id=s.id WHERE p.published AND s.verified AND c.status='enabled') AS quotable`)).rows[0];
       const expected = manifest.providers.length;
       const categories = new Set(manifest.providers.map(p => p.category)).size;
-      if (counts.suppliers !== expected || counts.products !== expected * 30 || counts.categories !== categories || counts.quotable !== expected * 30)
-        throw new Error(`Los conteos de la demo no corresponden a ${expected} proveedores y ${expected * 30} productos cotizables.`);
+      // Mínimos: las empresas o productos que el usuario cree en sus pruebas no invalidan la demo.
+      if (counts.suppliers < expected || counts.products < expected * 30 || counts.categories < categories || counts.quotable < expected * 30)
+        throw new Error(`Los conteos de la demo no alcanzan ${expected} proveedores y ${expected * 30} productos cotizables.`);
       return { schema: config.schema, ...counts, imports };
     });
   } finally {

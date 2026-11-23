@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { CatalogProduct } from './catalog-product';
@@ -20,7 +21,7 @@ function accountTarget(url: string): AccountTarget {
 }
 @Component({
   selector: 'app-identity',
-  imports: [FormsModule, CatalogImportComponent, TradeComponent],
+  imports: [DatePipe, FormsModule, CatalogImportComponent, TradeComponent],
   template: ` <section aria-label="Cuenta empresarial" class="identity">
     <div class="account-heading">
       <div>
@@ -267,6 +268,112 @@ function accountTarget(url: string): AccountTarget {
           ><button [disabled]="busy()">Verificar proveedor por separado</button>
         </form>
       }
+      @if (admin()) {
+        <h3 class="admin-section-title">Empresas registradas</h3>
+        <form class="admin-search" role="search" (ngSubmit)="loadCompanies()">
+          <label
+            >Buscar empresa por nombre o RUC<input
+              name="companySearch"
+              type="search"
+              [(ngModel)]="companySearch"
+              placeholder="Ej.: Andina o 20123456789"
+          /></label>
+          <button class="secondary" [disabled]="busy()">Buscar</button>
+        </form>
+        @for (company of companies(); track company.id) {
+          <article [class]="company.status === 'suspended' ? 'admin-card tone-wait' : 'admin-card tone-ok'">
+            <h3>{{ company.legalName }}</h3>
+            <p>
+              RUC {{ company.ruc }} · {{ company.publishedProducts }} productos publicados
+              {{ company.supplierVerified ? '· proveedor verificado' : '' }}
+            </p>
+            <p class="status-pill">
+              {{
+                company.status === 'suspended'
+                  ? 'Suspendida'
+                  : company.status === 'enabled'
+                    ? 'Habilitada'
+                    : 'Pendiente'
+              }}
+            </p>
+            @if (company.status === 'suspended' && company.suspendedReason) {
+              <p class="muted">Motivo: {{ company.suspendedReason }}</p>
+            }
+            @if (moderating()?.id === company.id) {
+              <label
+                >{{ company.status === 'suspended' ? 'Motivo de la reactivación' : 'Motivo de la suspensión'
+                }}<textarea name="moderationReason" rows="2" maxlength="500" [(ngModel)]="moderationReason"></textarea>
+              </label>
+              <div class="moderation-buttons">
+                <button
+                  [class]="company.status === 'suspended' ? '' : 'danger'"
+                  [disabled]="busy() || moderationReason.trim().length < 5"
+                  (click)="moderateCompany(company)"
+                >
+                  {{ company.status === 'suspended' ? 'Confirmar reactivación' : 'Confirmar suspensión' }}
+                </button>
+                <button class="secondary" (click)="moderating.set(null)">Cancelar</button>
+              </div>
+            } @else if (company.status === 'enabled') {
+              <button class="danger" [disabled]="busy()" (click)="startModeration(company.id)">
+                Suspender {{ company.legalName }}
+              </button>
+            } @else if (company.status === 'suspended') {
+              <button class="secondary" [disabled]="busy()" (click)="startModeration(company.id)">
+                Reactivar {{ company.legalName }}
+              </button>
+            }
+          </article>
+        } @empty {
+          <p class="empty-state">No encontramos empresas con esa búsqueda.</p>
+        }
+        <h3 class="admin-section-title">Productos retirados</h3>
+        <p class="muted">Para retirar un producto, ábrelo en el Catálogo y usa «Retirar producto».</p>
+        @for (product of retired(); track product.id) {
+          <article class="admin-card tone-wait">
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.supplier }} · retirado el {{ product.retiredAt | date: 'd/M/yyyy HH:mm' }}</p>
+            <p class="muted">Motivo: {{ product.reason }}</p>
+            @if (moderating()?.id === product.id) {
+              <label
+                >Motivo para volver a publicarlo<textarea
+                  name="restoreReason"
+                  rows="2"
+                  maxlength="500"
+                  [(ngModel)]="moderationReason"
+                ></textarea>
+              </label>
+              <div class="moderation-buttons">
+                <button [disabled]="busy() || moderationReason.trim().length < 5" (click)="restoreProduct(product.id)">
+                  Confirmar restauración
+                </button>
+                <button class="secondary" (click)="moderating.set(null)">Cancelar</button>
+              </div>
+            } @else {
+              <button class="secondary" [disabled]="busy()" (click)="startModeration(product.id)">
+                Restaurar {{ product.name }}
+              </button>
+            }
+          </article>
+        } @empty {
+          <p class="empty-state">No hay productos retirados.</p>
+        }
+        <h3 class="admin-section-title">Bitácora de moderación</h3>
+        @if (moderationLog().length) {
+          <ol class="moderation-log">
+            @for (entry of moderationLog(); track entry.id) {
+              <li>
+                <strong>{{ actionLabel(entry.action) }}</strong> · {{ entry.resourceName }}
+                <span class="muted"
+                  >{{ entry.createdAt | date: 'd/M/yyyy HH:mm' }} · {{ entry.actor }} · Motivo: {{ entry.reason }}</span
+                >
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="empty-state">Aún no hay acciones de moderación.</p>
+        }
+      }
     }
     @if (message() && token()) {
       <p class="notice" [class.error]="failed()" [attr.role]="failed() ? 'alert' : 'status'" aria-live="polite">
@@ -309,6 +416,13 @@ export class IdentityComponent {
   members = signal<any[]>([]);
   requests = signal<any[]>([]);
   link = signal('');
+  companies = signal<any[]>([]);
+  retired = signal<any[]>([]);
+  moderationLog = signal<any[]>([]);
+  /** Tarjeta (empresa o producto) donde el admin está escribiendo el motivo. */
+  moderating = signal<{ id: string } | null>(null);
+  moderationReason = '';
+  companySearch = '';
   constructor() {
     if (this.invitation) this.mode = 'accept';
     const navigation = this.router.events.subscribe(event => {
@@ -465,7 +579,54 @@ export class IdentityComponent {
   async loadAdmin() {
     const result = await this.call('admin/enrollments');
     this.requests.set(result ?? []);
-    if (!result) this.admin.set(false);
+    if (!result) {
+      this.admin.set(false);
+      return;
+    }
+    await Promise.all([this.loadCompanies(), this.loadModeration()]);
+  }
+  async loadModeration() {
+    const [retired, log] = await Promise.all([this.call('admin/products/retired'), this.call('admin/moderation')]);
+    this.retired.set(retired ?? []);
+    this.moderationLog.set(log ?? []);
+  }
+  async loadCompanies() {
+    const query = this.companySearch.trim() ? '?q=' + encodeURIComponent(this.companySearch.trim()) : '';
+    const result = await this.call('admin/companies' + query);
+    if (result) this.companies.set(result);
+  }
+  startModeration(id: string) {
+    this.moderationReason = '';
+    this.moderating.set({ id });
+  }
+  actionLabel(action: string): string {
+    return (
+      {
+        'retire-product': 'Producto retirado',
+        'restore-product': 'Producto restaurado',
+        'suspend-company': 'Empresa suspendida',
+        'reactivate-company': 'Empresa reactivada',
+      }[action] ?? action
+    );
+  }
+  async moderateCompany(company: any) {
+    const action = company.status === 'suspended' ? 'reactivate' : 'suspend';
+    const result = await this.call('admin/companies/' + company.id + '/' + action, 'POST', {
+      reason: this.moderationReason,
+    });
+    if (!result) return;
+    this.moderating.set(null);
+    await Promise.all([this.loadCompanies(), this.loadModeration()]);
+    this.message.set(
+      action === 'suspend' ? 'Empresa suspendida. Sus productos ya no se muestran.' : 'Empresa reactivada.',
+    );
+  }
+  async restoreProduct(id: string) {
+    const result = await this.call('admin/products/' + id + '/restore', 'POST', { reason: this.moderationReason });
+    if (!result) return;
+    this.moderating.set(null);
+    await this.loadModeration();
+    this.message.set('Producto restaurado. Vuelve a mostrarse si tiene stock.');
   }
   async approve(id: string) {
     if (await this.call('admin/enrollments/' + id + '/approve', 'POST')) await this.loadAdmin();

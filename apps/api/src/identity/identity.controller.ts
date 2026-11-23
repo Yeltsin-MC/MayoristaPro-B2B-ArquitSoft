@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -73,6 +74,43 @@ export class IdentityController {
   }
   @Post('admin/enrollments/:id/approve') approve(@Param('id') id: string, @Headers('authorization') auth?: string) {
     return this.identity.approve(id, auth);
+  }
+  @Get('admin/companies') companies(@Query('q') q?: string, @Headers('authorization') auth?: string) {
+    return this.identity.companies(auth, q);
+  }
+  @Post('admin/companies/:id/suspend') suspend(
+    @Param('id') id: string,
+    @Body() body: any,
+    @Headers('authorization') auth?: string,
+  ) {
+    return this.identity.suspendCompany(id, body ?? {}, auth);
+  }
+  @Post('admin/companies/:id/reactivate') reactivate(
+    @Param('id') id: string,
+    @Body() body: any,
+    @Headers('authorization') auth?: string,
+  ) {
+    return this.identity.reactivateCompany(id, body ?? {}, auth);
+  }
+  @Get('admin/products/retired') retired(@Headers('authorization') auth?: string) {
+    return this.identity.retiredProducts(auth);
+  }
+  @Post('admin/products/:id/retire') retire(
+    @Param('id') id: string,
+    @Body() body: any,
+    @Headers('authorization') auth?: string,
+  ) {
+    return this.identity.retireProduct(id, body ?? {}, auth);
+  }
+  @Post('admin/products/:id/restore') restoreProduct(
+    @Param('id') id: string,
+    @Body() body: any,
+    @Headers('authorization') auth?: string,
+  ) {
+    return this.identity.restoreProduct(id, body ?? {}, auth);
+  }
+  @Get('admin/moderation') moderationLog(@Headers('authorization') auth?: string) {
+    return this.identity.moderationLog(auth);
   }
   @Post('company/invitations') invite(@Body() body: any, @Headers('authorization') auth?: string) {
     return this.identity.invite(body ?? {}, auth);

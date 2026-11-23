@@ -19,7 +19,7 @@ test('T2: identidad empresarial y permisos con PostgreSQL real', async t => {
   const url=new URL(original); url.searchParams.set('options',`-c search_path=${schema},public`);
   process.env.DATABASE_URL=url.toString();
   db=new Pool({connectionString:process.env.DATABASE_URL});
-  for(const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql','database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/migrations/007_catalog_cache.sql','database/migrations/010_product_media.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
+  for(const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql','database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/migrations/007_catalog_cache.sql','database/migrations/010_product_media.sql','database/migrations/011_moderation.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
   await db.query('INSERT INTO accounts(email,password_hash,platform_admin) VALUES($1,$2,true)',['admin@example.test',await passwordHash(password)]);
   app=await NestFactory.create(AppModule,{logger:false,abortOnError:false});
   app.setGlobalPrefix('api/v1');await app.listen(0,'127.0.0.1');
@@ -90,6 +90,33 @@ test('T2: identidad empresarial y permisos con PostgreSQL real', async t => {
    const newToken=await login('invited@example.test');assert.equal((await call('auth/me','GET',undefined,newToken)).status,403);
    const members=(await call('company/members','GET',undefined,tokenB)).body;
    assert.ok(!members.some(m=>m.email==='invited@example.test'));
+  });
+  await t.test('moderación: retirar producto y suspender empresa con bitácora',async()=>{
+   const reason={reason:'Producto prohibido en la plataforma'};
+   assert.equal((await call('admin/products/'+productA+'/retire','POST',reason,tokenA)).status,403);
+   assert.equal((await call('admin/products/'+productA+'/retire','POST',{reason:'no'},admin)).status,400);
+   assert.equal((await call('admin/products/'+productA+'/retire','POST',reason,admin)).status,201);
+   assert.ok(!(await call('products')).body.items.some(p=>p.id===productA));
+   const blocked=await call('products/'+productA+'/publish','POST',{},tokenA);
+   assert.equal(blocked.status,403);assert.match(blocked.body.message,/retiró/);
+   assert.ok((await call('admin/products/retired','GET',undefined,admin)).body.some(p=>p.id===productA));
+   assert.equal((await call('admin/products/'+productA+'/restore','POST',{reason:'Revisado, es legal'},admin)).status,201);
+   assert.ok((await call('products')).body.items.some(p=>p.id===productA));
+   const companies=(await call('admin/companies?q=20111111111','GET',undefined,admin)).body;
+   assert.equal(companies.length,1);assert.equal(companies[0].status,'enabled');
+   const session=await login('a@example.test');
+   assert.equal((await call('admin/companies/'+companyA+'/suspend','POST',{reason:'Vende productos ilegales'},admin)).status,201);
+   assert.equal((await call('auth/me','GET',undefined,session)).status,401);
+   const denied=await call('auth/login','POST',{email:'a@example.test',password});
+   assert.equal(denied.status,403);assert.match(denied.body.message,/suspendida.*ilegales/);
+   assert.ok(!(await call('products')).body.items.some(p=>p.id===productA));
+   assert.equal((await call('admin/companies/'+companyA+'/reactivate','POST',{reason:'Corrigió su catálogo'},admin)).status,201);
+   tokenA=await login('a@example.test');
+   assert.ok((await call('products')).body.items.some(p=>p.id===productA));
+   const log=(await call('admin/moderation','GET',undefined,admin)).body;
+   assert.deepEqual(log.map(e=>e.action),['reactivate-company','suspend-company','restore-product','retire-product']);
+   assert.equal(log[1].actor,'admin@example.test');assert.equal(log[1].reason,'Vende productos ilegales');
+   assert.equal((await call('admin/moderation','GET',undefined,tokenA)).status,403);
   });
   await t.test('sesiones vencidas, logout y credenciales inválidas',async()=>{
    assert.equal((await call('auth/login','POST',{email:'a@example.test',password:'Incorrecta-2026!'})).status,401);
