@@ -23,6 +23,8 @@ export class AppComponent {
   readonly categories = signal<string[]>([]);
   /** Al bajar, el encabezado fijo se compacta (oculta lema y categorías) para dejar espacio. */
   readonly scrolled = signal(false);
+  /** En Mi cuenta (cotizaciones, pedidos, administración) no se muestra la barra de categorías. */
+  readonly onAccount = signal(false);
   /** En celular, el menú de categorías se abre con el botón «Categorías». */
   readonly menuOpen = signal(false);
   onScroll() {
@@ -42,11 +44,13 @@ export class AppComponent {
     // Al cambiar de página (catálogo ↔ cuenta) se empieza arriba; dentro de la
     // cuenta, cada vista hace su propio desplazamiento hasta el contenido abierto.
     let page = this.page(this.router.url);
+    this.onAccount.set(page === 'cuenta');
     const events = this.router.events.subscribe(event => {
       if (!(event instanceof NavigationEnd)) return;
       const next = this.page(event.urlAfterRedirects);
       if (next !== page && !event.urlAfterRedirects.includes('#')) window.scrollTo(0, 0);
       page = next;
+      this.onAccount.set(next === 'cuenta');
       const fragment = event.urlAfterRedirects.split('#')[1];
       if (fragment) this.alignAnchor(decodeURIComponent(fragment));
     });

@@ -192,7 +192,8 @@ export class IdentityService {
       await this.actor(db, auth, true);
       return (
         await db.query(
-          'SELECT r.id,r.evidence,r.approved_at,c.ruc,c.legal_name,c.supplier_id,a.email FROM enrollment_requests r JOIN companies c ON c.id=r.company_id JOIN accounts a ON a.id=r.account_id ORDER BY r.id',
+          // Pendientes primero; supplier_verified evita ofrecer «Verificar» a quien ya lo está.
+          'SELECT r.id,r.evidence,r.approved_at,c.ruc,c.legal_name,c.supplier_id,a.email,COALESCE(s.verified,false) AS supplier_verified FROM enrollment_requests r JOIN companies c ON c.id=r.company_id JOIN accounts a ON a.id=r.account_id LEFT JOIN suppliers s ON s.id=c.supplier_id ORDER BY r.approved_at IS NOT NULL,r.id',
         )
       ).rows;
     });

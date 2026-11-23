@@ -46,7 +46,9 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
    const stock=(await f.db.query('SELECT stock FROM products WHERE id=$1',[f.products.vendor.id])).rows[0].stock;assert.equal(stock,18);
    const reservations=(await f.db.query('SELECT quantity,state,expires_at FROM stock_reservations WHERE order_id=$1',[order.id])).rows;
    assert.deepEqual(reservations,[{quantity:2,state:'activa',expires_at:null}]);assert.equal(order.total,'104.00');assert.equal(order.state,'pendiente');
-   await buyer.getByRole('button',{name:'Crear pedido y reservar stock',exact:true}).click();await expect(buyer.getByRole('heading',{name:'Pedido pendiente',exact:true})).toBeVisible();
+   // Con el pedido ya creado, la oferta ofrece «Ver pedido» y no deja crear otro.
+   await expect(buyer.getByRole('button',{name:'Crear pedido y reservar stock',exact:true})).toHaveCount(0);
+   await buyer.getByRole('button',{name:'Ver pedido',exact:true}).first().click();await expect(buyer.getByRole('heading',{name:'Pedido pendiente',exact:true})).toBeVisible();
    assert.equal((await f.db.query('SELECT stock FROM products WHERE id=$1',[f.products.vendor.id])).rows[0].stock,18);
    const seller=pages[1];await open(seller,q.id);await expect(seller.getByText('S/ 108.00',{exact:true})).toHaveCount(0);
    await mkdir('.angular/t4-evidence',{recursive:true});

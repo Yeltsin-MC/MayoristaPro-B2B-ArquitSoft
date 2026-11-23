@@ -24,7 +24,7 @@ function accountTarget(url: string): AccountTarget {
   template: ` <section aria-label="Cuenta empresarial" class="identity">
     <div class="account-heading">
       <div>
-        <h2>Cuenta empresarial</h2>
+        <h2>{{ token() && admin() ? 'Panel de administración' : 'Cuenta empresarial' }}</h2>
         @if (!token()) {
           <p>Demo con empresas ficticias. El alta se revisa manualmente.</p>
         }
@@ -33,8 +33,6 @@ function accountTarget(url: string): AccountTarget {
         <div class="actions">
           @if (admin()) {
             <button class="secondary" (click)="loadAdmin()">Solicitudes (administración)</button>
-          } @else {
-            <button class="secondary" (click)="loadAccount()">Mi empresa</button>
           }
           <button class="secondary" (click)="logout()">Salir</button>
         </div>
@@ -61,20 +59,40 @@ function accountTarget(url: string): AccountTarget {
           </aside>
         } @else {
           <aside class="auth-aside">
-            <h3>Tu empresa,<br />mejor conectada.</h3>
-            <p>Compra y vende con una cuenta empresarial revisada manualmente.</p>
-            <ol>
-              <li>Solicita el alta de tu empresa.</li>
-              <li>Espera la aprobación de administración.</li>
-              <li>Solicita ofertas y compara proveedores.</li>
-            </ol>
+            @if (mode === 'register') {
+              <h3>Registra tu empresa.</h3>
+              <p>
+                Crea la cuenta de tu empresa con su RUC. Tú quedas como responsable y luego puedes invitar a tu equipo.
+              </p>
+              <ol>
+                <li>Completa RUC, razón social y tus datos de acceso.</li>
+                <li>Administración revisa la solicitud manualmente.</li>
+                <li>Al aprobarse, ya puedes comprar y, si vendes, publicar productos.</li>
+              </ol>
+            } @else if (mode === 'accept') {
+              <h3>Únete a tu empresa.</h3>
+              <p>Usa esta opción si el responsable de tu empresa te envió un enlace o código de invitación.</p>
+              <ol>
+                <li>Abre el enlace que te enviaron o pega el código.</li>
+                <li>Escribe tu correo y crea tu contraseña.</li>
+                <li>Entras con los permisos que te dio tu empresa.</li>
+              </ol>
+            } @else {
+              <h3>Tu empresa,<br />mejor conectada.</h3>
+              <p>Compra y vende con una cuenta empresarial revisada manualmente.</p>
+              <ol>
+                <li>Registra tu empresa o acepta una invitación.</li>
+                <li>Espera la aprobación de administración.</li>
+                <li>Solicita ofertas y compara proveedores.</li>
+              </ol>
+            }
           </aside>
         }
         <div class="auth-content">
           <nav class="auth-tabs" aria-label="Acceso">
             <button type="button" [attr.aria-pressed]="mode === 'login'" (click)="mode = 'login'">Ingresar</button
             ><button type="button" [attr.aria-pressed]="mode === 'register'" (click)="mode = 'register'">
-              Solicitar alta</button
+              Registrar mi empresa</button
             ><button type="button" [attr.aria-pressed]="mode === 'accept'" (click)="mode = 'accept'">
               Aceptar invitación
             </button>
@@ -207,6 +225,19 @@ function accountTarget(url: string): AccountTarget {
           }
         }
       }
+      @if (admin()) {
+        <dl class="company-stats" aria-label="Resumen de administración">
+          <div>
+            <dt>Solicitudes pendientes</dt>
+            <dd>{{ pendingRequests() }}</dd>
+          </div>
+          <div>
+            <dt>Empresas aprobadas</dt>
+            <dd>{{ requests().length - pendingRequests() }}</dd>
+          </div>
+        </dl>
+        <h3 class="admin-section-title">Solicitudes de alta</h3>
+      }
       @for (request of requests(); track request.id) {
         <article [class]="request.approved_at ? 'admin-card tone-ok' : 'admin-card tone-wait'">
           <h3>{{ request.legal_name }}</h3>
@@ -216,14 +247,22 @@ function accountTarget(url: string): AccountTarget {
             <button [disabled]="busy()" (click)="approve(request.id)">Aprobar vinculación</button>
           } @else {
             <p class="status-pill">Revisado manualmente</p>
-            <button class="secondary" [disabled]="busy()" (click)="verify(request.supplier_id)">
-              Verificar proveedor de {{ request.legal_name }}
-            </button>
+            @if (request.supplier_verified) {
+              <p class="status-pill">✓ Proveedor verificado</p>
+            } @else if (request.supplier_id) {
+              <button class="secondary" [disabled]="busy()" (click)="verify(request.supplier_id)">
+                Verificar proveedor de {{ request.legal_name }}
+              </button>
+            }
           }
         </article>
       }
       @if (admin()) {
-        <form class="management" (ngSubmit)="verify()">
+        @if (!requests().length) {
+          <p class="empty-state">No hay solicitudes de alta por revisar.</p>
+        }
+        <form class="management account-panel" (ngSubmit)="verify()">
+          <p class="muted">Verificación manual: usa el ID del proveedor si no aparece en la lista de arriba.</p>
           <label>ID del proveedor habilitado<input name="supplierId" required [(ngModel)]="supplierId" /></label
           ><button [disabled]="busy()">Verificar proveedor por separado</button>
         </form>
@@ -412,12 +451,16 @@ export class IdentityComponent {
       return;
     }
     this.admin.set(session.platformAdmin === true);
-    if (!this.admin()) await this.loadAccount();
+    if (this.admin()) await this.loadAdmin();
+    else await this.loadAccount();
   }
   async loadAccount() {
     const result = await this.call('auth/me');
     this.company.set(result?.company ?? null);
     this.permissions.set(result?.permissions ?? []);
+  }
+  pendingRequests(): number {
+    return this.requests().filter(r => !r.approved_at).length;
   }
   async loadAdmin() {
     const result = await this.call('admin/enrollments');
@@ -443,8 +486,10 @@ export class IdentityComponent {
     if (await this.call('company/members/' + id + '/revoke', 'POST')) await this.loadMembers();
   }
   async verify(id = this.supplierId) {
-    if (await this.call('providers/' + id + '/verify', 'PATCH'))
+    if (await this.call('providers/' + id + '/verify', 'PATCH')) {
+      await this.loadAdmin();
       this.message.set('Proveedor verificado. Revisado manualmente.');
+    }
   }
   async publishProduct() {
     if (await this.call('products/' + this.productId + '/publish', 'POST'))
