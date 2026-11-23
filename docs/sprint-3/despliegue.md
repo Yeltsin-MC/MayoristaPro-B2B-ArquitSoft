@@ -22,6 +22,15 @@ MayoristaPro B2B está publicado en **https://mayoristapro.shop**. Este document
 | Registro de imágenes | GitHub Container Registry (GHCR) | Imágenes `api`, `web` y `ai` etiquetadas con el SHA del commit. |
 | Integración continua | GitHub Actions | `ci.yml` compila y prueba cada cambio; `aws-images.yml` construye, prueba y publica las imágenes. |
 
+Cuentas de administración (los correos, contraseñas e identificadores de cuenta no se publican en el repositorio):
+
+| Servicio | Cuenta | Acceso a la consola |
+|---|---|---|
+| AWS | Cuenta raíz creada con el correo institucional del autor, región `us-east-1` (Norte de Virginia), plan con crédito promocional | Navegador. A la instancia se entra con **EC2 Instance Connect** desde la consola; el grupo de seguridad solo permite SSH desde ese servicio de AWS y desde la IP del equipo usado al crearla. |
+| Cloudflare | Correo personal del autor, plan Free | Navegador (`dash.cloudflare.com`). |
+| Hostinger | Cuenta del autor | Solo registro del dominio y nameservers. |
+| GitHub | `Yeltsin-MC` | Repositorio, Actions y GHCR. |
+
 Contenedores dentro de la instancia (Docker Compose: `compose.yaml` + `compose.demo.yaml` + `compose.aws.yaml`, perfil `cache`):
 
 | Contenedor | Tecnología | Exposición |
