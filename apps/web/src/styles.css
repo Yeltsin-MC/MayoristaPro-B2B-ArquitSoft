@@ -4131,3 +4131,24 @@ button.danger:hover {
 .import-steps input[type='file'] {
   width: 100%;
 }
+
+/* Celulares muy angostos (320–360 px): con la campana de avisos el encabezado
+   necesita menos separación para no generar scroll horizontal. */
+@media (max-width: 360px) {
+  .header-actions {
+    gap: 2px;
+  }
+  .header-actions .account-link {
+    min-width: 40px;
+  }
+  .site-header .header-search {
+    min-width: 0;
+  }
+  .site-header .header-search input {
+    min-width: 0;
+  }
+  .site-header .header-search button {
+    min-width: 44px;
+    padding-inline: 10px;
+  }
+}
