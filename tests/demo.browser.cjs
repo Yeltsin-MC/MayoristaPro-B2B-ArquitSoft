@@ -49,7 +49,7 @@ test('T3 cierre: proveedor demo existente descarga Excel, revisa error, confirma
     await page.locator('form').getByRole('button',{name:'Ingresar',exact:true}).click();
     await expect(page.getByRole('heading',{name:'Carga masiva del catálogo',exact:true})).toBeVisible();
     await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toHaveCount(0);
-    await expect(page.getByRole('button',{name:'Publicar producto',exact:true})).toBeVisible();
+    await expect(page.getByRole('heading',{name:'Mis productos',exact:true})).toBeVisible();
 
     const downloadPromise=page.waitForEvent('download');
     await page.getByRole('link',{name:'Plantilla Excel',exact:true}).click();

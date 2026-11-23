@@ -91,6 +91,27 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
 
+  /products/{id}/unpublish:
+    post:
+      tags: [Proveedor]
+      summary: Ocultar un producto propio del catálogo
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201': { description: Producto oculto }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /company/products:
+    get:
+      tags: [Proveedor]
+      summary: Todos mis productos (publicados, ocultos y retirados) para el panel «Mis productos»
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: Lista de productos propios }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
   /products/imports/template:
     get:
       tags: [Importación]

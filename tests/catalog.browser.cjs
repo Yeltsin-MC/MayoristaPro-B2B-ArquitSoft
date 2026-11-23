@@ -75,7 +75,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
       await withAccount('pending',async page=>{
         await expect(page.getByText(/La carga masiva y la publicación requieren/)).toBeVisible();
         await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toHaveCount(0);
-        await expect(page.getByRole('button',{name:'Publicar producto',exact:true})).toHaveCount(0);
+        await expect(page.getByRole('heading',{name:'Mis productos',exact:true})).toHaveCount(0);
         await expect(page.getByRole('heading',{name:'Carga masiva del catálogo',exact:true})).toHaveCount(0);
       });
     });
@@ -83,7 +83,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
       await withAccount('reader',async page=>{
         await expect(page.getByRole('heading',{name:'reader',exact:true})).toBeVisible();
         await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toHaveCount(0);
-        await expect(page.getByRole('button',{name:'Publicar producto',exact:true})).toHaveCount(0);
+        await expect(page.getByRole('heading',{name:'Mis productos',exact:true})).toHaveCount(0);
         await expect(page.getByRole('heading',{name:'Carga masiva del catálogo',exact:true})).toHaveCount(0);
       });
     });
@@ -91,7 +91,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
       await withAccount('verified',async page=>{
         await expect(page.getByRole('heading',{name:'Carga masiva del catálogo',exact:true})).toBeVisible();
         await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toHaveCount(0);
-        await expect(page.getByRole('button',{name:'Publicar producto',exact:true})).toBeVisible();
+        await expect(page.getByRole('heading',{name:'Mis productos',exact:true})).toBeVisible();
         const values={sku:'BROWSER-CUAD',nombre:'Cuaderno Browser',categoria:'Papelería',presentacion:'caja',
           unidades_por_presentacion:12,precio:'abc',moneda:'PEN',incluye_igv:'true',minimo:2,multiplo:1,stock:20,publicado:'true'};
         const templatePromise=page.waitForEvent('download');
@@ -116,6 +116,12 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
         await expect(page.getByText(/Lote aplicado: 1 altas y 0 actualizaciones/)).toBeVisible();
         const product=(await db.query("SELECT stock,price,published FROM products WHERE sku='BROWSER-CUAD'")).rows[0];
         assert.deepEqual(product,{stock:20,price:'48.00',published:true});
+        // «Mis productos» lista lo cargado y permite ocultarlo y volver a publicarlo.
+        await page.getByRole('button',{name:'Ocultar Cuaderno Browser',exact:true}).click();
+        await expect(page.getByRole('button',{name:'Publicar Cuaderno Browser',exact:true})).toBeVisible();
+        assert.equal((await db.query("SELECT published FROM products WHERE sku='BROWSER-CUAD'")).rows[0].published,false);
+        await page.getByRole('button',{name:'Publicar Cuaderno Browser',exact:true}).click();
+        await expect(page.getByRole('button',{name:'Ocultar Cuaderno Browser',exact:true})).toBeVisible();
         const downloadPromise=page.waitForEvent('download');
         await page.getByRole('button',{name:'Descargar reporte CSV',exact:true}).click();
         const download=await downloadPromise;assert.match(download.suggestedFilename(),/^reporte-.*\.csv$/);

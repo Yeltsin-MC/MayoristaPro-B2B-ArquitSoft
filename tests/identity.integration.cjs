@@ -91,6 +91,16 @@ test('T2: identidad empresarial y permisos con PostgreSQL real', async t => {
    const members=(await call('company/members','GET',undefined,tokenB)).body;
    assert.ok(!members.some(m=>m.email==='invited@example.test'));
   });
+  await t.test('mis productos: listar, ocultar y volver a publicar solo lo propio',async()=>{
+   const own=(await call('company/products','GET',undefined,tokenA)).body;
+   assert.deepEqual(own.map(p=>[p.id,p.published]),[[productA,true]]);
+   assert.equal((await call('products/'+productA+'/unpublish','POST',{},tokenB)).status,403);
+   assert.equal((await call('products/'+productA+'/unpublish','POST',{},tokenA)).status,201);
+   assert.ok(!(await call('products')).body.items.some(p=>p.id===productA));
+   assert.equal((await call('company/products','GET',undefined,tokenA)).body[0].published,false);
+   assert.equal((await call('products/'+productA+'/publish','POST',{},tokenA)).status,201);
+   assert.ok((await call('products')).body.items.some(p=>p.id===productA));
+  });
   await t.test('moderación: retirar producto y suspender empresa con bitácora',async()=>{
    const reason={reason:'Producto prohibido en la plataforma'};
    assert.equal((await call('admin/products/'+productA+'/retire','POST',reason,tokenA)).status,403);
