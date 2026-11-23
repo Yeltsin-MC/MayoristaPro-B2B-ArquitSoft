@@ -19,40 +19,94 @@ interface Preview {
 
 @Component({
   selector: 'app-catalog-import',
-  template: ` <section aria-label="Carga masiva del catálogo" class="import">
+  template: ` <section aria-label="Carga masiva del catálogo" class="import account-panel">
     <h3>Carga masiva del catálogo</h3>
-    <p>Descarga la plantilla, completa tus productos y revisa el lote antes de confirmar.</p>
-    <p>
-      <a href="/api/v1/products/imports/template">Plantilla CSV</a> ·
-      <a href="/api/v1/products/imports/template?format=xlsx">Plantilla Excel</a>
-    </p>
-    <p>
-      Hasta 500 filas y 5 MB. CSV UTF-8 separado por comas o Excel XLSX con una sola hoja, sin fórmulas. Precio por
-      presentación en PEN, decimal con punto. Publicado e incluye IGV: true o false.
-    </p>
-    <p>
-      <strong>Las actualizaciones conservan el stock existente.</strong> La columna stock solo establece existencias de
-      productos nuevos. No cambies la presentación ni su equivalencia en un SKU existente.
-    </p>
-    <label
-      >Archivo del catálogo <input type="file" accept=".csv,.xlsx" [disabled]="busy()" (change)="selectFile($event)"
-    /></label>
-    <button type="button" [disabled]="!file() || busy()" (click)="preview()">
-      {{ busy() ? 'Procesando…' : 'Cargar y revisar lote' }}
-    </button>
-    <p role="status" aria-live="polite">{{ message() }}</p>
+    <p class="muted">Sube o actualiza muchos productos a la vez con una hoja de Excel, en 4 pasos.</p>
+    <ol class="import-steps" aria-label="Pasos de la carga masiva">
+      <li [class.done]="!!file() || !!batch()" [class.current]="!file() && !batch()">
+        <span class="step-number" aria-hidden="true">1</span>
+        <div>
+          <strong>Descarga la plantilla</strong>
+          <p>
+            <a href="/api/v1/products/imports/template?format=xlsx">Plantilla Excel</a> ·
+            <a href="/api/v1/products/imports/template">Plantilla CSV</a>
+          </p>
+          <small>Llénala desde la fila 2. No cambies los nombres de la primera fila.</small>
+        </div>
+      </li>
+      <li [class.done]="!!batch()" [class.current]="!!file() && !batch()">
+        <span class="step-number" aria-hidden="true">2</span>
+        <div>
+          <strong>Sube tu archivo</strong>
+          <label
+            >Archivo del catálogo
+            <input type="file" accept=".csv,.xlsx" [disabled]="busy()" (change)="selectFile($event)"
+          /></label>
+          <button type="button" [disabled]="!file() || busy()" (click)="preview()">
+            {{ busy() ? 'Procesando…' : 'Cargar y revisar lote' }}
+          </button>
+        </div>
+      </li>
+      <li [class.done]="batch()?.status === 'applied'" [class.current]="!!batch() && batch()?.status !== 'applied'">
+        <span class="step-number" aria-hidden="true">3</span>
+        <div>
+          <strong>Revisa</strong>
+          <small>Te mostramos cuántos productos se crean, cuántos se actualizan y qué filas tienen errores.</small>
+        </div>
+      </li>
+      <li [class.done]="batch()?.status === 'applied'">
+        <span class="step-number" aria-hidden="true">4</span>
+        <div>
+          <strong>Confirma</strong>
+          <small>Nada cambia en tu catálogo hasta que confirmes.</small>
+        </div>
+      </li>
+    </ol>
+    <details class="import-rules">
+      <summary>¿Cómo lleno la plantilla?</summary>
+      <ul>
+        <li><strong>sku</strong>: tu código interno del producto. Si ya existe, el producto se actualiza.</li>
+        <li><strong>presentacion</strong> y <strong>unidades_por_presentacion</strong>: por ejemplo «caja» de 12.</li>
+        <li><strong>precio</strong>: precio de una presentación en soles, con punto decimal (48.50).</li>
+        <li>
+          <strong>minimo</strong> y <strong>multiplo</strong>: cuántas presentaciones como mínimo y de cuánto en cuánto.
+        </li>
+        <li><strong>incluye_igv</strong> y <strong>publicado</strong>: escribe true (sí) o false (no).</li>
+        <li>
+          <strong>stock</strong>: solo se usa al crear un producto; al actualizar se conserva el stock que ya tienes.
+        </li>
+        <li>
+          Hasta 500 filas y 5 MB, una sola hoja y sin fórmulas. Las fotos se agregan aparte, no van en la plantilla.
+        </li>
+      </ul>
+    </details>
+    <p role="status" aria-live="polite" [class.import-error]="failed()">{{ message() }}</p>
     @if (batch(); as b) {
       <h4>Vista previa</h4>
-      <p>Lote {{ b.id }} · Estado: {{ statusLabel(b.status) }}</p>
-      <p>
+      <dl class="import-summary">
+        <div>
+          <dt>Filas</dt>
+          <dd>{{ b.summary.total }}</dd>
+        </div>
+        <div>
+          <dt>Nuevos</dt>
+          <dd>{{ b.summary.creates }}</dd>
+        </div>
+        <div>
+          <dt>Se actualizan</dt>
+          <dd>{{ b.summary.updates }}</dd>
+        </div>
+        <div [class.has-errors]="b.summary.invalid > 0">
+          <dt>Con errores</dt>
+          <dd>{{ b.summary.invalid }}</dd>
+        </div>
+      </dl>
+      <p class="muted">
         {{ b.summary.total }} filas · {{ b.summary.creates }} altas · {{ b.summary.updates }} actualizaciones ·
-        {{ b.summary.invalid }} filas con errores.
+        {{ b.summary.invalid }} filas con errores. Estado: {{ statusLabel(b.status) }}. La vista previa vence:
+        {{ formatDate(b.expiresAt) }}.
       </p>
-      <p>
-        Vence: {{ formatDate(b.expiresAt) }}. Ante un cambio posterior, vuelve a cargar el archivo para revisar una
-        nueva vista previa.
-      </p>
-      <button type="button" (click)="downloadReport()">Descargar reporte CSV</button>
+      <button type="button" class="secondary" (click)="downloadReport()">Descargar reporte CSV</button>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Filas de la vista previa">
         <table>
           <thead>
@@ -116,23 +170,6 @@ interface Preview {
   </section>`,
   styles: [
     `
-      .import {
-        margin-top: 1.5rem;
-        border-top: 1px solid #ccc;
-        padding-top: 1rem;
-      }
-      label {
-        display: block;
-        margin: 1rem 0;
-      }
-      button,
-      input {
-        font: inherit;
-        padding: 0.5rem;
-      }
-      button {
-        margin: 0.25rem;
-      }
       .table-scroll {
         overflow: auto;
         max-height: 32rem;
@@ -146,7 +183,7 @@ interface Preview {
       }
       th,
       td {
-        border: 1px solid #ccc;
+        border: 1px solid var(--border, #dde3ec);
         padding: 0.6rem;
         text-align: left;
         vertical-align: top;
@@ -175,15 +212,18 @@ export class CatalogImportComponent {
   readonly batch = signal<Preview | null>(null);
   readonly busy = signal(false);
   readonly message = signal('');
+  readonly failed = signal(false);
   private key = '';
 
   selectFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     this.batch.set(null);
     this.message.set('');
+    this.failed.set(false);
     this.file.set(null);
     if (!file) return;
     if (!/\.(csv|xlsx)$/i.test(file.name) || file.size > 5 * 1024 * 1024) {
+      this.failed.set(true);
       this.message.set('Selecciona un CSV o XLSX de hasta 5 MB.');
       return;
     }
@@ -210,6 +250,7 @@ export class CatalogImportComponent {
     if (!file || this.busy()) return;
     this.busy.set(true);
     this.batch.set(null);
+    this.failed.set(false);
     this.message.set('Validando archivo…');
     try {
       const form = new FormData();
@@ -218,6 +259,7 @@ export class CatalogImportComponent {
       this.key = crypto.randomUUID();
       this.message.set('Revisa la vista previa antes de confirmar.');
     } catch (error) {
+      this.failed.set(true);
       this.message.set(error instanceof Error ? error.message : 'Error de conexión.');
     } finally {
       this.busy.set(false);
@@ -228,6 +270,7 @@ export class CatalogImportComponent {
     const batch = this.batch();
     if (!batch || this.busy() || batch.status !== 'preview') return;
     this.busy.set(true);
+    this.failed.set(false);
     this.message.set('Confirmando lote…');
     try {
       const applied = await this.request(batch.id + '/confirm', {
@@ -239,6 +282,7 @@ export class CatalogImportComponent {
       this.message.set('Lote aplicado correctamente.');
       this.applied.emit();
     } catch (error) {
+      this.failed.set(true);
       this.message.set(
         error instanceof Error ? error.message : 'Error de conexión. Puedes reintentar la confirmación.',
       );

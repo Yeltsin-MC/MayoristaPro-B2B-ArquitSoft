@@ -216,11 +216,73 @@ function accountTarget(url: string): AccountTarget {
         }
         @if (permissions().includes('publish')) {
           @if (company().supplier_verified) {
-            <app-catalog-import [token]="token()" />
-            <form class="management inline-form" (ngSubmit)="publishProduct()">
-              <label>ID del producto propio<input name="productId" required [(ngModel)]="productId" /></label
-              ><button [disabled]="busy()">Publicar producto</button>
-            </form>
+            <section class="my-products account-panel" aria-labelledby="my-products-title">
+              <div class="my-products-head">
+                <h3 id="my-products-title">Mis productos</h3>
+                <span class="count-pill">{{ publishedCount() }} publicados de {{ ownProducts().length }}</span>
+              </div>
+              <p class="muted">
+                Oculta un producto cuando no quieras recibir cotizaciones por él y vuelve a publicarlo cuando quieras.
+              </p>
+              @if (ownProducts().length > 6) {
+                <label class="my-products-search"
+                  >Buscar en mis productos<input
+                    name="productFilter"
+                    type="search"
+                    [(ngModel)]="productFilter"
+                    placeholder="Nombre o SKU"
+                /></label>
+              }
+              <ul class="my-products-list">
+                @for (product of visibleProducts(); track product.id) {
+                  <li>
+                    @if (product.photo) {
+                      <img [src]="product.photo" alt="" loading="lazy" />
+                    } @else {
+                      <span class="my-product-placeholder" aria-hidden="true">📦</span>
+                    }
+                    <div>
+                      <strong>{{ product.name }}</strong>
+                      <small
+                        >SKU {{ product.sku }} · S/ {{ product.price }} · stock {{ product.stock }}
+                        {{ product.unit }}</small
+                      >
+                      @if (product.retiredReason) {
+                        <small class="retired">Retirado por administración: {{ product.retiredReason }}</small>
+                      }
+                    </div>
+                    <span class="status-pill">{{
+                      product.retiredReason ? 'Retirado' : product.published ? 'Publicado' : 'Oculto'
+                    }}</span>
+                    @if (!product.retiredReason) {
+                      @if (product.published) {
+                        <button
+                          type="button"
+                          class="secondary"
+                          [disabled]="busy()"
+                          [attr.aria-label]="'Ocultar ' + product.name"
+                          (click)="setPublished(product, false)"
+                        >
+                          Ocultar
+                        </button>
+                      } @else {
+                        <button
+                          type="button"
+                          [disabled]="busy()"
+                          [attr.aria-label]="'Publicar ' + product.name"
+                          (click)="setPublished(product, true)"
+                        >
+                          Publicar
+                        </button>
+                      }
+                    }
+                  </li>
+                } @empty {
+                  <li class="empty-state">Aún no tienes productos. Súbelos con la carga masiva de abajo.</li>
+                }
+              </ul>
+            </section>
+            <app-catalog-import [token]="token()" (applied)="loadOwnProducts()" />
           } @else {
             <p class="notice">La carga masiva y la publicación requieren que administración verifique tu empresa.</p>
           }
@@ -410,7 +472,8 @@ export class IdentityComponent {
   inviteDays = 1;
   buy = true;
   publish = false;
-  productId = '';
+  productFilter = '';
+  ownProducts = signal<any[]>([]);
   supplierId = '';
   busy = signal(false);
   members = signal<any[]>([]);
@@ -434,6 +497,14 @@ export class IdentityComponent {
       const selection = this.pendingQuote();
       if (!selection || this.restoring()) return;
       untracked(() => this.explainSelection(selection.product));
+    });
+    // «Mis productos» también se carga al recuperar la sesión tras recargar la página.
+    effect(() => {
+      if (this.restoring() || !this.token() || !this.company()?.supplier_verified) return;
+      if (!this.permissions().includes('publish')) return;
+      untracked(() => {
+        if (!this.ownProducts().length) void this.loadOwnProducts();
+      });
     });
     // Abre en el panel la vista indicada por la URL.
     effect(() => {
@@ -572,6 +643,7 @@ export class IdentityComponent {
     const result = await this.call('auth/me');
     this.company.set(result?.company ?? null);
     this.permissions.set(result?.permissions ?? []);
+    await this.loadOwnProducts();
   }
   pendingRequests(): number {
     return this.requests().filter(r => !r.approved_at).length;
@@ -652,13 +724,39 @@ export class IdentityComponent {
       this.message.set('Proveedor verificado. Revisado manualmente.');
     }
   }
-  async publishProduct() {
-    if (await this.call('products/' + this.productId + '/publish', 'POST'))
-      this.message.set('Producto publicado. Ya aparece en el catálogo.');
+  publishedCount(): number {
+    return this.ownProducts().filter(p => p.published).length;
+  }
+  visibleProducts(): any[] {
+    const term = this.productFilter.trim().toLowerCase();
+    if (!term) return this.ownProducts();
+    return this.ownProducts().filter(p => (p.name + ' ' + p.sku).toLowerCase().includes(term));
+  }
+  async loadOwnProducts() {
+    if (!this.permissions().includes('publish') || !this.company()?.supplier_verified) return;
+    // Consulta silenciosa: no toca los avisos del panel ni el estado «ocupado».
+    try {
+      const response = await fetch('/api/v1/company/products', {
+        headers: { Authorization: 'Bearer ' + this.token() },
+        cache: 'no-store',
+      });
+      if (response.ok) this.ownProducts.set(await response.json());
+    } catch {
+      /* Se reintenta al publicar, ocultar o recargar. */
+    }
+  }
+  async setPublished(product: any, published: boolean) {
+    const result = await this.call('products/' + product.id + (published ? '/publish' : '/unpublish'), 'POST');
+    if (!result) return;
+    await this.loadOwnProducts();
+    this.message.set(
+      published ? product.name + ' ya aparece en el catálogo.' : product.name + ' quedó oculto del catálogo.',
+    );
   }
   private clearSession(clearSelection = true) {
     this.session.clear(clearSelection);
     this.requests.set([]);
+    this.ownProducts.set([]);
     this.members.set([]);
     this.link.set('');
     this.password = '';

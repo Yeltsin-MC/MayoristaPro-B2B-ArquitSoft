@@ -335,6 +335,37 @@ export class IdentityService {
       return { published: true };
     });
   }
+  /** Todos los productos propios (publicados, ocultos o retirados) para el panel «Mis productos». */
+  async ownProducts(auth?: string) {
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth);
+      if (!actor.permissions.includes('publish')) throw new ForbiddenException();
+      return (
+        await db.query(
+          `SELECT p.id,p.sku,p.name,p.category,p.unit,p.stock,p.minimum,p.price::text,p.published,
+             p.retired_reason AS "retiredReason",
+             (SELECT i.url FROM product_images i WHERE i.product_id=p.id ORDER BY i.position LIMIT 1) AS photo
+           FROM products p JOIN companies c ON c.supplier_id=p.supplier_id
+           WHERE c.id=$1 ORDER BY p.name LIMIT 1000`,
+          [actor.company_id],
+        )
+      ).rows;
+    });
+  }
+  async unpublish(id: string, auth?: string) {
+    uuid(id);
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth);
+      if (!actor.permissions.includes('publish')) throw new ForbiddenException();
+      const result = await db.query(
+        'UPDATE products p SET published=false FROM companies c WHERE p.id=$1 AND c.supplier_id=p.supplier_id AND c.id=$2 RETURNING p.id',
+        [id, actor.company_id],
+      );
+      if (!result.rowCount) throw new ForbiddenException('Solo puedes ocultar tus propios productos.');
+      await this.audit(db, actor, 'unpublish-product', id);
+      return { published: false };
+    });
+  }
   // ---- Moderación (solo administrador de la plataforma) ----
   private reason(value: unknown): string {
     const result = typeof value === 'string' ? value.trim() : '';

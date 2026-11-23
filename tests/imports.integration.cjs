@@ -62,6 +62,13 @@ test('T3: importación CSV/XLSX con PostgreSQL y HTTP reales', async t => {
       return (await db.query('SELECT * FROM products WHERE supplier_id=$1 AND sku=$2',[supplier,sku])).rows[0];
     }
 
+    await t.test('Encabezados mal escritos: el mensaje dice cuál falta y cuál sobra',async()=>{
+      const header='sku,nombre,Categoría,presentacion,unidades_por_presentacion,precio,moneda,incluye_igv,minimo,multiplo,stock,publicado';
+      const bad=await upload(header+'\nA,B,C,caja,1,1.00,PEN,true,1,1,1,true\n');
+      assert.equal(bad.status,400);
+      assert.match(bad.body.message,/faltan: categoria/);
+      assert.match(bad.body.message,/sobran o están mal escritas: Categoría/);
+    });
     let first;
     await t.test('CSV: vista previa sin escrituras, confirmación y catálogo público',async()=>{
       first = await preview([example('NEW-1'), example('DRAFT',{publicado:'false'})]);

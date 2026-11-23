@@ -133,10 +133,22 @@ export async function readImportFile(file: { originalname: string; buffer: Buffe
     headers.length !== COLUMNS.length ||
     new Set(headers).size !== COLUMNS.length ||
     COLUMNS.some(c => !headers.includes(c))
-  )
+  ) {
+    // Explica exactamente qué columna falta o sobra (p. ej. si Excel renombró «categoria» a «Categoría»).
+    const missing = COLUMNS.filter(c => !headers.includes(c));
+    const extra = headers.filter(h => !(COLUMNS as readonly string[]).includes(h)).map(h => h || '(vacía)');
+    const repeated = headers.filter((h, i) => h && headers.indexOf(h) !== i);
+    const details = [
+      missing.length ? 'faltan: ' + missing.join(', ') : '',
+      extra.length ? 'sobran o están mal escritas: ' + extra.join(', ') : '',
+      repeated.length ? 'repetidas: ' + [...new Set(repeated)].join(', ') : '',
+    ].filter(Boolean);
     throw new BadRequestException(
-      'Encabezados incorrectos. Usa todas las columnas de la plantilla, sin columnas adicionales.',
+      'Encabezados incorrectos (' +
+        details.join('; ') +
+        '). La primera fila debe tener exactamente las columnas de la plantilla, en minúsculas y sin tildes.',
     );
+  }
   const rows: ImportRow[] = [];
   records.slice(1).forEach((record, index) => {
     if (record.every(value => value === '' || value == null)) return;

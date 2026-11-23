@@ -3897,3 +3897,237 @@ button.danger:hover {
   border-radius: 12px;
   background: #f5f8fd;
 }
+
+/* «Mis productos» y carga masiva en 4 pasos. */
+.my-products,
+.import.account-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+.my-products-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.my-products-head h3,
+.import h3 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+.count-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef3fb;
+  color: var(--brand);
+  font-weight: 650;
+  font-size: 0.85rem;
+}
+.my-products-search {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+.my-products-search input {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.my-products-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  max-height: 460px;
+  overflow-y: auto;
+}
+.my-products-list li {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+}
+.my-products-list li.empty-state {
+  display: block;
+}
+.my-products-list img,
+.my-product-placeholder {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  background: #f1f4f9;
+  font-size: 1.4rem;
+}
+.my-products-list li div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.my-products-list strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.my-products-list small {
+  color: var(--muted);
+}
+.my-products-list small.retired {
+  color: #c62828;
+}
+.my-products-list button {
+  min-height: 38px;
+  padding: 6px 14px;
+}
+@media (max-width: 600px) {
+  .my-products-list li {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+  .my-products-list img,
+  .my-product-placeholder {
+    width: 44px;
+    height: 44px;
+  }
+  .my-products-list li .status-pill {
+    display: none;
+  }
+}
+.import-steps {
+  list-style: none;
+  margin: 4px 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.import-steps li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+}
+.import-steps li.current {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgb(31 91 216 / 0.12);
+}
+.import-steps li div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.import-steps p,
+.import-steps label {
+  margin: 0;
+}
+.import-steps label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+.import-steps input[type='file'] {
+  max-width: 100%;
+  font-size: 0.85rem;
+}
+.import-steps small {
+  color: var(--muted);
+}
+.step-number {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #eef3fb;
+  color: var(--brand);
+  font-weight: 700;
+}
+.import-steps li.done .step-number {
+  background: #1f8a4c;
+  color: white;
+}
+@media (max-width: 900px) {
+  .import-steps {
+    grid-template-columns: 1fr;
+  }
+}
+.import-rules {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f8fafc;
+}
+.import-rules summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.import-rules ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+.import-error {
+  color: #c62828;
+  font-weight: 600;
+}
+.import-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.import-summary div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f1f5fb;
+}
+.import-summary div.has-errors {
+  background: #fff1f0;
+  color: #a31f1f;
+}
+.import-summary dt {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.import-summary dd {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+@media (max-width: 600px) {
+  .import-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.import-steps li {
+  min-width: 0;
+}
+.import-steps li div {
+  flex: 1;
+}
+.import-steps button {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+.import-steps li div {
+  grid-template-columns: minmax(0, 1fr);
+}
+.import-steps input[type='file'] {
+  width: 100%;
+}

@@ -130,4 +130,10 @@ export class IdentityController {
   @Post('products/:id/publish') publish(@Param('id') id: string, @Headers('authorization') auth?: string) {
     return this.identity.publish(id, auth);
   }
+  @Post('products/:id/unpublish') unpublish(@Param('id') id: string, @Headers('authorization') auth?: string) {
+    return this.identity.unpublish(id, auth);
+  }
+  @Get('company/products') @Header('Cache-Control', 'no-store') ownProducts(@Headers('authorization') auth?: string) {
+    return this.identity.ownProducts(auth);
+  }
 }
