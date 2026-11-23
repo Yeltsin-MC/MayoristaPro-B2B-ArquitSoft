@@ -532,6 +532,16 @@ interface RequestItem {
                 Confirmar recepción
               </button>
             }
+            @if (o.isBuyer && o.state === 'delivered') {
+              <div class="reorder">
+                <p class="muted">
+                  ¿Necesitas reponer? Enviamos al mismo proveedor una nueva solicitud con estos productos.
+                </p>
+                <button type="button" [disabled]="busy()" (click)="reorder(o.id)">
+                  <span aria-hidden="true">↻</span> Volver a pedir
+                </button>
+              </div>
+            }
             @if (o.state === 'pendiente' && o.isBuyer) {
               <p>
                 <strong>Pagar antes de: {{ expiresIn(o.expiresAt) }}</strong>
@@ -1002,6 +1012,15 @@ export class TradeComponent {
       const list = await this.call('orders');
       if (list) this.orders.set(list);
     }
+  }
+  /** Crea una nueva solicitud con los mismos productos y la abre para seguir su estado. */
+  async reorder(orderId: string) {
+    const q = await this.call('orders/' + orderId + '/reorder', 'POST', {});
+    if (!q) return;
+    const list = await this.call('quotations');
+    if (list) this.requests.set(list);
+    await this.open(q.id);
+    this.message.set('Listo: enviamos una nueva solicitud al mismo proveedor. Te avisaremos cuando llegue su oferta.');
   }
   async openOrder(id: string) {
     const o = await this.call('orders/' + id);

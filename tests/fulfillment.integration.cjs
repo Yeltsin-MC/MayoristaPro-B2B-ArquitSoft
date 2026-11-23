@@ -52,6 +52,30 @@ test('Despacho de pedidos: preparing, dispatched y delivered', async t => {
         ['order-preparing', 'order-dispatched', 'order-delivered'],
       );
     });
+
+    await t.test('Avisos de cada paso y «Volver a pedir» tras la entrega', async () => {
+      const vendor = ok(await call('notifications', 'GET', undefined, 'vendor'));
+      assert.deepEqual(
+        vendor.items.map(n => n.kind).reverse(),
+        ['quote-request', 'offer-accepted', 'order', 'order-paid', 'order-delivered'],
+      );
+      assert.equal(vendor.unread, vendor.items.length);
+      const buyer = ok(await call('notifications', 'GET', undefined, 'buyer'));
+      assert.deepEqual(buyer.items.map(n => n.kind).reverse(), ['offer', 'order-preparing', 'order-dispatched']);
+      assert.ok(buyer.items.every(n => n.link.startsWith('/cuenta/')));
+      assert.equal(ok(await call('notifications', 'GET', undefined, 'vendor2')).unread, 0);
+      ok(await call('notifications/read', 'POST', {}, 'buyer'), 201);
+      assert.equal(ok(await call('notifications', 'GET', undefined, 'buyer')).unread, 0);
+
+      assert.equal((await call('orders/' + pedido.id + '/reorder', 'POST', {}, 'vendor')).status, 404);
+      const again = ok(await call('orders/' + pedido.id + '/reorder', 'POST', {}, 'buyer'), 201);
+      assert.notEqual(again.id, pedido.requestId);
+      assert.equal(again.items.length, 1);
+      assert.equal(again.items[0].quantity, pedido.items[0].quantity);
+      const fresh = ok(await call('notifications', 'GET', undefined, 'vendor'));
+      assert.equal(fresh.items[0].kind, 'quote-request');
+      assert.equal(fresh.items[0].link, '/cuenta/cotizaciones/' + again.id);
+    });
   } finally {
     await f.close();
   }

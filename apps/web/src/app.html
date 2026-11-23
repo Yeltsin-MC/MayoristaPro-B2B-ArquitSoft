@@ -25,6 +25,9 @@
           >{{ session.token() ? (session.admin() ? 'Administración' : 'Mi empresa') : 'Mi cuenta' }}</span
         ></a
       >
+      @if (session.token() && !session.admin() && session.permissions().length) {
+        <app-notifications />
+      }
       @if (!session.admin()) {
         <a
           class="account-link order-list-link"

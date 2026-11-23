@@ -65,4 +65,13 @@ export class TradeController {
   ) {
     return this.trade.fulfill(id, b, a);
   }
+  @Post('orders/:id/reorder') reorder(@Param('id') id: string, @Headers('authorization') a?: string) {
+    return this.trade.reorder(id, a);
+  }
+  @Get('notifications') @Header('Cache-Control', 'no-store') notifications(@Headers('authorization') a?: string) {
+    return this.trade.notifications(a);
+  }
+  @Post('notifications/read') readNotifications(@Headers('authorization') a?: string) {
+    return this.trade.readNotifications(a);
+  }
 }

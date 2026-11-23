@@ -27,6 +27,7 @@ tags:
   - name: Cotizaciones
   - name: Pedidos
   - name: Pagos
+  - name: Avisos
   - name: IA
 
 paths:
@@ -692,6 +693,53 @@ paths:
         '200': { description: Pedido con líneas, totales e historial de despacho }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+
+  /orders/{id}/reorder:
+    post:
+      tags: [Pedidos]
+      summary: Volver a pedir (nueva solicitud con los mismos productos al mismo proveedor)
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201': { description: Nueva solicitud de cotización creada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /notifications:
+    get:
+      tags: [Avisos]
+      summary: Últimos 20 avisos de la empresa y cantidad sin leer
+      security: [{ bearer: [] }]
+      responses:
+        '200':
+          description: Avisos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unread: { type: integer }
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        kind: { type: string, example: offer }
+                        title: { type: string, example: Nueva oferta de Cobre Suministros }
+                        link: { type: string, example: /cuenta/cotizaciones/0b6f... }
+                        createdAt: { type: string, format: date-time }
+                        read: { type: boolean }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /notifications/read:
+    post:
+      tags: [Avisos]
+      summary: Marcar todos los avisos como leídos
+      security: [{ bearer: [] }]
+      responses:
+        '201': { description: Avisos leídos }
+        '401': { $ref: '#/components/responses/Unauthorized' }
 
   /orders/{id}/fulfillment:
     patch:
