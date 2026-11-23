@@ -28,3 +28,13 @@ curl --fail 'http://127.0.0.1:8080/api/v1/products?limit=1'
 ```
 
 En actualizaciones, respaldar PostgreSQL, cambiar el SHA, descargar las imágenes y repetir el arranque. El volumen guarda los datos entre versiones. Cuando Cloudflare active el dominio, conectar un túnel ejecutado en el host a `http://127.0.0.1:8080`. Sustituir el registro A importado que ocupa el nombre raíz y validar catálogo, acceso y cotización desde la URL HTTPS.
+
+## Actualizar en un paso
+
+Tras ejecutar en verde **Preparar imágenes para AWS** sobre `main`, abrir la terminal de EC2 (EC2 → instancia → Conectar → Conexión de la instancia EC2) y ejecutar con el SHA completo de esa ejecución:
+
+```bash
+bash ~/mayoristapro/deployment/actualizar.sh <SHA> [--fotos]
+```
+
+El script respalda PostgreSQL en `~/respaldos`, cambia el código y `RELEASE_SHA`, descarga las imágenes, arranca los servicios (el servicio `migrate` aplica las migraciones) y comprueba la API. Con `--fotos` vuelve a cargar el catálogo demo; pide las contraseñas originales de la demo sin mostrarlas. El grupo de seguridad permite SSH solo desde la IP del equipo de despliegue y desde el rango de EC2 Instance Connect de `us-east-1` (`18.206.107.24/29`).
