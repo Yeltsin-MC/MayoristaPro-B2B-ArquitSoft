@@ -39,8 +39,11 @@ async function main(mode) {
   if (process.env.DEMO_CATALOG_SCHEMA) {
     const { demoDatabaseUrl, loadDemo } = require('../database/demo/load.cjs');
     if (mode === 'load-demo') {
-      await loadDemo();
-      return;
+      // Muestra el resumen y termina explícitamente: algún recurso del API embebido (temporizadores o
+      // conexiones) puede mantener vivo el proceso, y entonces `docker compose run` nunca acababa.
+      const summary = await loadDemo();
+      console.log(JSON.stringify(summary, null, 2));
+      process.exit(0);
     }
     process.env.DATABASE_URL = demoDatabaseUrl(process.env.DATABASE_URL, process.env.DEMO_CATALOG_SCHEMA);
   }
@@ -71,6 +74,8 @@ async function main(mode) {
 if (require.main === module) {
   main(process.argv[2] || 'api').catch(error => {
     console.error(error.message);
+    // En load-demo el API embebido podría dejar el proceso vivo tras el error; en los demás modos se conserva exitCode.
+    if (process.argv[2] === 'load-demo') process.exit(1);
     process.exitCode = 1;
   });
 }
