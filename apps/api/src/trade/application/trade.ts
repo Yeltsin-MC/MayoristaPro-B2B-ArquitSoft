@@ -13,6 +13,9 @@ export interface TradeStore {
   orders(auth?: string): Promise<unknown>;
   orderDetail(id: string, auth?: string): Promise<unknown>;
   fulfill(id: string, input: FulfillmentDraft, auth?: string): Promise<unknown>;
+  reorder(id: string, auth?: string): Promise<unknown>;
+  notifications(auth?: string): Promise<unknown>;
+  readNotifications(auth?: string): Promise<unknown>;
 }
 export const TRADE_STORE = Symbol('TradeStore');
 export class Trade {
@@ -57,5 +60,15 @@ export class Trade {
   }
   fulfill(id: string, body: unknown, auth?: string) {
     return this.store.fulfill(identifier(id), fulfillmentDraft(body), auth);
+  }
+  /** «Volver a pedir»: nueva solicitud con los mismos productos y cantidades al mismo proveedor. */
+  reorder(id: string, auth?: string) {
+    return this.store.reorder(identifier(id), auth);
+  }
+  notifications(auth?: string) {
+    return this.store.notifications(auth);
+  }
+  readNotifications(auth?: string) {
+    return this.store.readNotifications(auth);
   }
 }

@@ -6,11 +6,12 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { CatalogSearchService } from './catalog-search.service';
 import { SessionService } from './session.service';
 import { OrderListService } from './order-list.service';
+import { NotificationsComponent } from './notifications';
 
 /** Marco común: encabezado con búsqueda y navegación, contenido por ruta y pie. */
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [FormsModule, NotificationsComponent, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.html',
   host: { '(window:scroll)': 'onScroll()' },
 })

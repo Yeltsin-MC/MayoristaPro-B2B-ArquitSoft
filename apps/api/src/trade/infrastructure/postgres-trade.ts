@@ -188,34 +188,34 @@ export class PostgresTrade implements TradeStore {
     });
   }
   async create(input: RequestDraft, auth?: string) {
-    return this.tx(async db => {
-      const actor = await this.identity.tradeIdentity(db, auth);
-      this.access(actor, 'buy');
-      const eligible = await db.query(
-        `SELECT s.id FROM suppliers s JOIN companies c ON c.supplier_id=s.id WHERE s.id=ANY($1::uuid[]) AND s.verified AND c.status='enabled' AND c.id<>$2 FOR SHARE OF s,c`,
-        [input.proveedorIds, actor.companyId],
+    return this.tx(async db => this.createRequest(db, input, await this.identity.tradeIdentity(db, auth)));
+  }
+  private async createRequest(db: PoolClient, input: RequestDraft, actor: Actor) {
+    this.access(actor, 'buy');
+    const eligible = await db.query(
+      `SELECT s.id FROM suppliers s JOIN companies c ON c.supplier_id=s.id WHERE s.id=ANY($1::uuid[]) AND s.verified AND c.status='enabled' AND c.id<>$2 FOR SHARE OF s,c`,
+      [input.proveedorIds, actor.companyId],
+    );
+    rule(
+      eligible.rowCount === input.proveedorIds.length,
+      'INVALID_INPUT',
+      'Selecciona proveedores verificados de otras empresas.',
+    );
+    const id = (
+      await db.query('INSERT INTO quotation_requests(buyer_company_id,actor_id) VALUES($1,$2) RETURNING id', [
+        actor.companyId,
+        actor.accountId,
+      ])
+    ).rows[0].id;
+    for (const i of input.items)
+      await db.query(
+        'INSERT INTO quotation_items(request_id,description,unit,units_per_pack,quantity) VALUES($1,$2,$3,$4,$5)',
+        [id, i.descripcion, i.presentacion, i.unidadesPorPresentacion, i.cantidad],
       );
-      rule(
-        eligible.rowCount === input.proveedorIds.length,
-        'INVALID_INPUT',
-        'Selecciona proveedores verificados de otras empresas.',
-      );
-      const id = (
-        await db.query('INSERT INTO quotation_requests(buyer_company_id,actor_id) VALUES($1,$2) RETURNING id', [
-          actor.companyId,
-          actor.accountId,
-        ])
-      ).rows[0].id;
-      for (const i of input.items)
-        await db.query(
-          'INSERT INTO quotation_items(request_id,description,unit,units_per_pack,quantity) VALUES($1,$2,$3,$4,$5)',
-          [id, i.descripcion, i.presentacion, i.unidadesPorPresentacion, i.cantidad],
-        );
-      for (const supplier of input.proveedorIds)
-        await db.query('INSERT INTO quotation_recipients VALUES($1,$2)', [id, supplier]);
-      await this.audit(db, actor, 'create-quotation', id);
-      return this.details(db, id, actor);
-    });
+    for (const supplier of input.proveedorIds)
+      await db.query('INSERT INTO quotation_recipients VALUES($1,$2)', [id, supplier]);
+    await this.audit(db, actor, 'create-quotation', id);
+    return this.details(db, id, actor);
   }
   async requests(auth?: string) {
     return this.tx(async db => {
@@ -505,6 +505,50 @@ export class PostgresTrade implements TradeStore {
         await this.audit(db, a, 'order-' + input.estado, id);
       }
       return this.orderView(db, id, a);
+    });
+  }
+  async reorder(id: string, auth?: string) {
+    return this.tx(async db => {
+      const a = await this.identity.tradeIdentity(db, auth);
+      const o = (await db.query('SELECT * FROM trade_orders WHERE id=$1', [id])).rows[0];
+      if (!o || !a.canBuy || o.buyer_company_id !== a.companyId) throw new NotFoundException();
+      rule(o.state === 'delivered', 'INVALID_INPUT', 'Solo puedes volver a pedir un pedido entregado.');
+      const items = (
+        await db.query(
+          `SELECT q.description AS descripcion,q.unit AS presentacion,q.units_per_pack AS "unidadesPorPresentacion",
+             i.quantity AS cantidad
+           FROM trade_order_items i JOIN quotation_items q ON q.id=i.request_item_id WHERE i.order_id=$1 ORDER BY i.id`,
+          [id],
+        )
+      ).rows;
+      const request: any = await this.createRequest(db, { proveedorIds: [o.supplier_id], items }, a);
+      await this.audit(db, a, 'reorder', id);
+      return request;
+    });
+  }
+  async notifications(auth?: string) {
+    return this.tx(async db => {
+      const a = await this.identity.tradeIdentity(db, auth);
+      const items = (
+        await db.query(
+          `SELECT id::text,kind,title,link,created_at AS "createdAt",read_at IS NOT NULL AS read
+           FROM notifications WHERE company_id=$1 ORDER BY id DESC LIMIT 20`,
+          [a.companyId],
+        )
+      ).rows;
+      const unread = (
+        await db.query('SELECT count(*)::int AS n FROM notifications WHERE company_id=$1 AND read_at IS NULL', [
+          a.companyId,
+        ])
+      ).rows[0].n;
+      return { unread, items };
+    });
+  }
+  async readNotifications(auth?: string) {
+    return this.tx(async db => {
+      const a = await this.identity.tradeIdentity(db, auth);
+      await db.query('UPDATE notifications SET read_at=now() WHERE company_id=$1 AND read_at IS NULL', [a.companyId]);
+      return { unread: 0 };
     });
   }
 }

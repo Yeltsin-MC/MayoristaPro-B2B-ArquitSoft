@@ -3814,3 +3814,86 @@ button.danger:hover {
   display: block;
   font-size: 0.9rem;
 }
+
+/* Campana de avisos del encabezado. */
+.notifications {
+  position: relative;
+}
+.notifications-toggle {
+  background: transparent;
+  color: var(--navy);
+  border: 0;
+  padding: 0;
+  font-weight: 650;
+}
+.notifications-toggle:hover {
+  background: transparent;
+  color: var(--brand);
+}
+.notifications-toggle .badge {
+  background: #c62828;
+}
+.notifications-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 60;
+  width: min(360px, calc(100vw - 32px));
+  max-height: 70vh;
+  overflow-y: auto;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgb(23 32 51 / 0.16);
+}
+.notifications-panel h2 {
+  font-size: 1rem;
+  margin: 2px 6px 6px;
+}
+.notice-item {
+  display: grid;
+  justify-content: stretch;
+  justify-items: start;
+  width: 100%;
+  gap: 2px;
+  min-height: 0;
+  padding: 10px 12px;
+  background: white;
+  color: var(--navy);
+  border-radius: 10px;
+  font-weight: 500;
+  text-align: left;
+}
+.notice-item:hover {
+  background: #eef3fb;
+}
+.notice-item.unread {
+  background: #eef3fb;
+  font-weight: 650;
+}
+.notice-item small {
+  color: var(--muted);
+  font-weight: 400;
+}
+@media (max-width: 720px) {
+  .notifications-panel {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    top: 64px;
+    width: auto;
+  }
+}
+.reorder {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f5f8fd;
+}
