@@ -1,0 +1,25 @@
+# Tareas — Catálogo público, filtros, precios por volumen y caché
+
+- [x] 1. Crear la migración `001_catalog.sql` con proveedores y productos, y el seed sintético
+  - _Requisitos: 1.1, 1.2_
+- [x] 2. Implementar `GET /products` con paginación validada y `Cache-Control: no-store`
+  - _Requisitos: 1.1, 1.3, 1.4_
+- [x] 3. Agregar búsqueda literal, filtros por categoría, proveedor y disponibilidad, y orden por precio
+  - [x] 3.1 Validar parámetros en el controlador (400)
+  - [x] 3.2 Aplicar los filtros en SQL antes de paginar
+  - [x] 3.3 `GET /products/options` con categorías y proveedores visibles
+  - _Requisitos: 2.1–2.5_
+- [x] 4. Precios por volumen
+  - [x] 4.1 Migración `008_price_tiers.sql` con restricciones y trigger de revisión
+  - [x] 4.2 `PUT /trade/products/:id/price-tiers` solo para el proveedor dueño
+  - [x] 4.3 Mostrar escalas en tarjeta y ficha, y calcular el precio según la cantidad
+  - _Requisitos: 3.1–3.4_
+- [x] 5. Caché Redis con invalidación confirmada
+  - [x] 5.1 Migración `007_catalog_cache.sql` con revisión y constraint triggers diferidos
+  - [x] 5.2 Decorador `CachedProducts` (cache-aside, TTL 30 s, clave con revisión)
+  - [x] 5.3 Tiempo límite de 100 ms y fallo abierto hacia PostgreSQL
+  - _Requisitos: 4.1–4.4_
+- [x] 6. Interfaz Angular: carrusel, categorías con foto, filtros laterales fijos y tarjetas
+  - _Requisitos: 1.2, 2.1–2.4_
+- [x] 7. Pruebas de integración, de navegador y carga k6 con 2000 usuarios virtuales
+  - _Requisitos: todos_

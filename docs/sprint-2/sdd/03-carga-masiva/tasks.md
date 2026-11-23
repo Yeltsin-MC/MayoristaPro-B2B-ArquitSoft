@@ -1,0 +1,21 @@
+# Tareas — Carga masiva del catálogo
+
+- [x] 1. Migración `003_catalog_imports.sql` con revisión de metadatos y lotes persistidos
+  - _Requisitos: 3.1, 3.4_
+- [x] 2. Plantillas CSV y XLSX descargables
+  - _Requisitos: 1.1_
+- [x] 3. Lectura acotada de CSV y XLSX (tamaño, filas, ZIP, fórmulas)
+  - _Requisitos: 1.4, 2.3_
+- [x] 4. Validación por fila y columna, y SKU duplicados
+  - [x] 4.1 Mensaje detallado de encabezados (faltan, sobran, repetidas)
+  - _Requisitos: 1.3, 2.1, 2.2, 2.4_
+- [x] 5. Vista previa persistida con huella y vencimiento de 30 minutos
+  - _Requisitos: 1.2_
+- [x] 6. Confirmación transaccional e idempotente, con detección de cambios concurrentes y conservación de stock
+  - _Requisitos: 3.1–3.5_
+- [x] 7. Autorización por sesión, permiso `publish` y proveedor verificado; productos retirados no se republican
+  - _Requisitos: 4.1–4.3_
+- [x] 8. Asistente Angular en 4 pasos con reporte CSV descargable
+  - _Requisitos: 1.2, 3.1_
+- [x] 9. Pruebas de integración y de navegador
+  - _Requisitos: todos_

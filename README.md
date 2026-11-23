@@ -41,6 +41,8 @@ El proyecto surgió como AyniCompra y fue reformulado a **MayoristaPro B2B**. El
 
 El [diagnóstico y plan del Sprint 2](docs/sprint-2/00-preparacion-sprint-2.md) registra la rúbrica y las decisiones pendientes. Véanse el [flujo comercial](docs/sprint-1/03-diseno-de-software/flujo-comercial-sprint-2.md) y el [despliegue académico](docs/sprint-1/02-arquitectura-software/despliegue-academico.md).
 
+Las [especificaciones SDD por módulo](docs/sprint-2/sdd/README.md) (requisitos, diseño y tareas) describen cada funcionalidad implementada.
+
 ## Alcance de la primera versión — MVP
 
 La carga masiva CSV/Excel es obligatoria para el MVP; la edición individual sirve para mantenimiento. Al ingresar, el catálogo mostrará tarjetas de ofertas con proveedor, precio por presentación y condiciones mayoristas. [Detalle de catálogo, precios y referencias B2B](docs/sprint-1/03-diseno-de-software/reglas-comerciales-mayoristas.md).
