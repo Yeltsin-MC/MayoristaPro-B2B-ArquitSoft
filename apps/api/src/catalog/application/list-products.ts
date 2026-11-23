@@ -16,6 +16,9 @@ export interface PublishedProduct {
   includesTax: boolean;
   /** Precios por volumen: desde N presentaciones, precio por presentación. */
   priceTiers: Array<{ desde: number; precioUnitario: string }>;
+  /** Fotos en orden de galería; la primera es la principal. Vacío = ilustración de la categoría. */
+  images: Array<{ url: string; credito: string | null }>;
+  description: string | null;
 }
 
 export interface CatalogFilters {

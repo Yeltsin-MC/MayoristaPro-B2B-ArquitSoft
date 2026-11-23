@@ -104,10 +104,11 @@
         @for (product of deals(); track product.id) {
           <button type="button" class="deal-card" role="listitem" (click)="showProduct(product, productDialog)">
             <span class="deal-media">
-              <app-catalog-photo [kind]="productImage(product)" class="family-photo deal-photo" /><span
-                class="deal-badge"
-                >-{{ maxDiscount(product) }}%</span
-              >
+              <app-catalog-photo
+                [kind]="productImage(product)"
+                [photo]="product.images?.[0]?.url"
+                class="family-photo deal-photo"
+              /><span class="deal-badge">-{{ maxDiscount(product) }}%</span>
             </span>
             <span class="deal-body">
               <small>{{ product.supplier }}</small>
@@ -217,8 +218,11 @@
                   (click)="showProduct(product, productDialog)"
                 >
                   <app-catalog-photo
-                    [description]="'Imagen referencial de ' + product.category"
+                    [description]="
+                      product.images?.length ? 'Foto de ' + product.name : 'Imagen referencial de ' + product.category
+                    "
                     [kind]="productImage(product)"
+                    [photo]="product.images?.[0]?.url"
                     class="family-photo product-visual"
                   /><span class="category-tag">{{ product.category }}</span>
                   @if (maxDiscount(product); as discount) {
@@ -412,15 +416,44 @@
     </form>
     @if (selectedProduct(); as product) {
       <div class="product-detail">
-        <app-catalog-photo
-          [kind]="productImage(product)"
-          [description]="'Imagen referencial de ' + product.category"
-          class="family-photo detail-photo"
-        />
+        <div class="detail-gallery">
+          <app-catalog-photo
+            [kind]="productImage(product)"
+            [photo]="product.images?.[activeImage()]?.url"
+            [description]="
+              product.images?.length
+                ? 'Foto ' + (activeImage() + 1) + ' de ' + product.images!.length + ': ' + product.name
+                : 'Imagen referencial de ' + product.category
+            "
+            class="family-photo detail-photo"
+          />
+          @if ((product.images?.length ?? 0) > 1) {
+            <div class="detail-thumbs" role="group" aria-label="Fotos del producto">
+              @for (image of product.images; track image.url; let i = $index) {
+                <button
+                  type="button"
+                  class="detail-thumb"
+                  [class.active]="i === activeImage()"
+                  [attr.aria-label]="'Ver foto ' + (i + 1)"
+                  [attr.aria-pressed]="i === activeImage()"
+                  (click)="activeImage.set(i)"
+                >
+                  <img [src]="image.url" alt="" loading="lazy" />
+                </button>
+              }
+            </div>
+          }
+          @if (product.images?.[activeImage()]?.credito; as credit) {
+            <p class="photo-credit">{{ credit }}</p>
+          }
+        </div>
         <div class="detail-content">
           <p class="eyebrow">{{ product.category }}</p>
           <h2 id="product-detail-title">{{ product.name }}</h2>
           <p class="supplier">{{ product.supplier }}</p>
+          @if (product.description) {
+            <p class="detail-description">{{ product.description }}</p>
+          }
           <div class="product-price">
             <strong>{{ product.price | currency: product.currency : 'S/ ' : '1.2-2' }}</strong><span
               >por {{ packDescription(product) }}</span
@@ -474,25 +507,27 @@
               <p class="quantity-error">{{ issue }}</p>
             }
           </div>
-          <button
-            type="button"
-            class="quote-button"
-            [disabled]="!product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))"
-            (click)="productDialog.close(); requestQuote(product, quantityFor(product))"
-          >
-            {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
-            <span aria-hidden="true">↗</span>
-          </button>
-          @if (product.quoteEnabled && product.available) {
+          <div class="detail-actions">
             <button
               type="button"
-              class="secondary add-to-list"
-              [disabled]="!!quantityError(product, quantityFor(product))"
-              (click)="addToList(product)"
+              class="quote-button"
+              [disabled]="!product.available || !product.quoteEnabled || !!quantityError(product, quantityFor(product))"
+              (click)="productDialog.close(); requestQuote(product, quantityFor(product))"
             >
-              {{ orderList.has(product.id) ? '✓ En tu lista · actualizar' : '+ Agregar a la lista de pedido' }}
+              {{ product.quoteEnabled ? 'Solicitar cotización' : 'Cotización no habilitada' }}
+              <span aria-hidden="true">↗</span>
             </button>
-          }
+            @if (product.quoteEnabled && product.available) {
+              <button
+                type="button"
+                class="secondary add-to-list"
+                [disabled]="!!quantityError(product, quantityFor(product))"
+                (click)="addToList(product)"
+              >
+                {{ orderList.has(product.id) ? '✓ En tu lista · actualizar' : '+ Agregar a la lista de pedido' }}
+              </button>
+            }
+          </div>
           @if (!product.quoteEnabled) {
             <p class="quote-unavailable">
               Este proveedor aún no tiene una empresa habilitada para recibir cotizaciones.
@@ -508,7 +543,8 @@
             }
           }
           <p class="detail-note">
-            Imagen referencial. El proveedor confirma precio, envío y plazo en su oferta privada.
+            {{ product.images?.length ? 'Foto ilustrativa.' : 'Imagen referencial.' }} El proveedor confirma precio,
+            envío y plazo en su oferta privada.
           </p>
         </div>
       </div>

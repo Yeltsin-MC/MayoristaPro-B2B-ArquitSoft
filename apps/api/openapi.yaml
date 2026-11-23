@@ -721,6 +721,15 @@ components:
         currency: { type: string, enum: [PEN] }
         includesTax: { type: boolean }
         priceTiers: { type: array, items: { $ref: '#/components/schemas/PriceTier' } }
+        images:
+          type: array
+          description: Fotos en orden de galería; la primera es la principal
+          items:
+            type: object
+            properties:
+              url: { type: string, example: /images/productos/teclado-1.webp }
+              credito: { type: string, nullable: true, example: 'Foto: autor · CC BY 2.0' }
+        description: { type: string, nullable: true }
   responses:
     BadRequest:
       description: Solicitud o datos incorrectos

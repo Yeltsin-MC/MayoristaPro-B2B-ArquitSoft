@@ -3566,3 +3566,183 @@ html {
   padding: 18px 22px;
   margin-bottom: 16px;
 }
+
+/* Foto real del producto (cuando el proveedor la cargó). */
+.product-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Ficha del producto: foto con miniaturas a la izquierda y datos compactos a la
+   derecha; en celular la foto arriba y los botones siempre a la vista abajo. */
+.product-dialog {
+  width: min(1000px, calc(100% - 36px));
+}
+.product-dialog .product-detail {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 32px;
+  align-items: start;
+  padding: 4px 32px 28px;
+}
+.detail-gallery {
+  position: sticky;
+  top: 60px;
+  display: grid;
+  gap: 10px;
+}
+.product-dialog .detail-photo {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+.detail-thumbs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.detail-thumb {
+  width: 64px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: var(--page);
+  overflow: hidden;
+}
+.detail-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.detail-thumb.active {
+  border-color: var(--brand);
+}
+.photo-credit {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin: 0;
+}
+.product-dialog .detail-content h2 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin: 4px 0 6px;
+}
+.product-dialog .detail-content .supplier {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+.detail-description {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+.product-dialog .detail-content .product-price strong {
+  font-size: 1.8rem;
+}
+.product-dialog .detail-content .product-price span,
+.product-dialog .tax-note,
+.product-dialog .stock {
+  font-size: 0.88rem;
+}
+.product-dialog .volume-prices-detail h3 {
+  font-size: 0.95rem;
+  margin: 12px 0 6px;
+}
+.product-dialog .volume-prices {
+  font-size: 0.88rem;
+}
+.product-dialog .detail-content dl {
+  margin-top: 12px;
+  gap: 8px 16px;
+}
+.product-dialog .detail-content dt {
+  font-size: 0.8rem;
+}
+.product-dialog .quantity-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+.product-dialog .quantity-label input {
+  width: 110px;
+  min-height: 44px;
+  margin: 0;
+}
+.detail-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+.detail-actions .quote-button,
+.detail-actions .add-to-list {
+  min-height: 48px;
+  margin: 0;
+  font-size: 0.88rem;
+}
+.detail-actions .quote-button:only-child {
+  grid-column: 1 / -1;
+}
+.product-dialog .detail-note {
+  font-size: 0.75rem;
+}
+@media (max-width: 740px) {
+  .product-dialog .product-detail {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 0 16px 0;
+  }
+  .detail-gallery {
+    position: static;
+  }
+  .product-dialog .detail-photo {
+    width: 100%;
+  }
+  .product-dialog .detail-content h2 {
+    font-size: 1.25rem;
+  }
+  /* Botones siempre visibles al pie de la ficha. */
+  .detail-actions {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 10px 0 14px;
+    margin: 8px -16px 0;
+    padding-inline: 16px;
+    border-top: 1px solid var(--border);
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 740px) {
+  .product-dialog .detail-photo {
+    aspect-ratio: 16 / 10;
+    max-height: 210px;
+  }
+  .detail-thumb {
+    width: 56px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .product-dialog .dialog-close {
+    padding: 6px 6px 0;
+  }
+  .detail-actions {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .detail-actions .quote-button,
+  .detail-actions .add-to-list {
+    min-height: 46px;
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
+}
