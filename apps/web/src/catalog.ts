@@ -79,6 +79,8 @@ export class CatalogComponent {
     suppliers: [],
   });
   readonly selectedProduct = signal<CatalogProduct | null>(null);
+  /** Foto visible en la galería del detalle. */
+  readonly activeImage = signal(0);
   readonly categories = computed(() =>
     [...this.options().categories].sort(
       (a, b) => this.categoryPriority(a) - this.categoryPriority(b) || a.localeCompare(b, 'es'),
@@ -261,6 +263,7 @@ export class CatalogComponent {
 
   showProduct(product: CatalogProduct, dialog: HTMLDialogElement): void {
     this.selectedProduct.set(product);
+    this.activeImage.set(0);
     if (!dialog.open) dialog.showModal();
   }
 

@@ -79,6 +79,42 @@ function demoTiers(product, index) {
   return [{ desde: first, precioUnitario: soles(one) }, { desde: second, precioUnitario: soles(two) }];
 }
 
+/** Descripción de demostración a partir del nombre, la presentación y el rubro. */
+function demoDescription(product, row) {
+  const units = Number(row.unidades_por_presentacion);
+  const pack = units > 1 ? `${row.presentacion} de ${units} unidades` : row.presentacion;
+  return `${row.nombre}. Se vende por ${pack}, ideal para empresas y negocios que compran por volumen en el rubro ` +
+    `${row.categoria.toLowerCase()}. Compra mínima: ${row.minimo} ${Number(row.minimo) === 1 ? row.presentacion : row.presentacion + (/[aeiou]$/.test(row.presentacion) ? 's' : 'es')}. ` +
+    'Producto ficticio de demostración: el proveedor confirma precio, stock y plazo en su oferta.';
+}
+
+/** Fotos y descripción de la demo (fotos.json: nombre del producto → fotos en /images/productos). */
+async function applyDemoMedia(db, products, rows) {
+  let media = { productos: {}, fotos: {} };
+  try { media = require('./catalogo150/fotos.json'); } catch { /* sin fotos: se usan las ilustraciones */ }
+  const bySku = new Map(rows.map(row => [row.sku, row]));
+  let photos = 0;
+  for (const product of products) {
+    const row = bySku.get(product.sku);
+    if (!row) continue;
+    await db.query('UPDATE products SET description=$2 WHERE id=$1', [product.id, demoDescription(product, row)]);
+    await db.query('DELETE FROM product_images WHERE product_id=$1', [product.id]);
+    const images = media.fotos[media.productos[row.nombre]] || [];
+    for (const [index, image] of images.entries()) {
+      await db.query('INSERT INTO product_images(product_id,position,url,credit) VALUES($1,$2,$3,$4)',
+        [product.id, index + 1, '/images/productos/' + image.archivo, image.credito || null]);
+    }
+    if (images.length) photos++;
+  }
+  return photos;
+}
+
+function parseCsv(text) {
+  const [header, ...lines] = text.trim().split(/\r?\n/).map(line =>
+    [...line.matchAll(/"((?:[^"]|"")*)"|([^,]+)|(?<=,|^)(?=,|$)/g)].map(m => (m[1] ?? m[2] ?? '').replace(/""/g, '"')));
+  return lines.map(cells => Object.fromEntries(header.map((name, i) => [name, cells[i]])));
+}
+
 async function applyDemoPriceTiers(base, token, products) {
   let count = 0;
   const ordered = [...products].sort((a, b) => a.sku.localeCompare(b.sku));
@@ -142,7 +178,8 @@ async function loadDemo(config = configuration()) {
         const products = await apiCall(base, 'trade/products', 'GET', undefined, token);
         if (products.length !== 30) throw new Error('El proveedor ' + entity.code + ' no tiene exactamente 30 referencias en este esquema.');
         const tiers = await applyDemoPriceTiers(base, token, products);
-        imports.push({ provider: entity.name, products: products.length, created: result.result.created, updated: result.result.updated, tiers });
+        const photos = await applyDemoMedia(db, products, parseCsv(csv.toString('utf8')));
+        imports.push({ provider: entity.name, products: products.length, created: result.result.created, updated: result.result.updated, tiers, photos });
       }
       const counts = (await db.query(`SELECT
         (SELECT count(*)::int FROM suppliers WHERE verified) AS suppliers,

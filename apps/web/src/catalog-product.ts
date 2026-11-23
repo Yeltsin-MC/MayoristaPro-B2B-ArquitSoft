@@ -20,4 +20,7 @@ export interface CatalogProduct {
   includesTax: boolean;
   /** Precios por volumen: desde N presentaciones, precio por presentación. */
   priceTiers?: PriceTier[];
+  /** Fotos en orden de galería; la primera es la principal. */
+  images?: { url: string; credito: string | null }[];
+  description?: string | null;
 }

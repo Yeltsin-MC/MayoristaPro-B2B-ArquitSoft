@@ -1,6 +1,6 @@
 import { OnModuleDestroy } from '@nestjs/common';
 import { Pool } from 'pg';
-import { TIERS_JSON } from './price-tiers-sql';
+import { IMAGES_JSON, TIERS_JSON } from './price-tiers-sql';
 import { CatalogFilters, CatalogOptions, ProductReader, PublishedProduct } from '../application/list-products';
 
 export class PostgresProducts implements ProductReader, OnModuleDestroy {
@@ -32,7 +32,8 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
              EXISTS(SELECT 1 FROM companies c WHERE c.supplier_id=s.id AND c.status='enabled') AS "quoteEnabled",
              p.units_per_pack AS "unitsPerPack", p.minimum, p.multiple,
              p.stock, p.price::text, p.currency, p.includes_tax AS "includesTax",
-             ${TIERS_JSON} AS "priceTiers"
+             ${TIERS_JSON} AS "priceTiers",
+             ${IMAGES_JSON} AS images, p.description
       FROM products p
       JOIN suppliers s ON s.id = p.supplier_id
       WHERE p.published AND s.verified

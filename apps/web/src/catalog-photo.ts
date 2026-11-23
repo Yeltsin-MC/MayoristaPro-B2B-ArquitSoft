@@ -19,7 +19,9 @@ const ILLUSTRATED = [
   selector: 'app-catalog-photo',
   host: { role: 'img', '[attr.aria-label]': 'description()' },
   template: `<span class="photo-canvas">
-    @if (illustration()) {
+    @if (photo() && failedSource() !== photo()) {
+      <img class="product-photo" [src]="photo()" alt="" loading="lazy" (error)="failedSource.set(photo() ?? '')" />
+    } @else if (illustration()) {
       <img class="category-illustration" [src]="illustration()" alt="" loading="lazy" />
     } @else {
       <img
@@ -38,6 +40,8 @@ const ILLUSTRATED = [
 export class CatalogPhotoComponent {
   readonly kind = input('supplies');
   readonly description = input('Imagen referencial');
+  /** Foto real del producto (si el proveedor la cargó); si falla o no hay, se usa la ilustración. */
+  readonly photo = input<string | undefined>(undefined);
   readonly failedSource = signal('');
   /** Rubros sin foto propia: ilustración por categoría (íconos Lucide, licencia ISC). */
   readonly illustration = computed(() =>

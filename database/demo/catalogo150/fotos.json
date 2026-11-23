@@ -1,0 +1,2420 @@
+{
+ "productos": {
+  "Arroz extra, bolsa de 5 kg": "arroz",
+  "Arroz superior, saco cerrado de 50 kg": "arroz",
+  "Azúcar rubia, bolsa de 5 kg": "azucar",
+  "Azúcar blanca, saco cerrado de 50 kg": "azucar",
+  "Aceite vegetal, botella de 1 L": "aceite",
+  "Aceite vegetal, bidón de 20 L": "aceite",
+  "Fideo spaghetti, paquete de 1 kg": "fideos",
+  "Fideo canuto, paquete de 500 g": "fideos",
+  "Avena hojuela, bolsa de 1 kg": "avena",
+  "Leche evaporada entera, lata de 400 g": "leche-lata",
+  "Atún en trozos en aceite, lata de 170 g": "atun",
+  "Sal de mesa yodada, bolsa de 1 kg": "sal",
+  "Café instantáneo, frasco de 200 g": "cafe",
+  "Infusión de manzanilla, caja de 100 sobres": "te",
+  "Agua mineral sin gas, botella de 625 ml": "agua",
+  "Agua mineral sin gas, bidón de 20 L": "bidon-agua",
+  "Gaseosa sabor cola, botella de 500 ml": "gaseosa",
+  "Néctar de durazno, caja de 1 L": "jugo",
+  "Bebida rehidratante, botella de 500 ml": "bebida-deportiva",
+  "Galleta de soda, paquete de 6 unidades": "galletas",
+  "Galleta de vainilla, paquete de 6 unidades": "galletas",
+  "Mermelada de fresa, frasco de 1 kg": "mermelada",
+  "Mayonesa, doypack de 1 kg": "salsas",
+  "Ketchup, doypack de 1 kg": "salsas",
+  "Lenteja bebé, bolsa de 1 kg": "menestras",
+  "Frejol canario, bolsa de 1 kg": "menestras",
+  "Quinua perlada, bolsa de 1 kg": "quinua",
+  "Chocolate para taza, tableta de 90 g": "chocolate",
+  "Papel A4 blanco 75 g, caja de 5 resmas": "resma-papel",
+  "Bolígrafo azul 1 mm": "boligrafo",
+  "Archivador lomo ancho A4": "archivador",
+  "Archivador lomo angosto A4": "archivador",
+  "Folder plástico A4": "folder",
+  "Mica protectora A4, bolsa de 100": "folder",
+  "Separadores A4, juego de 10": "folder",
+  "Grapas estándar 26/6, cajita de 5000": "engrapadora",
+  "Engrapador de escritorio mediano": "engrapadora",
+  "Perforador de oficina de dos huecos": "perforador",
+  "Clips metálicos, cajita de 100": "clips",
+  "Sujetador de papel 32 mm, caja de 12": "clips",
+  "Notas adhesivas 75 mm, block de 100": "notas-adhesivas",
+  "Resaltador amarillo": "marcadores",
+  "Marcador permanente negro": "marcadores",
+  "Marcador para pizarra azul": "marcadores",
+  "Borrador para pizarra": "pizarra",
+  "Cinta de embalaje transparente 48 mm": "cinta-embalaje",
+  "Cinta de embalaje marrón 48 mm": "cinta-embalaje",
+  "Dispensador de cinta de escritorio": "cinta-embalaje",
+  "Corrector en cinta 5 mm": "corrector",
+  "Libro de actas de 100 hojas": "libro-actas",
+  "Libro de cargo de 100 hojas": "libro-actas",
+  "Talonario de recibos de 50 juegos": "libro-actas",
+  "Caja de archivo de cartón A4": "caja-archivo",
+  "Bandeja organizadora de documentos": "organizador",
+  "Porta lapiceros de escritorio": "organizador",
+  "Sello fechador manual": "sello",
+  "Almohadilla para sello": "sello",
+  "Etiquetas adhesivas A4, bolsa de 100": "etiquetas",
+  "Lentes de seguridad lunas claras": "lentes-seguridad",
+  "Lentes de seguridad lunas oscuras": "lentes-seguridad",
+  "Respirador descartable N95": "mascarilla",
+  "Mascarilla quirúrgica de 3 pliegues, caja de 50": "mascarilla",
+  "Guantes de nitrilo descartables, caja de 100": "guantes-nitrilo",
+  "Guantes de cuero para carga, par": "guantes-trabajo",
+  "Guantes anticorte nivel 5, par": "guantes-trabajo",
+  "Chaleco reflectivo naranja con cierre": "chaleco-reflectivo",
+  "Chaleco reflectivo tipo brigadista": "chaleco-reflectivo",
+  "Zapato de seguridad con punta de acero, talla 40": "zapato-seguridad",
+  "Zapato de seguridad con punta de acero, talla 42": "zapato-seguridad",
+  "Botas de jebe con punta de acero, talla 41": "botas-jebe",
+  "Arnés de seguridad de cuerpo entero": "arnes",
+  "Línea de vida con absorbedor de impacto": "arnes",
+  "Cono de seguridad de 70 cm con cinta reflectiva": "cono",
+  "Cinta de seguridad amarilla, rollo de 500 m": "cinta-seguridad",
+  "Extintor PQS de 6 kg con soporte": "extintor",
+  "Extintor CO2 de 5 kg": "extintor",
+  "Señal de seguridad «Salida» fotoluminiscente": "senal",
+  "Señal de seguridad «Zona segura en sismos»": "senal",
+  "Careta de soldar con visor fijo": "careta-soldar",
+  "Overol drill con cinta reflectiva, talla L": "overol",
+  "Protector facial transparente": "protector-facial",
+  "Rodilleras de trabajo, par": "epp",
+  "Faja lumbar de soporte, talla M": "epp",
+  "Camisa oxford manga larga celeste, talla M": "camisa",
+  "Camisa oxford manga larga blanca, talla L": "camisa",
+  "Pantalón drill azul para trabajo, talla 32": "pantalon",
+  "Pantalón drill caqui para trabajo, talla 34": "pantalon",
+  "Casaca cortaviento con forro polar, talla L": "casaca",
+  "Chompa de punto cuello V azul marino, talla M": "casaca",
+  "Mandil de drill con bolsillo, color negro": "mandil",
+  "Mandil de cocina blanco con pechera": "mandil",
+  "Gorro de cocinero desechable": "chef",
+  "Chaqueta de chef manga larga, talla M": "chef",
+  "Uniforme quirúrgico de dos piezas, talla M": "uniforme-medico",
+  "Bata de laboratorio blanca, talla M": "uniforme-medico",
+  "Toalla de manos de algodón 40×70 cm": "toalla",
+  "Toalla de baño de algodón 70×140 cm": "toalla",
+  "Sábana de 1.5 plazas de algodón": "ropa-cama",
+  "Funda de almohada de algodón": "ropa-cama",
+  "Frazada polar de 1.5 plazas": "ropa-cama",
+  "Mantel de tela antimanchas 1.5 × 2.5 m": "mantel",
+  "Secador de cocina de algodón": "pano",
+  "Chaleco multibolsillos de drill, talla L": "casaca",
+  "Buzo deportivo institucional, talla M": "casaca",
+  "Bordado de logotipo en prenda, hasta 8 cm": "bordado",
+  "Estampado serigráfico a un color, hasta A4": "bordado",
+  "Cuaderno A4 cuadriculado 100 hojas": "cuaderno",
+  "Cuaderno A4 rayado 100 hojas": "cuaderno",
+  "Cuaderno A5 espiral 80 hojas": "cuaderno",
+  "Cuaderno de dibujo A4": "cuaderno",
+  "Libreta de bolsillo 60 hojas": "cuaderno",
+  "Lápiz grafito HB": "lapiz",
+  "Regla transparente 30 cm": "regla",
+  "Colores de madera, estuche de 12": "colores",
+  "Plumones escolares, estuche de 12": "marcadores",
+  "Crayones, estuche de 12": "colores",
+  "Cartulina blanca A4, bolsa de 20": "cartulina",
+  "Cartulina de colores A4, bolsa de 20": "cartulina",
+  "Papel lustre A4, bolsa de 25": "cartulina",
+  "Papel kraft en pliego": "papel-kraft",
+  "Papel bond A3, resma de 500 hojas": "resma-papel",
+  "Papel cuadriculado A4, block de 50": "papel-kraft",
+  "Block de notas adhesivas 75 mm": "notas-adhesivas",
+  "Goma en barra 21 g": "goma",
+  "Pegamento escolar 250 ml": "goma",
+  "Folder manila A4": "folder",
+  "Sobre manila A4": "sobre-manila",
+  "Forro transparente para cuaderno": "forro",
+  "Cinta adhesiva transparente 18 mm": "cinta-adhesiva",
+  "Pincel escolar plano": "pincel",
+  "Papel crepé, colores surtidos": "cartulina",
+  "Harina de trigo panadera, saco cerrado de 25 kg": "harina",
+  "Harina de trigo pastelera, saco cerrado de 25 kg": "harina",
+  "Harina integral de trigo, saco cerrado de 10 kg": "harina",
+  "Azúcar rubia, saco cerrado de 25 kg": "azucar",
+  "Azúcar blanca, saco cerrado de 25 kg": "azucar",
+  "Azúcar impalpable, bolsa cerrada de 1 kg": "azucar",
+  "Levadura seca, bolsa cerrada de 500 g": "levadura",
+  "Polvo de hornear, envase cerrado de 1 kg": "levadura",
+  "Bicarbonato alimentario, bolsa de 1 kg": "levadura",
+  "Sal fina, saco cerrado de 25 kg": "sal",
+  "Cacao en polvo, bolsa cerrada de 1 kg": "chocolate",
+  "Canela molida, bolsa cerrada de 500 g": "especias",
+  "Anís en grano, bolsa cerrada de 1 kg": "especias",
+  "Vainilla en polvo, envase de 250 g": "especias",
+  "Mejorador panario, bolsa cerrada de 500 g": "levadura",
+  "Gluten de trigo, bolsa cerrada de 1 kg": "levadura",
+  "Leche en polvo, bolsa cerrada de 1 kg": "leche-polvo",
+  "Ajonjolí, bolsa cerrada de 1 kg": "semillas",
+  "Semilla de girasol, bolsa de 1 kg": "semillas",
+  "Algarroba en polvo, bolsa cerrada de 1 kg": "algarroba",
+  "Avena en hojuelas, saco cerrado de 25 kg": "avena",
+  "Quinua en hojuelas, bolsa cerrada de 1 kg": "avena",
+  "Harina de arroz, saco cerrado de 25 kg": "arroz",
+  "Harina de maíz, saco cerrado de 25 kg": "harina",
+  "Premezcla para bizcocho, saco cerrado de 10 kg": "premezcla",
+  "Premezcla para pan integral, saco cerrado de 10 kg": "premezcla",
+  "Detergente en polvo multiusos, bolsa de 2 kg": "detergente",
+  "Detergente en polvo multiusos, bolsa de 4.5 kg": "detergente",
+  "Desinfectante aroma lavanda, botella de 900 ml": "desinfectante",
+  "Desinfectante aroma cítrico, galonera de 3.8 L": "desinfectante",
+  "Jabón líquido para manos, galonera de 3.8 L": "jabon",
+  "Jabón líquido para manos, frasco dosificador de 400 ml": "jabon",
+  "Alcohol en gel 70%, galonera de 3.8 L": "alcohol",
+  "Alcohol etílico 70%, botella de 1 L": "alcohol",
+  "Papel higiénico jumbo hoja doble, rollo de 250 m": "papel-higienico",
+  "Papel higiénico hoja doble, paquete de 4 rollos": "papel-higienico",
+  "Papel toalla interfoliado, paquete de 200 hojas": "papel-toalla",
+  "Papel toalla en rollo, rollo de 100 m": "papel-toalla",
+  "Bolsa de basura negra 140 L, paquete de 10": "bolsa-basura",
+  "Bolsa de basura negra 75 L, paquete de 20": "bolsa-basura",
+  "Bolsa de basura verde 50 L, paquete de 20": "bolsa-basura",
+  "Escoba de cerdas suaves con mango": "escoba",
+  "Recogedor plástico con mango largo": "escoba",
+  "Trapeador de algodón con mango": "trapeador",
+  "Balde con escurridor de 12 L": "trapeador",
+  "Esponja doble uso, paquete de 3": "esponja",
+  "Paño absorbente multiuso, paquete de 5": "pano",
+  "Guantes de látex para limpieza, talla M": "guantes-nitrilo",
+  "Limpiavidrios con atomizador, 650 ml": "desinfectante",
+  "Ambientador en aerosol, 360 ml": "ambientador",
+  "Lavavajilla en crema, pote de 900 g": "lavavajilla",
+  "Quitasarro para baños, botella de 1 L": "desinfectante",
+  "Dispensador de papel higiénico jumbo": "papel-higienico",
+  "Dispensador de jabón líquido de pared": "jabon",
+  "Caja de archivo de cartón con tapa": "caja-archivo",
+  "Cinta de embalaje transparente 48 mm × 100 m": "cinta-embalaje",
+  "Cinta de embalaje marrón 48 mm × 100 m": "cinta-embalaje",
+  "Cinta de papel masking 24 mm × 40 m": "masking",
+  "Film stretch transparente 18 pulgadas, rollo de 2 kg": "stretch",
+  "Plástico burbuja 1 m × 50 m": "burbuja",
+  "Bolsa de papel kraft con asa, 26×12×32 cm": "papel-kraft",
+  "Bolsa de papel kraft sin asa, 18×9×27 cm": "papel-kraft",
+  "Bolsa plástica con cierre hermético 20×25 cm": "bolsa-plastica",
+  "Bolsa de polietileno transparente 30×40 cm": "bolsa-plastica",
+  "Bolsa camiseta reforzada 40×50 cm": "bolsa-plastica",
+  "Sobre manila A4 con fuelle": "sobre-manila",
+  "Etiqueta adhesiva térmica 10×15 cm, rollo de 500": "etiquetas",
+  "Dispensador de cinta de embalaje metálico": "cinta-embalaje",
+  "Papel kraft en bobina 60 cm × 100 m": "papel-kraft",
+  "Esquinero de cartón 5 cm × 1 m": "carton",
+  "Separador de cartón para botellas, 12 celdas": "carton",
+  "Bandeja de tecnopor N.º 10": "envase",
+  "Envase plástico con tapa de 500 ml": "envase",
+  "Envase plástico con tapa de 1 L": "envase",
+  "Bolsa de yute natural 30×40 cm": "yute",
+  "Teclado USB de oficina": "teclado",
+  "Mouse USB óptico": "mouse",
+  "Mouse inalámbrico": "mouse",
+  "Kit teclado y mouse USB": "teclado-mouse",
+  "Teclado inalámbrico compacto": "teclado",
+  "Pad para mouse de oficina": "mouse",
+  "Hub USB de cuatro puertos": "hub-usb",
+  "Memoria USB 32 GB": "usb",
+  "Memoria USB 64 GB": "usb",
+  "Tarjeta microSD 64 GB con adaptador": "microsd",
+  "Disco SSD SATA 240 GB": "ssd",
+  "Disco SSD SATA 480 GB": "ssd",
+  "Módulo RAM DDR4 8 GB": "ram",
+  "Cable de red Cat 6 de 2 m": "cable-red",
+  "Cable de red Cat 6 de 5 m": "cable-red",
+  "Conector RJ45 Cat 6, bolsa de 100": "cable-red",
+  "Router WiFi de oficina": "router",
+  "Switch de red de cinco puertos": "switch",
+  "Cable HDMI de 1.5 m": "cable-hdmi",
+  "Cable USB tipo C de 1 m": "cable-hdmi",
+  "Adaptador USB tipo C a HDMI": "hub-usb",
+  "Lector USB de tarjetas de memoria": "hub-usb",
+  "Base regulable para portátil": "soporte-laptop",
+  "Ventilador de base para portátil": "soporte-laptop",
+  "Limpiador de pantalla, kit cerrado": "limpiador-pantalla",
+  "Protector eléctrico de seis tomas": "regleta",
+  "Escritorio de melamina 120×60 cm, color haya": "escritorio",
+  "Escritorio en L de melamina 150×150 cm": "escritorio",
+  "Escritorio de vidrio templado 120×60 cm": "escritorio",
+  "Silla giratoria ergonómica de malla": "silla",
+  "Silla giratoria gerencial de cuero sintético": "silla",
+  "Silla fija para visita con brazos": "silla",
+  "Silla apilable de polipropileno": "silla",
+  "Mesa de reuniones para 6 personas": "mesa-reuniones",
+  "Mesa plegable de 180×75 cm": "mesa",
+  "Archivador metálico de 4 gavetas": "archivador-metal",
+  "Credenza de melamina con 2 puertas": "mueble",
+  "Armario metálico de 2 puertas": "mueble",
+  "Estante metálico de 5 niveles": "mueble",
+  "Locker metálico de 6 casilleros": "locker",
+  "Módulo de recepción en melamina": "recepcion",
+  "Biblioteca de melamina de 5 niveles": "mueble",
+  "Cajonera rodante de 3 gavetas": "mueble",
+  "Pizarra acrílica 120×90 cm": "pizarra",
+  "Pizarra de corcho 90×60 cm": "corcho",
+  "Rotafolio con pizarra acrílica": "pizarra",
+  "Separador de ambientes de melamina 120×160 cm": "separador",
+  "Atril para computadora regulable": "soporte-laptop",
+  "Perchero de pie metálico": "perchero",
+  "Sofá de espera de 3 cuerpos": "sofa",
+  "Tándem de 3 asientos para sala de espera": "sofa",
+  "Mesa de centro de vidrio": "mesa",
+  "Lámpara de escritorio LED articulada": "escritorio",
+  "Papelera metálica de malla": "papelera",
+  "Organizador de escritorio de 5 compartimentos": "organizador",
+  "Vaso de papel para bebida caliente 8 oz": "vaso-papel",
+  "Vaso de papel para bebida caliente 12 oz": "vaso-papel",
+  "Vaso plástico transparente 7 oz": "vaso-plastico",
+  "Vaso plástico transparente 12 oz": "vaso-plastico",
+  "Tapa para vaso de papel 8 oz": "vaso-papel",
+  "Plato descartable biodegradable de 23 cm": "plato",
+  "Plato tendido de plástico de 23 cm": "plato",
+  "Tenedor descartable": "cubiertos",
+  "Cuchara descartable": "cubiertos",
+  "Cuchillo descartable": "cubiertos",
+  "Sorbete flexible con funda": "sorbete",
+  "Envase de tecnopor para almuerzo": "envase",
+  "Envase biodegradable de bagazo para almuerzo": "envase",
+  "Taper rectangular de 1 L con tapa": "envase",
+  "Mantel descartable 1.2 × 1.8 m": "mantel",
+  "Papel aluminio, rollo de 30 m": "aluminio",
+  "Film plástico para alimentos, rollo de 300 m": "aluminio",
+  "Azúcar en sobres de 5 g": "sobres-azucar",
+  "Endulzante en sobres de 1 g": "sobres-azucar",
+  "Café molido para pasar, bolsa de 1 kg": "cafe",
+  "Café en cápsulas compatibles, caja de 50": "cafe",
+  "Infusión de té verde, caja de 100 sobres": "te",
+  "Leche en polvo para café, bolsa de 1 kg": "leche-polvo",
+  "Galleta surtida para reuniones, caja de 500 g": "galletas",
+  "Hervidor eléctrico de 1.7 L": "hervidor",
+  "Dispensador de agua fría y caliente": "bidon-agua",
+  "Pintura látex blanca, balde cerrado de 4 L": "pintura",
+  "Pintura látex marfil, balde cerrado de 4 L": "pintura",
+  "Pintura látex gris, balde cerrado de 4 L": "pintura",
+  "Sellador de pared, balde cerrado de 4 L": "pintura",
+  "Imprimante de pared, balde cerrado de 4 L": "pintura",
+  "Esmalte al agua blanco, envase de 1 L": "pintura",
+  "Rodillo para pared de 9 pulgadas": "rodillo",
+  "Repuesto de rodillo de 9 pulgadas": "rodillo",
+  "Bandeja para pintura": "pintura",
+  "Cinta de enmascarar 24 mm": "masking",
+  "Cinta de enmascarar 48 mm": "masking",
+  "Lija para pared grano 80": "lija",
+  "Lija para pared grano 120": "lija",
+  "Espátula metálica de 4 pulgadas": "llana",
+  "Llana lisa de acero": "llana",
+  "Llana dentada para cerámica": "llana",
+  "Adhesivo cerámico, saco cerrado de 25 kg": "cemento",
+  "Cemento para acabados, saco cerrado de 42.5 kg": "cemento",
+  "Fragua blanca, bolsa cerrada de 1 kg": "cemento",
+  "Fragua gris, bolsa cerrada de 1 kg": "cemento",
+  "Cerámica de piso 45 x 45 cm": "ceramica",
+  "Cerámica de pared 30 x 60 cm": "ceramica",
+  "Porcelanato 60 x 60 cm": "ceramica",
+  "Silicona neutra, cartucho cerrado de 300 ml": "silicona",
+  "Perfil esquinero de 2 m": "carton",
+  "Guantes de trabajo de algodón, par": "guantes-trabajo",
+  "Botiquín de pared con implementos para 10 personas": "botiquin",
+  "Botiquín portátil de primeros auxilios": "botiquin",
+  "Gasa estéril 10×10 cm, sobre individual": "vendas",
+  "Venda elástica de 4 pulgadas": "vendas",
+  "Venda elástica de 6 pulgadas": "vendas",
+  "Esparadrapo de tela 1 pulgada × 5 m": "vendas",
+  "Curitas surtidas, caja de 100": "vendas",
+  "Algodón hidrófilo, bolsa de 500 g": "vendas",
+  "Agua oxigenada, frasco de 120 ml": "antiseptico",
+  "Alcohol medicinal 70%, frasco de 250 ml": "alcohol",
+  "Yodopovidona solución, frasco de 120 ml": "antiseptico",
+  "Suero fisiológico 0.9%, frasco de 1 L": "antiseptico",
+  "Tensiómetro digital de brazo": "tensiometro",
+  "Oxímetro de pulso": "oximetro",
+  "Guantes de examen de látex, caja de 100": "guantes-nitrilo",
+  "Manta térmica de emergencia": "manta-termica",
+  "Tijera de trauma de acero inoxidable": "instrumental",
+  "Pinza de punta fina": "instrumental",
+  "Mascarilla de RCP con válvula": "rcp",
+  "Jabón antiséptico, frasco de 1 L": "jabon",
+  "Paracetamol 500 mg, caja de 100 tabletas": "pastillas",
+  "Sales de rehidratación oral, sobre": "pastillas",
+  "Señal de botiquín fotoluminiscente": "senal",
+  "Tubo PVC eléctrico 3/4 pulgada × 3 m": "tubo-pvc",
+  "Curva PVC eléctrica 3/4 pulgada": "tubo-pvc",
+  "Caja octogonal de PVC": "caja-electrica",
+  "Caja rectangular de PVC para empotrar": "caja-electrica",
+  "Foco LED 9 W luz blanca, E27": "foco",
+  "Foco LED 15 W luz blanca, E27": "foco",
+  "Panel LED empotrable 60×60 cm 40 W": "panel-led",
+  "Tubo LED T8 de 18 W, 120 cm": "panel-led",
+  "Reflector LED 50 W para exteriores": "reflector",
+  "Interruptor diferencial 2 × 25 A": "breaker",
+  "Tablero de distribución de 8 polos": "breaker",
+  "Cinta aislante negra 3/4 pulgada × 20 m": "cinta-aislante",
+  "Extensión eléctrica de 5 m con 3 tomas": "extension",
+  "Regleta con protector de 6 tomas": "regleta",
+  "Canaleta adhesiva 20 × 12 mm × 2 m": "tubo-pvc",
+  "Sensor de movimiento para techo": "sensor",
+  "Luz de emergencia LED recargable": "luz-emergencia",
+  "Multímetro digital de bolsillo": "multimetro",
+  "Martillo de uña 16 oz, mango de fibra": "martillo",
+  "Destornillador plano 1/4 × 6 pulgadas": "destornillador",
+  "Destornillador estrella PH2 × 6 pulgadas": "destornillador",
+  "Juego de llaves mixtas de 8 a 19 mm, 8 piezas": "llaves",
+  "Alicate universal de 8 pulgadas": "alicate",
+  "Wincha métrica de 5 m": "wincha",
+  "Nivel de aluminio de 24 pulgadas": "nivel",
+  "Taladro percutor 650 W": "taladro",
+  "Amoladora angular 4 1/2 pulgadas 850 W": "amoladora",
+  "Disco de corte para metal 4 1/2 pulgadas": "amoladora",
+  "Broca para concreto de 1/4 pulgada": "taladro",
+  "Juego de brocas para metal, 13 piezas": "taladro",
+  "Tornillo autorroscante 8 × 1 pulgada, caja de 100": "tornillos",
+  "Clavo de acero 2 pulgadas, caja de 1 kg": "tornillos",
+  "Tarugo plástico de 1/4 pulgada, bolsa de 100": "tornillos",
+  "Pernos hexagonales 3/8 × 2 pulgadas, caja de 50": "tornillos",
+  "Silicona transparente para sellado, 280 ml": "silicona",
+  "Pegamento epóxico de dos componentes, 25 ml": "epoxico",
+  "Lija al agua grano 120": "lija",
+  "Lija para madera grano 80": "lija",
+  "Candado de bronce de 40 mm": "candado",
+  "Bisagra de acero 3 pulgadas, par": "bisagra",
+  "Pala tipo cuchara con mango de madera": "pala",
+  "Pico de acero con mango": "pala",
+  "Manguera reforzada de 1/2 pulgada × 25 m": "manguera",
+  "Caja de herramientas plástica de 19 pulgadas": "caja-herramientas",
+  "Serrucho de 20 pulgadas": "serrucho",
+  "Cincel plano de 10 pulgadas": "cincel"
+ },
+ "fotos": {
+  "aceite": [
+   {
+    "archivo": "aceite-1.webp",
+    "credito": "Foto: Couleur · Pixabay"
+   },
+   {
+    "archivo": "aceite-2.webp",
+    "credito": "Foto: JillWellington · Pixabay"
+   },
+   {
+    "archivo": "aceite-3.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "agua": [
+   {
+    "archivo": "agua-1.webp",
+    "credito": "Foto: mrganso · Pixabay"
+   },
+   {
+    "archivo": "agua-3.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   }
+  ],
+  "alcohol": [
+   {
+    "archivo": "alcohol-1.webp",
+    "credito": "Foto: sweetlouise · Pixabay"
+   },
+   {
+    "archivo": "alcohol-3.webp",
+    "credito": "Foto: slavoljubovski · Pixabay"
+   }
+  ],
+  "algarroba": [
+   {
+    "archivo": "algarroba-1.webp",
+    "credito": "Foto: byrev · Pixabay"
+   }
+  ],
+  "alicate": [
+   {
+    "archivo": "alicate-1.webp",
+    "credito": "Foto: picjumbo_com · Pixabay"
+   },
+   {
+    "archivo": "alicate-2.webp",
+    "credito": "Foto: Bru-nO · Pixabay"
+   },
+   {
+    "archivo": "alicate-3.webp",
+    "credito": "Foto: Peggy_Marco · Pixabay"
+   }
+  ],
+  "aluminio": [
+   {
+    "archivo": "aluminio-1.webp",
+    "credito": "Foto: analogicus · Pixabay"
+   },
+   {
+    "archivo": "aluminio-2.webp",
+    "credito": "Foto: analogicus · Pixabay"
+   },
+   {
+    "archivo": "aluminio-3.webp",
+    "credito": "Foto: Pezibear · Pixabay"
+   }
+  ],
+  "ambientador": [
+   {
+    "archivo": "ambientador-2.webp",
+    "credito": "Foto: ha11ok · Pixabay"
+   },
+   {
+    "archivo": "ambientador-3.webp",
+    "credito": "Foto: monicore · Pixabay"
+   }
+  ],
+  "amoladora": [
+   {
+    "archivo": "amoladora-1.webp",
+    "credito": "Foto: jannonivergall · Pixabay"
+   },
+   {
+    "archivo": "amoladora-2.webp",
+    "credito": "Foto: neelam279 · Pixabay"
+   },
+   {
+    "archivo": "amoladora-3.webp",
+    "credito": "Foto: tattybadger · Pixabay"
+   }
+  ],
+  "antiseptico": [
+   {
+    "archivo": "antiseptico-1.webp",
+    "credito": "Foto: analogicus · Pixabay"
+   },
+   {
+    "archivo": "antiseptico-2.webp",
+    "credito": "Foto: Couleur · Pixabay"
+   },
+   {
+    "archivo": "antiseptico-3.webp",
+    "credito": "Foto: garten-gg · Pixabay"
+   }
+  ],
+  "archivador": [
+   {
+    "archivo": "archivador-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "archivador-2.webp",
+    "credito": "Foto: Juergen_Sieber · Pixabay"
+   }
+  ],
+  "archivador-metal": [
+   {
+    "archivo": "archivador-metal-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "archivador-metal-2.webp",
+    "credito": "Foto: Angelo_Giordano · Pixabay"
+   },
+   {
+    "archivo": "archivador-metal-3.webp",
+    "credito": "Foto: roma1880 · Pixabay"
+   }
+  ],
+  "arnes": [
+   {
+    "archivo": "arnes-2.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "arnes-3.webp",
+    "credito": "Foto: Gipfelsturm69 · Pixabay"
+   }
+  ],
+  "arroz": [
+   {
+    "archivo": "arroz-1.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   },
+   {
+    "archivo": "arroz-2.webp",
+    "credito": "Foto: MLbay · Pixabay"
+   },
+   {
+    "archivo": "arroz-3.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   }
+  ],
+  "atun": [
+   {
+    "archivo": "atun-1.webp",
+    "credito": "Foto: foto-canvas-store · Pixabay"
+   },
+   {
+    "archivo": "atun-3.webp",
+    "credito": "Foto: Joenomias · Pixabay"
+   }
+  ],
+  "avena": [
+   {
+    "archivo": "avena-1.webp",
+    "credito": "Foto: Nennieinszweidrei · Pixabay"
+   },
+   {
+    "archivo": "avena-2.webp",
+    "credito": "Foto: markusspiske · Pixabay"
+   },
+   {
+    "archivo": "avena-3.webp",
+    "credito": "Foto: Mondgesicht · Pixabay"
+   }
+  ],
+  "azucar": [
+   {
+    "archivo": "azucar-1.webp",
+    "credito": "Foto: pasja1000 · Pixabay"
+   },
+   {
+    "archivo": "azucar-3.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   }
+  ],
+  "bebida-deportiva": [
+   {
+    "archivo": "bebida-deportiva-1.webp",
+    "credito": "Foto: 926663 · Pixabay"
+   },
+   {
+    "archivo": "bebida-deportiva-2.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "bidon-agua": [
+   {
+    "archivo": "bidon-agua-3.webp",
+    "credito": "Foto: WilsonBlanco · Pixabay"
+   }
+  ],
+  "bisagra": [
+   {
+    "archivo": "bisagra-1.webp",
+    "credito": "Foto: analogicus · Pixabay"
+   },
+   {
+    "archivo": "bisagra-2.webp",
+    "credito": "Foto: fietzfotos · Pixabay"
+   },
+   {
+    "archivo": "bisagra-3.webp",
+    "credito": "Foto: anaterate · Pixabay"
+   }
+  ],
+  "boligrafo": [
+   {
+    "archivo": "boligrafo-2.webp",
+    "credito": "Foto: ClickerHappy · Pixabay"
+   },
+   {
+    "archivo": "boligrafo-3.webp",
+    "credito": "Foto: NickyPe · Pixabay"
+   }
+  ],
+  "bolsa-basura": [
+   {
+    "archivo": "bolsa-basura-1.webp",
+    "credito": "Foto: chaiyananuwatmongkolchai · Pixabay"
+   },
+   {
+    "archivo": "bolsa-basura-2.webp",
+    "credito": "Foto: ALTEREGOINTELIGENCIA · Pixabay"
+   },
+   {
+    "archivo": "bolsa-basura-3.webp",
+    "credito": "Foto: cocoparisienne · Pixabay"
+   }
+  ],
+  "bolsa-plastica": [
+   {
+    "archivo": "bolsa-plastica-1.webp",
+    "credito": "Foto: chaiyananuwatmongkolchai · Pixabay"
+   },
+   {
+    "archivo": "bolsa-plastica-3.webp",
+    "credito": "Foto: Arhazel · Pixabay"
+   }
+  ],
+  "bordado": [
+   {
+    "archivo": "bordado-1.webp",
+    "credito": "Foto: Myriams-Fotos · Pixabay"
+   },
+   {
+    "archivo": "bordado-2.webp",
+    "credito": "Foto: monicore · Pixabay"
+   },
+   {
+    "archivo": "bordado-3.webp",
+    "credito": "Foto: mariya_m · Pixabay"
+   }
+  ],
+  "botas-jebe": [
+   {
+    "archivo": "botas-jebe-1.webp",
+    "credito": "Foto: JillWellington · Pixabay"
+   },
+   {
+    "archivo": "botas-jebe-3.webp",
+    "credito": "Foto: Ralphs_Fotos · Pixabay"
+   }
+  ],
+  "botiquin": [
+   {
+    "archivo": "botiquin-1.webp",
+    "credito": "Foto: Alexas_Fotos · Pixabay"
+   },
+   {
+    "archivo": "botiquin-2.webp",
+    "credito": "Foto: Alexas_Fotos · Pixabay"
+   },
+   {
+    "archivo": "botiquin-3.webp",
+    "credito": "Foto: Hans · Pixabay"
+   }
+  ],
+  "breaker": [
+   {
+    "archivo": "breaker-1.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "breaker-2.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "breaker-3.webp",
+    "credito": "Foto: Turmfalke · Pixabay"
+   }
+  ],
+  "burbuja": [
+   {
+    "archivo": "burbuja-1.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   }
+  ],
+  "cable-hdmi": [
+   {
+    "archivo": "cable-hdmi-1.webp",
+    "credito": "Foto: WikimediaImages · Pixabay"
+   },
+   {
+    "archivo": "cable-hdmi-2.webp",
+    "credito": "Foto: newpose · Pixabay"
+   },
+   {
+    "archivo": "cable-hdmi-3.webp",
+    "credito": "Foto: juliangvm · Pixabay"
+   }
+  ],
+  "cable-red": [
+   {
+    "archivo": "cable-red-1.webp",
+    "credito": "Foto: blickpixel · Pixabay"
+   },
+   {
+    "archivo": "cable-red-2.webp",
+    "credito": "Foto: blickpixel · Pixabay"
+   },
+   {
+    "archivo": "cable-red-3.webp",
+    "credito": "Foto: blickpixel · Pixabay"
+   }
+  ],
+  "cafe": [
+   {
+    "archivo": "cafe-1.webp",
+    "credito": "Foto: eliasfalla · Pixabay"
+   },
+   {
+    "archivo": "cafe-2.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   },
+   {
+    "archivo": "cafe-3.webp",
+    "credito": "Foto: shixugang · Pixabay"
+   }
+  ],
+  "caja-archivo": [
+   {
+    "archivo": "caja-archivo-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "caja-archivo-2.webp",
+    "credito": "Foto: analogicus · Pixabay"
+   },
+   {
+    "archivo": "caja-archivo-3.webp",
+    "credito": "Foto: creativesignature · Pixabay"
+   }
+  ],
+  "caja-electrica": [
+   {
+    "archivo": "caja-electrica-2.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "caja-electrica-3.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "caja-herramientas": [
+   {
+    "archivo": "caja-herramientas-1.webp",
+    "credito": "Foto: chrisreadingfoto · Pixabay"
+   },
+   {
+    "archivo": "caja-herramientas-2.webp",
+    "credito": "Foto: vinayr16 · Pixabay"
+   }
+  ],
+  "camisa": [
+   {
+    "archivo": "camisa-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "camisa-3.webp",
+    "credito": "Foto: MabelAmber · Pixabay"
+   }
+  ],
+  "candado": [
+   {
+    "archivo": "candado-1.webp",
+    "credito": "Foto: haalkab · Pixabay"
+   },
+   {
+    "archivo": "candado-2.webp",
+    "credito": "Foto: neelam279 · Pixabay"
+   },
+   {
+    "archivo": "candado-3.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "careta-soldar": [
+   {
+    "archivo": "careta-soldar-1.webp",
+    "credito": "Foto: natsan · Pixabay"
+   },
+   {
+    "archivo": "careta-soldar-2.webp",
+    "credito": "Foto: WikiImages · Pixabay"
+   },
+   {
+    "archivo": "careta-soldar-3.webp",
+    "credito": "Foto: simonreza09 · Pixabay"
+   }
+  ],
+  "carton": [
+   {
+    "archivo": "carton-1.webp",
+    "credito": "Foto: ulotkidruk · Pixabay"
+   }
+  ],
+  "cartulina": [
+   {
+    "archivo": "cartulina-1.webp",
+    "credito": "Foto: tamanna_rumee · Pixabay"
+   }
+  ],
+  "casaca": [
+   {
+    "archivo": "casaca-2.webp",
+    "credito": "Foto: Hans · Pixabay"
+   }
+  ],
+  "cemento": [
+   {
+    "archivo": "cemento-2.webp",
+    "credito": "Foto: OrnaW · Pixabay"
+   }
+  ],
+  "ceramica": [
+   {
+    "archivo": "ceramica-1.webp",
+    "credito": "Foto: StockSnap · Pixabay"
+   },
+   {
+    "archivo": "ceramica-2.webp",
+    "credito": "Foto: 652234 · Pixabay"
+   },
+   {
+    "archivo": "ceramica-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "chaleco-reflectivo": [
+   {
+    "archivo": "chaleco-reflectivo-1.webp",
+    "credito": "Foto: ZeeChow · Pixabay"
+   },
+   {
+    "archivo": "chaleco-reflectivo-3.webp",
+    "credito": "Foto: Ben_Kerckx · Pixabay"
+   }
+  ],
+  "chef": [
+   {
+    "archivo": "chef-1.webp",
+    "credito": "Foto: 752910 · Pixabay"
+   },
+   {
+    "archivo": "chef-2.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "chef-3.webp",
+    "credito": "Foto: binmassam · Pixabay"
+   }
+  ],
+  "chocolate": [
+   {
+    "archivo": "chocolate-1.webp",
+    "credito": "Foto: AlexanderStein · Pixabay"
+   },
+   {
+    "archivo": "chocolate-2.webp",
+    "credito": "Foto: pixel2013 · Pixabay"
+   },
+   {
+    "archivo": "chocolate-3.webp",
+    "credito": "Foto: StockSnap · Pixabay"
+   }
+  ],
+  "cincel": [
+   {
+    "archivo": "cincel-2.webp",
+    "credito": "Foto: Jirreaux · Pixabay"
+   },
+   {
+    "archivo": "cincel-3.webp",
+    "credito": "Foto: dbreen · Pixabay"
+   }
+  ],
+  "cinta-adhesiva": [
+   {
+    "archivo": "cinta-adhesiva-1.webp",
+    "credito": "Foto: WikimediaImages · Pixabay"
+   },
+   {
+    "archivo": "cinta-adhesiva-2.webp",
+    "credito": "Foto: stux · Pixabay"
+   }
+  ],
+  "cinta-aislante": [
+   {
+    "archivo": "cinta-aislante-1.webp",
+    "credito": "Foto: Sid74 · Pixabay"
+   },
+   {
+    "archivo": "cinta-aislante-2.webp",
+    "credito": "Foto: falconp4 · Pixabay"
+   },
+   {
+    "archivo": "cinta-aislante-3.webp",
+    "credito": "Foto: Sid74 · Pixabay"
+   }
+  ],
+  "cinta-embalaje": [
+   {
+    "archivo": "cinta-embalaje-1.webp",
+    "credito": "Foto: stux · Pixabay"
+   },
+   {
+    "archivo": "cinta-embalaje-2.webp",
+    "credito": "Foto: phily_shotz · Pixabay"
+   },
+   {
+    "archivo": "cinta-embalaje-3.webp",
+    "credito": "Foto: s_sopian · Pixabay"
+   }
+  ],
+  "cinta-seguridad": [
+   {
+    "archivo": "cinta-seguridad-1.webp",
+    "credito": "Foto: stux · Pixabay"
+   },
+   {
+    "archivo": "cinta-seguridad-2.webp",
+    "credito": "Foto: danhusseyphoto · Pixabay"
+   },
+   {
+    "archivo": "cinta-seguridad-3.webp",
+    "credito": "Foto: Life-Of-Pix · Pixabay"
+   }
+  ],
+  "clips": [
+   {
+    "archivo": "clips-1.webp",
+    "credito": "Foto: ha11ok · Pixabay"
+   },
+   {
+    "archivo": "clips-3.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   }
+  ],
+  "colores": [
+   {
+    "archivo": "colores-1.webp",
+    "credito": "Foto: Myriams-Fotos · Pixabay"
+   },
+   {
+    "archivo": "colores-2.webp",
+    "credito": "Foto: padrinan · Pixabay"
+   },
+   {
+    "archivo": "colores-3.webp",
+    "credito": "Foto: padrinan · Pixabay"
+   }
+  ],
+  "cono": [
+   {
+    "archivo": "cono-2.webp",
+    "credito": "Foto: manfredrichter · Pixabay"
+   },
+   {
+    "archivo": "cono-3.webp",
+    "credito": "Foto: neelam279 · Pixabay"
+   }
+  ],
+  "corcho": [
+   {
+    "archivo": "corcho-1.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   },
+   {
+    "archivo": "corcho-2.webp",
+    "credito": "Foto: MasterTux · Pixabay"
+   },
+   {
+    "archivo": "corcho-3.webp",
+    "credito": "Foto: katzengraben · Pixabay"
+   }
+  ],
+  "corrector": [
+   {
+    "archivo": "corrector-2.webp",
+    "credito": "Foto: manseok_Kim · Pixabay"
+   },
+   {
+    "archivo": "corrector-3.webp",
+    "credito": "Foto: u_n37k94s5sg · Pixabay"
+   }
+  ],
+  "cuaderno": [
+   {
+    "archivo": "cuaderno-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "cuaderno-2.webp",
+    "credito": "Foto: Engin_Akyurt · Pixabay"
+   },
+   {
+    "archivo": "cuaderno-3.webp",
+    "credito": "Foto: Firmbee · Pixabay"
+   }
+  ],
+  "cubiertos": [
+   {
+    "archivo": "cubiertos-2.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   }
+  ],
+  "desinfectante": [
+   {
+    "archivo": "desinfectante-1.webp",
+    "credito": "Foto: tookapic · Pixabay"
+   },
+   {
+    "archivo": "desinfectante-2.webp",
+    "credito": "Foto: Mimzy · Pixabay"
+   },
+   {
+    "archivo": "desinfectante-3.webp",
+    "credito": "Foto: ds_30 · Pixabay"
+   }
+  ],
+  "destornillador": [
+   {
+    "archivo": "destornillador-1.webp",
+    "credito": "Foto: picjumbo_com · Pixabay"
+   },
+   {
+    "archivo": "destornillador-2.webp",
+    "credito": "Foto: padrinan · Pixabay"
+   }
+  ],
+  "detergente": [
+   {
+    "archivo": "detergente-1.webp",
+    "credito": "Foto: flutie8211 · Pixabay"
+   },
+   {
+    "archivo": "detergente-2.webp",
+    "credito": "Foto: habelfrank · Pixabay"
+   }
+  ],
+  "engrapadora": [
+   {
+    "archivo": "engrapadora-2.webp",
+    "credito": "Foto: ds_30 · Pixabay"
+   }
+  ],
+  "envase": [
+   {
+    "archivo": "envase-1.webp",
+    "credito": "Foto: elizadean · Pixabay"
+   },
+   {
+    "archivo": "envase-2.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "envase-3.webp",
+    "credito": "Foto: Daria-Yakovleva · Pixabay"
+   }
+  ],
+  "epoxico": [
+   {
+    "archivo": "epoxico-1.webp",
+    "credito": "Foto: Counselling · Pixabay"
+   },
+   {
+    "archivo": "epoxico-2.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "epp": [
+   {
+    "archivo": "epp-2.webp",
+    "credito": "Foto: Ri_Ya · Pixabay"
+   },
+   {
+    "archivo": "epp-3.webp",
+    "credito": "Foto: leo2014 · Pixabay"
+   }
+  ],
+  "escoba": [
+   {
+    "archivo": "escoba-2.webp",
+    "credito": "Foto: orzalaga · Pixabay"
+   },
+   {
+    "archivo": "escoba-3.webp",
+    "credito": "Foto: anncapictures · Pixabay"
+   }
+  ],
+  "escritorio": [
+   {
+    "archivo": "escritorio-1.webp",
+    "credito": "Foto: Firmbee · Pixabay"
+   },
+   {
+    "archivo": "escritorio-2.webp",
+    "credito": "Foto: martinvorel_com · Pixabay"
+   },
+   {
+    "archivo": "escritorio-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "especias": [
+   {
+    "archivo": "especias-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "especias-2.webp",
+    "credito": "Foto: weinstock · Pixabay"
+   },
+   {
+    "archivo": "especias-3.webp",
+    "credito": "Foto: Daria-Yakovleva · Pixabay"
+   }
+  ],
+  "esponja": [
+   {
+    "archivo": "esponja-1.webp",
+    "credito": "Foto: Ralphs_Fotos · Pixabay"
+   },
+   {
+    "archivo": "esponja-2.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   },
+   {
+    "archivo": "esponja-3.webp",
+    "credito": "Foto: RitaE · Pixabay"
+   }
+  ],
+  "etiquetas": [
+   {
+    "archivo": "etiquetas-1.webp",
+    "credito": "Foto: mastersenaiper · Pixabay"
+   },
+   {
+    "archivo": "etiquetas-3.webp",
+    "credito": "Foto: geegeepia · Pixabay"
+   }
+  ],
+  "extension": [
+   {
+    "archivo": "extension-1.webp",
+    "credito": "Foto: Bru-nO · Pixabay"
+   }
+  ],
+  "extintor": [
+   {
+    "archivo": "extintor-1.webp",
+    "credito": "Foto: GulArt · Pixabay"
+   },
+   {
+    "archivo": "extintor-3.webp",
+    "credito": "Foto: Antranias · Pixabay"
+   }
+  ],
+  "fideos": [
+   {
+    "archivo": "fideos-2.webp",
+    "credito": "Foto: Divily · Pixabay"
+   },
+   {
+    "archivo": "fideos-3.webp",
+    "credito": "Foto: lukasbieri · Pixabay"
+   }
+  ],
+  "foco": [
+   {
+    "archivo": "foco-1.webp",
+    "credito": "Foto: Daniel_Calabrese · Pixabay"
+   },
+   {
+    "archivo": "foco-2.webp",
+    "credito": "Foto: Couleur · Pixabay"
+   },
+   {
+    "archivo": "foco-3.webp",
+    "credito": "Foto: Couleur · Pixabay"
+   }
+  ],
+  "folder": [
+   {
+    "archivo": "folder-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "folder-3.webp",
+    "credito": "Foto: Angelo_Giordano · Pixabay"
+   }
+  ],
+  "forro": [
+   {
+    "archivo": "forro-1.webp",
+    "credito": "Foto: Darkmoon_Art · Pixabay"
+   },
+   {
+    "archivo": "forro-2.webp",
+    "credito": "Foto: qiye · Pixabay"
+   },
+   {
+    "archivo": "forro-3.webp",
+    "credito": "Foto: MsErinEast · Pixabay"
+   }
+  ],
+  "galletas": [
+   {
+    "archivo": "galletas-1.webp",
+    "credito": "Foto: planet_fox · Pixabay"
+   },
+   {
+    "archivo": "galletas-2.webp",
+    "credito": "Foto: u_czhrz1rjhw · Pixabay"
+   },
+   {
+    "archivo": "galletas-3.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "gaseosa": [
+   {
+    "archivo": "gaseosa-1.webp",
+    "credito": "Foto: igorovsyannykov · Pixabay"
+   },
+   {
+    "archivo": "gaseosa-2.webp",
+    "credito": "Foto: Couleur · Pixabay"
+   }
+  ],
+  "goma": [
+   {
+    "archivo": "goma-1.webp",
+    "credito": "Foto: ds_30 · Pixabay"
+   },
+   {
+    "archivo": "goma-2.webp",
+    "credito": "Foto: Counselling · Pixabay"
+   }
+  ],
+  "guantes-nitrilo": [
+   {
+    "archivo": "guantes-nitrilo-1.webp",
+    "credito": "Foto: Ri_Ya · Pixabay"
+   },
+   {
+    "archivo": "guantes-nitrilo-2.webp",
+    "credito": "Foto: leo2014 · Pixabay"
+   },
+   {
+    "archivo": "guantes-nitrilo-3.webp",
+    "credito": "Foto: leo2014 · Pixabay"
+   }
+  ],
+  "guantes-trabajo": [
+   {
+    "archivo": "guantes-trabajo-2.webp",
+    "credito": "Foto: anaterate · Pixabay"
+   },
+   {
+    "archivo": "guantes-trabajo-3.webp",
+    "credito": "Foto: Carola68 · Pixabay"
+   }
+  ],
+  "harina": [
+   {
+    "archivo": "harina-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "harina-2.webp",
+    "credito": "Foto: ClickerHappy · Pixabay"
+   },
+   {
+    "archivo": "harina-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "hervidor": [
+   {
+    "archivo": "hervidor-1.webp",
+    "credito": "Foto: Engin_Akyurt · Pixabay"
+   },
+   {
+    "archivo": "hervidor-2.webp",
+    "credito": "Foto: Josch13 · Pixabay"
+   },
+   {
+    "archivo": "hervidor-3.webp",
+    "credito": "Foto: Josch13 · Pixabay"
+   }
+  ],
+  "hub-usb": [
+   {
+    "archivo": "hub-usb-2.webp",
+    "credito": "Foto: linlin2017 · Pixabay"
+   },
+   {
+    "archivo": "hub-usb-3.webp",
+    "credito": "Foto: LYRL · Pixabay"
+   }
+  ],
+  "instrumental": [
+   {
+    "archivo": "instrumental-1.webp",
+    "credito": "Foto: ymkaaaaaa · Pixabay"
+   },
+   {
+    "archivo": "instrumental-2.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "instrumental-3.webp",
+    "credito": "Foto: domkarch · Pixabay"
+   }
+  ],
+  "jabon": [
+   {
+    "archivo": "jabon-1.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   }
+  ],
+  "jugo": [
+   {
+    "archivo": "jugo-1.webp",
+    "credito": "Foto: palacioerick · Pixabay"
+   },
+   {
+    "archivo": "jugo-2.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "jugo-3.webp",
+    "credito": "Foto: marijana1 · Pixabay"
+   }
+  ],
+  "lapiz": [
+   {
+    "archivo": "lapiz-1.webp",
+    "credito": "Foto: padrinan · Pixabay"
+   },
+   {
+    "archivo": "lapiz-2.webp",
+    "credito": "Foto: padrinan · Pixabay"
+   },
+   {
+    "archivo": "lapiz-3.webp",
+    "credito": "Foto: picjumbo_com · Pixabay"
+   }
+  ],
+  "lavavajilla": [
+   {
+    "archivo": "lavavajilla-1.webp",
+    "credito": "Foto: Monfocus · Pixabay"
+   },
+   {
+    "archivo": "lavavajilla-2.webp",
+    "credito": "Foto: Ylanite · Pixabay"
+   },
+   {
+    "archivo": "lavavajilla-3.webp",
+    "credito": "Foto: Couleur · Pixabay"
+   }
+  ],
+  "leche-lata": [
+   {
+    "archivo": "leche-lata-1.webp",
+    "credito": "Foto: Bru-nO · Pixabay"
+   },
+   {
+    "archivo": "leche-lata-2.webp",
+    "credito": "Foto: pixel2013 · Pixabay"
+   },
+   {
+    "archivo": "leche-lata-3.webp",
+    "credito": "Foto: pixel2013 · Pixabay"
+   }
+  ],
+  "leche-polvo": [
+   {
+    "archivo": "leche-polvo-3.webp",
+    "credito": "Foto: farmerdir · Pixabay"
+   }
+  ],
+  "lentes-seguridad": [
+   {
+    "archivo": "lentes-seguridad-1.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "levadura": [
+   {
+    "archivo": "levadura-1.webp",
+    "credito": "Foto: ClickerHappy · Pixabay"
+   },
+   {
+    "archivo": "levadura-2.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "levadura-3.webp",
+    "credito": "Foto: webentwicklerin · Pixabay"
+   }
+  ],
+  "libro-actas": [
+   {
+    "archivo": "libro-actas-2.webp",
+    "credito": "Foto: duanebarry · Pixabay"
+   },
+   {
+    "archivo": "libro-actas-3.webp",
+    "credito": "Foto: 652234 · Pixabay"
+   }
+  ],
+  "lija": [
+   {
+    "archivo": "lija-1.webp",
+    "credito": "Foto: BRRT · Pixabay"
+   }
+  ],
+  "limpiador-pantalla": [
+   {
+    "archivo": "limpiador-pantalla-1.webp",
+    "credito": "Foto: anncapictures · Pixabay"
+   }
+  ],
+  "llana": [
+   {
+    "archivo": "llana-2.webp",
+    "credito": "Foto: domeckopol · Pixabay"
+   }
+  ],
+  "llaves": [
+   {
+    "archivo": "llaves-1.webp",
+    "credito": "Foto: Corgi22164 · Pixabay"
+   },
+   {
+    "archivo": "llaves-2.webp",
+    "credito": "Foto: Bru-nO · Pixabay"
+   },
+   {
+    "archivo": "llaves-3.webp",
+    "credito": "Foto: vinayr16 · Pixabay"
+   }
+  ],
+  "locker": [
+   {
+    "archivo": "locker-1.webp",
+    "credito": "Foto: laterjay · Pixabay"
+   },
+   {
+    "archivo": "locker-2.webp",
+    "credito": "Foto: pixel2013 · Pixabay"
+   }
+  ],
+  "luz-emergencia": [
+   {
+    "archivo": "luz-emergencia-1.webp",
+    "credito": "Foto: TheOtherKev · Pixabay"
+   }
+  ],
+  "mandil": [
+   {
+    "archivo": "mandil-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "mandil-3.webp",
+    "credito": "Foto: Intuitivmedia · Pixabay"
+   }
+  ],
+  "manguera": [
+   {
+    "archivo": "manguera-1.webp",
+    "credito": "Foto: Ralphs_Fotos · Pixabay"
+   },
+   {
+    "archivo": "manguera-2.webp",
+    "credito": "Foto: sdg_Rai · Pixabay"
+   },
+   {
+    "archivo": "manguera-3.webp",
+    "credito": "Foto: JonasKIM · Pixabay"
+   }
+  ],
+  "manta-termica": [
+   {
+    "archivo": "manta-termica-1.webp",
+    "credito": "Foto: Hans · Pixabay"
+   },
+   {
+    "archivo": "manta-termica-2.webp",
+    "credito": "Foto: Hans · Pixabay"
+   },
+   {
+    "archivo": "manta-termica-3.webp",
+    "credito": "Foto: AndrzejRembowski · Pixabay"
+   }
+  ],
+  "mantel": [
+   {
+    "archivo": "mantel-2.webp",
+    "credito": "Foto: JillWellington · Pixabay"
+   },
+   {
+    "archivo": "mantel-3.webp",
+    "credito": "Foto: JillWellington · Pixabay"
+   }
+  ],
+  "marcadores": [
+   {
+    "archivo": "marcadores-2.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "marcadores-3.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "martillo": [
+   {
+    "archivo": "martillo-1.webp",
+    "credito": "Foto: picjumbo_com · Pixabay"
+   },
+   {
+    "archivo": "martillo-2.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "mascarilla": [
+   {
+    "archivo": "mascarilla-1.webp",
+    "credito": "Foto: coyot · Pixabay"
+   },
+   {
+    "archivo": "mascarilla-2.webp",
+    "credito": "Foto: leo2014 · Pixabay"
+   },
+   {
+    "archivo": "mascarilla-3.webp",
+    "credito": "Foto: rottonara · Pixabay"
+   }
+  ],
+  "masking": [
+   {
+    "archivo": "masking-1.webp",
+    "credito": "Foto: StockSnap · Pixabay"
+   },
+   {
+    "archivo": "masking-2.webp",
+    "credito": "Foto: va703b · Pixabay"
+   },
+   {
+    "archivo": "masking-3.webp",
+    "credito": "Foto: s_sopian · Pixabay"
+   }
+  ],
+  "menestras": [
+   {
+    "archivo": "menestras-1.webp",
+    "credito": "Foto: yilmazfatih · Pixabay"
+   },
+   {
+    "archivo": "menestras-2.webp",
+    "credito": "Foto: arielnunezg · Pixabay"
+   },
+   {
+    "archivo": "menestras-3.webp",
+    "credito": "Foto: yilmazfatih · Pixabay"
+   }
+  ],
+  "mermelada": [
+   {
+    "archivo": "mermelada-1.webp",
+    "credito": "Foto: markusspiske · Pixabay"
+   },
+   {
+    "archivo": "mermelada-2.webp",
+    "credito": "Foto: RitaE · Pixabay"
+   },
+   {
+    "archivo": "mermelada-3.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   }
+  ],
+  "mesa": [
+   {
+    "archivo": "mesa-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "mesa-reuniones": [
+   {
+    "archivo": "mesa-reuniones-1.webp",
+    "credito": "Foto: StartupStockPhotos · Pixabay"
+   },
+   {
+    "archivo": "mesa-reuniones-2.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "mesa-reuniones-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "microsd": [
+   {
+    "archivo": "microsd-2.webp",
+    "credito": "Foto: MabelAmber · Pixabay"
+   },
+   {
+    "archivo": "microsd-3.webp",
+    "credito": "Foto: AS_Photography · Pixabay"
+   }
+  ],
+  "mouse": [
+   {
+    "archivo": "mouse-1.webp",
+    "credito": "Foto: ClickerHappy · Pixabay"
+   },
+   {
+    "archivo": "mouse-2.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "mouse-3.webp",
+    "credito": "Foto: markusspiske · Pixabay"
+   }
+  ],
+  "mueble": [
+   {
+    "archivo": "mueble-1.webp",
+    "credito": "Foto: ricardorv30 · Pixabay"
+   }
+  ],
+  "multimetro": [
+   {
+    "archivo": "multimetro-1.webp",
+    "credito": "Foto: falconp4 · Pixabay"
+   },
+   {
+    "archivo": "multimetro-2.webp",
+    "credito": "Foto: MaFree · Pixabay"
+   },
+   {
+    "archivo": "multimetro-3.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "nivel": [
+   {
+    "archivo": "nivel-2.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "nivel-3.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "notas-adhesivas": [
+   {
+    "archivo": "notas-adhesivas-1.webp",
+    "credito": "Foto: geralt · Pixabay"
+   },
+   {
+    "archivo": "notas-adhesivas-2.webp",
+    "credito": "Foto: geralt · Pixabay"
+   },
+   {
+    "archivo": "notas-adhesivas-3.webp",
+    "credito": "Foto: ClickerHappy · Pixabay"
+   }
+  ],
+  "organizador": [
+   {
+    "archivo": "organizador-3.webp",
+    "credito": "Foto: kaboompics · Pixabay"
+   }
+  ],
+  "overol": [
+   {
+    "archivo": "overol-1.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "oximetro": [
+   {
+    "archivo": "oximetro-1.webp",
+    "credito": "Foto: subarasikiai · Pixabay"
+   },
+   {
+    "archivo": "oximetro-2.webp",
+    "credito": "Foto: kkirkemtp · Pixabay"
+   },
+   {
+    "archivo": "oximetro-3.webp",
+    "credito": "Foto: Engin_Akyurt · Pixabay"
+   }
+  ],
+  "pala": [
+   {
+    "archivo": "pala-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "panel-led": [
+   {
+    "archivo": "panel-led-1.webp",
+    "credito": "Foto: maxsel · Pixabay"
+   }
+  ],
+  "pano": [
+   {
+    "archivo": "pano-1.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   },
+   {
+    "archivo": "pano-2.webp",
+    "credito": "Foto: MichelleCoppiens · Pixabay"
+   },
+   {
+    "archivo": "pano-3.webp",
+    "credito": "Foto: monicore · Pixabay"
+   }
+  ],
+  "pantalon": [
+   {
+    "archivo": "pantalon-1.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "pantalon-2.webp",
+    "credito": "Foto: Kranich17 · Pixabay"
+   },
+   {
+    "archivo": "pantalon-3.webp",
+    "credito": "Foto: Irenna_____ · Pixabay"
+   }
+  ],
+  "papel-higienico": [
+   {
+    "archivo": "papel-higienico-1.webp",
+    "credito": "Foto: lyperzyt · Pixabay"
+   },
+   {
+    "archivo": "papel-higienico-2.webp",
+    "credito": "Foto: Alexas_Fotos · Pixabay"
+   },
+   {
+    "archivo": "papel-higienico-3.webp",
+    "credito": "Foto: lyperzyt · Pixabay"
+   }
+  ],
+  "papel-kraft": [
+   {
+    "archivo": "papel-kraft-3.webp",
+    "credito": "Foto: 370eis · Pixabay"
+   }
+  ],
+  "papel-toalla": [
+   {
+    "archivo": "papel-toalla-1.webp",
+    "credito": "Foto: KAVOWO · Pixabay"
+   },
+   {
+    "archivo": "papel-toalla-2.webp",
+    "credito": "Foto: Engin_Akyurt · Pixabay"
+   },
+   {
+    "archivo": "papel-toalla-3.webp",
+    "credito": "Foto: MabelAmber · Pixabay"
+   }
+  ],
+  "papelera": [
+   {
+    "archivo": "papelera-1.webp",
+    "credito": "Foto: succo · Pixabay"
+   },
+   {
+    "archivo": "papelera-3.webp",
+    "credito": "Foto: IzabellArt · Pixabay"
+   }
+  ],
+  "pastillas": [
+   {
+    "archivo": "pastillas-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "pastillas-2.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "pastillas-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "perchero": [
+   {
+    "archivo": "perchero-1.webp",
+    "credito": "Foto: Bertsz · Pixabay"
+   },
+   {
+    "archivo": "perchero-2.webp",
+    "credito": "Foto: 23555986 · Pixabay"
+   },
+   {
+    "archivo": "perchero-3.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "perforador": [
+   {
+    "archivo": "perforador-2.webp",
+    "credito": "Foto: BRRT · Pixabay"
+   },
+   {
+    "archivo": "perforador-3.webp",
+    "credito": "Foto: jankosmowski · Pixabay"
+   }
+  ],
+  "pincel": [
+   {
+    "archivo": "pincel-2.webp",
+    "credito": "Foto: freephotocc · Pixabay"
+   },
+   {
+    "archivo": "pincel-3.webp",
+    "credito": "Foto: bilgecangurer · Pixabay"
+   }
+  ],
+  "pintura": [
+   {
+    "archivo": "pintura-1.webp",
+    "credito": "Foto: zivica · Pixabay"
+   }
+  ],
+  "pizarra": [
+   {
+    "archivo": "pizarra-1.webp",
+    "credito": "Foto: StartupStockPhotos · Pixabay"
+   },
+   {
+    "archivo": "pizarra-3.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   }
+  ],
+  "plato": [
+   {
+    "archivo": "plato-1.webp",
+    "credito": "Foto: Negrobike · Pixabay"
+   },
+   {
+    "archivo": "plato-2.webp",
+    "credito": "Foto: gryzoon · Pixabay"
+   },
+   {
+    "archivo": "plato-3.webp",
+    "credito": "Foto: gryzoon · Pixabay"
+   }
+  ],
+  "premezcla": [
+   {
+    "archivo": "premezcla-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "premezcla-2.webp",
+    "credito": "Foto: markusspiske · Pixabay"
+   },
+   {
+    "archivo": "premezcla-3.webp",
+    "credito": "Foto: ClickerHappy · Pixabay"
+   }
+  ],
+  "protector-facial": [
+   {
+    "archivo": "protector-facial-1.webp",
+    "credito": "Foto: HelenJank · Pixabay"
+   }
+  ],
+  "quinua": [
+   {
+    "archivo": "quinua-1.webp",
+    "credito": "Foto: maxfranke · Pixabay"
+   },
+   {
+    "archivo": "quinua-2.webp",
+    "credito": "Foto: va703b · Pixabay"
+   },
+   {
+    "archivo": "quinua-3.webp",
+    "credito": "Foto: pictavio · Pixabay"
+   }
+  ],
+  "ram": [
+   {
+    "archivo": "ram-1.webp",
+    "credito": "Foto: cliffsmith23 · Pixabay"
+   },
+   {
+    "archivo": "ram-2.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   },
+   {
+    "archivo": "ram-3.webp",
+    "credito": "Foto: 502designs · Pixabay"
+   }
+  ],
+  "rcp": [
+   {
+    "archivo": "rcp-2.webp",
+    "credito": "Foto: JamesRein · Pixabay"
+   }
+  ],
+  "recepcion": [
+   {
+    "archivo": "recepcion-1.webp",
+    "credito": "Foto: Rodrigo_SalomonHC · Pixabay"
+   },
+   {
+    "archivo": "recepcion-2.webp",
+    "credito": "Foto: AS_Photography · Pixabay"
+   },
+   {
+    "archivo": "recepcion-3.webp",
+    "credito": "Foto: Rodrigo_SalomonHC · Pixabay"
+   }
+  ],
+  "reflector": [
+   {
+    "archivo": "reflector-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "reflector-3.webp",
+    "credito": "Foto: jeanvdmeulen · Pixabay"
+   }
+  ],
+  "regla": [
+   {
+    "archivo": "regla-1.webp",
+    "credito": "Foto: 3844328 · Pixabay"
+   }
+  ],
+  "regleta": [
+   {
+    "archivo": "regleta-2.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   },
+   {
+    "archivo": "regleta-3.webp",
+    "credito": "Foto: Bru-nO · Pixabay"
+   }
+  ],
+  "resma-papel": [
+   {
+    "archivo": "resma-papel-1.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   },
+   {
+    "archivo": "resma-papel-2.webp",
+    "credito": "Foto: macfly · Pixabay"
+   }
+  ],
+  "rodillo": [
+   {
+    "archivo": "rodillo-1.webp",
+    "credito": "Foto: StockSnap · Pixabay"
+   },
+   {
+    "archivo": "rodillo-2.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "rodillo-3.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   }
+  ],
+  "ropa-cama": [
+   {
+    "archivo": "ropa-cama-1.webp",
+    "credito": "Foto: JayMantri · Pixabay"
+   }
+  ],
+  "router": [
+   {
+    "archivo": "router-2.webp",
+    "credito": "Foto: USA-Reiseblogger · Pixabay"
+   }
+  ],
+  "sal": [
+   {
+    "archivo": "sal-3.webp",
+    "credito": "Foto: Topi_Pigula · Pixabay"
+   }
+  ],
+  "salsas": [
+   {
+    "archivo": "salsas-2.webp",
+    "credito": "Foto: Hans · Pixabay"
+   }
+  ],
+  "sello": [
+   {
+    "archivo": "sello-1.webp",
+    "credito": "Foto: TayebMEZAHDIA · Pixabay"
+   },
+   {
+    "archivo": "sello-2.webp",
+    "credito": "Foto: webandi · Pixabay"
+   },
+   {
+    "archivo": "sello-3.webp",
+    "credito": "Foto: ds_30 · Pixabay"
+   }
+  ],
+  "semillas": [
+   {
+    "archivo": "semillas-2.webp",
+    "credito": "Foto: 0xCoffe · Pixabay"
+   },
+   {
+    "archivo": "semillas-3.webp",
+    "credito": "Foto: bichnguyenvo · Pixabay"
+   }
+  ],
+  "senal": [
+   {
+    "archivo": "senal-1.webp",
+    "credito": "Foto: TheOtherKev · Pixabay"
+   },
+   {
+    "archivo": "senal-2.webp",
+    "credito": "Foto: 422737 · Pixabay"
+   },
+   {
+    "archivo": "senal-3.webp",
+    "credito": "Foto: Aintschie · Pixabay"
+   }
+  ],
+  "sensor": [
+   {
+    "archivo": "sensor-1.webp",
+    "credito": "Foto: Surprising_Media · Pixabay"
+   },
+   {
+    "archivo": "sensor-2.webp",
+    "credito": "Foto: Deniz_Turgut · Pixabay"
+   }
+  ],
+  "separador": [
+   {
+    "archivo": "separador-1.webp",
+    "credito": "Foto: 12019 · Pixabay"
+   },
+   {
+    "archivo": "separador-2.webp",
+    "credito": "Foto: anaterate · Pixabay"
+   },
+   {
+    "archivo": "separador-3.webp",
+    "credito": "Foto: Feygrace · Pixabay"
+   }
+  ],
+  "serrucho": [
+   {
+    "archivo": "serrucho-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "serrucho-2.webp",
+    "credito": "Foto: caouic · Pixabay"
+   },
+   {
+    "archivo": "serrucho-3.webp",
+    "credito": "Foto: toppeyjob · Pixabay"
+   }
+  ],
+  "silicona": [
+   {
+    "archivo": "silicona-2.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "silla": [
+   {
+    "archivo": "silla-2.webp",
+    "credito": "Foto: jhenning · Pixabay"
+   }
+  ],
+  "sobre-manila": [
+   {
+    "archivo": "sobre-manila-2.webp",
+    "credito": "Foto: Catkin · Pixabay"
+   },
+   {
+    "archivo": "sobre-manila-3.webp",
+    "credito": "Foto: freestocks-photos · Pixabay"
+   }
+  ],
+  "sobres-azucar": [
+   {
+    "archivo": "sobres-azucar-1.webp",
+    "credito": "Foto: feelphotoz · Pixabay"
+   },
+   {
+    "archivo": "sobres-azucar-2.webp",
+    "credito": "Foto: feelphotoz · Pixabay"
+   }
+  ],
+  "sofa": [
+   {
+    "archivo": "sofa-1.webp",
+    "credito": "Foto: oh0725 · Pixabay"
+   },
+   {
+    "archivo": "sofa-2.webp",
+    "credito": "Foto: jhenning · Pixabay"
+   },
+   {
+    "archivo": "sofa-3.webp",
+    "credito": "Foto: OliverKepka · Pixabay"
+   }
+  ],
+  "soporte-laptop": [
+   {
+    "archivo": "soporte-laptop-1.webp",
+    "credito": "Foto: COPPERTISTWU · Pixabay"
+   },
+   {
+    "archivo": "soporte-laptop-2.webp",
+    "credito": "Foto: Riekus · Pixabay"
+   },
+   {
+    "archivo": "soporte-laptop-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "sorbete": [
+   {
+    "archivo": "sorbete-2.webp",
+    "credito": "Foto: bridgesward · Pixabay"
+   },
+   {
+    "archivo": "sorbete-3.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   }
+  ],
+  "ssd": [
+   {
+    "archivo": "ssd-1.webp",
+    "credito": "Foto: Mitrey · Pixabay"
+   },
+   {
+    "archivo": "ssd-2.webp",
+    "credito": "Foto: pagefact · Pixabay"
+   },
+   {
+    "archivo": "ssd-3.webp",
+    "credito": "Foto: manseok_Kim · Pixabay"
+   }
+  ],
+  "stretch": [
+   {
+    "archivo": "stretch-3.webp",
+    "credito": "Foto: promil69 · Pixabay"
+   }
+  ],
+  "switch": [
+   {
+    "archivo": "switch-1.webp",
+    "credito": "Foto: jarmoluk · Pixabay"
+   },
+   {
+    "archivo": "switch-2.webp",
+    "credito": "Foto: dlohner · Pixabay"
+   },
+   {
+    "archivo": "switch-3.webp",
+    "credito": "Foto: blickpixel · Pixabay"
+   }
+  ],
+  "taladro": [
+   {
+    "archivo": "taladro-1.webp",
+    "credito": "Foto: jeanvdmeulen · Pixabay"
+   },
+   {
+    "archivo": "taladro-2.webp",
+    "credito": "Foto: dreimarkfuffzig · Pixabay"
+   },
+   {
+    "archivo": "taladro-3.webp",
+    "credito": "Foto: Bru-nO · Pixabay"
+   }
+  ],
+  "te": [
+   {
+    "archivo": "te-1.webp",
+    "credito": "Foto: Couleur · Pixabay"
+   },
+   {
+    "archivo": "te-2.webp",
+    "credito": "Foto: pasja1000 · Pixabay"
+   },
+   {
+    "archivo": "te-3.webp",
+    "credito": "Foto: Humusak · Pixabay"
+   }
+  ],
+  "teclado": [
+   {
+    "archivo": "teclado-1.webp",
+    "credito": "Foto: Simon · Pixabay"
+   },
+   {
+    "archivo": "teclado-2.webp",
+    "credito": "Foto: StartupStockPhotos · Pixabay"
+   },
+   {
+    "archivo": "teclado-3.webp",
+    "credito": "Foto: StartupStockPhotos · Pixabay"
+   }
+  ],
+  "teclado-mouse": [
+   {
+    "archivo": "teclado-mouse-1.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   },
+   {
+    "archivo": "teclado-mouse-2.webp",
+    "credito": "Foto: LUM3N · Pixabay"
+   },
+   {
+    "archivo": "teclado-mouse-3.webp",
+    "credito": "Foto: Firmbee · Pixabay"
+   }
+  ],
+  "tensiometro": [
+   {
+    "archivo": "tensiometro-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "tensiometro-2.webp",
+    "credito": "Foto: Bru-nO · Pixabay"
+   },
+   {
+    "archivo": "tensiometro-3.webp",
+    "credito": "Foto: geraldoswald62 · Pixabay"
+   }
+  ],
+  "toalla": [
+   {
+    "archivo": "toalla-1.webp",
+    "credito": "Foto: FotoRieth · Pixabay"
+   },
+   {
+    "archivo": "toalla-2.webp",
+    "credito": "Foto: Positive_Images · Pixabay"
+   },
+   {
+    "archivo": "toalla-3.webp",
+    "credito": "Foto: CapeCom · Pixabay"
+   }
+  ],
+  "tornillos": [
+   {
+    "archivo": "tornillos-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "tornillos-2.webp",
+    "credito": "Foto: PublicDomainPictures · Pixabay"
+   }
+  ],
+  "trapeador": [
+   {
+    "archivo": "trapeador-1.webp",
+    "credito": "Foto: voltamax · Pixabay"
+   },
+   {
+    "archivo": "trapeador-2.webp",
+    "credito": "Foto: Myriams-Fotos · Pixabay"
+   },
+   {
+    "archivo": "trapeador-3.webp",
+    "credito": "Foto: dattolirenata · Pixabay"
+   }
+  ],
+  "tubo-pvc": [
+   {
+    "archivo": "tubo-pvc-1.webp",
+    "credito": "Foto: Kranich17 · Pixabay"
+   },
+   {
+    "archivo": "tubo-pvc-2.webp",
+    "credito": "Foto: anaterate · Pixabay"
+   }
+  ],
+  "uniforme-medico": [
+   {
+    "archivo": "uniforme-medico-1.webp",
+    "credito": "Foto: sasint · Pixabay"
+   },
+   {
+    "archivo": "uniforme-medico-2.webp",
+    "credito": "Foto: sasint · Pixabay"
+   },
+   {
+    "archivo": "uniforme-medico-3.webp",
+    "credito": "Foto: voltamax · Pixabay"
+   }
+  ],
+  "usb": [
+   {
+    "archivo": "usb-1.webp",
+    "credito": "Foto: ds_30 · Pixabay"
+   },
+   {
+    "archivo": "usb-3.webp",
+    "credito": "Foto: PIX1861 · Pixabay"
+   }
+  ],
+  "vaso-papel": [
+   {
+    "archivo": "vaso-papel-2.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "vaso-plastico": [
+   {
+    "archivo": "vaso-plastico-1.webp",
+    "credito": "Foto: Evilowl · Pixabay"
+   },
+   {
+    "archivo": "vaso-plastico-2.webp",
+    "credito": "Foto: 26089 · Pixabay"
+   },
+   {
+    "archivo": "vaso-plastico-3.webp",
+    "credito": "Foto: bluebudgie · Pixabay"
+   }
+  ],
+  "vendas": [
+   {
+    "archivo": "vendas-1.webp",
+    "credito": "Foto: congerdesign · Pixabay"
+   },
+   {
+    "archivo": "vendas-3.webp",
+    "credito": "Foto: ElasticComputeFarm · Pixabay"
+   }
+  ],
+  "wincha": [
+   {
+    "archivo": "wincha-1.webp",
+    "credito": "Foto: ElisaRiva · Pixabay"
+   },
+   {
+    "archivo": "wincha-2.webp",
+    "credito": "Foto: beasternchen · Pixabay"
+   },
+   {
+    "archivo": "wincha-3.webp",
+    "credito": "Foto: Corgi22164 · Pixabay"
+   }
+  ],
+  "yute": [
+   {
+    "archivo": "yute-1.webp",
+    "credito": "Foto: Van3ssa_ · Pixabay"
+   },
+   {
+    "archivo": "yute-2.webp",
+    "credito": "Foto: 526663 · Pixabay"
+   },
+   {
+    "archivo": "yute-3.webp",
+    "credito": "Foto: Pexels · Pixabay"
+   }
+  ],
+  "zapato-seguridad": [
+   {
+    "archivo": "zapato-seguridad-1.webp",
+    "credito": "Foto: stevepb · Pixabay"
+   },
+   {
+    "archivo": "zapato-seguridad-2.webp",
+    "credito": "Foto: pen_ash · Pixabay"
+   },
+   {
+    "archivo": "zapato-seguridad-3.webp",
+    "credito": "Foto: pen_ash · Pixabay"
+   }
+  ]
+ }
+}
