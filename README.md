@@ -137,7 +137,7 @@ MayoristaPro-B2B-ArquitSoft/
 │   ├── sprint-1/            Análisis, arquitectura, diseño y modelo C4
 │   ├── sprint-2/            Especificaciones SDD, pruebas y evidencias
 │   ├── sprint-3/            Despliegue en AWS
-│   └── guias/               Puertos, contexto del proyecto e historial de revisiones
+│   └── guias/               Puertos, revisión del frontend e historial de revisiones
 ├── img/                     Diagramas usados por la documentación
 ├── postman/                 Colección de Postman
 ├── presentaciones/          Presentaciones de los sprints
