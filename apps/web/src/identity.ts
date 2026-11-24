@@ -33,7 +33,7 @@ function accountTarget(url: string): AccountTarget {
       @if (token()) {
         <div class="actions">
           @if (admin()) {
-            <button class="secondary" (click)="loadAdmin()">Solicitudes (administración)</button>
+            <button class="secondary" [disabled]="busy()" (click)="loadAdmin()">Actualizar solicitudes</button>
           }
           <button class="secondary" (click)="logout()">Salir</button>
         </div>
@@ -307,7 +307,35 @@ function accountTarget(url: string): AccountTarget {
           <p>{{ request.ruc }} · {{ request.email }}</p>
           <p>Evidencia {{ request.evidence }}</p>
           @if (!request.approved_at) {
-            <button [disabled]="busy()" (click)="approve(request.id)">Aprobar vinculación</button>
+            @if (moderating()?.id === request.id) {
+              <label
+                >Motivo del rechazo<textarea
+                  name="rejectReason"
+                  rows="2"
+                  maxlength="500"
+                  placeholder="Ejemplo: el RUC no corresponde a la razón social"
+                  [(ngModel)]="moderationReason"
+                ></textarea>
+              </label>
+              <p class="muted">Se borrarán la cuenta y la empresa pendientes. Esta acción no se puede deshacer.</p>
+              <div class="moderation-buttons">
+                <button
+                  class="danger"
+                  [disabled]="busy() || moderationReason.trim().length < 5"
+                  (click)="reject(request.id)"
+                >
+                  Confirmar rechazo
+                </button>
+                <button class="secondary" (click)="moderating.set(null)">Cancelar</button>
+              </div>
+            } @else {
+              <div class="moderation-buttons">
+                <button [disabled]="busy()" (click)="approve(request.id)">Aprobar vinculación</button>
+                <button class="danger" [disabled]="busy()" (click)="startModeration(request.id)">
+                  Rechazar solicitud
+                </button>
+              </div>
+            }
           } @else {
             <p class="status-pill">Revisado manualmente</p>
             @if (request.supplier_verified) {
@@ -492,6 +520,19 @@ export class IdentityComponent {
       if (event instanceof NavigationEnd) this.target.set(accountTarget(event.urlAfterRedirects));
     });
     inject(DestroyRef).onDestroy(() => navigation.unsubscribe());
+    // Panel de administración: las solicitudes se cargan solas al entrar o al recargar la página,
+    // y se revisan cada 30 s y al volver a la pestaña para mostrar las altas nuevas.
+    effect(() => {
+      if (this.restoring() || !this.token() || !this.admin()) return;
+      untracked(() => void this.loadAdmin());
+    });
+    const refresh = () => void this.refreshRequests();
+    const timer = setInterval(refresh, 30_000);
+    document.addEventListener('visibilitychange', refresh);
+    inject(DestroyRef).onDestroy(() => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', refresh);
+    });
     // Selección traída desde el catálogo: explica qué falta antes de cotizar.
     effect(() => {
       const selection = this.pendingQuote();
@@ -636,8 +677,8 @@ export class IdentityComponent {
       return;
     }
     this.admin.set(session.platformAdmin === true);
-    if (this.admin()) await this.loadAdmin();
-    else await this.loadAccount();
+    // El panel de administración lo carga el efecto del constructor al detectar la sesión de admin.
+    if (!this.admin()) await this.loadAccount();
   }
   async loadAccount() {
     const result = await this.call('auth/me');
@@ -678,6 +719,7 @@ export class IdentityComponent {
         'restore-product': 'Producto restaurado',
         'suspend-company': 'Empresa suspendida',
         'reactivate-company': 'Empresa reactivada',
+        'reject-enrollment': 'Solicitud de alta rechazada',
       }[action] ?? action
     );
   }
@@ -702,6 +744,25 @@ export class IdentityComponent {
   }
   async approve(id: string) {
     if (await this.call('admin/enrollments/' + id + '/approve', 'POST')) await this.loadAdmin();
+  }
+  async reject(id: string) {
+    const result = await this.call('admin/enrollments/' + id + '/reject', 'POST', { reason: this.moderationReason });
+    if (!result) return;
+    this.moderating.set(null);
+    await this.loadAdmin();
+    this.message.set('Solicitud rechazada. La empresa y su cuenta se borraron.');
+  }
+  /** Revisa en silencio si llegaron solicitudes nuevas (sin bloquear botones ni borrar mensajes). */
+  private async refreshRequests() {
+    if (!this.admin() || !this.token() || this.busy() || document.hidden) return;
+    try {
+      const response = await fetch('/api/v1/admin/enrollments', {
+        headers: { Authorization: 'Bearer ' + this.token() },
+      });
+      if (response.ok) this.requests.set(await response.json());
+    } catch {
+      // Sin conexión: se vuelve a intentar en la próxima revisión.
+    }
   }
   async invite() {
     const result = await this.call('company/invitations', 'POST', {

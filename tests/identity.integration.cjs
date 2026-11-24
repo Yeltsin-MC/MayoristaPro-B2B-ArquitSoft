@@ -19,7 +19,7 @@ test('T2: identidad empresarial y permisos con PostgreSQL real', async t => {
   const url=new URL(original); url.searchParams.set('options',`-c search_path=${schema},public`);
   process.env.DATABASE_URL=url.toString();
   db=new Pool({connectionString:process.env.DATABASE_URL});
-  for(const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql','database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/migrations/007_catalog_cache.sql','database/migrations/010_product_media.sql','database/migrations/011_moderation.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
+  for(const file of ['database/migrations/001_catalog.sql','database/migrations/002_identity.sql','database/migrations/003_catalog_imports.sql','database/migrations/004_trade.sql','database/migrations/007_catalog_cache.sql','database/migrations/010_product_media.sql','database/migrations/011_moderation.sql','database/migrations/013_reject_enrollment.sql','database/seed.sql']) await db.query(await readFile(file,'utf8'));
   await db.query('INSERT INTO accounts(email,password_hash,platform_admin) VALUES($1,$2,true)',['admin@example.test',await passwordHash(password)]);
   app=await NestFactory.create(AppModule,{logger:false,abortOnError:false});
   app.setGlobalPrefix('api/v1');await app.listen(0,'127.0.0.1');
@@ -127,6 +127,23 @@ test('T2: identidad empresarial y permisos con PostgreSQL real', async t => {
    assert.deepEqual(log.map(e=>e.action),['reactivate-company','suspend-company','restore-product','retire-product']);
    assert.equal(log[1].actor,'admin@example.test');assert.equal(log[1].reason,'Vende productos ilegales');
    assert.equal((await call('admin/moderation','GET',undefined,tokenA)).status,403);
+  });
+  await t.test('rechazar una solicitud falsa borra la cuenta pendiente y libera el RUC',async()=>{
+   const fake=await call('auth/register','POST',{email:'falsa@example.test',password,ruc:'20333333333',legalName:'Empresa falsa',evidence:'Sin respaldo'});
+   assert.equal(fake.status,201);
+   const fakeSession=await login('falsa@example.test');
+   const why={reason:'El RUC no corresponde a la razón social'};
+   assert.equal((await call('admin/enrollments/'+fake.body.requestId+'/reject','POST',why,tokenA)).status,403);
+   assert.equal((await call('admin/enrollments/'+fake.body.requestId+'/reject','POST',{reason:'no'},admin)).status,400);
+   assert.equal((await call('admin/enrollments/'+a.body.requestId+'/reject','POST',why,admin)).status,409);
+   assert.equal((await call('admin/enrollments/'+fake.body.requestId+'/reject','POST',why,admin)).status,201);
+   assert.equal((await call('admin/enrollments/'+fake.body.requestId+'/reject','POST',why,admin)).status,400);
+   assert.ok(!(await call('admin/enrollments','GET',undefined,admin)).body.some(r=>r.id===fake.body.requestId));
+   assert.equal((await call('auth/session','GET',undefined,fakeSession)).status,401);
+   assert.equal((await call('auth/login','POST',{email:'falsa@example.test',password})).status,401);
+   const log=(await call('admin/moderation','GET',undefined,admin)).body;
+   assert.equal(log[0].action,'reject-enrollment');assert.equal(log[0].resourceName,'Empresa falsa');
+   assert.equal((await call('auth/register','POST',{email:'real@example.test',password,ruc:'20333333333',legalName:'Empresa real',evidence:'Ficha RUC'})).status,201);
   });
   await t.test('sesiones vencidas, logout y credenciales inválidas',async()=>{
    assert.equal((await call('auth/login','POST',{email:'a@example.test',password:'Incorrecta-2026!'})).status,401);

@@ -67,7 +67,7 @@ test('Demo UX: login, catalogo, cotizacion y comparacion FastAPI en escritorio y
     await expect(page.locator('.score-info')).toHaveCount(2);
     await expect(page.locator('.best-offer')).toHaveCount(1);
     await expect(page.locator('.best-offer')).toContainText('Proveedor Demo Uno');
-    await expect(page.getByRole('button', { name: 'Solicitudes (administración)', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Actualizar solicitudes', exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Publicar producto', exact: true })).toHaveCount(0);
     await page.getByRole('checkbox', { name: 'Ordenar por puntuación', exact: true }).check();
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
