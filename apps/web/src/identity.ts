@@ -91,10 +91,10 @@ function accountTarget(url: string): AccountTarget {
         }
         <div class="auth-content">
           <nav class="auth-tabs" aria-label="Acceso">
-            <button type="button" [attr.aria-pressed]="mode === 'login'" (click)="mode = 'login'">Ingresar</button
-            ><button type="button" [attr.aria-pressed]="mode === 'register'" (click)="mode = 'register'">
+            <button type="button" [attr.aria-pressed]="mode === 'login'" (click)="setMode('login')">Ingresar</button
+            ><button type="button" [attr.aria-pressed]="mode === 'register'" (click)="setMode('register')">
               Registrar mi empresa</button
-            ><button type="button" [attr.aria-pressed]="mode === 'accept'" (click)="mode = 'accept'">
+            ><button type="button" [attr.aria-pressed]="mode === 'accept'" (click)="setMode('accept')">
               Aceptar invitación
             </button>
           </nav>
@@ -107,16 +107,34 @@ function accountTarget(url: string): AccountTarget {
             <label
               >Correo<input name="email" type="email" autocomplete="username" required [(ngModel)]="email"
             /></label>
-            <label
-              >Contraseña (12–128 caracteres)<input
-                name="password"
-                type="password"
-                [attr.autocomplete]="mode === 'login' ? 'current-password' : 'new-password'"
-                required
-                minlength="12"
-                maxlength="128"
-                [(ngModel)]="password"
-            /></label>
+            <div class="password-group">
+              <label for="password">Contraseña (12–128 caracteres)</label>
+              <div class="password-field">
+                <input
+                  id="password"
+                  name="password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  [attr.autocomplete]="mode === 'login' ? 'current-password' : 'new-password'"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  required
+                  minlength="12"
+                  maxlength="128"
+                  [(ngModel)]="password"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  aria-controls="password"
+                  [attr.aria-pressed]="showPassword()"
+                  [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  [title]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="showPassword.set(!showPassword())"
+                >
+                  <span aria-hidden="true">{{ showPassword() ? '🙈' : '👁️' }}</span>
+                </button>
+              </div>
+            </div>
             @if (mode === 'register') {
               <label
                 >RUC (11 dígitos)<input name="ruc" pattern="[0-9]{11}" inputmode="numeric" required [(ngModel)]="ruc"
@@ -490,6 +508,8 @@ export class IdentityComponent {
   readonly packDescription = packDescription;
   readonly presentations = presentations;
   mode = 'login';
+  /** El ojito: muestra la contraseña hasta que se vuelve a pulsar, se envía el formulario o se cambia de pestaña. */
+  showPassword = signal(false);
   email = '';
   password = '';
   ruc = '';
@@ -628,7 +648,12 @@ export class IdentityComponent {
       this.busy.set(false);
     }
   }
+  setMode(mode: string) {
+    this.mode = mode;
+    this.showPassword.set(false);
+  }
   async submit() {
+    this.showPassword.set(false);
     this.session.nextAuthVersion();
     if (this.mode === 'login') {
       const result = await this.call('auth/login', 'POST', { email: this.email, password: this.password });
