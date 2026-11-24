@@ -36,6 +36,11 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
       await db.query('INSERT INTO memberships(company_id,account_id,permissions) VALUES($1,$2,$3)',
         [company,account,name==='reader'?['buy']:['buy','publish']]);
     }
+    // Una solicitud de alta pendiente para que el admin la vea apenas ingresa.
+    const pendingSupplier = (await db.query("INSERT INTO suppliers(code,name) VALUES('solicitud','Solicitud pendiente') RETURNING id")).rows[0].id;
+    const pendingCompany = (await db.query("INSERT INTO companies(ruc,legal_name,supplier_id) VALUES('20777777771','Solicitud pendiente',$1) RETURNING id",[pendingSupplier])).rows[0].id;
+    const pendingAccount = (await db.query("INSERT INTO accounts(email,password_hash) VALUES('solicitud@browser.test',$1) RETURNING id",[hash])).rows[0].id;
+    await db.query("INSERT INTO enrollment_requests(company_id,account_id,evidence) VALUES($1,$2,'Ficha RUC ficticia')",[pendingCompany,pendingAccount]);
     app = await NestFactory.create(AppModule,{logger:false,abortOnError:false});
     require('../apps/api/dist/http-setup.js').configureHttp(app,resolve(__dirname,'../apps/web/dist/catalog/browser'));
     await app.listen(0,'127.0.0.1');
@@ -63,18 +68,23 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
 
     await t.test('administrador ve solicitudes sin requerir vinculación empresarial',async()=>{
       await withAccount('admin',async page=>{
-        await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toBeVisible();
+        await expect(page.getByRole('button',{name:'Actualizar solicitudes',exact:true})).toBeVisible();
         await expect(page.getByRole('button',{name:'Mi empresa',exact:true})).toHaveCount(0);
-        await page.getByRole('button',{name:'Solicitudes (administración)',exact:true}).click();
-        await expect(page.getByRole('button',{name:'Verificar proveedor por separado',exact:true})).toBeVisible();
-        await expect(page.getByRole('heading',{name:'Empresas registradas',exact:true})).toBeVisible();
-        await expect(page.getByRole('heading',{name:'Bitácora de moderación',exact:true})).toBeVisible();
+        // El panel se llena solo al ingresar y también tras recargar la página, sin pulsar ningún botón.
+        for(const step of ['ingreso','recarga']){
+          if(step==='recarga')await page.reload();
+          await expect(page.getByRole('heading',{name:'Solicitudes de alta',exact:true})).toBeVisible();
+          await expect(page.getByRole('button',{name:'Rechazar solicitud',exact:true}).first()).toBeVisible();
+          await expect(page.getByRole('button',{name:'Verificar proveedor por separado',exact:true})).toBeVisible();
+          await expect(page.getByRole('heading',{name:'Empresas registradas',exact:true})).toBeVisible();
+          await expect(page.getByRole('heading',{name:'Bitácora de moderación',exact:true})).toBeVisible();
+        }
       });
     });
     await t.test('proveedor pendiente no ve administración, publicación ni carga masiva',async()=>{
       await withAccount('pending',async page=>{
         await expect(page.getByText(/La carga masiva y la publicación requieren/)).toBeVisible();
-        await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toHaveCount(0);
+        await expect(page.getByRole('button',{name:'Actualizar solicitudes',exact:true})).toHaveCount(0);
         await expect(page.getByRole('heading',{name:'Mis productos',exact:true})).toHaveCount(0);
         await expect(page.getByRole('heading',{name:'Carga masiva del catálogo',exact:true})).toHaveCount(0);
       });
@@ -82,7 +92,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
     await t.test('usuario sin publish tampoco ve controles de publicación',async()=>{
       await withAccount('reader',async page=>{
         await expect(page.getByRole('heading',{name:'reader',exact:true})).toBeVisible();
-        await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toHaveCount(0);
+        await expect(page.getByRole('button',{name:'Actualizar solicitudes',exact:true})).toHaveCount(0);
         await expect(page.getByRole('heading',{name:'Mis productos',exact:true})).toHaveCount(0);
         await expect(page.getByRole('heading',{name:'Carga masiva del catálogo',exact:true})).toHaveCount(0);
       });
@@ -90,7 +100,7 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
     await t.test('proveedor verificado: ingresar, subir Excel inválido, corregir, confirmar y ver publicación',async()=>{
       await withAccount('verified',async page=>{
         await expect(page.getByRole('heading',{name:'Carga masiva del catálogo',exact:true})).toBeVisible();
-        await expect(page.getByRole('button',{name:'Solicitudes (administración)',exact:true})).toHaveCount(0);
+        await expect(page.getByRole('button',{name:'Actualizar solicitudes',exact:true})).toHaveCount(0);
         await expect(page.getByRole('heading',{name:'Mis productos',exact:true})).toBeVisible();
         const values={sku:'BROWSER-CUAD',nombre:'Cuaderno Browser',categoria:'Papelería',presentacion:'caja',
           unidades_por_presentacion:12,precio:'abc',moneda:'PEN',incluye_igv:'true',minimo:2,multiplo:1,stock:20,publicado:'true'};

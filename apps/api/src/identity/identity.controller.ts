@@ -75,6 +75,13 @@ export class IdentityController {
   @Post('admin/enrollments/:id/approve') approve(@Param('id') id: string, @Headers('authorization') auth?: string) {
     return this.identity.approve(id, auth);
   }
+  @Post('admin/enrollments/:id/reject') reject(
+    @Param('id') id: string,
+    @Body() body: any,
+    @Headers('authorization') auth?: string,
+  ) {
+    return this.identity.reject(id, body ?? {}, auth);
+  }
   @Get('admin/companies') companies(@Query('q') q?: string, @Headers('authorization') auth?: string) {
     return this.identity.companies(auth, q);
   }

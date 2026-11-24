@@ -367,6 +367,30 @@ export class IdentityService {
     });
   }
   // ---- Moderación (solo administrador de la plataforma) ----
+  /** Rechaza una solicitud pendiente: borra la cuenta y la empresa sin aprobar y deja el motivo en la bitácora. */
+  async reject(id: string, body: any, auth?: string) {
+    uuid(id);
+    const why = this.reason(body?.reason);
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth, true);
+      const request = (
+        await db.query(
+          'SELECT r.approved_at,r.company_id,r.account_id,c.legal_name,c.supplier_id FROM enrollment_requests r JOIN companies c ON c.id=r.company_id WHERE r.id=$1 FOR UPDATE OF r,c',
+          [id],
+        )
+      ).rows[0];
+      if (!request) throw new BadRequestException('Solicitud inexistente.');
+      if (request.approved_at)
+        throw new ConflictException('La solicitud ya fue aprobada. Para bloquear la empresa, suspéndela.');
+      await db.query('DELETE FROM identity_sessions WHERE account_id=$1', [request.account_id]);
+      await db.query('DELETE FROM enrollment_requests WHERE id=$1', [id]);
+      await db.query('DELETE FROM accounts WHERE id=$1', [request.account_id]);
+      await db.query('DELETE FROM companies WHERE id=$1', [request.company_id]);
+      await db.query('DELETE FROM suppliers WHERE id=$1', [request.supplier_id]);
+      await this.moderation(db, actor, 'reject-enrollment', id, request.legal_name, why);
+      return { status: 'rejected' };
+    });
+  }
   private reason(value: unknown): string {
     const result = typeof value === 'string' ? value.trim() : '';
     if (result.length < 5 || result.length > 500)
