@@ -55,6 +55,33 @@ export class PaymentsController {
     }
   }
 
+  @Get('payments/simulated/:attemptId')
+  async simulatedCheckout(@Param('attemptId') attemptId: string, @Headers('authorization') auth?: string) {
+    return this.asBuyer(auth, companyId => this.payments.simulatedCheckout(attemptId, companyId));
+  }
+
+  @Post('payments/simulated/:attemptId')
+  async simulatePayment(
+    @Param('attemptId') attemptId: string,
+    @Body() body: any,
+    @Headers('authorization') auth?: string,
+  ) {
+    return this.asBuyer(auth, companyId => this.payments.simulatePayment(attemptId, companyId, body));
+  }
+
+  private async asBuyer<T>(auth: string | undefined, action: (companyId: string) => Promise<T>): Promise<T> {
+    const db = await this.pool.connect();
+    let companyId: string;
+    try {
+      const actor = await this.identity.tradeIdentity(db, auth);
+      if (!actor.canBuy) throw new PaymentError('FORBIDDEN', 'Se requiere permiso de compra.');
+      companyId = actor.companyId;
+    } finally {
+      db.release();
+    }
+    return action(companyId);
+  }
+
   @Post('webhooks/mercadopago')
   @HttpCode(200)
   async handleWebhook(

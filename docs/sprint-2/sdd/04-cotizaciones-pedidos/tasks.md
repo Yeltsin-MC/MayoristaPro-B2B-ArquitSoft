@@ -23,5 +23,5 @@
   - _Requisitos: 2.2, 3.3_
 - [x] 10. Pruebas unitarias, de integración y de navegador
   - _Requisitos: todos_
-- [ ] 11. Botón «Simular pago aprobado» para la demo y orden de compra en PDF con desglose de IGV (pendiente)
+- [x] 11. Pago de prueba estilo Perú (Tarjeta, Yape, PagoEfectivo con CIP) cuando no hay credenciales de Mercado Pago, y orden de compra en PDF con desglose de IGV (`pago-prueba.ts`, `orden-compra.ts`, `tests/pago-prueba.browser.cjs`)
   - _Requisitos: 4.3_

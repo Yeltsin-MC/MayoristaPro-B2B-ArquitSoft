@@ -36,6 +36,8 @@ export interface Order {
 }
 
 export interface PaymentGateway {
+  /** true cuando no hay credenciales de Mercado Pago y el cobro se simula (demo académica). */
+  readonly simulated: boolean;
   createPreference(params: {
     external_reference: string;
     items: Array<{ title: string; quantity: number; unit_price: number }>;
@@ -151,6 +153,66 @@ export class Payments {
     }
   }
 
+  /** Datos de la pantalla «Pago de prueba»: solo en modo simulado y para la empresa compradora. */
+  async simulatedCheckout(attemptId: string, companyId: string) {
+    const { attempt, order } = await this.simulatedAttempt(attemptId, companyId);
+    return {
+      attemptId: attempt.id,
+      orderId: order.id,
+      state: attempt.state,
+      orderState: order.state,
+      total: order.total,
+      shipping: order.shipping,
+      expiresAt: order.expires_at,
+      medio: attempt.mp_payment_response?.medio ?? null,
+      cip: attempt.mp_payment_response?.cip ?? null,
+    };
+  }
+
+  /**
+   * Simula lo que haría Mercado Pago: tarjeta o Yape se aprueban o rechazan al instante;
+   * PagoEfectivo primero genera un código CIP (pago pendiente) y luego se «paga en agente».
+   * Usa las mismas transiciones que el webhook real (created → pending → approved).
+   */
+  async simulatePayment(attemptId: string, companyId: string, body: any) {
+    const accion = body?.accion;
+    const medio = body?.medio;
+    rule(['aprobar', 'rechazar', 'generar-cip'].includes(accion), 'INVALID_INPUT', 'Acción inválida.');
+    rule(['tarjeta', 'yape', 'pagoefectivo'].includes(medio), 'INVALID_INPUT', 'Medio de pago inválido.');
+    rule(accion !== 'generar-cip' || medio === 'pagoefectivo', 'INVALID_INPUT', 'El código CIP es de PagoEfectivo.');
+    const { attempt, order } = await this.simulatedAttempt(attemptId, companyId);
+    const reference = 'SIM-' + attempt.id.slice(0, 8).toUpperCase();
+    const cip = attempt.mp_payment_response?.cip ?? cipFor(attempt.id);
+    const detail = (status: string) => ({
+      simulated: true,
+      medio,
+      status,
+      ...(medio === 'pagoefectivo' ? { cip } : {}),
+    });
+    let state: PaymentState = attempt.state;
+    if (state === 'created' && accion !== 'rechazar') {
+      validateOrderForPayment(order);
+      await this.store.updateAttemptState(attempt.id, 'pending', reference, detail('pending'));
+      state = 'pending';
+    }
+    if (accion === 'generar-cip') return { state, orderId: order.id, cip };
+    const target: PaymentState =
+      accion === 'rechazar' ? 'rejected' : new Date() > new Date(order.expires_at) ? 'approved_late' : 'approved';
+    rule(canTransitionTo(state, target), 'INVALID_TRANSITION', 'Este intento de pago ya terminó; inicia uno nuevo.');
+    await this.store.updateAttemptState(attempt.id, target, reference, detail(target));
+    return { state: target, orderId: order.id, cip: medio === 'pagoefectivo' ? cip : null };
+  }
+
+  private async simulatedAttempt(attemptId: string, companyId: string) {
+    rule(this.gateway.simulated, 'FORBIDDEN', 'El pago de prueba solo existe cuando Mercado Pago no está configurado.');
+    rule(/^[0-9a-f-]{36}$/i.test(attemptId), 'INVALID_INPUT', 'Intento de pago inválido.');
+    const attempt = await this.store.getAttemptByExternalReference(attemptId);
+    rule(attempt, 'ATTEMPT_NOT_FOUND', 'Intento de pago no encontrado.');
+    const order = await this.store.getOrder(attempt.order_id, companyId);
+    rule(order, 'ORDER_NOT_FOUND', 'Pedido no encontrado o no pertenece a tu empresa.');
+    return { attempt, order };
+  }
+
   async getOrderAttempts(orderId: string, companyId: string): Promise<PaymentAttempt[]> {
     const order = await this.store.getOrder(orderId, companyId);
     rule(order, 'ORDER_NOT_FOUND', 'Pedido no encontrado o no pertenece a tu empresa.');
@@ -263,4 +325,10 @@ export class Payments {
         throw new PaymentError('UNKNOWN_STATUS', `Estado MP desconocido: ${mpStatus}`);
     }
   }
+}
+
+/** Código CIP de 8 dígitos, estable para cada intento (PagoEfectivo simulado). */
+function cipFor(attemptId: string): string {
+  const digits = attemptId.replace(/[^0-9]/g, '') + '73519284';
+  return digits.slice(0, 8);
 }

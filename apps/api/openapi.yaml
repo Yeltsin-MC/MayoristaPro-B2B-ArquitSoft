@@ -832,6 +832,43 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
 
+  /payments/simulated/{attemptId}:
+    get:
+      tags: [Pagos]
+      summary: Datos del pago de prueba (solo sin MP_ACCESS_TOKEN, para la empresa compradora)
+      security: [{ bearer: [] }]
+      parameters: [{ name: attemptId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        '200': { description: Total, vencimiento, estado del intento y código CIP si existe }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [Pagos]
+      summary: Simular el pago con Tarjeta, Yape o PagoEfectivo (CIP)
+      parameters: [{ name: attemptId, in: path, required: true, schema: { type: string, format: uuid } }]
+      description: |
+        Usa las mismas transiciones que el webhook de Mercado Pago: created → pending → approved.
+        `generar-cip` deja el intento pendiente (PagoEfectivo); `aprobar` marca el pedido como pagado
+        y consume la reserva de stock; `rechazar` no cambia el pedido.
+      security: [{ bearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [accion, medio]
+              properties:
+                accion: { type: string, enum: [aprobar, rechazar, generar-cip] }
+                medio: { type: string, enum: [tarjeta, yape, pagoefectivo] }
+      responses:
+        '201': { description: Nuevo estado del intento }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
   /webhooks/mercadopago:
     post:
       tags: [Pagos]

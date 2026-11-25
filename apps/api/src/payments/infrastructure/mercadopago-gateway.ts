@@ -9,6 +9,11 @@ export class MercadoPagoGateway implements PaymentGateway {
   private readonly baseUrl = 'https://api.mercadopago.com';
   private readonly useMock: boolean;
 
+  /** Sin MP_ACCESS_TOKEN el cobro se simula dentro de MayoristaPro (pantalla «Pago de prueba»). */
+  get simulated(): boolean {
+    return this.useMock;
+  }
+
   constructor() {
     this.accessToken = process.env.MP_ACCESS_TOKEN;
     this.useMock = !this.accessToken || process.env.NODE_ENV === 'test';
@@ -117,15 +122,17 @@ export class MercadoPagoGateway implements PaymentGateway {
   // Mock implementations for testing without real credentials
   private mockCreatePreference(params: any): Promise<{ preference_id: string; init_point: string; response: any }> {
     const mockId = `MOCK_PREF_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    // Página propia de pago simulado; antes apuntaba a Mercado Pago con un id falso y mostraba error.
+    const initPoint = `/pago-de-prueba/${params.external_reference}`;
     return Promise.resolve({
       preference_id: mockId,
-      init_point: `https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=${mockId}`,
+      init_point: initPoint,
       response: {
         id: mockId,
         external_reference: params.external_reference,
         items: params.items,
         date_created: new Date().toISOString(),
-        init_point: `https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=${mockId}`,
+        init_point: initPoint,
       },
     });
   }
