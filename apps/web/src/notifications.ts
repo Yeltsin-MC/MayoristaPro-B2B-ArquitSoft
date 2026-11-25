@@ -20,6 +20,8 @@ interface Notice {
     <button
       type="button"
       class="account-link notifications-toggle"
+      [class.has-unread]="unread() > 0"
+      [class.active]="open()"
       [attr.aria-expanded]="open()"
       [attr.aria-label]="'Avisos, ' + unread() + ' sin leer'"
       (click)="toggle()"

@@ -18,9 +18,13 @@
       <button type="submit">Buscar <span aria-hidden="true">→</span></button>
     </form>
     <div class="header-actions">
-      <a class="account-link" routerLink="/cuenta" routerLinkActive="active"
-        ><span class="action-icon" aria-hidden="true">○</span
-        ><span class="action-text"
+      <a class="account-link" routerLink="/cuenta" routerLinkActive="active">
+        @if (session.token() && companyInitials()) {
+          <span class="action-avatar" aria-hidden="true">{{ companyInitials() }}</span>
+        } @else {
+          <span class="action-icon" aria-hidden="true">{{ session.admin() ? '🛡️' : '👤' }}</span>
+        }
+        <span class="action-text"
           ><small>{{ session.token() ? 'Hola' : 'Ingresa' }}</small
           >{{ session.token() ? (session.admin() ? 'Administración' : 'Mi empresa') : 'Mi cuenta' }}</span
         ></a
@@ -37,7 +41,7 @@
             'Lista de pedido, ' + orderList.count() + (orderList.count() === 1 ? ' producto' : ' productos')
           "
           ><span class="action-icon" aria-hidden="true"
-            >▤<span class="badge" [class.zero]="orderList.count() === 0">{{ orderList.count() }}</span></span
+            >📋<span class="badge" [class.zero]="orderList.count() === 0">{{ orderList.count() }}</span></span
           ><span class="action-text"><small>Cotiza todo junto</small>Lista de pedido</span></a
         >
       }
