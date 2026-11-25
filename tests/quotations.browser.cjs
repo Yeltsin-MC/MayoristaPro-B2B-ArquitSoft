@@ -19,12 +19,19 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
    const offerIds=[];
    for(const [who,shipping] of [['vendor','8.00'],['vendor2','12.00']]){
     const seller=await login(who);await open(seller,q.id);
-    await expect(seller.getByRole('heading',{name:'Responder con productos propios',exact:true})).toBeVisible();
-    await seller.locator('app-trade').getByRole('combobox').first().selectOption(f.products[who].id);
-    await seller.getByLabel('Precio por presentación PEN (IGV incluido)',{exact:true}).fill('48.00');
-    await seller.getByLabel('Envío final PEN',{exact:true}).fill(shipping);
+    await expect(seller.getByRole('heading',{name:/^Responder a /})).toBeVisible();
+    // La descripción libre no coincide con un producto propio: se pide elegirlo.
+    await expect(seller.getByText(/No encontramos «Cuadernos para demo T4» en tu catálogo/)).toBeVisible();
+    await seller.getByLabel(/^Producto que ofrecerás/).selectOption(f.products[who].id);
+    await expect(seller.locator('.offer-product')).toHaveCount(0);
+    await seller.getByLabel(/^Precio por .*\(S\/, IGV incluido\)/).fill('48.00');
+    await seller.getByLabel(/^Costo de envío/).fill(shipping);
+    // Subtotal y total se calculan en vivo antes de enviar.
+    const total=(2*48+Number(shipping)).toFixed(2);
+    await expect(seller.locator('.offer-subtotal strong')).toHaveText('S/ 96.00');
+    await expect(seller.locator('.offer-grand-total dd')).toHaveText('S/ '+total);
     const offered=seller.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/responses'));
-    await seller.getByRole('button',{name:'Enviar oferta',exact:true}).click();const result=await(await offered).json();assert.equal(result.offers.length,1);offerIds.push(result.offers[0].id);
+    await seller.getByRole('button',{name:'Enviar oferta por S/ '+total,exact:true}).click();const result=await(await offered).json();assert.equal(result.offers.length,1);offerIds.push(result.offers[0].id);
    }
    await open(buyer,q.id);
    // Cada cotización tiene su propia URL: se puede recargar o compartir dentro de la empresa.
@@ -55,6 +62,18 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
    await buyer.getByRole('article',{name:'Detalle del pedido'}).screenshot({path:'.angular/t4-evidence/pedido-pendiente.png'});
    await writeFile('.angular/t4-evidence/resultado.json',JSON.stringify({browser:await browser.version(),requestId:q.id,offerIds,order,stockAfter:stock,reservations},null,2)+'\n');
    console.log('T4 navegador: pedido '+order.id+', total '+order.total+', stock 20→18, reserva activa 2.');
+  });
+  await t.test('oferta: el producto pedido se muestra fijo, sin desplegable, y se puede ofrecer otro',async()=>{
+   const q=(await f.call('quotations','POST',{proveedorIds:[f.accounts.vendor.supplier],items:[{descripcion:'Cuaderno vendor',presentacion:'caja',unidadesPorPresentacion:12,cantidad:4}]},'buyer')).body;
+   const seller=await login('vendor');await open(seller,q.id);
+   const card=seller.locator('.offer-product');
+   await expect(card).toContainText('Cuaderno vendor');await expect(card).toContainText('Es el producto que pidió');
+   await expect(seller.getByLabel(/^Producto que ofrecerás/)).toHaveCount(0);
+   await expect(seller.locator('.offer-subtotal strong')).toHaveText('S/ 192.00');
+   await seller.getByRole('button',{name:/Ofrecer un producto parecido/}).click();
+   await expect(seller.getByLabel(/^Producto que ofrecerás/)).toBeVisible();
+   await seller.getByRole('button',{name:'Volver al producto que pidió',exact:true}).click();
+   await expect(card).toBeVisible();
   });
   await t.test('T4-AC05/06: motivo de vencimiento, stock o condiciones y nueva solicitud',async()=>{
    for(const reason of ['OFFER_EXPIRED','INSUFFICIENT_STOCK','CONDITIONS_CHANGED']){

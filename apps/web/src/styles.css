@@ -4185,3 +4185,316 @@ button.danger:hover {
     padding-inline: 10px;
   }
 }
+
+/* ===================================================================
+   Cabecera reactiva: Mi empresa, Avisos y Lista de pedido se sombrean
+   al pasar el mouse, marcan la sección activa y tienen iconos más grandes.
+   =================================================================== */
+.site-header .header-actions .account-link {
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+.site-header .header-actions .account-link:hover {
+  background: var(--brand-soft);
+  border-color: var(--border);
+  box-shadow: 0 2px 8px rgba(29, 78, 216, 0.1);
+  transform: translateY(-1px);
+}
+.site-header .header-actions .account-link:active {
+  transform: translateY(0);
+}
+.site-header .header-actions .account-link.active {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  color: var(--brand-dark);
+}
+.site-header .header-actions .account-link .action-icon {
+  font-size: 1.6rem;
+}
+.site-header .header-actions .account-link .action-text {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+.site-header .header-actions .account-link .action-text small {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.action-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--surface);
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+.site-header .badge {
+  top: -7px;
+  right: -11px;
+  min-width: 21px;
+  height: 21px;
+  line-height: 21px;
+  font-size: 0.7rem;
+  box-shadow: 0 0 0 2px var(--surface);
+  animation: badge-pop 0.35s ease-out;
+}
+.notifications-toggle.has-unread .action-icon {
+  display: inline-block;
+  transform-origin: 50% 10%;
+  animation: bell-ring 1s ease-in-out 2;
+}
+@keyframes badge-pop {
+  from {
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes bell-ring {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-12deg);
+  }
+  60% {
+    transform: rotate(8deg);
+  }
+  80% {
+    transform: rotate(-4deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header .header-actions .account-link,
+  .site-header .badge,
+  .notifications-toggle.has-unread .action-icon {
+    transition: none;
+    animation: none;
+  }
+}
+@media (max-width: 740px) {
+  .site-header .header-actions .account-link {
+    padding: 4px 6px;
+  }
+  .action-avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+@media (max-width: 360px) {
+  .site-header .header-actions .account-link {
+    padding: 2px 4px;
+  }
+}
+
+/* ===================================================================
+   Oferta del proveedor: ficha del producto pedido, subtotal por línea,
+   bloque de entrega y total final.
+   =================================================================== */
+.offer-builder {
+  max-width: 820px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+}
+.offer-builder-head h4 {
+  margin: 2px 0 4px;
+  font-size: 1.15rem;
+}
+.offer-builder-head p {
+  margin: 0;
+}
+.offer-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 0;
+  font-size: 0.98rem;
+}
+.offer-step span {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--surface);
+  font-size: 0.8rem;
+}
+.offer-line {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--page);
+}
+.offer-line legend {
+  padding: 0 6px;
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+.offer-product {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.offer-product img,
+.offer-product-placeholder {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--brand-soft);
+}
+.offer-product-placeholder {
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+}
+.offer-product > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.offer-product strong {
+  font-size: 1rem;
+}
+.match-badge,
+.alt-badge {
+  justify-self: start;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 650;
+}
+.match-badge {
+  background: var(--brand-soft);
+  color: var(--tone-ok);
+}
+.alt-badge {
+  background: var(--page);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.offer-builder .offer-swap {
+  justify-content: flex-start;
+  text-align: left;
+  justify-self: start;
+  min-height: 36px;
+  margin: 0;
+  font-size: 0.84rem;
+}
+.offer-line-calc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+}
+.offer-subtotal {
+  display: grid;
+  justify-items: end;
+  margin: 0;
+  padding-bottom: 6px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.offer-subtotal strong {
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+.offer-line .price-reference {
+  margin: 0;
+}
+.offer-delivery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.offer-delivery label {
+  align-content: start;
+}
+.offer-delivery small {
+  font-weight: 450;
+  color: var(--muted);
+}
+.offer-total {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  margin: 0;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--brand-soft);
+}
+.offer-total div {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+}
+.offer-total dt,
+.offer-total dd {
+  margin: 0;
+}
+.offer-grand-total {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 1.12rem;
+  font-weight: 750;
+}
+.offer-grand-total dd {
+  color: var(--brand-dark);
+}
+.offer-igv {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.offer-builder .offer-submit {
+  width: 100%;
+  min-height: 52px;
+  font-size: 1rem;
+}
+@media (max-width: 740px) {
+  .offer-builder {
+    padding: 14px;
+  }
+  .offer-delivery {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .offer-line-calc {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .offer-subtotal {
+    justify-items: start;
+  }
+}

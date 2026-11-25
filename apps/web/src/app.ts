@@ -1,4 +1,4 @@
-import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ViewportScroller } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,6 +20,16 @@ export class AppComponent {
   readonly search = inject(CatalogSearchService);
   readonly session = inject(SessionService);
   readonly orderList = inject(OrderListService);
+  /** Iniciales de la empresa (p. ej. «FY» para Ferretería El Yunque) para el botón «Mi empresa». */
+  readonly companyInitials = computed(() => {
+    const name: string = this.session.company()?.legal_name ?? '';
+    const ignored = /^(s\.?a\.?c?\.?|e\.?i\.?r\.?l\.?|s\.?r\.?l\.?|y|de|del|la|el|los|las)$/i;
+    const words = name.split(/\s+/).filter(w => w && !ignored.test(w) && /\p{L}/u.test(w));
+    return words
+      .slice(0, 2)
+      .map(w => w[0].toUpperCase())
+      .join('');
+  });
   /** Categorías del catálogo publicado para el menú del encabezado. */
   readonly categories = signal<string[]>([]);
   /** Al bajar, el encabezado fijo se compacta (oculta lema y categorías) para dejar espacio. */

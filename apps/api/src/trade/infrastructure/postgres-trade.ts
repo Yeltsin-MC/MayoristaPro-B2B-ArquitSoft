@@ -157,7 +157,8 @@ export class PostgresTrade implements TradeStore {
       this.access(actor, 'sell');
       return (
         await db.query(
-          `SELECT p.id,p.sku,p.name,p.unit,p.units_per_pack AS "unitsPerPack",p.minimum,p.multiple,p.stock,p.price,${TIERS_JSON} AS "priceTiers"
+          `SELECT p.id,p.sku,p.name,p.unit,p.units_per_pack AS "unitsPerPack",p.minimum,p.multiple,p.stock,p.price,${TIERS_JSON} AS "priceTiers",
+     (SELECT i.url FROM product_images i WHERE i.product_id=p.id ORDER BY i.position LIMIT 1) AS "imageUrl"
    FROM products p WHERE p.supplier_id=$1 AND p.published ORDER BY p.name`,
           [actor.supplierId],
         )

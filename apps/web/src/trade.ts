@@ -291,52 +291,121 @@ interface RequestItem {
             }
           </div>
           @if (!q.isBuyer && q.status === 'abierta' && q.offers.length === 0 && canSell()) {
-            <form class="response-form" (ngSubmit)="respond()">
-              <h4>Responder con productos propios</h4>
+            <form class="response-form offer-builder" (ngSubmit)="respond()">
+              <div class="offer-builder-head">
+                <p class="eyebrow">TU OFERTA PRIVADA</p>
+                <h4>Responder a {{ q.buyerName }}</h4>
+                <p class="muted">{{ offerIntro(q) }}</p>
+              </div>
+              <h5 class="offer-step"><span aria-hidden="true">1</span> Productos y precios</h5>
               @for (line of responseItems; track line.solicitudItemId; let n = $index) {
-                <fieldset>
-                  <legend>{{ q.items[n].description }} · {{ line.cantidad }} {{ q.items[n].unit }}</legend>
-                  @if (line.productoId && line.productoId === matchingProduct(q.items[n])?.id) {
-                    <p class="match-note">✓ Producto encontrado en tu catálogo. Revisa el precio y envía.</p>
-                  }
-                  <label
-                    >Producto propio
-                    <select
-                      [name]="'product-' + n"
-                      required
-                      [(ngModel)]="line.productoId"
-                      (ngModelChange)="suggestPrice(line)"
-                    >
-                      <option value="">Seleccionar</option>
-                      @for (p of products(); track p.id) {
-                        <option [value]="p.id">
-                          {{ p.name }} · {{ p.unit }} de {{ p.unitsPerPack }} · stock {{ p.stock }}
-                        </option>
+                <fieldset class="offer-line">
+                  <legend>
+                    Pidió: {{ q.items[n].description }} · {{ presentations(line.cantidad, q.items[n].unit) }}
+                  </legend>
+                  @if (!line.choosing && ownProduct(line.productoId); as p) {
+                    <div class="offer-product">
+                      @if (p.imageUrl) {
+                        <img [src]="p.imageUrl" alt="" loading="lazy" />
+                      } @else {
+                        <span class="offer-product-placeholder" aria-hidden="true">📦</span>
                       }
-                    </select></label
-                  >
-                  <label
-                    >Precio por presentación PEN (IGV incluido)
-                    <input [name]="'price-' + n" required [(ngModel)]="line.precioUnitario"
-                  /></label>
+                      <div>
+                        <strong>{{ p.name }}</strong>
+                        <span class="muted">{{ p.unit }} de {{ p.unitsPerPack }} · stock {{ p.stock }}</span>
+                        @if (p.id === matchingProduct(q.items[n])?.id) {
+                          <span class="match-badge">✓ Es el producto que pidió</span>
+                        } @else {
+                          <span class="alt-badge">Producto alternativo</span>
+                        }
+                      </div>
+                    </div>
+                    <button type="button" class="text-button offer-swap" (click)="line.choosing = true">
+                      ¿No tienes stock? Ofrecer un producto parecido
+                    </button>
+                  } @else {
+                    @if (!matchingProduct(q.items[n])) {
+                      <p class="notice">
+                        No encontramos «{{ q.items[n].description }}» en tu catálogo. Elige el producto que ofrecerás.
+                      </p>
+                    }
+                    <label
+                      >Producto que ofrecerás
+                      <select
+                        [name]="'product-' + n"
+                        required
+                        [(ngModel)]="line.productoId"
+                        (ngModelChange)="chooseProduct(line)"
+                      >
+                        <option value="">Seleccionar</option>
+                        @for (p of products(); track p.id) {
+                          <option [value]="p.id">
+                            {{ p.name }} · {{ p.unit }} de {{ p.unitsPerPack }} · stock {{ p.stock }}
+                          </option>
+                        }
+                      </select></label
+                    >
+                    @if (matchingProduct(q.items[n]); as match) {
+                      <button type="button" class="text-button offer-swap" (click)="useRequested(line, match)">
+                        Volver al producto que pidió
+                      </button>
+                    }
+                  }
+                  <div class="offer-line-calc">
+                    <label
+                      >Precio por {{ q.items[n].unit }} (S/, IGV incluido)
+                      <input [name]="'price-' + n" inputmode="decimal" required [(ngModel)]="line.precioUnitario"
+                    /></label>
+                    <p class="offer-subtotal" aria-live="polite">
+                      <span>{{ line.cantidad }} × S/ {{ soles(line.precioUnitario) }}</span>
+                      <strong>S/ {{ soles(lineTotal(line)) }}</strong>
+                    </p>
+                  </div>
                   @if (ownProduct(line.productoId); as p) {
                     <p class="price-reference">
-                      Tu precio publicado: S/ {{ tierUnitPrice(p, line.cantidad)
+                      Tu precio publicado para esta cantidad: S/ {{ tierUnitPrice(p, line.cantidad)
                       }}{{ p.priceTiers?.length ? ' (por volumen)' : '' }}
                     </p>
                   }
                 </fieldset>
               }
-              <label>Envío final PEN <input name="shipping" required [(ngModel)]="shipping" /></label>
-              <label
-                >Plazo de entrega en días
-                <input name="deliveryDays" type="number" min="1" required [(ngModel)]="deliveryDays"
-              /></label>
-              <label
-                >Vigente hasta <input name="expiresAt" type="datetime-local" required [(ngModel)]="expiresAt"
-              /></label>
-              <p class="muted">Precios con IGV incluido.</p>
-              <button [disabled]="busy()">Enviar oferta</button>
+              <h5 class="offer-step"><span aria-hidden="true">2</span> Entrega y vigencia</h5>
+              <div class="offer-delivery">
+                <label
+                  >Costo de envío (S/)
+                  <input name="shipping" inputmode="decimal" required [(ngModel)]="shipping" />
+                  <small>0.00 si el comprador recoge o el envío es gratis</small></label
+                >
+                <label
+                  >Plazo de entrega (días)
+                  <input name="deliveryDays" type="number" min="1" required [(ngModel)]="deliveryDays" />
+                  <small>Desde que el comprador paga</small></label
+                >
+                <label
+                  >Oferta vigente hasta
+                  <input name="expiresAt" type="datetime-local" required [(ngModel)]="expiresAt" />
+                  <small>Después ya no podrá aceptarla</small></label
+                >
+              </div>
+              <dl class="offer-total" aria-label="Total de la oferta">
+                <div>
+                  <dt>Productos</dt>
+                  <dd>S/ {{ soles(offerSubtotal()) }}</dd>
+                </div>
+                <div>
+                  <dt>Envío</dt>
+                  <dd>S/ {{ soles(shipping) }}</dd>
+                </div>
+                <div class="offer-grand-total">
+                  <dt>Total para el comprador</dt>
+                  <dd>S/ {{ soles(offerTotal()) }}</dd>
+                </div>
+                <div class="offer-igv">
+                  <dt>IGV incluido (18 %)</dt>
+                  <dd>S/ {{ soles(offerTotal() - offerTotal() / 1.18) }}</dd>
+                </div>
+              </dl>
+              <button class="offer-submit" [disabled]="busy()">Enviar oferta por S/ {{ soles(offerTotal()) }}</button>
             </form>
           }
           <div class="comparison-heading">
@@ -632,7 +701,7 @@ export class TradeComponent {
     });
   }
   future() {
-    return new Date(Date.now() + 86400000 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    return new Date(Date.now() + 2 * 86400000 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   }
   date(value: string) {
     return new Date(value).toLocaleString('es-PE');
@@ -708,6 +777,35 @@ export class TradeComponent {
   suggestPrice(line: any) {
     const product = this.ownProduct(line.productoId);
     if (product) line.precioUnitario = tierUnitPrice(product, line.cantidad);
+  }
+  offerIntro(q: any): string {
+    const count = q.items.length === 1 ? '1 producto solicitado' : q.items.length + ' productos solicitados';
+    const when = q.createdAt ? ' el ' + this.shortDate(q.createdAt) : '';
+    return count + when + '. Solo este comprador verá tu oferta.';
+  }
+  /** Elegir otro producto en el desplegable: propone su precio. */
+  chooseProduct(line: any) {
+    this.suggestPrice(line);
+  }
+  /** Vuelve al producto que el comprador pidió y oculta el desplegable. */
+  useRequested(line: any, match: any) {
+    line.productoId = match.id;
+    line.choosing = false;
+    this.suggestPrice(line);
+  }
+  /** Monto en soles con dos decimales; vacío o inválido cuenta como 0. */
+  soles(value: unknown): string {
+    const n = typeof value === 'number' ? value : Number(String(value ?? '').replace(',', '.'));
+    return (Number.isFinite(n) ? n : 0).toFixed(2);
+  }
+  lineTotal(line: any): number {
+    return Number(line.cantidad) * Number(this.soles(line.precioUnitario));
+  }
+  offerSubtotal(): number {
+    return this.responseItems.reduce((sum, line) => sum + this.lineTotal(line), 0);
+  }
+  offerTotal(): number {
+    return this.offerSubtotal() + Number(this.soles(this.shipping));
   }
   selectTierProduct(id: string) {
     this.tierProductId = id;
@@ -931,6 +1029,7 @@ export class TradeComponent {
         return {
           solicitudItemId: i.id,
           productoId: match?.id ?? '',
+          choosing: !match,
           cantidad: i.quantity,
           precioUnitario: match ? tierUnitPrice(match, i.quantity) : '',
         };
@@ -988,7 +1087,12 @@ export class TradeComponent {
       costoEnvio: this.shipping,
       diasEntrega: this.deliveryDays,
       vigenteHasta: expiry.toISOString(),
-      items: this.responseItems,
+      items: this.responseItems.map(({ solicitudItemId, productoId, cantidad, precioUnitario }) => ({
+        solicitudItemId,
+        productoId,
+        cantidad,
+        precioUnitario,
+      })),
     });
     if (result) this.selected.set(result);
   }
