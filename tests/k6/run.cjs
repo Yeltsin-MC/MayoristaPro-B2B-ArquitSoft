@@ -5,7 +5,7 @@ const path = require('node:path');
 const perfil = process.argv[2] || 'humo';
 const env = { ...process.env, PERFIL: perfil };
 env.COMPRADOR_EMAIL ||= 'demo-comprador150@example.test';
-const resumen = path.join('docs', 'evidencias', 'k6', 'resumen-' + perfil + '.json');
+const resumen = path.join('docs', 'sprint-2', 'evidencias', 'k6', 'resumen-' + perfil + '.json');
 require('node:fs').mkdirSync(path.dirname(resumen), { recursive: true });
 const result = spawnSync('k6', ['run', '--summary-export', resumen, path.join('tests', 'k6', 'catalogo.k6.js')], {
   stdio: 'inherit', env,
