@@ -117,6 +117,10 @@ export class CatalogComponent {
   readonly visibleSuppliers = computed(() =>
     this.showAllSuppliers() ? this.options().suppliers : this.options().suppliers.slice(0, this.supplierPreview),
   );
+  /** El filtro desplegable muestra siempre todos los proveedores, en orden alfabético. */
+  readonly supplierOptions = computed(() =>
+    [...this.options().suppliers].sort((a, b) => a.name.localeCompare(b.name, 'es')),
+  );
   readonly quantities = signal<Record<string, number | null>>({});
   readonly presentations = presentations;
   readonly packDescription = packDescription;
