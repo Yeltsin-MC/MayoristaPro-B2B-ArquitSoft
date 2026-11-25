@@ -10,7 +10,7 @@ calidad» de la guía del Sprint 2.
 
 | Herramienta | Qué valida | Comando | Evidencia |
 |---|---|---|---|
-| **Jest 30** (unitarias e integración con PostgreSQL, Redis y FastAPI reales) | Reglas de negocio, permisos, concurrencia, idempotencia, caché, arquitectura | `npm run test:coverage` | [cobertura/jest-cobertura-2026-11-20.txt](evidencias/cobertura/jest-cobertura-2026-11-20.txt); en CI, artefacto `cobertura-jest` |
+| **Jest 30** (unitarias e integración con PostgreSQL, Redis y FastAPI reales) | Reglas de negocio, permisos, concurrencia, idempotencia, caché, arquitectura | `npm run test:coverage` | [cobertura/jest-cobertura-2026-11-25.txt](evidencias/cobertura/jest-cobertura-2026-11-25.txt) (89,96 % de líneas; la del [20/11](evidencias/cobertura/jest-cobertura-2026-11-20.txt) se conserva); en CI, artefacto `cobertura-jest` |
 | **Postman / Newman** | Contrato REST, códigos HTTP, formato de error, flujo B2B completo | `npx newman run postman/MayoristaPro.postman_collection.json ...` ([postman/README.md](../../postman/README.md)) | [postman/ejecucion-local-2026-11-20.txt](evidencias/postman/ejecucion-local-2026-11-20.txt) |
 | **OpenAPI / Swagger UI** | Contrato documentado igual al implementado | `/api-docs` y prueba `tests/openapi.test.cjs` | [apps/api/openapi.yaml](../../apps/api/openapi.yaml) |
 | **k6** | Rendimiento y escalabilidad hasta 2.000 VU | `npm run test:carga -- humo\|local\|completo` ([pruebas-carga-k6.md](pruebas-carga-k6.md)) | [evidencias/k6/](evidencias/k6) |
@@ -19,11 +19,13 @@ calidad» de la guía del Sprint 2.
 
 ### Cobertura de pruebas (Jest)
 
-27 suites y 44 pruebas aprobadas (20/11/2026). Cobertura sobre el código TypeScript de la API:
+27 suites y 44 pruebas aprobadas (25/11/2026, después de agregar moderación, avisos, fotos,
+«Mis productos» y el rechazo de solicitudes). Cobertura sobre el código TypeScript de la API:
 
-| Sentencias | Ramas | Funciones | Líneas |
-|---|---|---|---|
-| 89,13 % (3323/3728) | 86,94 % (719/827) | 92,88 % (222/239) | 89,13 % |
+| Fecha | Sentencias | Ramas | Funciones | Líneas |
+|---|---|---|---|---|
+| 25/11/2026 | 89,96 % (3667/4076) | 86,16 % (791/918) | 93,72 % (254/271) | 89,96 % |
+| 20/11/2026 | 89,13 % (3323/3728) | 86,94 % (719/827) | 92,88 % (222/239) | 89,13 % |
 
 El CI falla si la cobertura baja de 80 % en sentencias, funciones y líneas, o de 75 % en ramas.
 Los módulos con menos cobertura son Pagos (adaptador de Mercado Pago, 53–70 %), porque la

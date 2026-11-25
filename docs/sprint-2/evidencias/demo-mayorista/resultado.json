@@ -1,7 +1,7 @@
 {
   "browser": "157.0.8103.78",
   "flow": "login -> catalogo -> solicitud -> ofertas -> FastAPI",
-  "quotationId": "88622413-d874-4519-b887-32bd0ab50d4e",
+  "quotationId": "49cd7ed4-7355-4217-9efe-9a75ea2f3edb",
   "scores": [
     90,
     10

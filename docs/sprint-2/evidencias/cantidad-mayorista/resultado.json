@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T10:12:25.357Z",
+  "generatedAt": "2026-11-25T19:38:41.832Z",
   "browser": "157.0.8103.78",
   "results": [
     {
@@ -30,7 +30,7 @@
       "invalidMultiple": 3,
       "validQuantity": 4,
       "units": 48,
-      "quotationId": "22e25d0f-b3fd-4295-a1ea-063fbf4bdba0",
+      "quotationId": "8c7995d4-00cd-4e14-98de-0998189e12bf",
       "supplierPreserved": true,
       "quantityPreservedAfterLogin": true,
       "insufficientStockBlocked": true,
@@ -65,7 +65,7 @@
       "invalidMultiple": 3,
       "validQuantity": 4,
       "units": 48,
-      "quotationId": "80821b93-acd0-4d65-b38a-faa328e5c7e7",
+      "quotationId": "c62b274e-e209-428b-95d5-8048fc92e432",
       "supplierPreserved": true,
       "quantityPreservedAfterLogin": true,
       "insufficientStockBlocked": true,
