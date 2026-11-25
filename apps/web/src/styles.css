@@ -4343,7 +4343,7 @@ button.danger:hover {
   color: var(--surface);
   font-size: 0.8rem;
 }
-.offer-line {
+.offer-builder .offer-line {
   display: grid;
   gap: 12px;
   margin: 0;
@@ -4352,7 +4352,7 @@ button.danger:hover {
   border-radius: 12px;
   background: var(--page);
 }
-.offer-line legend {
+.offer-builder .offer-line legend {
   padding: 0 6px;
   font-size: 0.86rem;
   font-weight: 650;
@@ -4414,7 +4414,7 @@ button.danger:hover {
   margin: 0;
   font-size: 0.84rem;
 }
-.offer-line-calc {
+.offer-builder .offer-line-calc {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
@@ -4432,22 +4432,22 @@ button.danger:hover {
   font-size: 1.15rem;
   color: var(--ink);
 }
-.offer-line .price-reference {
+.offer-builder .offer-line .price-reference {
   margin: 0;
 }
-.offer-delivery {
+.offer-builder .offer-delivery {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
-.offer-delivery label {
+.offer-builder .offer-delivery label {
   align-content: start;
 }
-.offer-delivery small {
+.offer-builder .offer-delivery small {
   font-weight: 450;
   color: var(--muted);
 }
-.offer-total {
+.offer-builder .offer-total {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 6px;
@@ -4456,26 +4456,26 @@ button.danger:hover {
   border-radius: 12px;
   background: var(--brand-soft);
 }
-.offer-total div {
+.offer-builder .offer-total div {
   display: flex;
   width: 100%;
   justify-content: space-between;
   gap: 12px;
 }
-.offer-total dt,
-.offer-total dd {
+.offer-builder .offer-total dt,
+.offer-builder .offer-total dd {
   margin: 0;
 }
-.offer-grand-total {
+.offer-builder .offer-grand-total {
   padding-top: 8px;
   border-top: 1px solid var(--border);
   font-size: 1.12rem;
   font-weight: 750;
 }
-.offer-grand-total dd {
+.offer-builder .offer-grand-total dd {
   color: var(--brand-dark);
 }
-.offer-igv {
+.offer-builder .offer-igv {
   font-size: 0.8rem;
   color: var(--muted);
 }
@@ -4488,10 +4488,10 @@ button.danger:hover {
   .offer-builder {
     padding: 14px;
   }
-  .offer-delivery {
+  .offer-builder .offer-delivery {
     grid-template-columns: minmax(0, 1fr);
   }
-  .offer-line-calc {
+  .offer-builder .offer-line-calc {
     grid-template-columns: minmax(0, 1fr);
   }
   .offer-subtotal {
