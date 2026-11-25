@@ -6,6 +6,8 @@ export interface PublishedProduct {
   quoteEnabled: boolean;
   supplier: string;
   supplierId: string;
+  /** Provincia del almacén del proveedor («Despacha desde Lima»); null si no la registró. */
+  supplierCity?: string | null;
   unit: string;
   unitsPerPack: number;
   minimum: number;

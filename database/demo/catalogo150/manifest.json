@@ -1,5 +1,5 @@
 {
-  "description": "Empresas, RUC y productos ficticios para la demostración académica de MayoristaPro B2B",
+  "description": "Empresas, RUC y productos ficticios para la demostración académica de MayoristaPro B2B. Direcciones ficticias: compradores en Huamanga (Ayacucho) y proveedores en Lima o Ayacucho",
   "providers": [
     {
       "code": "lirio",
@@ -9,7 +9,14 @@
       "category": "Librería y papelería",
       "shipping": "8.00",
       "days": 2,
-      "file": "lirio.csv"
+      "file": "lirio.csv",
+      "ubicacion": {
+        "direccion": "Jr. Callao 410",
+        "distrito": "Ayacucho",
+        "provincia": "Huamanga",
+        "departamento": "Ayacucho",
+        "referencia": "A dos cuadras de la Plaza de Armas"
+      }
     },
     {
       "code": "cobre",
@@ -19,7 +26,14 @@
       "category": "Suministros de oficina",
       "shipping": "12.00",
       "days": 5,
-      "file": "cobre.csv"
+      "file": "cobre.csv",
+      "ubicacion": {
+        "direccion": "Av. Argentina 1520",
+        "distrito": "Cercado de Lima",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Zona de distribuidoras de Av. Argentina"
+      }
     },
     {
       "code": "quilla",
@@ -29,7 +43,14 @@
       "category": "Tecnología y periféricos",
       "shipping": "10.00",
       "days": 3,
-      "file": "quilla.csv"
+      "file": "quilla.csv",
+      "ubicacion": {
+        "direccion": "Jr. Paruro 875",
+        "distrito": "Cercado de Lima",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Galería de tecnología, primer piso"
+      }
     },
     {
       "code": "miga",
@@ -39,7 +60,14 @@
       "category": "Insumos secos de panadería",
       "shipping": "15.00",
       "days": 2,
-      "file": "miga.csv"
+      "file": "miga.csv",
+      "ubicacion": {
+        "direccion": "Av. Cusco 1140",
+        "distrito": "Jesús Nazareno",
+        "provincia": "Huamanga",
+        "departamento": "Ayacucho",
+        "referencia": "Frente al grifo de la salida a Cusco"
+      }
     },
     {
       "code": "trazo",
@@ -49,7 +77,14 @@
       "category": "Acabados para construcción",
       "shipping": "18.00",
       "days": 3,
-      "file": "trazo.csv"
+      "file": "trazo.csv",
+      "ubicacion": {
+        "direccion": "Av. Nicolás Ayllón 3260",
+        "distrito": "Ate",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Almacén a la altura de la Carretera Central"
+      }
     },
     {
       "code": "nube",
@@ -59,7 +94,14 @@
       "category": "Limpieza e higiene",
       "shipping": "9.00",
       "days": 2,
-      "file": "nube.csv"
+      "file": "nube.csv",
+      "ubicacion": {
+        "direccion": "Calle Los Rubíes 233",
+        "distrito": "Santa Anita",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Parque industrial de Santa Anita"
+      }
     },
     {
       "code": "alba",
@@ -69,7 +111,14 @@
       "category": "Abarrotes y bebidas",
       "shipping": "12.00",
       "days": 2,
-      "file": "alba.csv"
+      "file": "alba.csv",
+      "ubicacion": {
+        "direccion": "Jr. Nazareno 205",
+        "distrito": "Ayacucho",
+        "provincia": "Huamanga",
+        "departamento": "Ayacucho",
+        "referencia": "Cerca al Mercado Central 12 de Abril"
+      }
     },
     {
       "code": "pliego",
@@ -79,7 +128,14 @@
       "category": "Embalaje y empaques",
       "shipping": "10.00",
       "days": 3,
-      "file": "pliego.csv"
+      "file": "pliego.csv",
+      "ubicacion": {
+        "direccion": "Av. Industrial 1880",
+        "distrito": "San Martín de Porres",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Zona industrial, portón azul"
+      }
     },
     {
       "code": "yunque",
@@ -89,7 +145,14 @@
       "category": "Ferretería y herramientas",
       "shipping": "15.00",
       "days": 3,
-      "file": "yunque.csv"
+      "file": "yunque.csv",
+      "ubicacion": {
+        "direccion": "Av. Javier Pérez de Cuéllar 560",
+        "distrito": "San Juan Bautista",
+        "provincia": "Huamanga",
+        "departamento": "Ayacucho",
+        "referencia": "Al costado del mercado Las Nazarenas"
+      }
     },
     {
       "code": "voltio",
@@ -99,7 +162,14 @@
       "category": "Material eléctrico",
       "shipping": "12.00",
       "days": 3,
-      "file": "voltio.csv"
+      "file": "voltio.csv",
+      "ubicacion": {
+        "direccion": "Jr. Leticia 612",
+        "distrito": "Cercado de Lima",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Zona comercial de Las Malvinas"
+      }
     },
     {
       "code": "escudo",
@@ -109,7 +179,14 @@
       "category": "Seguridad industrial",
       "shipping": "10.00",
       "days": 2,
-      "file": "escudo.csv"
+      "file": "escudo.csv",
+      "ubicacion": {
+        "direccion": "Av. Los Próceres 940",
+        "distrito": "San Juan de Lurigancho",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Almacén frente al paradero Próceres"
+      }
     },
     {
       "code": "taza",
@@ -119,7 +196,14 @@
       "category": "Descartables y cafetería",
       "shipping": "8.00",
       "days": 1,
-      "file": "taza.csv"
+      "file": "taza.csv",
+      "ubicacion": {
+        "direccion": "Av. Mariscal Cáceres 780",
+        "distrito": "Ayacucho",
+        "provincia": "Huamanga",
+        "departamento": "Ayacucho",
+        "referencia": "Cerca al terminal de buses de la Av. Cáceres"
+      }
     },
     {
       "code": "hilo",
@@ -129,7 +213,14 @@
       "category": "Textil y uniformes",
       "shipping": "10.00",
       "days": 5,
-      "file": "hilo.csv"
+      "file": "hilo.csv",
+      "ubicacion": {
+        "direccion": "Jr. Sáenz Peña 330",
+        "distrito": "Huanta",
+        "provincia": "Huanta",
+        "departamento": "Ayacucho",
+        "referencia": "Media cuadra de la plaza de Huanta"
+      }
     },
     {
       "code": "vital",
@@ -139,7 +230,14 @@
       "category": "Botiquín y primeros auxilios",
       "shipping": "9.00",
       "days": 2,
-      "file": "vital.csv"
+      "file": "vital.csv",
+      "ubicacion": {
+        "direccion": "Av. Independencia 455",
+        "distrito": "Carmen Alto",
+        "provincia": "Huamanga",
+        "departamento": "Ayacucho",
+        "referencia": "Subiendo al mirador de Carmen Alto"
+      }
     },
     {
       "code": "tablero",
@@ -149,13 +247,27 @@
       "category": "Mobiliario de oficina",
       "shipping": "45.00",
       "days": 5,
-      "file": "tablero.csv"
+      "file": "tablero.csv",
+      "ubicacion": {
+        "direccion": "Av. Separadora Industrial 2105",
+        "distrito": "Ate",
+        "provincia": "Lima",
+        "departamento": "Lima",
+        "referencia": "Parque industrial de Ate Vitarte"
+      }
     }
   ],
   "buyer": {
     "name": "Bodega Mostrador Huamanga S.A.C.",
     "ruc": "20999000006",
-    "email": "demo-comprador150@example.test"
+    "email": "demo-comprador150@example.test",
+    "ubicacion": {
+      "direccion": "Jr. 9 de Diciembre 318",
+      "distrito": "San Juan Bautista",
+      "provincia": "Huamanga",
+      "departamento": "Ayacucho",
+      "referencia": "Frente al mercado de San Juan Bautista"
+    }
   },
   "comparison": {
     "codes": [

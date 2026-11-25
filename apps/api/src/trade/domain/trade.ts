@@ -46,7 +46,56 @@ export function priceTotal(lines: { quantity: number; unitPrice: string }[], shi
     total: amount(subtotal + money(shipping, true)),
   };
 }
+/** Entrega pedida por el comprador (envío a su negocio, recojo en almacén o en agencia de transporte). */
+export interface DeliveryDraft {
+  modalidad: 'envio' | 'recojo' | 'agencia';
+  direccion?: string;
+  distrito?: string;
+  provincia?: string;
+  departamento?: string;
+  referencia?: string;
+  contacto?: string;
+  telefono?: string;
+  agencia?: string;
+}
+function deliveryText(value: unknown, label: string, max: number, required: boolean): string | undefined {
+  if (value === undefined || value === null || value === '') {
+    rule(!required, 'INVALID_INPUT', label + ' obligatorio para esta modalidad de entrega.');
+    return undefined;
+  }
+  rule(
+    typeof value === 'string' && value.trim().length > 0 && value.length <= max && !value.includes('\0'),
+    'INVALID_INPUT',
+    label + ' inválido (máximo ' + max + ' caracteres).',
+  );
+  return (value as string).trim();
+}
+/** Valida la entrega: envío y agencia necesitan dónde; el recojo en almacén no. */
+export function deliveryDraft(body: any): DeliveryDraft {
+  rule(
+    ['envio', 'recojo', 'agencia'].includes(body?.modalidad),
+    'INVALID_INPUT',
+    'Modalidad de entrega: envio, recojo o agencia.',
+  );
+  const modalidad = body.modalidad as DeliveryDraft['modalidad'];
+  if (modalidad === 'recojo') return { modalidad };
+  const draft: DeliveryDraft = {
+    modalidad,
+    direccion: deliveryText(body.direccion, 'Dirección', 200, modalidad === 'envio'),
+    distrito: deliveryText(body.distrito, 'Distrito', 60, true),
+    provincia: deliveryText(body.provincia, 'Provincia', 60, true),
+    departamento: deliveryText(body.departamento, 'Departamento', 60, true),
+    referencia: deliveryText(body.referencia, 'Referencia', 200, false),
+    contacto: deliveryText(body.contacto, 'Contacto', 100, false),
+    telefono: deliveryText(body.telefono, 'Teléfono', 15, false),
+    agencia: deliveryText(body.agencia, 'Agencia de transporte', 100, modalidad === 'agencia'),
+  };
+  rule(!draft.telefono || /^\+?[0-9 ]{6,15}$/.test(draft.telefono), 'INVALID_INPUT', 'Teléfono inválido.');
+  return Object.fromEntries(Object.entries(draft).filter(([, v]) => v !== undefined)) as DeliveryDraft;
+}
 export interface RequestDraft {
+  /** Sin «entrega», la API usa la dirección registrada de la empresa compradora (si tiene). */
+  entrega?: DeliveryDraft;
   proveedorIds: string[];
   items: { descripcion: string; presentacion: string; unidadesPorPresentacion: number; cantidad: number }[];
 }
@@ -98,7 +147,7 @@ export function requestDraft(body: any): RequestDraft {
       cantidad: positive(item.cantidad, 'Cantidad'),
     };
   });
-  return { proveedorIds, items };
+  return { proveedorIds, items, ...(body.entrega === undefined ? {} : { entrega: deliveryDraft(body.entrega) }) };
 }
 export function offerDraft(body: any): OfferDraft {
   rule(

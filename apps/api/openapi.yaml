@@ -504,6 +504,26 @@ paths:
         '200': { description: Lista de miembros }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
+  /company/address:
+    put:
+      tags: [Empresa]
+      summary: Guardar la dirección del negocio o del almacén
+      description: >-
+        Dirección de la empresa (negocio del comprador o almacén del proveedor). Se propone como lugar de
+        entrega al pedir una cotización, y su provincia se muestra como «Despacha desde» en el catálogo.
+        Requiere el permiso «manage».
+      security: [{ bearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Direccion' }
+      responses:
+        '200': { description: Dirección guardada }
+        '400': { description: Campo obligatorio vacío o inválido }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
   /company/members/{id}/revoke:
     post:
       tags: [Empresa]
@@ -578,6 +598,7 @@ paths:
               type: object
               required: [proveedorIds, items]
               properties:
+                entrega: { $ref: '#/components/schemas/Entrega' }
                 proveedorIds:
                   type: array
                   minItems: 1
@@ -616,7 +637,10 @@ paths:
       security: [{ bearer: [] }]
       parameters: [{ $ref: '#/components/parameters/Id' }]
       responses:
-        '200': { description: Solicitud con ítems, ofertas, reservas y eventos }
+        '200':
+          description: >-
+            Solicitud con ítems, ofertas, reservas y eventos. Incluye «delivery» (la entrega elegida) y, para el
+            proveedor, «origin» (provincia de su almacén) para avisar si el envío es interprovincial.
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
 
@@ -929,6 +953,35 @@ components:
       required: true
       schema: { type: string, pattern: '^[A-Za-z0-9._-]{1,128}$' }
   schemas:
+    Direccion:
+      type: object
+      required: [direccion, distrito, provincia, departamento]
+      properties:
+        direccion: { type: string, maxLength: 200, example: 'Jr. 9 de Diciembre 318' }
+        distrito: { type: string, maxLength: 60, example: San Juan Bautista }
+        provincia: { type: string, maxLength: 60, example: Huamanga }
+        departamento: { type: string, maxLength: 60, example: Ayacucho }
+        referencia: { type: string, maxLength: 200 }
+        contacto: { type: string, maxLength: 100 }
+        telefono: { type: string, pattern: '^\+?[0-9 ]{6,15}$' }
+    Entrega:
+      type: object
+      description: >-
+        Lugar de entrega del pedido, guardado como copia en la solicitud. Sin este campo se usa la dirección
+        registrada de la empresa compradora. «envio» exige dirección, distrito, provincia y departamento;
+        «agencia» exige agencia, distrito, provincia y departamento; «recojo» (en el almacén del proveedor) no
+        exige nada más.
+      required: [modalidad]
+      properties:
+        modalidad: { type: string, enum: [envio, recojo, agencia] }
+        direccion: { type: string, maxLength: 200 }
+        distrito: { type: string, maxLength: 60 }
+        provincia: { type: string, maxLength: 60 }
+        departamento: { type: string, maxLength: 60 }
+        referencia: { type: string, maxLength: 200 }
+        contacto: { type: string, maxLength: 100 }
+        telefono: { type: string, pattern: '^\+?[0-9 ]{6,15}$' }
+        agencia: { type: string, maxLength: 100, example: Terminal terrestre de Ayacucho }
     Error:
       type: object
       required: [statusCode, code, message]
@@ -956,6 +1009,7 @@ components:
         quoteEnabled: { type: boolean }
         supplier: { type: string }
         supplierId: { type: string, format: uuid }
+        supplierCity: { type: string, nullable: true, description: Provincia del almacén del proveedor (Lima, Huamanga…) }
         unit: { type: string, example: caja }
         unitsPerPack: { type: integer }
         minimum: { type: integer, description: Compra mínima en presentaciones }

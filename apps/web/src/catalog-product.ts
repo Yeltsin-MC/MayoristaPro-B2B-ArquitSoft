@@ -10,6 +10,8 @@ export interface CatalogProduct {
   quoteEnabled: boolean;
   supplier: string;
   supplierId: string;
+  /** Provincia del almacén del proveedor, p. ej. «Lima» o «Huamanga». */
+  supplierCity?: string | null;
   unit: string;
   unitsPerPack: number;
   minimum: number;

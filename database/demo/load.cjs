@@ -163,6 +163,8 @@ async function loadDemo(config = configuration()) {
         const token = await login(entity.email, config.demoPassword);
         let me = await apiCall(base, 'auth/me', 'GET', undefined, token);
         if (me.company.ruc !== entity.ruc) throw new Error('Vinculación demo inesperada.');
+        // Dirección ficticia: compradora en Huamanga, proveedores en Lima o Ayacucho.
+        if (entity.ubicacion) await apiCall(base, 'company/address', 'PUT', entity.ubicacion, token);
         if (!entity.file) continue; // La compradora puede comprar con su proveedor pendiente.
         if (!me.company.supplier_verified) {
           await apiCall(base, 'providers/' + me.company.supplier_id + '/verify', 'PATCH', undefined, adminToken);

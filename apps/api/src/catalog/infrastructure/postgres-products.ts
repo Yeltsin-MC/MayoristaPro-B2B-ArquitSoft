@@ -29,6 +29,7 @@ export class PostgresProducts implements ProductReader, OnModuleDestroy {
       `
       SELECT p.id, p.name, p.category, (p.stock >= p.minimum) AS available,
              s.name AS supplier, s.id AS "supplierId", p.unit,
+             (SELECT c.province FROM companies c WHERE c.supplier_id=s.id) AS "supplierCity",
              EXISTS(SELECT 1 FROM companies c WHERE c.supplier_id=s.id AND c.status='enabled') AS "quoteEnabled",
              p.units_per_pack AS "unitsPerPack", p.minimum, p.multiple,
              p.stock, p.price::text, p.currency, p.includes_tax AS "includesTax",

@@ -7,6 +7,7 @@ import {
   Headers,
   Param,
   Patch,
+  Put,
   Post,
   Query,
   Req,
@@ -118,6 +119,9 @@ export class IdentityController {
   }
   @Get('admin/moderation') moderationLog(@Headers('authorization') auth?: string) {
     return this.identity.moderationLog(auth);
+  }
+  @Put('company/address') address(@Body() body: any, @Headers('authorization') auth?: string) {
+    return this.identity.updateAddress(body ?? {}, auth);
   }
   @Post('company/invitations') invite(@Body() body: any, @Headers('authorization') auth?: string) {
     return this.identity.invite(body ?? {}, auth);
