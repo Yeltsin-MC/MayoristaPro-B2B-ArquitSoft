@@ -170,7 +170,7 @@
         <label
           >Proveedor<select aria-label="Proveedor del catálogo" [(ngModel)]="supplier" (ngModelChange)="load()">
             <option value="">Todos los proveedores</option>
-            @for (s of visibleSuppliers(); track s.id) {
+            @for (s of supplierOptions(); track s.id) {
               <option [value]="s.id">{{ s.name }}</option>
             }
           </select></label
