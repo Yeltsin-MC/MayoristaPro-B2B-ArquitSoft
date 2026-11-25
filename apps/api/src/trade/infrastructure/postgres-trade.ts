@@ -357,6 +357,14 @@ export class PostgresTrade implements TradeStore {
         [id],
       )
     ).rows;
+    // Datos de las partes para la orden de compra (razón social y RUC).
+    const parties = (
+      await db.query(
+        `SELECT b.legal_name AS "buyerName",b.ruc AS "buyerRuc",s.legal_name AS "supplierName",s.ruc AS "supplierRuc"
+           FROM companies b LEFT JOIN companies s ON s.supplier_id=$2 WHERE b.id=$1`,
+        [o.buyer_company_id, o.supplier_id],
+      )
+    ).rows[0];
     return {
       id: o.id,
       requestId: o.request_id,
@@ -369,6 +377,9 @@ export class PostgresTrade implements TradeStore {
       total: o.total,
       deliveryDays: o.delivery_days,
       expiresAt: o.expires_at,
+      createdAt: o.created_at,
+      buyer: { legalName: parties?.buyerName ?? '', ruc: parties?.buyerRuc ?? '' },
+      supplier: { legalName: parties?.supplierName ?? '', ruc: parties?.supplierRuc ?? '' },
       isBuyer: a.canBuy && o.buyer_company_id === a.companyId,
       isSupplier: a.canSell && o.supplier_id === a.supplierId,
       items,

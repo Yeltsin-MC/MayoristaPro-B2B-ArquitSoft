@@ -615,13 +615,19 @@ interface RequestItem {
               <p>
                 <strong>Pagar antes de: {{ expiresIn(o.expiresAt) }}</strong>
               </p>
-              <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar con Mercado Pago</button>
+              <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar S/ {{ o.total }}</button>
+              <p class="muted">Tarjeta, Yape o PagoEfectivo.</p>
             }
             @if (o.state === 'pendiente' && !o.isBuyer) {
               <p class="muted">Esperando el pago del comprador. Vence: {{ expiresIn(o.expiresAt) }}.</p>
             }
             @if (o.state === 'paid') {
               <p class="success">✓ Pago confirmado. El proveedor preparará el pedido.</p>
+            }
+            @if (inFulfillment(o.state)) {
+              <button type="button" class="secondary" (click)="openPurchaseOrder(o.id)">
+                <span aria-hidden="true">📄</span> Orden de compra (PDF)
+              </button>
             }
             @if (o.state === 'expired') {
               <p class="error">✗ Pedido vencido sin pago. Stock liberado.</p>
@@ -634,8 +640,8 @@ interface RequestItem {
                 <summary>Intentos de pago</summary>
                 @for (a of paymentAttempts(); track a.id) {
                   <p>
-                    {{ formatDate(a.created_at) }} · {{ a.state }} · S/ {{ a.amount }}
-                    @if (a.state === 'created' && a.preference_id) {
+                    {{ formatDate(a.created_at) }} · {{ attemptLabel(a.state) }} · S/ {{ a.amount }}
+                    @if ((a.state === 'created' || a.state === 'pending') && a.preference_id) {
                       <button type="button" (click)="openCheckout(a)">Continuar pago</button>
                     }
                   </p>
@@ -1137,14 +1143,33 @@ export class TradeComponent {
   }
   async startPayment(orderId: string) {
     const attempt = await this.call('orders/' + orderId + '/payment-attempts', 'POST', {});
-    if (attempt && attempt.init_point) {
-      this.message.set('Redirigiendo a Mercado Pago...');
-      window.location.href = attempt.init_point;
-    }
+    if (attempt && attempt.init_point) this.goToCheckout(attempt.init_point);
   }
   openCheckout(attempt: any) {
-    if (attempt.mp_preference_response?.init_point) {
-      window.location.href = attempt.mp_preference_response.init_point;
+    if (attempt.mp_preference_response?.init_point) this.goToCheckout(attempt.mp_preference_response.init_point);
+  }
+  /** Sin credenciales de Mercado Pago la API devuelve la ruta propia «/pago-de-prueba/…». */
+  private goToCheckout(url: string) {
+    if (url.startsWith('/')) {
+      void this.router.navigateByUrl(url);
+    } else {
+      this.message.set('Redirigiendo a Mercado Pago...');
+      window.location.href = url;
     }
+  }
+  openPurchaseOrder(orderId: string) {
+    void this.router.navigateByUrl('/orden-de-compra/' + orderId);
+  }
+  attemptLabel(state: string): string {
+    const labels: Record<string, string> = {
+      created: 'iniciado',
+      pending: 'pendiente',
+      approved: 'aprobado',
+      approved_late: 'aprobado tarde',
+      rejected: 'rechazado',
+      cancelled: 'cancelado',
+      refunded: 'reembolsado',
+    };
+    return labels[state] ?? state;
   }
 }
