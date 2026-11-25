@@ -119,6 +119,39 @@ label {
   font-size: 0.88rem;
   font-weight: 550;
 }
+/* Campo de contraseña con el ojito para mostrarla u ocultarla. */
+.password-group {
+  display: grid;
+  gap: 6px;
+}
+.password-group label {
+  display: block;
+}
+.password-field {
+  position: relative;
+}
+.password-field input:not([type='checkbox']):not([type='file']) {
+  padding-right: 56px;
+}
+.password-field .password-toggle,
+.auth-content form .password-field .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 44px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.password-field .password-toggle:hover {
+  background: #eef3fb;
+}
 .check {
   display: flex;
   align-items: center;

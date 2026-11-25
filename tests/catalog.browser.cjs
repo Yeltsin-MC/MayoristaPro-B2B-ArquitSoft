@@ -58,6 +58,13 @@ test('T3: controles por rol y recorrido Angular/Excel/PostgreSQL en navegador', 
         await page.goto(new URL('/cuenta',base).href);
         await page.getByLabel('Correo',{exact:true}).fill(name+'@browser.test');
         await page.getByLabel(/^Contraseña/).fill(password);
+        // El ojito muestra la contraseña al pulsarlo y la vuelve a ocultar al pulsarlo otra vez o al ingresar.
+        const field=page.getByLabel(/^Contraseña/);
+        await page.getByRole('button',{name:'Mostrar contraseña',exact:true}).click();
+        await expect(field).toHaveAttribute('type','text');
+        await page.getByRole('button',{name:'Ocultar contraseña',exact:true}).click();
+        await expect(field).toHaveAttribute('type','password');
+        await page.getByRole('button',{name:'Mostrar contraseña',exact:true}).click();
         await page.locator('form').getByRole('button',{name:'Ingresar',exact:true}).click();
         await expect(page.getByRole('button',{name:'Salir',exact:true})).toBeVisible();
         await check(page);
