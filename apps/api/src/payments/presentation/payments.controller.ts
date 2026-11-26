@@ -69,6 +69,13 @@ export class PaymentsController {
     return this.asBuyer(auth, companyId => this.payments.simulatePayment(attemptId, companyId, body));
   }
 
+  /** Regreso desde Mercado Pago: confirma el pago consultándolo a Mercado Pago. */
+  @Post('payments/mercadopago/confirm')
+  @HttpCode(200)
+  async confirmMercadoPago(@Body() body: any, @Headers('authorization') auth?: string) {
+    return this.asBuyer(auth, companyId => this.payments.confirmReturn(body, companyId));
+  }
+
   private async asBuyer<T>(auth: string | undefined, action: (companyId: string) => Promise<T>): Promise<T> {
     const db = await this.pool.connect();
     let companyId: string;
@@ -93,6 +100,10 @@ export class PaymentsController {
     @Headers('x-signature') xSignature?: string,
     @Headers('x-request-id') xRequestId?: string,
   ) {
+    // Webhooks actuales: ?data.id=…&type=payment y cuerpo { id, action, data: { id } }.
+    // IPN antiguo: ?id=<pago>&topic=payment. Se aceptan ambos formatos.
+    dataId = dataId || body?.data?.id?.toString() || (topic === 'payment' ? notificationId : '');
+    notificationId = body?.id?.toString() || notificationId || xRequestId || '';
     if (!notificationId || !dataId) {
       throw new BadRequestException('Missing notification ID or data ID');
     }

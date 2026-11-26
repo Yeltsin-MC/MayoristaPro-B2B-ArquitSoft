@@ -260,21 +260,58 @@ export class Payments {
     validateCurrency(paymentInfo.currency_id);
     validateAmount(paymentInfo.transaction_amount, parseFloat(order.total));
 
-    // 8. Mapear estado de MP a nuestro estado
-    const newState = this.mapMercadoPagoStatus(paymentInfo.status, order.expires_at);
-
-    // 9. Validar transición de estado
-    rule(
-      canTransitionTo(attempt.state, newState),
-      'INVALID_TRANSITION',
-      `Transición inválida de "${attempt.state}" a "${newState}".`,
-    );
-
-    // 10. Actualizar estado del intento
-    await this.store.updateAttemptState(attempt.id, newState, paymentInfo.id, paymentInfo);
+    // 8-10. Mapear el estado de MP, validar la transición y actualizar el intento
+    await this.applyPaymentInfo(attempt, order, paymentInfo);
 
     // 11. Marcar webhook como procesado exitosamente
     await this.store.markWebhookProcessed(notificationId);
+  }
+
+  /**
+   * Retorno desde Mercado Pago (back_urls): el comprador vuelve con ?payment_id=…&external_reference=….
+   * Se consulta el pago a Mercado Pago (fuente de verdad) y se aplica igual que el webhook. Así el pago
+   * se confirma también en localhost, donde Mercado Pago no puede enviar webhooks; en AWS es el respaldo.
+   */
+  async confirmReturn(body: any, companyId: string) {
+    rule(!this.gateway.simulated, 'FORBIDDEN', 'Mercado Pago no está configurado: usa el pago de prueba.');
+    const attemptId = String(body?.attemptId ?? '');
+    const paymentId = String(body?.paymentId ?? '');
+    rule(/^[0-9a-f-]{36}$/i.test(attemptId), 'INVALID_INPUT', 'Intento de pago inválido.');
+    const attempt = await this.store.getAttemptByExternalReference(attemptId);
+    rule(attempt, 'ATTEMPT_NOT_FOUND', 'Intento de pago no encontrado.');
+    const order = await this.store.getOrder(attempt.order_id, companyId);
+    rule(order, 'ORDER_NOT_FOUND', 'Pedido no encontrado o no pertenece a tu empresa.');
+    // Sin pago (el comprador canceló o volvió antes de pagar): solo se informa el estado actual.
+    if (!/^\d{1,20}$/.test(paymentId)) return { state: attempt.state, orderId: order.id };
+    const paymentInfo = await this.gateway.getPaymentInfo(paymentId);
+    rule(paymentInfo.external_reference === attempt.id, 'INVALID_INPUT', 'El pago no corresponde a este pedido.');
+    validateCurrency(paymentInfo.currency_id);
+    validateAmount(paymentInfo.transaction_amount, parseFloat(order.total));
+    const state = await this.applyPaymentInfo(attempt, order, paymentInfo);
+    return { state, orderId: order.id };
+  }
+
+  /** Aplica el estado informado por Mercado Pago; repetir la misma notificación no cambia nada. */
+  private async applyPaymentInfo(
+    attempt: PaymentAttempt,
+    order: Order,
+    paymentInfo: { id: string; status: string },
+  ): Promise<PaymentState> {
+    const newState = this.mapMercadoPagoStatus(paymentInfo.status, order.expires_at);
+    if (attempt.state === newState) return newState;
+    let current = attempt.state;
+    // Mercado Pago puede informar «approved» sin un «pending» previo: se registra el paso intermedio.
+    if (current === 'created' && (newState === 'approved' || newState === 'approved_late')) {
+      await this.store.updateAttemptState(attempt.id, 'pending', String(paymentInfo.id), paymentInfo);
+      current = 'pending';
+    }
+    rule(
+      canTransitionTo(current, newState),
+      'INVALID_TRANSITION',
+      `Transición inválida de "${current}" a "${newState}".`,
+    );
+    await this.store.updateAttemptState(attempt.id, newState, String(paymentInfo.id), paymentInfo);
+    return newState;
   }
 
   async retryPendingWebhooks(): Promise<{ processed: number; failed: number }> {

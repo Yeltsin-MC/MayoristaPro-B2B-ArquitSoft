@@ -4,6 +4,7 @@ import { IdentityComponent } from './identity';
 import { OrderListComponent } from './order-list';
 import { PagoPruebaComponent } from './pago-prueba';
 import { OrdenCompraComponent } from './orden-compra';
+import { PagoMercadoPagoComponent } from './pago-mercadopago';
 
 /**
  * Las vistas de la cuenta son rutas hijas sin componente: IdentityComponent se
@@ -27,7 +28,9 @@ export const routes: Routes = [
   // Pago simulado (sin credenciales de Mercado Pago) y orden de compra imprimible.
   { path: 'pago-de-prueba/:id', component: PagoPruebaComponent, title: 'Pago de prueba | MayoristaPro B2B' },
   { path: 'orden-de-compra/:id', component: OrdenCompraComponent, title: 'Orden de compra | MayoristaPro B2B' },
-  // Retorno de Mercado Pago (back_urls /payments/success|failure|pending).
+  // Regreso desde Mercado Pago (back_urls): confirma el pago consultándolo a Mercado Pago.
+  { path: 'pago-mercadopago', component: PagoMercadoPagoComponent, title: 'Pago con Mercado Pago | MayoristaPro B2B' },
+  // Retorno de versiones anteriores (back_urls /payments/success|failure|pending).
   { path: 'payments/:result', redirectTo: 'cuenta/pedidos' },
   { path: '**', redirectTo: '' },
 ];
