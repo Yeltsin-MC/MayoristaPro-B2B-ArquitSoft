@@ -17,26 +17,53 @@ La creación de pedidos (`POST /orders`) se mide aparte, en la prueba de concurr
 
 **Umbrales** (por endpoint): p95 < 500 ms y menos de 1 % de errores; más de 99 % de comprobaciones correctas. Si no se cumplen, k6 termina con error.
 
-## Perfiles
+## Tipos de prueba
 
-| Perfil | Usuarios virtuales | Duración | Para qué |
-|---|---|---|---|
-| `humo` | 5 | 1 min | Validar datos y credenciales antes de cargar. |
-| `local` | 50 y luego 200 | ~6,5 min | Laptop de desarrollo. |
-| `completo` | 500, 1000 y 2000 | 23 min | Meta académica. Ejecutar desde otra máquina contra el despliegue en AWS. |
+Las cuatro pruebas formales usan la misma mezcla de lecturas y los **mismos umbrales**: p95 < 500 ms y menos de 1 % de errores, más de 99 % de comprobaciones correctas. La sesión del comprador se prepara antes de empezar a medir.
+
+| Prueba | Comando | Usuarios virtuales | Duración | Aprueba si |
+|---|---|---|---|---|
+| **Smoke** | `npm run test:carga -- smoke` | 1 VU, 5 iteraciones; cada una recorre los 4 endpoints con sesión real | Máximo 30 s | Todos los umbrales con ✓. Si falla, no sigas con las demás. |
+| **Load** | `npm run test:carga -- load` | 10, 25 y 50 VU durante 1 min cada uno; 100 VU durante 10 min; 10 s de transición | ~13,5 min | Todos los niveles con ✓ (es la carga esperada). |
+| **Stress** | `npm run test:carga -- stress` | De 100 en 100 hasta 2000 VU, 60 s por nivel, 10 s de transición | ~23 min | No se espera que pasen todos. El resultado es el **máximo nivel aprobado**: el último nivel con ✓ cuando todos los anteriores también lo tuvieron. |
+| **Spike** | `npm run test:carga -- spike` | 10 VU por 30 s; salto a 1000 VU en 5 s; 30 s de pico; vuelta a 10 VU en 5 s; 60 s de recuperación | ~2 min 10 s | La fase **recuperación** con ✓: el sistema vuelve a la normalidad tras el pico. El pico se informa aparte. |
+| Completo (plan original) | `npm run test:carga -- completo` | Mesetas de 500, 1000 y 2000 VU | 23 min | Todos los umbrales con ✓. |
+
+`humo` y `local` siguen disponibles para comparar con las evidencias anteriores.
+
+**Ajustes opcionales** (PowerShell, antes del comando): `$env:STRESS_MAX="1000"` acorta el stress, `$env:PICO="800"` ajusta el pico del spike (conviene usar el máximo nivel aprobado del stress), `$env:BASE_URL="https://…"` apunta a otro servidor. Para volver a los valores por defecto, cierra y abre la terminal.
+
+En stress, load y spike, cada nivel o fase lleva su propia etiqueta (`nivel` o `fase`), así k6 evalúa los umbrales de cada uno por separado. Las escrituras (reservas, conflictos de stock, idempotencia) no entran en estas pruebas de lectura: se evalúan aparte en la prueba de concurrencia EQ-06.
 
 ## Cómo ejecutarlo (Windows)
 
 1. Instala k6 una vez: `winget install k6 --source winget` (o [otras opciones](https://grafana.com/docs/k6/latest/set-up/install-k6/)). Cierra y abre la terminal.
-2. Levanta la demo en el puerto 3300 (`npm run demo:catalog:api`).
-3. En otra terminal:
+2. Arranca PostgreSQL y levanta la demo en el puerto 3300 (`npm run demo:catalog:api`) en su propia terminal.
+3. Cierra los programas pesados (navegador, editores con IA) para dejar memoria libre.
+4. En otra terminal, en este orden:
 
 ```
-npm run test:carga -- humo
-npm run test:carga -- local
+npm run test:carga -- smoke
+npm run test:carga -- load
+npm run test:carga -- stress
+npm run test:carga -- spike
 ```
 
-El comando lee `DEMO_PASSWORD` de `.env.demo-catalog150` y usa la compradora `demo-comprador150@example.test`. Para otra URL, define `BASE_URL` (por ejemplo, la del despliegue). El resumen queda en `docs/sprint-2/evidencias/k6/resumen-<perfil>.json`; guárdalo como evidencia junto con la salida de la consola.
+Cada comando muestra antes de empezar el tipo de prueba, su objetivo, los usuarios, la duración y los umbrales. Después muestra el progreso de k6, sus `THRESHOLDS` y `TOTAL RESULTS`, y al final una tabla por nivel o fase. `Ctrl + C` una vez detiene la prueba de forma ordenada. Si la RAM de la máquina pasa de 97 %, la prueba se detiene sola y no cuenta como aprobada.
+
+El comando lee `DEMO_PASSWORD` de `.env.demo-catalog150` y usa la compradora `demo-comprador150@example.test`.
+
+### Evidencias
+
+Se guardan por campaña (la fecha del día, o `$env:CAMPANA="nombre"`) en `docs/sprint-2/evidencias/k6/<campaña>/`:
+
+| Archivo | Contenido |
+|---|---|
+| `<prueba>.json` | Resumen exportado por k6: todas las métricas y umbrales. |
+| `<prueba>-niveles.md` | Tabla por nivel o fase: peticiones, RPS, promedio, p50, p95, p99, errores y resultado. En el stress incluye el máximo nivel aprobado. |
+| `<prueba>-recursos.csv` | CPU y RAM de la máquina cada 5 s. En local, ahí corren k6, la API y PostgreSQL. |
+
+Los resúmenes anteriores (`resumen-humo.json`, `resumen-local.json`, `resumen-completo.json`) se conservan como pruebas preliminares.
 
 ## Resultados
 

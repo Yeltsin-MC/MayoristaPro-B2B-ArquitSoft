@@ -13,7 +13,7 @@ calidad» de la guía del Sprint 2.
 | **Jest 30** (unitarias e integración con PostgreSQL, Redis y FastAPI reales) | Reglas de negocio, permisos, concurrencia, idempotencia, caché, arquitectura | `npm run test:coverage` | [cobertura/jest-cobertura-2026-11-25.txt](evidencias/cobertura/jest-cobertura-2026-11-25.txt) (89,96 % de líneas; la del [20/11](evidencias/cobertura/jest-cobertura-2026-11-20.txt) se conserva); en CI, artefacto `cobertura-jest` |
 | **Postman / Newman** | Contrato REST, códigos HTTP, formato de error, flujo B2B completo | `npx newman run postman/MayoristaPro.postman_collection.json ...` ([postman/README.md](../../postman/README.md)) | [postman/ejecucion-local-2026-11-20.txt](evidencias/postman/ejecucion-local-2026-11-20.txt) |
 | **OpenAPI / Swagger UI** | Contrato documentado igual al implementado | `/api-docs` y prueba `tests/openapi.test.cjs` | [apps/api/openapi.yaml](../../apps/api/openapi.yaml) |
-| **k6** | Rendimiento y escalabilidad hasta 2.000 VU | `npm run test:carga -- humo\|local\|completo` ([pruebas-carga-k6.md](pruebas-carga-k6.md)) | [evidencias/k6/](evidencias/k6) |
+| **k6** | Rendimiento y escalabilidad hasta 2.000 VU | `npm run test:carga -- smoke\|load\|stress\|spike` ([pruebas-carga-k6.md](pruebas-carga-k6.md)) | [evidencias/k6/](evidencias/k6) |
 | **Playwright** | Recorridos E2E en navegador | `npm run test:browser` | artefacto `evidencia-demo` del CI |
 | **GitHub Actions** | Todo lo anterior (salvo k6) ante cada push y PR | `.github/workflows/ci.yml` | pestaña Actions |
 
