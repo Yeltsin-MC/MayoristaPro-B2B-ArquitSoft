@@ -4907,3 +4907,48 @@ button.danger:hover {
 .delivery-summary p {
   margin: 0;
 }
+
+/* Logo de la cabecera: misma respuesta al mouse que «Mi cuenta» y las notificaciones. */
+.site-header .brand {
+  padding: 4px 10px 4px 4px;
+  margin-left: -4px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+.site-header .brand .brand-mark {
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.site-header .brand:hover {
+  background: var(--brand-soft);
+  border-color: var(--border);
+  box-shadow: 0 2px 8px rgba(29, 78, 216, 0.1);
+  transform: translateY(-1px);
+}
+.site-header .brand:hover .brand-mark {
+  transform: translateY(-1px) rotate(-4deg);
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
+}
+.site-header .brand:active {
+  transform: translateY(0) scale(0.98);
+}
+.site-header .brand:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header .brand,
+  .site-header .brand .brand-mark {
+    transition: none;
+  }
+  .site-header .brand:hover,
+  .site-header .brand:hover .brand-mark {
+    transform: none;
+  }
+}

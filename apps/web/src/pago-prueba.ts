@@ -26,7 +26,7 @@ interface Checkout {
   selector: 'app-pago-prueba',
   imports: [FormsModule, RouterLink],
   template: `<section class="sim-checkout" aria-labelledby="sim-title">
-    <p class="sim-banner" role="note"><span aria-hidden="true">🧪</span> Modo demostración: no se cobra dinero real.</p>
+    <p class="sim-banner" role="note"><span aria-hidden="true">🧪</span> Pago de prueba: no se cobra dinero real.</p>
     @if (checkout(); as c) {
       <div class="sim-head">
         <div>

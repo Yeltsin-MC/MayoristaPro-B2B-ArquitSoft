@@ -153,7 +153,7 @@ export function offerDraft(body: any): OfferDraft {
   rule(
     body?.moneda === 'PEN' && body.precioIncluyeIgv === true,
     'INVALID_INPUT',
-    'Demo: PEN y precios con IGV incluido.',
+    'Solo se aceptan soles (PEN) con IGV incluido.',
   );
   const costoEnvio = amount(money(body.costoEnvio, true)),
     diasEntrega = positive(body.diasEntrega, 'Plazo');

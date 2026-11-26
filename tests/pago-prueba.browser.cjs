@@ -22,7 +22,7 @@ test('Pago de prueba: Yape y PagoEfectivo pagan el pedido y la orden de compra d
    const order=await pendingOrder();const page=await buyerPage(order.id);
    await page.getByRole('button',{name:'Pagar S/ '+order.total,exact:true}).click();
    await expect(page).toHaveURL(/\/pago-de-prueba\//);
-   await expect(page.getByText('Modo demostración: no se cobra dinero real.')).toBeVisible();
+   await expect(page.getByText('Pago de prueba: no se cobra dinero real.')).toBeVisible();
    await expect(page.locator('.sim-amount')).toHaveText('S/ '+order.total);
    await page.getByRole('radio',{name:/Yape/}).click();
    await page.getByRole('button',{name:'Yapear S/ '+order.total,exact:true}).click();
