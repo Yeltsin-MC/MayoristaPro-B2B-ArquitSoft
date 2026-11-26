@@ -10,6 +10,7 @@ import {
   offerLines,
   OfferDraft,
   priceTotal,
+  DeliveryDraft,
   RequestDraft,
   reservationQuantities,
   rule,
@@ -77,6 +78,22 @@ export class PostgresTrade implements TradeStore {
     if (!buyer && !recipient) throw new NotFoundException();
     return { ...q, isBuyer: buyer };
   }
+  /** Dirección registrada de una empresa (negocio del comprador o almacén del proveedor). */
+  private async place(db: PoolClient, companyId: string): Promise<Place | null> {
+    return (
+      (
+        await db.query(
+          `SELECT address,district,province,department,address_reference AS reference,contact_name AS contact,contact_phone AS phone
+             FROM companies WHERE id=$1`,
+          [companyId],
+        )
+      ).rows[0] ?? null
+    );
+  }
+  private async supplierPlace(db: PoolClient, supplierId: string): Promise<Place | null> {
+    const company = (await db.query('SELECT id FROM companies WHERE supplier_id=$1', [supplierId])).rows[0];
+    return company ? this.place(db, company.id) : null;
+  }
   private async details(db: PoolClient, id: string, actor: Actor) {
     const q = await this.request(db, id, actor);
     const items = (
@@ -127,10 +144,14 @@ export class PostgresTrade implements TradeStore {
     const orderId = q.isBuyer
       ? ((await db.query('SELECT id FROM trade_orders WHERE request_id=$1', [q.id])).rows[0]?.id ?? null)
       : null;
+    // El proveedor ve desde dónde despacha (su almacén) para calcular envío y plazo.
+    const origin = q.isBuyer ? null : publicPlace(await this.supplierPlace(db, actor.supplierId));
     return {
       id: q.id,
       buyerName: q.buyer_name,
       isBuyer: q.isBuyer,
+      delivery: q.delivery ?? null,
+      origin,
       status: q.accepted_offer_id ? 'aceptada' : 'abierta',
       acceptedOfferId,
       orderId,
@@ -202,11 +223,13 @@ export class PostgresTrade implements TradeStore {
       'INVALID_INPUT',
       'Selecciona proveedores verificados de otras empresas.',
     );
+    // Sin «entrega» explícita se copia la dirección registrada del comprador (envío a su negocio).
+    const delivery = input.entrega ?? deliveryFromCompany(await this.place(db, actor.companyId));
     const id = (
-      await db.query('INSERT INTO quotation_requests(buyer_company_id,actor_id) VALUES($1,$2) RETURNING id', [
-        actor.companyId,
-        actor.accountId,
-      ])
+      await db.query(
+        'INSERT INTO quotation_requests(buyer_company_id,actor_id,delivery) VALUES($1,$2,$3) RETURNING id',
+        [actor.companyId, actor.accountId, delivery],
+      )
     ).rows[0].id;
     for (const i of input.items)
       await db.query(
@@ -357,6 +380,8 @@ export class PostgresTrade implements TradeStore {
         [id],
       )
     ).rows;
+    const request = (await db.query('SELECT delivery FROM quotation_requests WHERE id=$1', [o.request_id])).rows[0];
+    const warehouse = await this.supplierPlace(db, o.supplier_id);
     // Datos de las partes para la orden de compra (razón social y RUC).
     const parties = (
       await db.query(
@@ -380,6 +405,10 @@ export class PostgresTrade implements TradeStore {
       createdAt: o.created_at,
       buyer: { legalName: parties?.buyerName ?? '', ruc: parties?.buyerRuc ?? '' },
       supplier: { legalName: parties?.supplierName ?? '', ruc: parties?.supplierRuc ?? '' },
+      delivery: request?.delivery ?? null,
+      // Desde dónde despacha el proveedor; la dirección completa solo hace falta si el comprador recoge.
+      origin: publicPlace(warehouse),
+      ...(request?.delivery?.modalidad === 'recojo' ? { pickup: warehouse } : {}),
       isBuyer: a.canBuy && o.buyer_company_id === a.companyId,
       isSupplier: a.canSell && o.supplier_id === a.supplierId,
       items,
@@ -563,4 +592,31 @@ export class PostgresTrade implements TradeStore {
       return { unread: 0 };
     });
   }
+}
+
+interface Place {
+  address: string | null;
+  district: string | null;
+  province: string | null;
+  department: string | null;
+  reference: string | null;
+  contact: string | null;
+  phone: string | null;
+}
+/** Solo la ciudad (provincia y departamento): suficiente para saber si el envío es interprovincial. */
+function publicPlace(place: Place | null) {
+  return place?.province ? { province: place.province, department: place.department } : null;
+}
+function deliveryFromCompany(place: Place | null): DeliveryDraft | null {
+  if (!place?.address || !place.district || !place.province || !place.department) return null;
+  return {
+    modalidad: 'envio',
+    direccion: place.address,
+    distrito: place.district,
+    provincia: place.province,
+    departamento: place.department,
+    ...(place.reference ? { referencia: place.reference } : {}),
+    ...(place.contact ? { contacto: place.contact } : {}),
+    ...(place.phone ? { telefono: place.phone } : {}),
+  };
 }

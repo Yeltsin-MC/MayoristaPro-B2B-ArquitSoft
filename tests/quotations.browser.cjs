@@ -89,5 +89,34 @@ test('T4 navegador: solicitud, ofertas privadas, aceptación y pedido pendiente'
    }
    assert.deepEqual(errors,[]);
   });
+  await t.test('entrega en Ayacucho: el comprador elige cómo recibe y el proveedor de Lima ve el envío interprovincial',async()=>{
+   await f.db.query(`UPDATE companies SET address='Jr. Ficticio 123',district='San Juan Bautista',province='Huamanga',department='Ayacucho' WHERE id=$1`,[f.accounts.buyer.company]);
+   await f.db.query(`UPDATE companies SET address='Av. Ficticia 456',district='Ate',province='Lima',department='Lima' WHERE id=$1`,[f.accounts.vendor.company]);
+   const buyer=await login('buyer');await buyer.getByRole('button',{name:'Nueva solicitud',exact:true}).click();
+   await buyer.getByRole('checkbox',{name:'vendor',exact:true}).check();
+   await buyer.getByLabel('Descripción',{exact:true}).fill('Cuadernos para Huamanga');
+   // Se propone la dirección registrada del negocio, en una línea que se puede cambiar.
+   await expect(buyer.locator('.delivery-summary')).toContainText('Jr. Ficticio 123, San Juan Bautista, Huamanga (Ayacucho)');
+   await buyer.getByRole('button',{name:'Cambiar lugar de entrega',exact:true}).click();
+   await expect(buyer.getByRole('radio',{name:/Envío a mi negocio/})).toBeChecked();
+   await expect(buyer.getByLabel('Distrito',{exact:true})).toHaveValue('San Juan Bautista');
+   await buyer.getByLabel('Referencia (opcional)',{exact:true}).fill('Puerta verde');
+   const requested=buyer.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1/quotations');
+   await buyer.getByRole('button',{name:'Enviar solicitud',exact:true}).click();const q=await(await requested).json();
+   assert.equal(q.delivery.referencia,'Puerta verde');
+   const seller=await login('vendor');await open(seller,q.id);
+   await expect(seller.locator('.selected-request .delivery-line')).toContainText('Jr. Ficticio 123, San Juan Bautista, Huamanga (Ayacucho)');
+   await expect(seller.getByRole('note').filter({hasText:'Envío interprovincial'})).toContainText('desde Lima a Huamanga');
+   // Recojo en almacén: sin dirección y sin aviso interprovincial.
+   await buyer.getByRole('button',{name:'Nueva solicitud',exact:true}).click();
+   await buyer.getByRole('checkbox',{name:'vendor',exact:true}).check();
+   await buyer.getByLabel('Descripción',{exact:true}).fill('Recojo en almacén');
+   await buyer.getByRole('button',{name:'Cambiar lugar de entrega',exact:true}).click();
+   await buyer.getByText('Recojo en almacén',{exact:true}).click();
+   await expect(buyer.getByLabel('Distrito',{exact:true})).toHaveCount(0);
+   const second=buyer.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1/quotations');
+   await buyer.getByRole('button',{name:'Enviar solicitud',exact:true}).click();assert.deepEqual((await(await second).json()).delivery,{modalidad:'recojo'});
+   assert.deepEqual(errors,[]);
+  });
  }finally{if(browser)await browser.close();await f.close();}
 });

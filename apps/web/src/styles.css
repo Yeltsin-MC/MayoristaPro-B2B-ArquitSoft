@@ -4785,3 +4785,125 @@ button.danger:hover {
     padding: 0;
   }
 }
+
+/* Direcciones y entrega (compradores de Ayacucho, proveedores de Lima o Ayacucho) */
+.address-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 16px;
+}
+.address-fields label {
+  display: grid;
+  gap: 4px;
+}
+.address-fields .address-wide {
+  grid-column: 1 / -1;
+}
+.company-address summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.company-address summary small {
+  font-weight: 400;
+  margin-left: 4px;
+}
+.company-address form {
+  display: grid;
+  gap: 14px;
+}
+.company-address form > button {
+  justify-self: start;
+}
+.tag-warn {
+  background: #fff4e0;
+  color: #8a5a00;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+}
+.delivery-choice {
+  display: grid;
+  gap: 12px;
+}
+.delivery-modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+.delivery-mode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 8px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.delivery-mode {
+  position: relative;
+}
+.delivery-mode input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.delivery-mode small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+.delivery-mode.is-selected {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.delivery-mode:has(input:focus-visible) {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+.delivery-line {
+  margin: 10px 0 0;
+}
+.delivery-notice {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff4e0;
+  color: #6b4500;
+}
+.ships-from {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.po-delivery {
+  margin: 0 0 18px;
+}
+.po-delivery h3 {
+  margin: 0 0 4px;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.po-delivery p {
+  margin: 2px 0;
+}
+.delivery-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.delivery-summary p {
+  margin: 0;
+}

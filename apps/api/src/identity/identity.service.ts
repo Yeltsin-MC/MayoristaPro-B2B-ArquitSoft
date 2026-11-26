@@ -182,7 +182,9 @@ export class IdentityService {
     return this.tx(async db => {
       const actor = await this.actor(db, auth);
       const company = await db.query(
-        'SELECT c.id,c.ruc,c.legal_name,c.review_label,c.supplier_id,s.verified AS supplier_verified FROM companies c JOIN suppliers s ON s.id=c.supplier_id WHERE c.id=$1',
+        `SELECT c.id,c.ruc,c.legal_name,c.review_label,c.supplier_id,s.verified AS supplier_verified,
+           c.address,c.district,c.province,c.department,c.address_reference,c.contact_name,c.contact_phone
+         FROM companies c JOIN suppliers s ON s.id=c.supplier_id WHERE c.id=$1`,
         [actor.company_id],
       );
       return {
@@ -228,6 +230,49 @@ export class IdentityService {
         await this.audit(db, actor, 'approve-enrollment', id);
       }
       return { companyId: request.company_id, reviewLabel: 'revisado manualmente' };
+    });
+  }
+  /**
+   * Dirección de la empresa: negocio del comprador (dónde recibe) o almacén del proveedor (desde dónde
+   * despacha). Solo quien administra la empresa la cambia; las cotizaciones ya enviadas guardan su copia.
+   */
+  async updateAddress(body: any, auth?: string) {
+    const field = (value: unknown, label: string, max: number, required = true) => {
+      if (value === undefined || value === null || (typeof value === 'string' && !value.trim())) {
+        if (required) throw new BadRequestException(label + ' es obligatorio.');
+        return null;
+      }
+      if (typeof value !== 'string' || value.length > max || value.includes('\0'))
+        throw new BadRequestException(label + ' inválido (máximo ' + max + ' caracteres).');
+      return value.trim();
+    };
+    const values = [
+      field(body?.direccion, 'Dirección', 200),
+      field(body?.distrito, 'Distrito', 60),
+      field(body?.provincia, 'Provincia', 60),
+      field(body?.departamento, 'Departamento', 60),
+      field(body?.referencia, 'Referencia', 200, false),
+      field(body?.contacto, 'Contacto', 100, false),
+      field(body?.telefono, 'Teléfono', 15, false),
+    ];
+    if (values[6] && !/^\+?[0-9 ]{6,15}$/.test(values[6])) throw new BadRequestException('Teléfono inválido.');
+    return this.tx(async db => {
+      const actor = await this.actor(db, auth);
+      if (!actor.permissions.includes('manage')) throw new ForbiddenException('Requiere permiso de administración.');
+      await db.query(
+        `UPDATE companies SET address=$2,district=$3,province=$4,department=$5,address_reference=$6,contact_name=$7,contact_phone=$8
+         WHERE id=$1`,
+        [actor.company_id, ...values],
+      );
+      return {
+        address: values[0],
+        district: values[1],
+        province: values[2],
+        department: values[3],
+        address_reference: values[4],
+        contact_name: values[5],
+        contact_phone: values[6],
+      };
     });
   }
   async invite(body: any, auth?: string) {

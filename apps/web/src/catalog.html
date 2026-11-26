@@ -235,6 +235,11 @@
                 </button>
                 <div class="product-content">
                   <p class="supplier"><span class="verified" aria-hidden="true">✔</span> {{ product.supplier }}</p>
+                  @if (product.supplierCity) {
+                    <p class="ships-from">
+                      <span aria-hidden="true">📍</span> Despacha desde {{ product.supplierCity }}
+                    </p>
+                  }
                   <h3>
                     <button type="button" class="product-name" (click)="showProduct(product, productDialog)">
                       {{ product.name }}
@@ -454,6 +459,9 @@
           <p class="eyebrow">{{ product.category }}</p>
           <h2 id="product-detail-title">{{ product.name }}</h2>
           <p class="supplier">{{ product.supplier }}</p>
+          @if (product.supplierCity) {
+            <p class="ships-from"><span aria-hidden="true">📍</span> Despacha desde {{ product.supplierCity }}</p>
+          }
           @if (product.description) {
             <p class="detail-description">{{ product.description }}</p>
           }

@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from './session.service';
+import { lugar } from './ubicaciones';
 
 const IGV = 0.18;
 
@@ -61,6 +62,31 @@ function soles(value: number): string {
             <p>Estado: {{ stateLabel(o.state) }}</p>
           </section>
         </div>
+        <section class="po-delivery">
+          <h3>Lugar de entrega</h3>
+          @if (o.delivery; as d) {
+            @if (d.modalidad === 'recojo') {
+              <p><strong>Recojo en almacén del proveedor</strong>{{ o.pickup ? ': ' + place(o.pickup) : '' }}</p>
+            } @else {
+              <p>
+                <strong>{{
+                  d.modalidad === 'agencia' ? 'Agencia ' + d.agencia : 'Envío al negocio del comprador'
+                }}</strong>
+              </p>
+              <p>{{ lugar(d) }}</p>
+              @if (d.referencia || d.contacto || d.telefono) {
+                <p>
+                  {{ contactLine(d) }}
+                </p>
+              }
+            }
+            @if (o.origin?.province) {
+              <p class="muted">Despacha desde {{ o.origin.province }} ({{ o.origin.department }})</p>
+            }
+          } @else {
+            <p>Por coordinar entre comprador y proveedor.</p>
+          }
+        </section>
         <table class="po-table">
           <thead>
             <tr>
@@ -161,6 +187,13 @@ export class OrdenCompraComponent {
     }
   }
 
+  readonly lugar = lugar;
+  contactLine(d: any): string {
+    return [d.referencia ? 'Ref.: ' + d.referencia : '', d.contacto, d.telefono].filter(Boolean).join(' · ');
+  }
+  place(p: any): string {
+    return lugar({ direccion: p.address, distrito: p.district, provincia: p.province, departamento: p.department });
+  }
   money(value: unknown): string {
     return soles(cents(value));
   }

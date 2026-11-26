@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CatalogImportComponent } from './catalog-import';
 import { TradeComponent } from './trade';
 import { SessionService } from './session.service';
+import { Direccion, DireccionComponent, lugar } from './ubicaciones';
 
 /** Vista de la cuenta indicada por la URL (/cuenta/cotizaciones/:id, /cuenta/pedidos…). */
 interface AccountTarget {
@@ -21,7 +22,7 @@ function accountTarget(url: string): AccountTarget {
 }
 @Component({
   selector: 'app-identity',
-  imports: [DatePipe, FormsModule, CatalogImportComponent, TradeComponent],
+  imports: [DatePipe, FormsModule, CatalogImportComponent, TradeComponent, DireccionComponent],
   template: ` <section aria-label="Cuenta empresarial" class="identity">
     <div class="account-heading">
       <div>
@@ -193,6 +194,30 @@ function accountTarget(url: string): AccountTarget {
             }
           </div>
         </div>
+        @if (permissions().includes('manage')) {
+          <details class="company-address account-panel" [open]="!company().district">
+            <summary>
+              <span aria-hidden="true">📍</span>
+              {{ permissions().includes('publish') ? 'Dirección del almacén' : 'Dirección de tu negocio' }}
+              @if (company().district) {
+                <small class="muted">· {{ placeLine(company()) }}</small>
+              } @else {
+                <small class="tag-warn">Falta completar</small>
+              }
+            </summary>
+            <p class="muted">
+              {{
+                permissions().includes('publish')
+                  ? 'Desde aquí despachas tus pedidos. Los compradores verán «Despacha desde» tu provincia.'
+                  : 'Es el lugar de entrega que se propone al pedir una cotización. Puedes cambiarlo en cada pedido.'
+              }}
+            </p>
+            <form (ngSubmit)="saveAddress()">
+              <app-direccion [value]="address" prefix="empresa" />
+              <button [disabled]="busy()">Guardar dirección</button>
+            </form>
+          </details>
+        }
         @if (permissions().includes('buy') || (permissions().includes('publish') && company().supplier_verified)) {
           <app-trade
             [token]="token()"
@@ -559,6 +584,13 @@ export class IdentityComponent {
       if (!selection || this.restoring()) return;
       untracked(() => this.explainSelection(selection.product));
     });
+    // Formulario de dirección: se llena con la empresa de la sesión (también al recargar).
+    effect(() => {
+      const id = this.company()?.id;
+      untracked(() => {
+        if (id && this.address.direccion === undefined) this.fillAddress(this.company());
+      });
+    });
     // «Mis productos» también se carga al recuperar la sesión tras recargar la página.
     effect(() => {
       if (this.restoring() || !this.token() || !this.company()?.supplier_verified) return;
@@ -705,9 +737,34 @@ export class IdentityComponent {
     // El panel de administración lo carga el efecto del constructor al detectar la sesión de admin.
     if (!this.admin()) await this.loadAccount();
   }
+  /** Copia editable de la dirección de la empresa (nombres de campo de la API). */
+  address: Direccion = {};
+  placeLine(c: any): string {
+    return lugar({ direccion: c?.address, distrito: c?.district, provincia: c?.province, departamento: c?.department });
+  }
+  private fillAddress(c: any) {
+    this.address = {
+      direccion: c?.address ?? '',
+      distrito: c?.district ?? '',
+      provincia: c?.province ?? '',
+      departamento: c?.department ?? 'Ayacucho',
+      referencia: c?.address_reference ?? '',
+      contacto: c?.contact_name ?? '',
+      telefono: c?.contact_phone ?? '',
+    };
+  }
+  async saveAddress() {
+    const result = await this.call('company/address', 'PUT', this.address);
+    if (result) {
+      this.company.update(c => (c ? { ...c, ...result } : c));
+      this.message.set('Dirección guardada.');
+    }
+  }
   async loadAccount() {
     const result = await this.call('auth/me');
     this.company.set(result?.company ?? null);
+    this.address = {};
+    if (result?.company) this.fillAddress(result.company);
     this.permissions.set(result?.permissions ?? []);
     await this.loadOwnProducts();
   }

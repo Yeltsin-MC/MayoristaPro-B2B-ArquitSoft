@@ -3,6 +3,8 @@ import { Component, effect, input, output, signal, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { CatalogProduct } from './catalog-product';
 import { OrderListService } from './order-list.service';
+import { SessionService } from './session.service';
+import { Direccion, DireccionComponent, interprovincial, lugar } from './ubicaciones';
 import {
   minimumQuantity,
   packDescription,
@@ -20,7 +22,7 @@ interface RequestItem {
 }
 @Component({
   selector: 'app-trade',
-  imports: [FormsModule],
+  imports: [FormsModule, DireccionComponent],
   template: ` <section id="cotizaciones" class="trade" aria-label="Cotizaciones y pedidos">
     <div class="workspace-heading">
       <h3>Cotizaciones y pedidos</h3>
@@ -183,6 +185,59 @@ interface RequestItem {
             }
           </fieldset>
         }
+        @if (!editingDelivery()) {
+          <div class="delivery-summary">
+            <p>
+              <span aria-hidden="true">{{ modeIcon(deliveryMode) }}</span>
+              <strong>Entrega:</strong> {{ deliveryLine(deliveryBody()) }}
+            </p>
+            <button class="text-button" type="button" (click)="editingDelivery.set(true)">
+              Cambiar lugar de entrega
+            </button>
+          </div>
+        } @else {
+          <fieldset class="delivery-choice">
+            <legend>¿Cómo recibes el pedido?</legend>
+            <div class="delivery-modes" role="radiogroup" aria-label="Modalidad de entrega">
+              @for (m of deliveryModes; track m.id) {
+                <label class="delivery-mode" [class.is-selected]="deliveryMode === m.id"
+                  ><input type="radio" name="modalidad" [value]="m.id" [(ngModel)]="deliveryMode" />
+                  <span aria-hidden="true">{{ m.icon }}</span>
+                  <strong>{{ m.label }}</strong>
+                  <small>{{ m.hint }}</small></label
+                >
+              }
+            </div>
+            @if (deliveryMode === 'envio') {
+              <app-direccion [value]="deliveryPlace" prefix="entrega" />
+              <p class="muted">
+                {{
+                  hasCompanyAddress()
+                    ? 'Se propone la dirección de tu empresa; si la cambias aquí, solo vale para este pedido.'
+                    : 'Consejo: guarda la dirección de tu negocio en «Dirección de tu negocio» para no escribirla cada vez.'
+                }}
+              </p>
+            } @else if (deliveryMode === 'agencia') {
+              <label
+                >Agencia de transporte
+                <input
+                  name="agencia"
+                  required
+                  maxlength="100"
+                  list="agencias-ayacucho"
+                  placeholder="Ej.: Terminal terrestre de Ayacucho"
+                  [(ngModel)]="deliveryAgency" />
+                <datalist id="agencias-ayacucho">
+                  @for (a of agencies; track a) {
+                    <option [value]="a"></option>
+                  }</datalist
+              ></label>
+              <app-direccion [value]="deliveryPlace" prefix="agencia" [requireStreet]="false" [showContact]="false" />
+            } @else {
+              <p class="muted">Recoges en el almacén del proveedor; el envío debería salir en S/ 0.00.</p>
+            }
+          </fieldset>
+        }
         <button [disabled]="busy() || supplierIds.length === 0 || invalidQuantities()">Enviar solicitud</button>
         @if (sourceProduct(items[0])) {
           <button
@@ -288,6 +343,20 @@ interface RequestItem {
               <p class="item-line">
                 {{ i.description }} · {{ i.unit }} de {{ i.unitsPerPack }} · cantidad {{ i.quantity }}
               </p>
+            }
+            @if (q.delivery; as d) {
+              <p class="delivery-line">
+                <span aria-hidden="true">{{ modeIcon(d.modalidad) }}</span>
+                <strong>{{ q.isBuyer ? 'Entrega:' : 'Entregar en:' }}</strong> {{ deliveryLine(d) }}
+              </p>
+              @if (!q.isBuyer && isInterprovincial(q.origin, d)) {
+                <p class="delivery-notice" role="note">
+                  <span aria-hidden="true">🛣️</span> Envío interprovincial: despachas desde {{ q.origin.province }} a
+                  {{ d.provincia }}. Considera el flete y los días de viaje en tu oferta.
+                </p>
+              }
+            } @else {
+              <p class="muted">Entrega por coordinar con el comprador.</p>
             }
           </div>
           @if (!q.isBuyer && q.status === 'abierta' && q.offers.length === 0 && canSell()) {
@@ -561,6 +630,15 @@ interface RequestItem {
                 {{ i.snapshot.name }} · {{ i.quantity }} {{ i.snapshot.unit }} de {{ i.snapshot.unitsPerPack }}
               </p>
             }
+            @if (o.delivery; as d) {
+              <p class="delivery-line">
+                <span aria-hidden="true">{{ modeIcon(d.modalidad) }}</span>
+                <strong>Entrega:</strong> {{ deliveryLine(d) }}
+              </p>
+              @if (d.modalidad === 'recojo' && o.pickup) {
+                <p class="muted">Recojo en: {{ pickupLine(o.pickup) }}</p>
+              }
+            }
             <details class="more-details">
               <summary>Ver más</summary>
               @for (i of o.items; track $index) {
@@ -698,6 +776,24 @@ export class TradeComponent {
   private keys = new Map<string, string>();
   private readonly router = inject(Router);
   private readonly orderList = inject(OrderListService);
+  private readonly session = inject(SessionService);
+  readonly deliveryModes = [
+    { id: 'envio', icon: '🚚', label: 'Envío a mi negocio', hint: 'El proveedor lo lleva a tu dirección' },
+    { id: 'recojo', icon: '🏬', label: 'Recojo en almacén', hint: 'Lo recoges en el almacén del proveedor' },
+    { id: 'agencia', icon: '📦', label: 'Recojo en agencia', hint: 'Llega por agencia de transporte' },
+  ];
+  /** Agencias de carga habituales en la ruta Lima - Ayacucho (solo sugerencias; se puede escribir otra). */
+  readonly agencies = [
+    'Terminal terrestre de Ayacucho',
+    'Agencia de carga en Huamanga',
+    'Agencia de carga en Huanta',
+    'Agencia de carga en San Francisco (VRAEM)',
+  ];
+  deliveryMode = 'envio';
+  deliveryPlace: Direccion = {};
+  deliveryAgency = '';
+  /** El lugar de entrega se muestra en una línea; «Cambiar» abre las opciones. */
+  editingDelivery = signal(false);
   constructor() {
     effect(() => {
       this.token();
@@ -922,7 +1018,69 @@ export class TradeComponent {
     this.message.set('');
     document.getElementById('cotizaciones')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+  /** Prepara la entrega con la dirección registrada de la empresa compradora. */
+  private resetDelivery() {
+    const c = this.session.company();
+    this.deliveryPlace = {
+      direccion: c?.address ?? '',
+      distrito: c?.district ?? '',
+      provincia: c?.province ?? '',
+      departamento: c?.department ?? 'Ayacucho',
+      referencia: c?.address_reference ?? '',
+      contacto: c?.contact_name ?? '',
+      telefono: c?.contact_phone ?? '',
+    };
+    // Sin dirección registrada se propone el recojo; el comprador puede elegir envío y escribirla.
+    this.deliveryMode = c?.district ? 'envio' : 'recojo';
+    this.deliveryAgency = '';
+    this.editingDelivery.set(false);
+  }
+  /** Lo que se envía a la API como «entrega»: sin campos vacíos. */
+  deliveryBody(): Record<string, string> {
+    if (this.deliveryMode === 'recojo') return { modalidad: 'recojo' };
+    const place: Record<string, string | undefined> = { ...this.deliveryPlace };
+    if (this.deliveryMode === 'agencia') {
+      place['agencia'] = this.deliveryAgency;
+      delete place['referencia'];
+      delete place['contacto'];
+      delete place['telefono'];
+    }
+    const body: Record<string, string> = { modalidad: this.deliveryMode };
+    for (const [key, value] of Object.entries(place)) if (value?.trim()) body[key] = value.trim();
+    return body;
+  }
+  hasCompanyAddress(): boolean {
+    return !!this.session.company()?.district;
+  }
+  /** Falta algún dato obligatorio para la modalidad elegida. */
+  deliveryIssue(): string {
+    const d = this.deliveryBody();
+    if (d['modalidad'] === 'recojo') return '';
+    const missing = [
+      ...(d['modalidad'] === 'envio' && !d['direccion'] ? ['dirección'] : []),
+      ...(d['modalidad'] === 'agencia' && !d['agencia'] ? ['agencia de transporte'] : []),
+      ...['distrito', 'provincia', 'departamento'].filter(key => !d[key]),
+    ];
+    return missing.length ? 'Completa el lugar de entrega: ' + missing.join(', ') + '.' : '';
+  }
+  modeIcon(mode: string): string {
+    return mode === 'recojo' ? '🏬' : mode === 'agencia' ? '📦' : '🚚';
+  }
+  deliveryLine(d: any): string {
+    if (d.modalidad === 'recojo') return 'Recojo en el almacén del proveedor';
+    const where = lugar(d);
+    const extra = [d.referencia ? 'Ref.: ' + d.referencia : '', d.contacto, d.telefono].filter(Boolean).join(' · ');
+    if (d.modalidad === 'agencia') return 'Agencia ' + d.agencia + ' · ' + where;
+    return where + (extra ? ' · ' + extra : '');
+  }
+  pickupLine(p: any): string {
+    return lugar({ direccion: p.address, distrito: p.district, provincia: p.province, departamento: p.department });
+  }
+  isInterprovincial(origin: any, delivery: any): boolean {
+    return interprovincial(origin, delivery);
+  }
   newRequest() {
+    this.resetDelivery();
     this.catalogItems = new Map();
     this.items = [{ descripcion: '', presentacion: 'caja', unidadesPorPresentacion: 12, cantidad: 2 }];
     this.supplierIds = [];
@@ -1001,12 +1159,16 @@ export class TradeComponent {
     this.items.push({ descripcion: '', presentacion: 'caja', unidadesPorPresentacion: 12, cantidad: 2 });
   }
   async create() {
-    const issue = this.items.map(item => this.quantityIssue(item)).find(Boolean);
+    const issue = this.items.map(item => this.quantityIssue(item)).find(Boolean) || this.deliveryIssue();
     if (issue) {
       this.message.set(issue);
       return;
     }
-    const q = await this.call('quotations', 'POST', { proveedorIds: this.supplierIds, items: this.items });
+    const q = await this.call('quotations', 'POST', {
+      proveedorIds: this.supplierIds,
+      items: this.items,
+      entrega: this.deliveryBody(),
+    });
     if (q) {
       // Lo que se cotizó desde la lista de pedido sale de la lista.
       for (const product of this.catalogItems.values()) this.orderList.remove(product.id);
@@ -1028,6 +1190,7 @@ export class TradeComponent {
       this.currentOrder.set(null);
       this.creating.set(false);
       this.expiresAt = this.future();
+      if (q.delivery?.modalidad === 'recojo') this.shipping = '0.00';
       this.scoredOffers.set([]);
       this.sortByScore = false;
       this.responseItems = q.items.map((i: any) => {
