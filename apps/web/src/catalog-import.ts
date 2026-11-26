@@ -190,12 +190,12 @@ interface Preview {
         vertical-align: top;
       }
       th {
-        background: #edf2f7;
+        background: var(--surface-2, #edf2f7);
         position: sticky;
         top: 0;
       }
       .invalid {
-        background: #fff1f0;
+        background: var(--danger-soft, #fff1f0);
       }
       td p {
         margin: 0 0 0.5rem;

@@ -18,6 +18,16 @@
       <button type="submit">Buscar <span aria-hidden="true">→</span></button>
     </form>
     <div class="header-actions">
+      <button
+        type="button"
+        class="theme-toggle"
+        (click)="toggleTheme()"
+        [attr.aria-pressed]="dark()"
+        [attr.aria-label]="dark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        [title]="dark() ? 'Modo claro' : 'Modo oscuro (descansa la vista)'"
+      >
+        <span aria-hidden="true">{{ dark() ? '☀️' : '🌙' }}</span>
+      </button>
       <a class="account-link" routerLink="/cuenta" routerLinkActive="active">
         @if (session.token() && companyInitials()) {
           <span class="action-avatar" aria-hidden="true">{{ companyInitials() }}</span>
