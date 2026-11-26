@@ -695,6 +695,11 @@ interface RequestItem {
               </p>
               <button type="button" [disabled]="busy()" (click)="startPayment(o.id)">Pagar S/ {{ o.total }}</button>
               <p class="muted">Tarjeta, Yape o PagoEfectivo.</p>
+              @if (mercadoPagoAttempt(); as a) {
+                <button type="button" class="secondary" (click)="verifyPayment(a.id)">
+                  Ya pagué en Mercado Pago: verificar
+                </button>
+              }
             }
             @if (o.state === 'pendiente' && !o.isBuyer) {
               <p class="muted">Esperando el pago del comprador. Vence: {{ expiresIn(o.expiresAt) }}.</p>
@@ -1319,6 +1324,18 @@ export class TradeComponent {
       this.message.set('Redirigiendo a Mercado Pago...');
       window.location.href = url;
     }
+  }
+  /** Último intento con checkout real de Mercado Pago (no el pago de prueba simulado). */
+  mercadoPagoAttempt() {
+    return (
+      [...this.paymentAttempts()]
+        .filter(a => (a.state === 'created' || a.state === 'pending') && /^https?:/.test(a.mp_preference_response?.init_point ?? ''))
+        .sort((x, y) => String(y.created_at).localeCompare(String(x.created_at)))[0] ?? null
+    );
+  }
+  /** Consulta el pago en Mercado Pago aunque el comprador no haya vuelto con «Volver al sitio». */
+  verifyPayment(attemptId: string) {
+    void this.router.navigate(['/pago-mercadopago'], { queryParams: { external_reference: attemptId } });
   }
   openPurchaseOrder(orderId: string) {
     void this.router.navigateByUrl('/orden-de-compra/' + orderId);

@@ -902,7 +902,7 @@ paths:
         (`external_reference` = intento y `payment_id`). La API consulta el pago a Mercado Pago, valida
         referencia, moneda, monto y empresa, y aplica el mismo cambio de estado que el webhook. Sirve en
         localhost, donde Mercado Pago no puede enviar webhooks, y como respaldo en el despliegue HTTPS.
-        Con `paymentId` vacío o «null» (el comprador volvió sin pagar) solo devuelve el estado actual.
+        Sin `paymentId` (o «null») busca en Mercado Pago el último pago del intento por external_reference; si no hay pago, solo devuelve el estado actual.
       security: [{ bearer: [] }]
       requestBody:
         required: true

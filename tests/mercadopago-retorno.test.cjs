@@ -60,6 +60,18 @@ test('Mercado Pago: confirmación al volver del checkout', async t => {
     assert.equal((await sinPago.payments.confirmReturn({ attemptId: ATTEMPT, paymentId: 'null' }, 'empresa-1')).state, 'created');
     assert.deepEqual(sinPago.transitions, []);
   });
+  await t.test('sin payment_id busca el pago por external_reference (no apareció «Volver al sitio»)', async () => {
+    const { payments, transitions } = escenario();
+    const buscados = [];
+    payments.gateway.findPaymentByReference = async ref => (buscados.push(ref), '191772116796');
+    const r = await payments.confirmReturn({ attemptId: ATTEMPT }, 'empresa-1');
+    assert.equal(r.state, 'approved');
+    assert.deepEqual(buscados, [ATTEMPT]);
+    assert.deepEqual(transitions, ['pending', 'approved']);
+    const sinPago = escenario();
+    sinPago.payments.gateway.findPaymentByReference = async () => null;
+    assert.equal((await sinPago.payments.confirmReturn({ attemptId: ATTEMPT }, 'empresa-1')).state, 'created');
+  });
   await t.test('rechaza pagos de otro pedido, otro monto u otra empresa', async () => {
     await assert.rejects(
       escenario({ reference: 'otro' }).payments.confirmReturn({ attemptId: ATTEMPT, paymentId: '4' }, 'empresa-1'),

@@ -54,6 +54,9 @@ export interface PaymentGateway {
     currency_id: string;
     external_reference: string | null;
   }>;
+
+  /** Último pago hecho para un intento (external_reference); null si el comprador aún no pagó. */
+  findPaymentByReference?(externalReference: string): Promise<string | null>;
 }
 
 export interface PaymentStore {
@@ -275,12 +278,16 @@ export class Payments {
   async confirmReturn(body: any, companyId: string) {
     rule(!this.gateway.simulated, 'FORBIDDEN', 'Mercado Pago no está configurado: usa el pago de prueba.');
     const attemptId = String(body?.attemptId ?? '');
-    const paymentId = String(body?.paymentId ?? '');
     rule(/^[0-9a-f-]{36}$/i.test(attemptId), 'INVALID_INPUT', 'Intento de pago inválido.');
     const attempt = await this.store.getAttemptByExternalReference(attemptId);
     rule(attempt, 'ATTEMPT_NOT_FOUND', 'Intento de pago no encontrado.');
     const order = await this.store.getOrder(attempt.order_id, companyId);
     rule(order, 'ORDER_NOT_FOUND', 'Pedido no encontrado o no pertenece a tu empresa.');
+    // Sin payment_id (no hubo «Volver al sitio» o se verifica desde el pedido): se busca el pago en Mercado Pago.
+    let paymentId = String(body?.paymentId ?? '');
+    if (!/^\d{1,20}$/.test(paymentId) && this.gateway.findPaymentByReference) {
+      paymentId = (await this.gateway.findPaymentByReference(attempt.id)) ?? '';
+    }
     // Sin pago (el comprador canceló o volvió antes de pagar): solo se informa el estado actual.
     if (!/^\d{1,20}$/.test(paymentId)) return { state: attempt.state, orderId: order.id };
     const paymentInfo = await this.gateway.getPaymentInfo(paymentId);
