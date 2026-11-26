@@ -34,6 +34,10 @@ export class MercadoPagoGateway implements PaymentGateway {
       return this.mockCreatePreference(params);
     }
 
+    const frontend = (process.env.FRONTEND_URL || 'http://localhost:3300').replace(/\/+$/, '');
+    const api = (process.env.API_URL || '').replace(/\/+$/, '');
+    // Mercado Pago vuelve a esta página con ?payment_id=…&external_reference=…; ahí se confirma el pago.
+    const retorno = frontend + '/pago-mercadopago';
     const body = {
       external_reference: params.external_reference,
       items: params.items.map(item => ({
@@ -42,18 +46,13 @@ export class MercadoPagoGateway implements PaymentGateway {
         unit_price: item.unit_price,
         currency_id: 'PEN',
       })),
-      shipments: {
-        cost: params.shipment_cost,
-        mode: 'not_specified',
-      },
+      expires: true,
       expiration_date_to: params.expires_at.toISOString(),
-      back_urls: params.back_urls || {
-        success: `${process.env.FRONTEND_URL || 'http://localhost:4200'}/payments/success`,
-        failure: `${process.env.FRONTEND_URL || 'http://localhost:4200'}/payments/failure`,
-        pending: `${process.env.FRONTEND_URL || 'http://localhost:4200'}/payments/pending`,
-      },
-      auto_return: 'approved',
-      notification_url: `${process.env.API_URL || 'http://localhost:3000'}/api/v1/webhooks/mercadopago`,
+      back_urls: params.back_urls || { success: retorno, failure: retorno, pending: retorno },
+      // Mercado Pago solo acepta el regreso automático y el webhook con direcciones públicas HTTPS:
+      // en localhost el comprador vuelve con «Volver al sitio» y el pago se confirma al regresar.
+      ...(retorno.startsWith('https://') ? { auto_return: 'approved' } : {}),
+      ...(api.startsWith('https://') ? { notification_url: api + '/api/v1/webhooks/mercadopago' } : {}),
     };
 
     const response = await fetch(`${this.baseUrl}/checkout/preferences`, {

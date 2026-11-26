@@ -893,14 +893,45 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/Unprocessable' }
 
+  /payments/mercadopago/confirm:
+    post:
+      tags: [Pagos]
+      summary: Confirmar el pago al volver de Mercado Pago
+      description: |
+        La página /pago-mercadopago la llama con los parámetros que agrega Mercado Pago al regresar
+        (`external_reference` = intento y `payment_id`). La API consulta el pago a Mercado Pago, valida
+        referencia, moneda, monto y empresa, y aplica el mismo cambio de estado que el webhook. Sirve en
+        localhost, donde Mercado Pago no puede enviar webhooks, y como respaldo en el despliegue HTTPS.
+        Con `paymentId` vacío o «null» (el comprador volvió sin pagar) solo devuelve el estado actual.
+      security: [{ bearer: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [attemptId]
+              properties:
+                attemptId: { type: string, format: uuid }
+                paymentId: { type: string, description: 'payment_id de Mercado Pago' }
+      responses:
+        '200': { description: 'Estado del intento (approved, approved_late, pending, rejected o created) y orderId' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
   /webhooks/mercadopago:
     post:
       tags: [Pagos]
       summary: Notificación de Mercado Pago
-      description: Verifica la firma `x-signature` (HMAC-SHA256) cuando `MP_WEBHOOK_SECRET` está configurado.
+      description: |
+        Verifica la firma `x-signature` (HMAC-SHA256) cuando `MP_WEBHOOK_SECRET` está configurado. Acepta el
+        formato actual (`?data.id=…&type=payment`, con el id de la notificación en el cuerpo) y el IPN antiguo
+        (`?id=…&topic=payment`). Solo se registra en la preferencia cuando `API_URL` es HTTPS.
       parameters:
-        - { name: id, in: query, required: true, schema: { type: string } }
-        - { name: data.id, in: query, required: true, schema: { type: string } }
+        - { name: id, in: query, schema: { type: string } }
+        - { name: data.id, in: query, schema: { type: string } }
         - { name: topic, in: query, schema: { type: string } }
         - { name: type, in: query, schema: { type: string } }
         - { name: x-signature, in: header, schema: { type: string } }
