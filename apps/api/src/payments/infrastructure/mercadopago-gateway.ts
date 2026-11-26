@@ -121,7 +121,11 @@ export class MercadoPagoGateway implements PaymentGateway {
   /** Busca en Mercado Pago el último pago del intento; prefiere uno aprobado si hay varios. */
   async findPaymentByReference(externalReference: string): Promise<string | null> {
     if (this.useMock) return null;
-    const query = new URLSearchParams({ external_reference: externalReference, sort: 'date_created', criteria: 'desc' });
+    const query = new URLSearchParams({
+      external_reference: externalReference,
+      sort: 'date_created',
+      criteria: 'desc',
+    });
     const response = await fetch(`${this.baseUrl}/v1/payments/search?${query}`, {
       headers: { Authorization: `Bearer ${this.accessToken}` },
     });

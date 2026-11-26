@@ -1329,7 +1329,11 @@ export class TradeComponent {
   mercadoPagoAttempt() {
     return (
       [...this.paymentAttempts()]
-        .filter(a => (a.state === 'created' || a.state === 'pending') && /^https?:/.test(a.mp_preference_response?.init_point ?? ''))
+        .filter(
+          a =>
+            (a.state === 'created' || a.state === 'pending') &&
+            /^https?:/.test(a.mp_preference_response?.init_point ?? ''),
+        )
         .sort((x, y) => String(y.created_at).localeCompare(String(x.created_at)))[0] ?? null
     );
   }
