@@ -100,7 +100,7 @@ export class MercadoPagoGateway implements PaymentGateway {
 
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error('Payment not found');
+        throw new Error('Mercado Pago no encontró el pago.');
       }
       const error = await response.text();
       throw new Error(`MP API error: ${response.status} ${error}`);

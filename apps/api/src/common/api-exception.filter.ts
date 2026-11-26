@@ -25,6 +25,8 @@ export class ApiExceptionFilter implements ExceptionFilter {
       return;
     }
     this.logger.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
-    response.status(500).json({ statusCode: 500, code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' });
+    response
+      .status(500)
+      .json({ statusCode: 500, code: 'INTERNAL_SERVER_ERROR', message: 'Error interno del servidor.' });
   }
 }

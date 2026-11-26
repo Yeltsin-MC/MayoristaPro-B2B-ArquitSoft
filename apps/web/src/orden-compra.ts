@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal, untracked } from '@angular
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from './session.service';
 import { lugar } from './ubicaciones';
+import { textoError } from './errores';
 
 const IGV = 0.18;
 
@@ -183,7 +184,7 @@ export class OrdenCompraComponent {
       if (!response.ok) throw new Error(result.message ?? 'No encontramos el pedido.');
       this.order.set(result);
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'No se pudo cargar la orden de compra.');
+      this.error.set(textoError(error, 'No se pudo cargar la orden de compra.'));
     }
   }
 

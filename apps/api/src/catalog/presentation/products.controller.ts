@@ -29,7 +29,7 @@ export class ProductsController {
       limit > 100 ||
       !Number.isSafeInteger((page - 1) * limit)
     ) {
-      throw new BadRequestException('Pagina o limite invalidos.');
+      throw new BadRequestException('Página o límite inválidos.');
     }
     if (
       (search !== undefined && (typeof search !== 'string' || search.length > 120)) ||
@@ -38,7 +38,7 @@ export class ProductsController {
       (available !== undefined && available !== 'true' && available !== 'false') ||
       (sort !== undefined && sort !== 'price-asc' && sort !== 'price-desc')
     ) {
-      throw new BadRequestException('Filtros de catalogo invalidos.');
+      throw new BadRequestException('Filtros de catálogo inválidos.');
     }
     const filters: CatalogFilters = {
       search: search?.trim(),

@@ -2,6 +2,7 @@ import { Component, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from './session.service';
+import { textoError } from './errores';
 
 type Medio = 'tarjeta' | 'yape' | 'pagoefectivo';
 
@@ -186,7 +187,7 @@ export class PagoPruebaComponent {
       if (c.state === 'approved' || c.state === 'approved_late') this.result.set('approved');
       if (c.state === 'rejected') this.result.set('rejected');
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'No se pudo cargar el pago.');
+      this.error.set(textoError(error, 'No se pudo cargar el pago.'));
     }
   }
 
@@ -199,7 +200,7 @@ export class PagoPruebaComponent {
       if (r.state === 'approved' || r.state === 'approved_late') this.result.set('approved');
       if (r.state === 'rejected') this.result.set('rejected');
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'No se pudo procesar el pago.');
+      this.error.set(textoError(error, 'No se pudo procesar el pago.'));
       this.checkout.set(null);
     } finally {
       this.busy.set(false);
