@@ -77,4 +77,19 @@ Los resúmenes anteriores (`resumen-humo.json`, `resumen-local.json`, `resumen-c
 
 **Lectura de la corrida del 25/11 en laptop.** Ninguna petición falló, pero la API llegó a su techo de unas 414 peticiones por segundo. Con 2000 usuarios que esperan 2 s, la demanda sube a unas 1000 por segundo, así que las peticiones hacen cola y el p95 pasa de 500 ms (la mediana sigue en 23 ms). La causa es que k6 genera la carga en la misma laptop donde corren la API (un solo proceso Node.js), PostgreSQL y Redis, y compite con ellos por CPU y memoria. En la nube, con 4 vCPU, la misma prueba dio p95 de 6 ms. La escalabilidad horizontal (varias réplicas de la API detrás de nginx, ver la arquitectura) es la respuesta para producción.
 
+### Campaña formal del 26/11/2026 (laptop Windows 16 GB, demo 450 productos en el 3300)
+
+k6, la API, PostgreSQL y Redis corrieron en la misma laptop. Umbrales: p95 < 500 ms y errores < 1 % por nivel o fase. Las tablas completas, los resúmenes JSON y la CPU/RAM cada 5 s están en [evidencias/k6/2026-11-26/](evidencias/k6/2026-11-26).
+
+| Prueba | Carga | Peticiones | Resultado clave | Errores | CPU / RAM máx. | Resultado |
+|---|---|---|---|---|---|---|
+| Smoke | 1 VU, 5 iteraciones | 22 | p95 por endpoint: catálogo 11,5 ms, cotizaciones 15,2 ms, opciones 2,6 ms, pedidos 7,9 ms | 0 % | 12 % / 85 % | ✓ Aprobado |
+| Load | 10, 25, 50 VU (1 min) y 100 VU (10 min) | 32 452 | p95 7,8 / 7,8 / 7,3 / 9,9 ms; 49,8 RPS con 100 VU | 0 % | 41 % / 85 % | ✓ Aprobado (máximo nivel: 100 VU) |
+| Stress | 100 a 2000 VU de 100 en 100, 1 min por nivel | 615 711 | **Los 20 niveles aprobados.** p95 ≤ 27,8 ms hasta 1100 VU; 116 ms con 1200; 275 ms con 1900; **353 ms con 2000 VU (905 RPS)** | 0 % | 48 % / 85 % | ✓ Aprobado (máximo nivel: 2000 VU) |
+| Spike | 10 → 1000 VU en 5 s, 30 s de pico, → 10 VU | 17 920 | p95 base 6,3 ms; pico 11,7 ms (436,7 RPS); recuperación 6,3 ms | 0 % | 27 % / 74 % | ✓ Aprobado (se recupera al nivel previo) |
+
+**Stress por nivel (p95):** 100: 9,3 ms · 200: 8,0 · 300: 6,6 · 400: 7,2 · 500: 6,4 · 600: 9,4 · 700: 12,0 · 800: 17,5 · 900: 13,9 · 1000: 27,7 · 1100: 27,8 · 1200: 116,4 · 1300: 66,3 · 1400: 73,6 · 1500: 98,4 · 1600: 162,6 · 1700: 122,0 · 1800: 138,6 · 1900: 275,2 · 2000: 353,2 ms.
+
+**Lectura.** El sistema atiende de forma lineal (≈ 0,45 RPS por usuario) hasta unos 1800 VU con p95 por debajo de 140 ms. Desde 1900 VU el rendimiento se aplana (892 → 905 RPS) y la latencia sube a 275–353 ms: es el punto de **saturación** de una sola instancia en esta laptop, aunque todavía dentro del umbral y sin errores. Cada nivel del stress dura 1 minuto. La corrida `completo` del 25/11 mantuvo 2000 VU durante 5 minutos, con la laptop más cargada (navegador y editores abiertos), y superó los 500 ms. Por eso la capacidad que se acredita es la del stress con la máquina dedicada, y la meseta larga en AWS queda pendiente.
+
 Comprobación previa sin k6 (13/11/2026, entorno de desarrollo): 2000 peticiones a `GET /products?page=2&limit=20`, 50 en paralelo, todas con 200, en 3,6 s (unas 550 por segundo, sin Redis). No reemplaza la medición k6.
