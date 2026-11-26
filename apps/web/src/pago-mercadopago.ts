@@ -1,6 +1,7 @@
 import { Component, effect, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from './session.service';
+import { textoError } from './errores';
 
 /**
  * Regreso desde Mercado Pago (back_urls). Mercado Pago agrega ?payment_id=…&external_reference=…;
@@ -95,7 +96,7 @@ export class PagoMercadoPagoComponent {
       else if (r.state === 'rejected' || r.state === 'cancelled') this.result.set('rejected');
       else this.result.set('sin-pago');
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'No se pudo confirmar el pago.');
+      this.error.set(textoError(error, 'No se pudo confirmar el pago.'));
       this.result.set('error');
     }
   }

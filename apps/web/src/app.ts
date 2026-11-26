@@ -30,6 +30,29 @@ export class AppComponent {
       .map(w => w[0].toUpperCase())
       .join('');
   });
+  /** Modo oscuro suave; la elección se recuerda en este navegador. */
+  readonly dark = signal(AppComponent.savedTheme() === 'oscuro');
+  private static savedTheme(): string | null {
+    try {
+      return localStorage.getItem('mayoristapro-tema');
+    } catch {
+      return null;
+    }
+  }
+  toggleTheme() {
+    const dark = !this.dark();
+    this.dark.set(dark);
+    this.applyTheme(dark);
+    try {
+      localStorage.setItem('mayoristapro-tema', dark ? 'oscuro' : 'claro');
+    } catch {
+      // Sin almacenamiento (modo privado): el tema dura solo esta visita.
+    }
+  }
+  private applyTheme(dark: boolean) {
+    if (dark) document.documentElement.dataset['theme'] = 'oscuro';
+    else delete document.documentElement.dataset['theme'];
+  }
   /** Categorías del catálogo publicado para el menú del encabezado. */
   readonly categories = signal<string[]>([]);
   /** Al bajar, el encabezado fijo se compacta (oculta lema y categorías) para dejar espacio. */
@@ -52,6 +75,7 @@ export class AppComponent {
   }
 
   constructor() {
+    this.applyTheme(this.dark());
     // Al cambiar de página (catálogo ↔ cuenta) se empieza arriba; dentro de la
     // cuenta, cada vista hace su propio desplazamiento hasta el contenido abierto.
     let page = this.page(this.router.url);

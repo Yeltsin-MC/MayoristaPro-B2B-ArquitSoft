@@ -14,6 +14,7 @@ import {
   tierTotal,
   tierUnitPrice,
 } from './wholesale-quantity';
+import { textoError } from './errores';
 interface RequestItem {
   descripcion: string;
   presentacion: string;
@@ -648,7 +649,10 @@ interface RequestItem {
               <p>Plazo: {{ o.deliveryDays }} días</p>
             </details>
             @for (r of o.reservations; track r.productId) {
-              <p class="muted">Reserva {{ r.state }}: {{ r.quantity }} presentaciones.</p>
+              <p class="muted">
+                {{ reservationLabel(r.state) }}: {{ r.quantity }}
+                {{ r.quantity === 1 ? 'presentación' : 'presentaciones' }}.
+              </p>
             }
             @if (inFulfillment(o.state)) {
               <ol class="fulfillment-steps" aria-label="Seguimiento del despacho">
@@ -842,7 +846,7 @@ export class TradeComponent {
       if (method !== 'GET') this.message.set('Operación completada.');
       return result;
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : 'Error de conexión.');
+      this.message.set(textoError(error, 'Error de conexión.'));
       return null;
     } finally {
       this.busy.set(false);
@@ -1343,6 +1347,17 @@ export class TradeComponent {
   }
   openPurchaseOrder(orderId: string) {
     void this.router.navigateByUrl('/orden-de-compra/' + orderId);
+  }
+  /** Estado de la reserva de stock del pedido, en palabras del comprador. */
+  reservationLabel(state: string): string {
+    const labels: Record<string, string> = {
+      activa: 'Reserva activa',
+      consumed: 'Reserva confirmada por el pago',
+      expired: 'Reserva vencida',
+      released: 'Reserva liberada',
+      payment_pending: 'Reserva en revisión por pago tardío',
+    };
+    return labels[state] ?? 'Reserva';
   }
   attemptLabel(state: string): string {
     const labels: Record<string, string> = {

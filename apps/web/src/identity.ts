@@ -8,6 +8,7 @@ import { CatalogImportComponent } from './catalog-import';
 import { TradeComponent } from './trade';
 import { SessionService } from './session.service';
 import { Direccion, DireccionComponent, lugar } from './ubicaciones';
+import { textoError } from './errores';
 
 /** Vista de la cuenta indicada por la URL (/cuenta/cotizaciones/:id, /cuenta/pedidos…). */
 interface AccountTarget {
@@ -674,7 +675,7 @@ export class IdentityComponent {
       return result;
     } catch (error) {
       this.failed.set(true);
-      this.message.set(error instanceof Error ? error.message : 'No se pudo conectar.');
+      this.message.set(textoError(error, 'No se pudo conectar.'));
       return null;
     } finally {
       this.busy.set(false);

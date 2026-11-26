@@ -31,5 +31,5 @@ test('todos los errores salen con el formato { statusCode, code, message }', () 
   assert.equal(http.body.code, 'NOT_FOUND');
   assert.equal(http.body.message, 'Lote no disponible.');
   const unknown = respond(new Error('detalle interno'));
-  assert.deepEqual(unknown.body, { statusCode: 500, code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' });
+  assert.deepEqual(unknown.body, { statusCode: 500, code: 'INTERNAL_SERVER_ERROR', message: 'Error interno del servidor.' });
 });

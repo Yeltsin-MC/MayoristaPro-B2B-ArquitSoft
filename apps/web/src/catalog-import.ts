@@ -1,4 +1,5 @@
 import { Component, input, output, signal } from '@angular/core';
+import { textoError } from './errores';
 
 interface PreviewRow {
   row: number;
@@ -189,12 +190,12 @@ interface Preview {
         vertical-align: top;
       }
       th {
-        background: #edf2f7;
+        background: var(--surface-2, #edf2f7);
         position: sticky;
         top: 0;
       }
       .invalid {
-        background: #fff1f0;
+        background: var(--danger-soft, #fff1f0);
       }
       td p {
         margin: 0 0 0.5rem;
@@ -260,7 +261,7 @@ export class CatalogImportComponent {
       this.message.set('Revisa la vista previa antes de confirmar.');
     } catch (error) {
       this.failed.set(true);
-      this.message.set(error instanceof Error ? error.message : 'Error de conexión.');
+      this.message.set(textoError(error, 'Error de conexión.'));
     } finally {
       this.busy.set(false);
     }
@@ -283,9 +284,7 @@ export class CatalogImportComponent {
       this.applied.emit();
     } catch (error) {
       this.failed.set(true);
-      this.message.set(
-        error instanceof Error ? error.message : 'Error de conexión. Puedes reintentar la confirmación.',
-      );
+      this.message.set(textoError(error, 'Error de conexión. Puedes reintentar la confirmación.'));
     } finally {
       this.busy.set(false);
     }

@@ -793,7 +793,7 @@ paths:
                       properties:
                         id: { type: string }
                         kind: { type: string, example: offer }
-                        title: { type: string, example: Nueva oferta de Cobre Suministros }
+                        title: { type: string, example: Nueva oferta de Ofimarket Perú }
                         link: { type: string, example: /cuenta/cotizaciones/0b6f... }
                         createdAt: { type: string, format: date-time }
                         read: { type: boolean }
