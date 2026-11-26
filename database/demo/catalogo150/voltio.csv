@@ -1,7 +1,7 @@
 sku,nombre,categoria,presentacion,unidades_por_presentacion,precio,moneda,incluye_igv,minimo,multiplo,stock,publicado
-"D150-VOLTIO-001","Cable eléctrico 2.5 mm², rollo de 100 m","Material eléctrico","unidad","1","175.00","PEN","true","1","1","30","true"
-"D150-VOLTIO-002","Cable eléctrico 4 mm², rollo de 100 m","Material eléctrico","unidad","1","265.00","PEN","true","1","1","20","true"
-"D150-VOLTIO-003","Cable mellizo 2 × 16 AWG, rollo de 100 m","Material eléctrico","unidad","1","145.00","PEN","true","1","1","25","true"
+"D150-VOLTIO-001","Cable eléctrico 2.5 mm² Indecito, rollo de 100 m","Material eléctrico","unidad","1","175.00","PEN","true","1","1","30","true"
+"D150-VOLTIO-002","Cable eléctrico 4 mm² Indecito, rollo de 100 m","Material eléctrico","unidad","1","265.00","PEN","true","1","1","20","true"
+"D150-VOLTIO-003","Cable mellizo 2 × 16 AWG Indecito, rollo de 100 m","Material eléctrico","unidad","1","145.00","PEN","true","1","1","25","true"
 "D150-VOLTIO-004","Tubo PVC eléctrico 3/4 pulgada × 3 m","Material eléctrico","paquete","10","42.00","PEN","true","2","1","40","true"
 "D150-VOLTIO-005","Curva PVC eléctrica 3/4 pulgada","Material eléctrico","paquete","25","22.50","PEN","true","1","1","40","true"
 "D150-VOLTIO-006","Caja octogonal de PVC","Material eléctrico","paquete","25","30.00","PEN","true","1","1","40","true"

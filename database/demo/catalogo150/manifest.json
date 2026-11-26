@@ -3,7 +3,7 @@
   "providers": [
     {
       "code": "lirio",
-      "name": "Papelera Lirio S.A.C.",
+      "name": "Librería y Distribuidora Huamanga S.A.C.",
       "ruc": "20999000001",
       "email": "demo-lirio@example.test",
       "category": "Librería y papelería",
@@ -20,7 +20,7 @@
     },
     {
       "code": "cobre",
-      "name": "Cobre Suministros de Oficina E.I.R.L.",
+      "name": "Ofimarket Perú S.A.C.",
       "ruc": "20999000002",
       "email": "demo-cobre@example.test",
       "category": "Suministros de oficina",
@@ -37,7 +37,7 @@
     },
     {
       "code": "quilla",
-      "name": "Quilla Tecnología S.A.C.",
+      "name": "Tecnoandina Perú S.A.C.",
       "ruc": "20999000003",
       "email": "demo-quilla@example.test",
       "category": "Tecnología y periféricos",
@@ -54,7 +54,7 @@
     },
     {
       "code": "miga",
-      "name": "Miga Insumos Panaderos S.A.C.",
+      "name": "Molinera Pampa Insumos E.I.R.L.",
       "ruc": "20999000004",
       "email": "demo-miga@example.test",
       "category": "Insumos secos de panadería",
@@ -71,7 +71,7 @@
     },
     {
       "code": "trazo",
-      "name": "Trazo Acabados S.A.C.",
+      "name": "Acabados El Constructor S.A.C.",
       "ruc": "20999000005",
       "email": "demo-trazo@example.test",
       "category": "Acabados para construcción",
@@ -88,7 +88,7 @@
     },
     {
       "code": "nube",
-      "name": "Nube Clean Perú S.A.C.",
+      "name": "Higiene Total Perú S.A.C.",
       "ruc": "20999000007",
       "email": "demo-nube@example.test",
       "category": "Limpieza e higiene",
@@ -105,7 +105,7 @@
     },
     {
       "code": "alba",
-      "name": "Distribuidora Alba Abarrotes E.I.R.L.",
+      "name": "Distribuidora Los Andes E.I.R.L.",
       "ruc": "20999000008",
       "email": "demo-alba@example.test",
       "category": "Abarrotes y bebidas",
@@ -122,7 +122,7 @@
     },
     {
       "code": "pliego",
-      "name": "Pliego Empaques S.A.C.",
+      "name": "Envases y Empaques del Perú S.A.C.",
       "ruc": "20999000009",
       "email": "demo-pliego@example.test",
       "category": "Embalaje y empaques",
@@ -139,7 +139,7 @@
     },
     {
       "code": "yunque",
-      "name": "Ferretería El Yunque Andino S.A.C.",
+      "name": "Ferretería Wamani S.A.C.",
       "ruc": "20999000010",
       "email": "demo-yunque@example.test",
       "category": "Ferretería y herramientas",
@@ -156,7 +156,7 @@
     },
     {
       "code": "voltio",
-      "name": "Voltio Materiales Eléctricos S.A.C.",
+      "name": "Electro Instalaciones Lima S.A.C.",
       "ruc": "20999000011",
       "email": "demo-voltio@example.test",
       "category": "Material eléctrico",
@@ -173,7 +173,7 @@
     },
     {
       "code": "escudo",
-      "name": "Escudo Seguridad Industrial E.I.R.L.",
+      "name": "Segurind Perú E.I.R.L.",
       "ruc": "20999000012",
       "email": "demo-escudo@example.test",
       "category": "Seguridad industrial",
@@ -190,7 +190,7 @@
     },
     {
       "code": "taza",
-      "name": "Taza Llena Descartables S.A.C.",
+      "name": "Descartables La Económica E.I.R.L.",
       "ruc": "20999000013",
       "email": "demo-taza@example.test",
       "category": "Descartables y cafetería",
@@ -207,7 +207,7 @@
     },
     {
       "code": "hilo",
-      "name": "Hilo Fino Uniformes S.A.C.",
+      "name": "Confecciones Huanta Textil S.A.C.",
       "ruc": "20999000014",
       "email": "demo-hilo@example.test",
       "category": "Textil y uniformes",
@@ -224,7 +224,7 @@
     },
     {
       "code": "vital",
-      "name": "Vital Botiquín Distribuciones S.A.C.",
+      "name": "Droguería Salud Ayacucho S.A.C.",
       "ruc": "20999000015",
       "email": "demo-vital@example.test",
       "category": "Botiquín y primeros auxilios",
@@ -241,7 +241,7 @@
     },
     {
       "code": "tablero",
-      "name": "Tablero Mobiliario Corporativo S.A.C.",
+      "name": "Muebles Ergomax S.A.C.",
       "ruc": "20999000016",
       "email": "demo-tablero@example.test",
       "category": "Mobiliario de oficina",
@@ -258,7 +258,7 @@
     }
   ],
   "buyer": {
-    "name": "Bodega Mostrador Huamanga S.A.C.",
+    "name": "Minimarket San Juan Bautista E.I.R.L.",
     "ruc": "20999000006",
     "email": "demo-comprador150@example.test",
     "ubicacion": {
@@ -275,7 +275,7 @@
       "cobre"
     ],
     "skuSuffix": "001",
-    "description": "Papel A4 blanco 75 g, caja de 5 resmas",
+    "description": "Papel A4 blanco 75 g Atlax, caja de 5 resmas",
     "unit": "caja",
     "unitsPerPack": 5,
     "quantity": 2

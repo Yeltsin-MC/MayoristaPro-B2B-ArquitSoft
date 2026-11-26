@@ -12,17 +12,29 @@ Todas las empresas son ficticias (15 proveedores, 30 productos cada uno: 450 pro
 
 | Proveedor ficticio | Rubro | CSV | Productos |
 |---|---|---|---|
-| Demo Lirio Papelería | Librería y papelería | `lirio.csv` | 30 |
-| Demo Cobre Oficina | Suministros de oficina | `cobre.csv` | 30 |
-| Demo Quilla Tecnología | Tecnología y periféricos | `quilla.csv` | 30 |
-| Demo Miga Insumos | Insumos secos de panadería | `miga.csv` | 30 |
-| Demo Trazo Acabados | Acabados para construcción | `trazo.csv` | 30 |
+| Librería y Distribuidora Huamanga S.A.C. | Librería y papelería | `lirio.csv` | 30 |
+| Ofimarket Perú S.A.C. | Suministros de oficina | `cobre.csv` | 30 |
+| Tecnoandina Perú S.A.C. | Tecnología y periféricos | `quilla.csv` | 30 |
+| Molinera Pampa Insumos E.I.R.L. | Insumos secos de panadería | `miga.csv` | 30 |
+| Acabados El Constructor S.A.C. | Acabados para construcción | `trazo.csv` | 30 |
+| Higiene Total Perú S.A.C. | Limpieza e higiene | `nube.csv` | 30 |
+| Distribuidora Los Andes E.I.R.L. | Abarrotes y bebidas | `alba.csv` | 30 |
+| Envases y Empaques del Perú S.A.C. | Embalaje y empaques | `pliego.csv` | 30 |
+| Ferretería Wamani S.A.C. | Ferretería y herramientas | `yunque.csv` | 30 |
+| Electro Instalaciones Lima S.A.C. | Material eléctrico | `voltio.csv` | 30 |
+| Segurind Perú E.I.R.L. | Seguridad industrial | `escudo.csv` | 30 |
+| Descartables La Económica E.I.R.L. | Descartables y cafetería | `taza.csv` | 30 |
+| Confecciones Huanta Textil S.A.C. | Textil y uniformes | `hilo.csv` | 30 |
+| Droguería Salud Ayacucho S.A.C. | Botiquín y primeros auxilios | `vital.csv` | 30 |
+| Muebles Ergomax S.A.C. | Mobiliario de oficina | `tablero.csv` | 30 |
+
+Los nombres de empresas y marcas (Standor, Atlax, Halión, Costeñita, Cocinera, Nicolina, Sapolín, Indecito, Tramonta, Curitita, Ergomax) son ficticios y solo se inspiran en marcas conocidas en Perú; no son las marcas reales. El código interno de cada proveedor (`lirio`, `cobre`, …) y su correo `demo-<código>@example.test` no cambian.
 
 Los archivos y el manifiesto están en `database/demo/catalogo150/`. SKU estable `D150-<CÓDIGO>-001` a `030`, único dentro del proveedor. Cada fila fija categoría, presentación, contenido, precio de dos decimales, mínimo, múltiplo, stock en presentaciones y publicación. Ejemplos: cuaderno por caja de 12; bolígrafos en paquetes de 24; harina por saco cerrado de 25 kg.
 
 El modelo vigente cuenta presentaciones enteras, no kilos fraccionarios: un saco cerrado contiene una unidad comercial, `unidades_por_presentacion=1`, y su peso queda en el nombre. Las cajas de bolsas indican cuántas bolsas cerradas contienen. No se habilita venta por peso ni conversión de precios por kg. Esa ampliación requeriría otra decisión comercial/contrato.
 
-La compradora **Demo Mostrador Compras (ficticia)** es una sexta empresa habilitada para comprar, con su proveedor interno pendiente de verificación, conforme a T2. Por eso hay **cinco proveedores verificados visibles**, no cinco registros internos totales de proveedor.
+La compradora **Minimarket San Juan Bautista E.I.R.L. (ficticia)** es una sexta empresa habilitada para comprar, con su proveedor interno pendiente de verificación, conforme a T2. Por eso hay **cinco proveedores verificados visibles**, no cinco registros internos totales de proveedor.
 
 No se amplían tablas, permisos ni transacciones. Se reutilizan fotos referenciales actuales para oficina/tecnología y un icono de categoría para panadería/construcción; no se atribuye a un producto una foto propia inexistente.
 
@@ -56,10 +68,10 @@ No ejecutes `db:seed` con el esquema demo: agregaría productos ajenos al conjun
 
 `demo:catalog:quote` crea **una nueva solicitud por ejecución**, usando credenciales del entorno en memoria, y deja dos ofertas abiertas durante 24 horas. No acepta ofertas ni crea pedidos automáticamente. Para renovar ofertas vencidas, ejecuta de nuevo ese comando.
 
-| Referencia equivalente | Lirio | Cobre | Cantidad válida común |
+| Referencia equivalente | Librería y Distribuidora Huamanga (lirio) | Ofimarket Perú (cobre) | Cantidad válida común |
 |---|---|---|---|
-| Papel A4 blanco 75 g, caja de 5 resmas | S/ 89.90; mínimo 1, múltiplo 1 | S/ 84.00; mínimo 2, múltiplo 2 | 2 cajas |
-| Bolígrafo azul 1 mm, paquete de 24 | S/ 24.00; mínimo 2, múltiplo 2 | S/ 22.50; mínimo 3, múltiplo 3 | 6 paquetes |
+| Papel A4 blanco 75 g Atlax, caja de 5 resmas | S/ 89.90; mínimo 1, múltiplo 1 | S/ 84.00; mínimo 2, múltiplo 2 | 2 cajas |
+| Bolígrafo azul 1 mm Standor, paquete de 24 | S/ 24.00; mínimo 2, múltiplo 2 | S/ 22.50; mínimo 3, múltiplo 3 | 6 paquetes |
 
 Para las dos cajas de A4: Lirio S/ 179.80 + envío S/ 8.00 = **S/ 187.80**, plazo 2 días; Cobre S/ 168.00 + envío S/ 12.00 = **S/ 180.00**, plazo 5 días. El servidor calcula el total exacto por las reglas T4. Equivalencia curada explícitamente por descripción y empaque, sin deducirla de SKU entre proveedores.
 
@@ -67,7 +79,7 @@ Recorrido manual:
 
 1. Abre 3300, recorre las cinco categorías y busca `Papel A4`. Aparecen las dos ofertas del catálogo.
 2. En Cobre, una caja es inválida; dos cajas habilitan cotizar. Pulsa **Solicitar cotización** e ingresa como `demo-comprador150@example.test`, usando `DEMO_PASSWORD` local.
-3. La solicitud conserva producto, presentación y dos cajas. Selecciona también **Demo Lirio Papelería (ficticia)** y envíala.
+3. La solicitud conserva producto, presentación y dos cajas. Selecciona también **Librería y Distribuidora Huamanga S.A.C.** y envíala.
 4. Cada proveedor (`demo-lirio@example.test` / `demo-cobre@example.test`, contraseña local `DEMO_PASSWORD`) abre la solicitud y responde con su SKU terminado `001`, precio, envío y plazo de la tabla, y vigencia futura.
 5. Regresa al comprador y abre la solicitud: compara cantidades, precio, envío, total, plazo y vigencia. Alternativamente abre la solicitud con dos respuestas creada por `demo:catalog:quote`.
 6. Aceptar no reserva; crear el pedido pendiente sí reserva por T4. Repetir la carga conserva esa reducción. No es necesario crear un pedido para exponer la comparación.
