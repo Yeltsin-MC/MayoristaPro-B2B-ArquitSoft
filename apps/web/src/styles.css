@@ -5027,3 +5027,18 @@ button.danger:hover {
     display: none;
   }
 }
+
+/* Logo «volumen apilado»: bultos sobre un pallet (también es el favicon). */
+.site-header .brand-mark,
+.site-header .brand:hover .brand-mark {
+  background: transparent;
+  box-shadow: none;
+}
+.brand-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+:root[data-theme='oscuro'] .brand-mark svg rect:nth-child(3) {
+  fill: #2f6bf0;
+}
