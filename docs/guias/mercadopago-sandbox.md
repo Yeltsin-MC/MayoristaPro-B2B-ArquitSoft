@@ -40,6 +40,9 @@ Los dos caminos usan la misma lógica: repetir una notificación no cambia nada.
 
    El **nombre del titular** decide el resultado: `APRO` = aprobado, `OTHE` = rechazado, `CONT` = pendiente. Documento: DNI `12345678`.
 9. Al terminar, pulsa **Volver al sitio**. En localhost no hay regreso automático. MayoristaPro muestra «¡Pago aprobado por Mercado Pago!» y el pedido queda pagado.
+   Si Mercado Pago no muestra «Volver al sitio», abre el pedido en MayoristaPro y pulsa **Ya pagué en Mercado Pago: verificar**. La API busca el pago por su referencia y lo confirma.
+
+> **Ojo con tu cuenta real:** si el checkout muestra tu nombre, estás con tu cuenta real y el pago de prueba falla. Abre el enlace del pago (`https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=…`) en una ventana de incógnito e ingresa con el comprador de prueba. Desde 2026 el token de prueba puede empezar con `APP_USR-` en lugar de `TEST-`; los dos sirven.
 
 Si cambian las tarjetas o los pasos, consulta la [documentación de pruebas de Checkout Pro](https://www.mercadopago.com.pe/developers/es/docs/checkout-pro/integration-test).
 

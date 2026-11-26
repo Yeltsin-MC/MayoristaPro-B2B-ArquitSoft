@@ -118,6 +118,24 @@ export class MercadoPagoGateway implements PaymentGateway {
     };
   }
 
+  /** Busca en Mercado Pago el último pago del intento; prefiere uno aprobado si hay varios. */
+  async findPaymentByReference(externalReference: string): Promise<string | null> {
+    if (this.useMock) return null;
+    const query = new URLSearchParams({
+      external_reference: externalReference,
+      sort: 'date_created',
+      criteria: 'desc',
+    });
+    const response = await fetch(`${this.baseUrl}/v1/payments/search?${query}`, {
+      headers: { Authorization: `Bearer ${this.accessToken}` },
+    });
+    if (!response.ok) throw new Error(`MP API error: ${response.status} ${await response.text()}`);
+    const data = await response.json();
+    const pagos: Array<{ id: number | string; status: string }> = Array.isArray(data?.results) ? data.results : [];
+    const elegido = pagos.find(p => p.status === 'approved') ?? pagos[0];
+    return elegido ? String(elegido.id) : null;
+  }
+
   // Mock implementations for testing without real credentials
   private mockCreatePreference(params: any): Promise<{ preference_id: string; init_point: string; response: any }> {
     const mockId = `MOCK_PREF_${Date.now()}_${Math.random().toString(36).substring(7)}`;
