@@ -32,7 +32,7 @@ function soles(value: number): string {
         <header class="po-head">
           <div>
             <p class="po-brand">Mayorista<span>Pro</span></p>
-            <p class="muted">Plataforma B2B · demo académica</p>
+            <p class="muted">Plataforma B2B para mayoristas</p>
           </div>
           <div class="po-number">
             <h2 id="po-title">ORDEN DE COMPRA</h2>

@@ -28,7 +28,7 @@ function accountTarget(url: string): AccountTarget {
       <div>
         <h2>{{ token() && admin() ? 'Panel de administración' : 'Cuenta empresarial' }}</h2>
         @if (!token()) {
-          <p>Demo con empresas ficticias. El alta se revisa manualmente.</p>
+          <p>El alta de cada empresa se revisa manualmente.</p>
         }
       </div>
       @if (token()) {
