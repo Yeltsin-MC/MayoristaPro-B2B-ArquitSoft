@@ -273,6 +273,99 @@ Evidencia: `docs/sprint-2/evidencias/k6/2026-11-26/`.
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Definir requisitos del catálogo (Tarea 1.1) → todos
+- [x] T002 [Fase 1] Diseñar la arquitectura del módulo (Tarea 1.2) → RF-CAT-01, RF-CAT-05
+- [x] T003 [Fase 2] Migración `001_catalog.sql` (Tarea 2.1) → RF-CAT-01
+- [x] T004 [Fase 2] Migración `007_catalog_cache.sql` (Tarea 2.2) → RF-CAT-05
+- [x] T005 [Fase 2] Migración `008_price_tiers.sql` (Tarea 2.3) → RF-CAT-04, RF-CAT-05
+- [x] T006 [Fase 3] `GET /api/v1/products` con paginación validada (Tarea 3.1) → RF-CAT-01
+- [x] T007 [Fase 3] Búsqueda, filtros y orden (Tarea 3.2) → RF-CAT-02
+- [x] T008 [Fase 3] `GET /api/v1/products/options` (Tarea 3.3) → RF-CAT-03
+- [x] T009 [Fase 3] Escalas de precio por volumen (Tarea 3.4) → RF-CAT-04
+- [x] T010 [Fase 3] Caché Redis con invalidación confirmada (Tarea 3.5) → RF-CAT-05
+- [x] T011 [Fase 4] Catálogo y filtros (Tarea 4.1) → RF-CAT-02, RF-CAT-06
+- [x] T012 [Fase 4] Tarjeta y ficha con precio por volumen (Tarea 4.2) → RF-CAT-04, RF-CAT-06
+- [x] T013 [Fase 4] Responsive y modo oscuro (Tarea 4.3) → RNF-CAT-06
+- [x] T014 [Fase 5] Pruebas unitarias (Jest) (Tarea 5.1)
+- [x] T015 [Fase 5] Pruebas de integración (Jest + PostgreSQL + Redis) (Tarea 5.2)
+- [x] T016 [Fase 5] Pruebas de navegador (Playwright) (Tarea 5.3)
+- [x] T017 [Fase 5] Pruebas funcionales con Postman (Tarea 5.4)
+- [x] T018 [Fase 5] Pruebas de carga con k6 (Tarea 5.5) → RNF-CAT-01
+
+### Dependencias
+
+```
+T001–T002 → T003–T005 → T006–T010 → T011–T013 → T014–T018
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 10/11/2026 · T1 · Base del catálogo ([#2](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/2))
+
+**Qué se hizo:** Migración `001_catalog.sql`, consulta paginada y página pública en Angular. Primer catálogo con datos sintéticos.
+
+**Resultado:** Compilación y `tests/catalog.integration.cjs` en verde en CI.
+
+### 12/11/2026 · T6 · Caché Redis ([#5](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/5))
+
+**Qué se hizo:** Decorador `CachedProducts` (Cache-Aside), TTL 30 s, revisión transaccional con trigger diferido y fallback a PostgreSQL.
+
+**Resultado:** `catalog-cache.test.cjs`, `catalog-cache.integration.cjs` y `catalog-revision.integration.cjs` en verde; medición en `evidencias/redis-catalogo`.
+
+### 13/11/2026 · Catálogo B2B ([#7](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/7))
+
+**Qué se hizo:** Búsqueda en la cabecera, categorías cerca del inicio y tarjetas con proveedor, presentación, mínimo y precio.
+
+**Resultado:** `experiencia-catalogo.browser.cjs` y `cantidad-mayorista.browser.cjs`, con capturas en 1440 y 390 px.
+
+### 13/11/2026 · Precios por volumen ([#11](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/11))
+
+**Qué se hizo:** Migración `008_price_tiers.sql`, escalas de precio en la tarjeta y la ficha, y 15 empresas con 450 productos en la demo.
+
+**Resultado:** `price-tiers.test.cjs` y `price-tiers.integration.cjs` en verde.
+
+### 20/11/2026 · Rediseño del catálogo ([#23](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/23))
+
+**Qué se hizo:** Paleta azul, carrusel, filtros fijos y vista responsive. Ajustes posteriores en [#24](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/24).
+
+**Resultado:** Revisión visual con `npm run revisar:front` de 320 a 1440 px.
+
+### 20/11/2026 · Pruebas de carga ([#16](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/16))
+
+**Qué se hizo:** Primera campaña k6 contra el catálogo, hasta 2000 usuarios virtuales.
+
+**Resultado:** Evidencia en `docs/sprint-2/evidencias/k6`.
+
+### 25/11/2026 · Filtro de proveedores ([#39](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/39))
+
+**Qué se hizo:** El filtro mostraba solo 6 proveedores; ahora muestra todos en orden alfabético.
+
+**Resultado:** Revisado en local y CI en verde.
+
+### 26/11/2026 · Campaña k6 formal ([#44](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/44))
+
+**Qué se hizo:** Pruebas smoke, load, stress y spike con `npm run test:carga`. Complemento en [#45](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/45).
+
+**Resultado:** Stress de 2000 VU con p95 de 353 ms y 0 % de errores; load de 100 VU durante 10 min con p95 de 9,9 ms.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```

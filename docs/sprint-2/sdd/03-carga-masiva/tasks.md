@@ -193,6 +193,69 @@
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Definir requisitos de la carga masiva (Tarea 1.1)
+- [x] T002 [Fase 1] Diseñar vista previa y confirmación (Tarea 1.2)
+- [x] T003 [Fase 2] Migración `003_catalog_imports.sql` (Tarea 2.1) → RF-IMP-02, RF-IMP-05
+- [x] T004 [Fase 3] Plantillas descargables (Tarea 3.1) → RF-IMP-01
+- [x] T005 [Fase 3] Lectura acotada de CSV y XLSX (Tarea 3.2) → RF-IMP-02, RF-IMP-03
+- [x] T006 [Fase 3] Validación por fila y mensaje de encabezados (Tarea 3.3) → RF-IMP-02, RF-IMP-03
+- [x] T007 [Fase 3] Vista previa persistida (Tarea 3.4) → RF-IMP-02
+- [x] T008 [Fase 3] Confirmación atómica e idempotente (Tarea 3.5) → RF-IMP-05
+- [x] T009 [Fase 3] Autorización (Tarea 3.6) → RF-IMP-04, RNF-IMP-01
+- [x] T010 [Fase 4] Asistente de carga (Tarea 4.1) → RF-IMP-02, RF-IMP-05
+- [x] T011 [Fase 5] Pruebas de integración (Jest + PostgreSQL) (Tarea 5.1)
+- [x] T012 [Fase 5] Pruebas de navegador (Playwright) (Tarea 5.2)
+
+### Dependencias
+
+```
+T001–T002 → T003 → T004–T009 → T010 → T011–T012
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 11/11/2026 · T3 · Carga masiva ([#3](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/3))
+
+**Qué se hizo:** Migración `003_catalog_imports.sql`, plantillas CSV y XLSX, vista previa con errores por fila y confirmación atómica con `Idempotency-Key`.
+
+**Resultado:** `imports.integration.cjs` en verde: límites de 5 MiB y 500 filas, lote vencido, cambios concurrentes y repetición idempotente.
+
+### 13/11/2026 · Catálogo de demostración ([#8](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/8))
+
+**Qué se hizo:** Carga de los CSV de 15 proveedores con `npm run demo:catalog:load`.
+
+**Resultado:** `demo-catalog.integration.cjs` en verde.
+
+### 22/11/2026 · Asistente en 4 pasos ([#31](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/31))
+
+**Qué se hizo:** La carga pasa a un asistente con pasos numerados, ayuda desplegable y mensaje de encabezados con columnas faltantes y sobrantes.
+
+**Resultado:** Caso «Encabezados mal escritos» y `catalog.browser.cjs` en verde.
+
+### 26/11/2026 · CSV de ejemplo ([#46](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/46))
+
+**Qué se hizo:** Archivos de ejemplo en `docs/ejemplos`: uno correcto con 15 productos y otro con errores para la exposición.
+
+**Resultado:** Revisados con la vista previa en local.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```

@@ -353,6 +353,102 @@
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Definir el flujo comercial (Tarea 1.1)
+- [x] T002 [Fase 1] Diseñar la concurrencia (Tarea 1.2)
+- [x] T003 [Fase 2] Migración `004_trade.sql` (Tarea 2.1) → RF-COT-01, 02, 04, 05
+- [x] T004 [Fase 2] Migraciones `005_payments.sql` y `006_add_payment_pending_state.sql` (Tarea 2.2) → RF-COT-06
+- [x] T005 [Fase 2] Migración `009_order_fulfillment.sql` (Tarea 2.3) → RF-COT-07
+- [x] T006 [Fase 2] Migración `014_delivery_addresses.sql` (Tarea 2.4) → RF-COT-01
+- [x] T007 [Fase 3] Dinero exacto (Tarea 3.1) → RNF-COT-01
+- [x] T008 [Fase 3] Reglas de solicitud, oferta y entrega (Tarea 3.2) → RF-COT-01, 02
+- [x] T009 [Fase 3] Transiciones de despacho (Tarea 3.3) → RF-COT-07
+- [x] T010 [Fase 4] Solicitudes y Lista de pedido (Tarea 4.1) → RF-COT-01
+- [x] T011 [Fase 4] Ofertas privadas (Tarea 4.2) → RF-COT-02
+- [x] T012 [Fase 4] Puntaje con IA (Tarea 4.3) → RF-COT-03
+- [x] T013 [Fase 4] Aceptación única (Tarea 4.4) → RF-COT-04
+- [x] T014 [Fase 4] Pedido idempotente con reserva atómica (Tarea 4.5) → RF-COT-05
+- [x] T015 [Fase 5] Intentos de pago (Tarea 5.1) → RF-COT-06
+- [x] T016 [Fase 5] Gateway de Mercado Pago y pago de prueba (Tarea 5.2) → RF-COT-06
+- [x] T017 [Fase 5] Webhook firmado e idempotente (Tarea 5.3) → RF-COT-06, RNF-COT-05
+- [x] T018 [Fase 5] Confirmación al volver de Mercado Pago (Tarea 5.4) → RF-COT-06
+- [x] T019 [Fase 5] Workers (Tarea 5.5) → RF-COT-06
+- [x] T020 [Fase 6] Lista de pedido y cotización (Tarea 6.1) → RF-COT-01
+- [x] T021 [Fase 6] Ofertas, comparación y pedido (Tarea 6.2) → RF-COT-02 a 05
+- [x] T022 [Fase 6] Pago (Tarea 6.3) → RF-COT-06
+- [x] T023 [Fase 6] Despacho y orden de compra (Tarea 6.4) → RF-COT-07, 08
+- [x] T024 [Fase 7] Pruebas unitarias (Jest) (Tarea 7.1)
+- [x] T025 [Fase 7] Pruebas de integración (Jest + PostgreSQL) (Tarea 7.2)
+- [x] T026 [Fase 7] Pruebas de navegador (Playwright) (Tarea 7.3)
+- [x] T027 [Fase 7] Pruebas funcionales con Postman (Tarea 7.4)
+
+### Dependencias
+
+```
+T001–T002 → T003–T006 → T007–T009 → T010–T014 → T015–T019 → T020–T023 → T024–T027
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 12/11/2026 · T4 y T5 · Cotizaciones, pedidos y pagos ([#4](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/4))
+
+**Qué se hizo:** Migraciones `004_trade.sql`, `005_payments.sql` y `006_add_payment_pending_state.sql`. Solicitud a varios proveedores, aceptación única, pedido idempotente con reserva de stock y pagos con máquina de estados.
+
+**Resultado:** `orders.integration.cjs`, `payments*.integration.cjs` y `quotations.browser.cjs` en verde.
+
+### 13/11/2026 · Cotización simple ([#9](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/9))
+
+**Qué se hizo:** Cotización compacta y comparación clara de ofertas para el comprador.
+
+**Resultado:** `cotizacion-simple.browser.cjs` con capturas en escritorio y celular.
+
+### 13/11/2026 · Despacho y Lista de pedido ([#11](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/11))
+
+**Qué se hizo:** Migración `009_order_fulfillment.sql`: estados preparing, dispatched y delivered, y Lista de pedido.
+
+**Resultado:** `fulfillment.test.cjs`, `fulfillment.integration.cjs` y `lista-pedido.browser.cjs` en verde.
+
+### 25/11/2026 · Oferta del proveedor ([#41](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/41))
+
+**Qué se hizo:** Formulario con la tarjeta del producto y subtotales en vivo. Ajuste de estilos posterior para no afectar las ofertas del comprador.
+
+**Resultado:** Pruebas de navegador en verde.
+
+### 25/11/2026 · Pago simulado y orden de compra ([#42](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/42))
+
+**Qué se hizo:** Checkout de prueba peruano (Tarjeta, Yape, PagoEfectivo) y orden de compra imprimible con IGV.
+
+**Resultado:** `pago-prueba.browser.cjs` en verde.
+
+### 26/11/2026 · Lugar de entrega ([#43](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/43))
+
+**Qué se hizo:** Migración `014_delivery_addresses.sql`: envío, recojo o agencia, y aviso interprovincial al proveedor.
+
+**Resultado:** `entrega.integration.cjs` en verde.
+
+### 26/11/2026 · Mercado Pago en modo prueba ([#47](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/47))
+
+**Qué se hizo:** Checkout Pro real en sandbox y verificación del pago al volver. Botón «Ya pagué en Mercado Pago: verificar» en [#48](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/48).
+
+**Resultado:** `mercadopago-retorno.test.cjs` en verde. Pago de prueba aprobado en local con un comprador de prueba.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```

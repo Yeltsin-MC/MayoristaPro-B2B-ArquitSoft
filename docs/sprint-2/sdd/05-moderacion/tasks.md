@@ -187,6 +187,59 @@
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Definir las acciones de moderación (Tarea 1.1)
+- [x] T002 [Fase 1] Diseñar dónde vive la moderación (Tarea 1.2)
+- [x] T003 [Fase 2] Migración `011_moderation.sql` (Tarea 2.1) → RF-MOD-01, 05, 08
+- [x] T004 [Fase 2] Migración `013_reject_enrollment.sql` (Tarea 2.2) → RF-MOD-08
+- [x] T005 [Fase 3] Validación del motivo y registro en bitácora (Tarea 3.1) → RF-MOD-01, 08
+- [x] T006 [Fase 3] Retirar y restaurar productos (Tarea 3.2) → RF-MOD-01, 03, 04
+- [x] T007 [Fase 3] Impedir la republicación (Tarea 3.3) → RF-MOD-02
+- [x] T008 [Fase 3] Suspender y reactivar empresas (Tarea 3.4) → RF-MOD-05, 06, 07
+- [x] T009 [Fase 3] Rutas del controlador (Tarea 3.5) → todos
+- [x] T010 [Fase 4] «Retirar producto» en la ficha (Tarea 4.1) → RF-MOD-01, RF-MOD-09
+- [x] T011 [Fase 4] Secciones del Panel de administración (Tarea 4.2) → RF-MOD-04 a 09
+- [x] T012 [Fase 5] Pruebas de integración (Jest + PostgreSQL) (Tarea 5.1)
+- [x] T013 [Fase 5] Contrato OpenAPI (Tarea 5.2)
+- [x] T014 [Fase 5] Revisión visual (Tarea 5.3)
+
+### Dependencias
+
+```
+T001–T002 → T003–T004 → T005–T009 → T010–T011 → T012–T014
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 22/11/2026 · Moderación ([#29](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/29))
+
+**Qué se hizo:** Migración `011_moderation.sql`: retirar y restaurar productos con motivo, suspender y reactivar empresas, y bitácora.
+
+**Resultado:** Casos de moderación en `identity.integration.cjs` y contrato en `openapi.test.cjs` en verde.
+
+### 23/11/2026 · Rechazar solicitudes ([#37](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/37))
+
+**Qué se hizo:** Rechazar una solicitud de alta borra la cuenta pendiente y queda en la bitácora.
+
+**Resultado:** `identity.integration.cjs` en verde.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```
