@@ -164,13 +164,7 @@ MayoristaPro-B2B-ArquitSoft/
 
 Los archivos sueltos de la raíz (`package.json`, `compose.yaml`, `.gitignore`, `eslint.config.mjs`, `jest.config.cjs`, etc.) son configuración que las herramientas buscan en la raíz; no se deben mover.
 
-El incremento inicial del Sprint 2 está en `apps/api`, `apps/web` y `database`. Consulta la [guía para ejecutar el catálogo de prueba](docs/sprint-2/base-catalogo.md).
-
-T2 incorpora [identidad y vinculación empresarial](docs/sprint-2/identidad.md): alta aprobada manualmente, invitaciones, revocación y verificación independiente del proveedor. D1 está aprobada; SUNAT externa queda pendiente de confirmación posterior.
-
-T3 incorpora [carga masiva CSV/XLSX](docs/sprint-2/carga-masiva.md): plantilla, vista previa con errores por fila y confirmación completa del lote por proveedor verificado. Actualiza SKU propios sin reemplazar stock y exige revisar de nuevo ante cambios concurrentes.
-
-T4 incorpora [cotizaciones, pedidos y reserva de stock](docs/sprint-2/cotizaciones-pedidos.md): ofertas privadas de varios proveedores, aceptación única y creación idempotente de pedido pendiente con reserva atómica. La demo suma precios con IGV incluido y envío final fijo/cero con aritmética exacta; no integra pago ni liberación automática.
+El código del Sprint 2 está en `apps/api`, `apps/web` y `database`. Cada módulo (catálogo, identidad, carga masiva, cotizaciones y pedidos, moderación, avisos, fotos y Mis productos) está especificado en las [SDD del Sprint 2](docs/sprint-2/sdd/README.md), con requisitos, diseño y tareas.
 
 ## Estado y siguiente paso
 
