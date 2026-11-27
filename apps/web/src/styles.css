@@ -2639,7 +2639,7 @@ body {
 }
 /* Ofertas por volumen */
 .eyebrow.sale {
-  color: var(--sale);
+  color: var(--sale-text, var(--sale));
 }
 .deals-section {
   margin: 0 0 44px;
@@ -2734,7 +2734,7 @@ body {
 }
 .deal-prices strong {
   font-size: 1.2rem;
-  color: var(--sale);
+  color: var(--sale-text, var(--sale));
   letter-spacing: -0.02em;
 }
 /* Tarjeta de producto estilo retail */
@@ -2786,7 +2786,7 @@ body {
 }
 .volume-best strong {
   font-size: 0.95rem;
-  color: var(--sale);
+  color: var(--sale-text, var(--sale));
 }
 /* Botón secundario: blanco con borde del color de marca */
 .add-to-list {
@@ -5041,4 +5041,37 @@ button.danger:hover {
 }
 :root[data-theme='oscuro'] .brand-mark svg rect:nth-child(3) {
   fill: #2f6bf0;
+}
+
+/* Modo oscuro: textos que en modo claro eran claros sobre azul marino (pie, franjas, carrusel)
+   o que usaban --navy como color de texto. Sin esto quedaban oscuros sobre oscuro. */
+:root[data-theme='oscuro'] {
+  --sale-text: #ff8a7a;
+  --accent-dark: #b7cbff;
+}
+:root[data-theme='oscuro'] .brand-mark,
+:root[data-theme='oscuro'] .supplier-initials,
+:root[data-theme='oscuro'] .site-footer .brand-pro {
+  color: #e8effd;
+}
+:root[data-theme='oscuro'] .hero-slide.theme-sale .eyebrow,
+:root[data-theme='oscuro'] .hero-slide.theme-dark .eyebrow,
+:root[data-theme='oscuro'] .cta-band .eyebrow,
+:root[data-theme='oscuro'] .account-link > span.action-avatar,
+:root[data-theme='oscuro'] .offer-step span {
+  color: #ffffff;
+}
+:root[data-theme='oscuro'] .site-footer,
+:root[data-theme='oscuro'] .site-footer a,
+:root[data-theme='oscuro'] .footer-brand p,
+:root[data-theme='oscuro'] .cta-band p {
+  color: #c8d0dc;
+}
+:root[data-theme='oscuro'] .company-stats dd,
+:root[data-theme='oscuro'] .notifications-toggle,
+:root[data-theme='oscuro'] .notice-item {
+  color: var(--ink);
+}
+:root[data-theme='oscuro'] .category-tag {
+  background: #141a26cc;
 }
