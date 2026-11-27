@@ -170,6 +170,59 @@
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Revisar la experiencia del proveedor (Tarea 1.1)
+- [x] T002 [Fase 2] `GET /company/products` (Tarea 2.1) → RF-MIS-01
+- [x] T003 [Fase 2] `POST /products/:id/unpublish` (Tarea 2.2) → RF-MIS-02
+- [x] T004 [Fase 3] Lista, contador y buscador (Tarea 3.1) → RF-MIS-01
+- [x] T005 [Fase 3] Botones Publicar / Ocultar (Tarea 3.2) → RF-MIS-02, 03, 04
+- [x] T006 [Fase 3] Quitar el formulario «ID del producto propio» (Tarea 3.3) → RNF-MIS-02
+- [x] T007 [Fase 4] Pasos numerados y ayuda (Tarea 4.1) → RF-MIS-05
+- [x] T008 [Fase 4] Errores comprensibles (Tarea 4.2) → RF-MIS-05
+- [x] T009 [Fase 4] Resumen y uso en celular (Tarea 4.3) → RF-MIS-05, RF-MIS-06
+- [x] T010 [Fase 5] Pruebas de integración (Jest + PostgreSQL) (Tarea 5.1)
+- [x] T011 [Fase 5] Pruebas de navegador (Playwright) (Tarea 5.2)
+- [x] T012 [Fase 5] Contrato y revisión visual (Tarea 5.3)
+- [ ] T013 [Pendiente] Editar precio y stock desde el panel (Tarea 6.1)
+
+### Dependencias
+
+```
+T001 → T002–T003 → T004–T006 → T007–T009 → T010–T012
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+La tarea pendiente T013 depende de que todo el módulo esté terminado y no bloquea la entrega.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 22/11/2026 · Mis productos y asistente ([#31](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/31))
+
+**Qué se hizo:** Panel «Mis productos» con Publicar y Ocultar, `GET /company/products` y asistente de carga en 4 pasos. Se quitó el formulario «ID del producto propio».
+
+**Resultado:** `identity.integration.cjs` («mis productos…»), `imports.integration.cjs` y `catalog.browser.cjs` en verde.
+
+### 26/11/2026 · Textos de exposición ([#46](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/46))
+
+**Qué se hizo:** Se quitaron los textos «demo» de la interfaz y se agregaron CSV de ejemplo para probar el asistente.
+
+**Resultado:** Pruebas de navegador en verde.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```

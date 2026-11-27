@@ -157,6 +157,56 @@
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Definir qué avisar y a quién (Tarea 1.1)
+- [x] T002 [Fase 1] Elegir cómo generar los avisos (Tarea 1.2)
+- [x] T003 [Fase 2] Tabla e índices (Tarea 2.1) → RF-AVI-02, RNF-AVI-02
+- [x] T004 [Fase 2] Función y triggers (Tarea 2.2) → RF-AVI-01
+- [x] T005 [Fase 3] `GET /notifications` (Tarea 3.1) → RF-AVI-02
+- [x] T006 [Fase 3] `POST /notifications/read` (Tarea 3.2) → RF-AVI-03
+- [x] T007 [Fase 3] `POST /orders/:id/reorder` (Tarea 3.3) → RF-AVI-05
+- [x] T008 [Fase 4] Campana en el encabezado (Tarea 4.1) → RF-AVI-04
+- [x] T009 [Fase 4] Botón «↻ Volver a pedir» (Tarea 4.2) → RF-AVI-05
+- [x] T010 [Fase 5] Pruebas de integración (Jest + PostgreSQL) (Tarea 5.1)
+- [x] T011 [Fase 5] Contrato OpenAPI (Tarea 5.2)
+
+### Dependencias
+
+```
+T001–T002 → T003–T004 → T005–T007 → T008–T009 → T010–T011
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 22/11/2026 · Avisos y «Volver a pedir» ([#30](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/30))
+
+**Qué se hizo:** Migración `012_notifications.sql` con el trigger `notify_trade_event()` (8 tipos), campana con contador y botón para repetir un pedido entregado.
+
+**Resultado:** `fulfillment.integration.cjs` y `catalog.browser.cjs` en verde.
+
+### 25/11/2026 · Campana animada ([#41](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/41))
+
+**Qué se hizo:** Animación de la campana cuando llegan avisos nuevos.
+
+**Resultado:** Revisión visual en local.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```

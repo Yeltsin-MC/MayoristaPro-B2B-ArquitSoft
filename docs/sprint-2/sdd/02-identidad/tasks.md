@@ -247,6 +247,85 @@
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Definir requisitos de identidad (Tarea 1.1)
+- [x] T002 [Fase 1] Diseñar la seguridad de la sesión (Tarea 1.2)
+- [x] T003 [Fase 2] Migración `002_identity.sql` (Tarea 2.1) → RF-IDE-01 a RF-IDE-06
+- [x] T004 [Fase 2] Migraciones de soporte (Tarea 2.2) → RF-IDE-02, RF-IDE-07
+- [x] T005 [Fase 3] Registro de empresa (Tarea 3.1) → RF-IDE-01
+- [x] T006 [Fase 3] Administrador inicial (Tarea 3.2) → RF-IDE-02
+- [x] T007 [Fase 3] Aprobación, rechazo y verificación (Tarea 3.3) → RF-IDE-02, RF-IDE-03
+- [x] T008 [Fase 3] Inicio y cierre de sesión (Tarea 3.4) → RF-IDE-04
+- [x] T009 [Fase 3] Cookie de sesión y restauración (Tarea 3.5) → RF-IDE-04
+- [x] T010 [Fase 3] Invitaciones y revocación (Tarea 3.6) → RF-IDE-05, RF-IDE-06
+- [x] T011 [Fase 3] Dirección de la empresa (Tarea 3.7) → RF-IDE-07
+- [x] T012 [Fase 4] Mi cuenta en paneles (Tarea 4.1) → RF-IDE-04, RF-IDE-08
+- [x] T013 [Fase 4] Registro, invitación y Panel de administración (Tarea 4.2) → RF-IDE-01, RF-IDE-02, RF-IDE-05
+- [x] T014 [Fase 5] Pruebas de integración (Jest + PostgreSQL) (Tarea 5.1)
+- [x] T015 [Fase 5] Pruebas de navegador (Playwright) (Tarea 5.2)
+- [x] T016 [Fase 5] Pruebas funcionales con Postman (Tarea 5.3)
+
+### Dependencias
+
+```
+T001–T002 → T003–T004 → T005–T011 → T012–T013 → T014–T016
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 10/11/2026 · T2 · Identidad empresarial ([#2](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/2))
+
+**Qué se hizo:** Migración `002_identity.sql`: alta con RUC revisada por el administrador, sesiones con token opaco, invitaciones y permisos manage, buy y publish.
+
+**Resultado:** `identity.integration.cjs` en verde en CI.
+
+### 13/11/2026 · Sesión del navegador ([#7](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/7))
+
+**Qué se hizo:** Cookie `mayoristapro_session` HttpOnly y SameSite=Strict, y continuidad de la sesión al cotizar.
+
+**Resultado:** `browser-session.integration.cjs` y `continuidad-comprador.browser.cjs` en verde.
+
+### 20/11/2026 · Contraseñas de la demo ([#15](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/15))
+
+**Qué se hizo:** Comando `npm run demo:catalog:passwords`, y mensaje claro cuando PostgreSQL no responde ([#17](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/17)).
+
+**Resultado:** Usado en la base local de la demo y documentado en el README.
+
+### 22/11/2026 · Mi cuenta ([#26](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/26))
+
+**Qué se hizo:** Mi cuenta en bloques, login más claro y Panel de administración ([#27](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/27)).
+
+**Resultado:** Pruebas de navegador ajustadas y en verde.
+
+### 23/11/2026 · Rechazar solicitudes de alta ([#37](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/37))
+
+**Qué se hizo:** Migración `013_reject_enrollment.sql`. El panel del administrador se carga solo y se refresca cada 30 s.
+
+**Resultado:** `identity.integration.cjs` con el caso de rechazo, en verde.
+
+### 25/11/2026 · Mostrar contraseña ([#38](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/38))
+
+**Qué se hizo:** Botón 👁️/🙈 en los campos de contraseña.
+
+**Resultado:** Revisado en local y CI en verde.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```

@@ -155,6 +155,63 @@
 
 ---
 
+## Lista de tareas
+
+Cada tarea tiene un código único `T###`, la fase a la que pertenece y los requisitos que cubre. `[x]` es completada y `[ ]` pendiente.
+
+- [x] T001 [Fase 1] Definir galería, ficha y respaldo (Tarea 1.1)
+- [x] T002 [Fase 2] Migración `010_product_media.sql` (Tarea 2.1) → RF-FOT-01
+- [x] T003 [Fase 2] `images[]` y `description` en `GET /products` (Tarea 2.2) → RF-FOT-02
+- [x] T004 [Fase 3] Seleccionar y convertir fotos (Tarea 3.1) → RF-FOT-05, RNF-FOT-04
+- [x] T005 [Fase 3] Mapa `fotos.json` y carga idempotente (Tarea 3.2) → RF-FOT-05
+- [x] T006 [Fase 4] Tarjeta con foto principal (Tarea 4.1) → RF-FOT-02, RF-FOT-04
+- [x] T007 [Fase 4] Ficha con galería (Tarea 4.2) → RF-FOT-03, RF-FOT-04
+- [x] T008 [Fase 4] Fotos de las 15 categorías (Tarea 4.3) → RF-FOT-06
+- [x] T009 [Fase 5] Publicar en producción (Tarea 5.1)
+- [x] T010 [Fase 5] Pruebas (Tarea 5.2)
+- [ ] T011 [Pendiente] Fotos desde la plantilla de carga masiva (Tarea 6.1)
+
+### Dependencias
+
+```
+T001 → T002–T003 → T004–T005 → T006–T008 → T009–T010
+```
+
+Cada fase empieza cuando la anterior está completa: primero la especificación, luego la base de datos y el backend, después la interfaz y al final las pruebas. Dentro de una fase, las tareas se hicieron en el orden de la lista.
+La tarea pendiente T011 depende de que todo el módulo esté terminado y no bloquea la entrega.
+
+---
+
+## Registro de ejecución
+
+Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cada cambio a `main`. Cada entrada enlaza su pull request, donde están los commits y el resultado del CI.
+
+### 22/11/2026 · Fotos y ficha ([#28](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/28))
+
+**Qué se hizo:** Migración `010_product_media.sql`, galería en la ficha, 417 fotos WebP con créditos e ilustración de respaldo.
+
+**Resultado:** `demo-catalog.integration.cjs`, `experiencia-catalogo.browser.cjs` y `cantidad-mayorista.browser.cjs` en verde.
+
+### 22/11/2026 · Fotos de categorías ([#32](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/32))
+
+**Qué se hizo:** Fotos reales para las 15 categorías de «Qué puedes comprar».
+
+**Resultado:** Revisión visual con `npm run revisar:front`.
+
+### 26/11/2026 · Marcas peruanas y modo oscuro ([#49](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/49))
+
+**Qué se hizo:** Nombres con marcas ficticias peruanas, `fotos.json` actualizado y modo oscuro. Contraste corregido en [#50](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/50).
+
+**Resultado:** Desplegado en mayoristapro.shop con 859 fotos.
+
+### 27/11/2026 · Especificación ampliada
+
+**Qué se hizo:** Se ampliaron `requirements.md`, `design.md` y este archivo con requisitos EARS, diagramas, decisiones, lista de tareas y este registro.
+
+**Resultado:** Documentación al día con el código desplegado en https://mayoristapro.shop.
+
+---
+
 ## Trazabilidad completa del módulo
 
 ```
