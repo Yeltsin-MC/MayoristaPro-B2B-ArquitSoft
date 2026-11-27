@@ -19,10 +19,11 @@ Todos los errores se validan contra el formato único `{ statusCode, code, messa
 1. Inicia PostgreSQL en **su propia terminal** y déjala abierta:
 
    ```powershell
-   pg_ctl -D <carpeta-de-datos> -l <carpeta>\postgres.log -o "-p 5432" start
+   $pg = "D:\mayorista-pg"   # carpeta de tu PostgreSQL portátil
+   & "$pg\package\native\bin\pg_ctl.exe" -D "$pg\package\test-data" -l "$pg\postgres.log" -o "-p 5432" start
    ```
 
-   Si dice *another server might be running*, ya estaba iniciado: sigue.
+   Si dice *another server might be running* y luego *Permission denied* en el log, ya estaba iniciado: sigue.
 2. En otra terminal, dentro del proyecto, levanta la demo de 15 empresas:
 
    ```powershell
