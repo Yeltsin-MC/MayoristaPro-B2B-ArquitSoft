@@ -15,5 +15,3 @@ __pycache__/
 !.env.demo.example
 coverage/
 dump.rdb
-# Informe y capturas de npm run revisar:front
-revision-frontend/

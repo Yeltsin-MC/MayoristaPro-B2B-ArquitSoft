@@ -3238,7 +3238,7 @@ html {
   }
 }
 
-/* Controles táctiles de al menos 44 px (revisión con npm run revisar:front). */
+/* Controles táctiles de al menos 44 px (revisión en celular). */
 .category-bar-link,
 .results-toolbar select,
 .site-header .brand {

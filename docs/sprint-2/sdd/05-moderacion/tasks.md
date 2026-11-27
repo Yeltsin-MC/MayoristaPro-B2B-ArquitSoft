@@ -172,7 +172,6 @@
 
 ### Tarea 5.3 — Revisión visual
 
-**Comando:** `npm run revisar:front` ([guía](../../../guias/revision-frontend.md))
 
 **Descripción:** Revisar el Panel de administración de 320 a 1440 px y en modo oscuro.
 

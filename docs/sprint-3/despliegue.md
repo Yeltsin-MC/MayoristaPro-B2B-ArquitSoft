@@ -87,7 +87,7 @@ Un pedido de la demo recorre todos los componentes:
 
 ## 4. Procedimiento de despliegue
 
-El procedimiento completo, con los comandos, está en [aws-demo.md](aws-demo.md). En resumen:
+Pasos:
 
 1. **Construir imágenes.** En GitHub, *Actions → Preparar imágenes para AWS → Run workflow* sobre `main`. El workflow construye las tres imágenes, arranca la pila, comprueba los 450 productos y publica en GHCR con el SHA del commit.
 2. **Preparar la instancia** (una sola vez). EC2 con Docker y Docker Compose 2.24.4 o superior, una copia del repositorio y un archivo privado `.env.demo` con `GHCR_IMAGE_PREFIX`, `RELEASE_SHA`, `PUBLIC_BASE_URL=https://mayoristapro.shop` y la contraseña de PostgreSQL.
@@ -95,6 +95,36 @@ El procedimiento completo, con los comandos, está en [aws-demo.md](aws-demo.md)
 4. **Arrancar**: `docker compose ... pull` y `up -d --wait`. Comprobar con `curl http://127.0.0.1:8080/api/v1/products?limit=1`.
 5. **Publicar**: en Cloudflare Zero Trust, el túnel `mayoristapro-ec2` enruta `mayoristapro.shop` a `http://127.0.0.1:8080`. En DNS, el registro raíz es un CNAME *proxied* a `<id-del-túnel>.cfargotunnel.com`; reemplazó el registro A de estacionamiento de Hostinger.
 6. **Actualizar**: el workflow manual **Desplegar en EC2** (`deploy-ec2.yml`) entra por SSH, cambia `RELEASE_SHA`, descarga las imágenes, reinicia la pila y ejecuta la prueba de humo contra la URL pública. Ver la sección siguiente.
+
+### Comandos de la primera instalación
+
+Desde la carpeta `~/mayoristapro` en EC2, con el archivo privado `.env.demo` creado a partir de `.env.demo.example`:
+
+```bash
+compose=(docker compose --env-file .env.demo -f compose.yaml -f compose.demo.yaml -f compose.aws.yaml --profile cache)
+"${compose[@]}" config --quiet
+"${compose[@]}" pull
+"${compose[@]}" up -d --wait db redis
+```
+
+Solo al inicializar la base se exportan `ADMIN_PASSWORD` y `DEMO_PASSWORD` (de 12 a 128 caracteres, distintas). Se carga el catálogo y se retiran de la sesión:
+
+```bash
+"${compose[@]}" run --rm --no-deps -e ADMIN_PASSWORD -e DEMO_PASSWORD migrate node deployment/start.cjs load-demo
+unset ADMIN_PASSWORD DEMO_PASSWORD
+"${compose[@]}" up -d --no-build --wait
+curl --fail 'http://127.0.0.1:8080/api/v1/products?limit=1'
+```
+
+### Actualizar en un paso
+
+Con **Preparar imágenes para AWS** en verde sobre `main`, abrir la terminal de EC2 (EC2 → instancia → Conectar → Conexión de la instancia EC2) y ejecutar con el SHA completo de esa ejecución:
+
+```bash
+bash ~/mayoristapro/deployment/actualizar.sh <SHA> [--fotos]
+```
+
+El script respalda PostgreSQL en `~/respaldos`, cambia el código y `RELEASE_SHA`, descarga las imágenes, arranca los servicios (el servicio `migrate` aplica las migraciones) y comprueba la API. Con `--fotos` vuelve a cargar el catálogo y pide las contraseñas originales sin mostrarlas. El grupo de seguridad permite SSH solo desde la IP del equipo de despliegue y desde el rango de EC2 Instance Connect de `us-east-1`.
 
 ### Despliegue continuo (CD)
 
@@ -107,7 +137,7 @@ El procedimiento completo, con los comandos, está en [aws-demo.md](aws-demo.md)
 | `EC2_SSH_KEY` | secret | Contenido de la llave privada `.pem` |
 | `EC2_APP_DIR` | variable | Carpeta del repositorio en la instancia |
 
-El grupo de seguridad debe permitir SSH (puerto 22) desde GitHub Actions. Si solo se permite desde tu IP, despliega a mano con [aws-demo.md](aws-demo.md).
+El grupo de seguridad debe permitir SSH (puerto 22) desde GitHub Actions. Si solo se permite desde tu IP, actualiza a mano como se explica abajo.
 
 ## 5. Verificación
 

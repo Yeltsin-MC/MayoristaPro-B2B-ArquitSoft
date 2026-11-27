@@ -139,11 +139,11 @@ MayoristaPro-B2B-ArquitSoft/
 │   ├── sprint-1/            Análisis, arquitectura, diseño y modelo C4
 │   ├── sprint-2/            Especificaciones SDD, pruebas y evidencias
 │   ├── sprint-3/            Despliegue en AWS
-│   └── guias/               Puertos, revisión del frontend e historial de revisiones
+│   └── guias/               Guía de Mercado Pago en modo prueba
 ├── img/                     Diagramas usados por la documentación
 ├── postman/                 Colección de Postman
 ├── presentaciones/          Presentaciones de los sprints
-├── scripts/                 Utilidades (puertos)
+├── scripts/                 Ver y liberar puertos en Windows
 ├── tests/                   Pruebas Jest, navegador (Playwright) y k6
 ├── .github/workflows/       CI (pruebas) y CD (despliegue)
 ├── compose*.yaml            Docker Compose local, demo y AWS
@@ -165,6 +165,18 @@ MayoristaPro-B2B-ArquitSoft/
 Los archivos sueltos de la raíz (`package.json`, `compose.yaml`, `.gitignore`, `eslint.config.mjs`, `jest.config.cjs`, etc.) son configuración que las herramientas buscan en la raíz; no se deben mover.
 
 El código del Sprint 2 está en `apps/api`, `apps/web` y `database`. Cada módulo (catálogo, identidad, carga masiva, cotizaciones y pedidos, moderación, avisos, fotos y Mis productos) está especificado en las [SDD del Sprint 2](docs/sprint-2/sdd/README.md), con requisitos, diseño y tareas.
+
+## Puertos
+
+| Puerto | Servicio |
+| --- | --- |
+| 5432 / 6379 | PostgreSQL / Redis |
+| 3000 / 4200 | API (NestJS) y web (Angular) de desarrollo |
+| 3300 | Sistema completo con 15 empresas y 450 productos (`npm run demo:catalog:api`) |
+| 5000 / 5055 | Servicio de IA (FastAPI) para desarrollo / para el 3300 y las pruebas |
+| 8080 | Sistema completo en Docker |
+
+Si un puerto está ocupado, `npm run puertos:liberar` cierra los procesos `node` y `python` que lo usan (nunca PostgreSQL ni Redis).
 
 ## Estado y siguiente paso
 
