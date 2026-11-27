@@ -17,7 +17,7 @@ MayoristaPro es B2B: quien compra o vende no es una persona suelta sino una **em
 
 Para evitar empresas falsas, el alta pasa por la revisión del administrador de la plataforma y, aparte, el proveedor necesita una **verificación** antes de publicar productos. Como no se consulta SUNAT en línea, la empresa queda marcada como «revisado manualmente».
 
-Origen: [T2 — Identidad y vinculación empresarial](../../identidad.md) y decisión D1 de la [preparación del Sprint 2](../../00-preparacion-sprint-2.md).
+Origen: entrega T2 (identidad y vinculación empresarial) y decisión D1 de la [preparación del Sprint 2](../../00-preparacion-sprint-2.md).
 
 ---
 

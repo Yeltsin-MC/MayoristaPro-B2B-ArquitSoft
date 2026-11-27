@@ -17,7 +17,7 @@ El catálogo es la puerta de entrada de MayoristaPro. Cualquier visitante, sin i
 
 Es también la pantalla con más tráfico. El escenario de escalabilidad del Sprint 1 exige soportar hasta 2000 usuarios virtuales concurrentes en k6, por lo que el listado se sirve desde una caché Redis que se invalida automáticamente cuando cambia cualquier dato visible (producto, proveedor, empresa, escala de precio o foto).
 
-Origen: historias de usuario del [Sprint 1](../../../sprint-1/01-analisis-de-sistema/02-historias-del-usuario.md), [T1 base del catálogo](../../base-catalogo.md), [experiencia de catálogo](../../experiencia-catalogo.md) y [caché Redis](../../redis-catalogo.md).
+Origen: historias de usuario del [Sprint 1](../../../sprint-1/01-analisis-de-sistema/02-historias-del-usuario.md), [experiencia de catálogo](../../experiencia-catalogo.md) y [caché Redis](../../redis-catalogo.md).
 
 ---
 

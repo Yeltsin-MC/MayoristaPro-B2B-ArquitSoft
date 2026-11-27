@@ -17,7 +17,7 @@ Un proveedor mayorista maneja cientos de productos: registrarlos uno por uno no 
 
 Como la confirmación puede repetirse (doble clic, red lenta) y otro proceso puede cambiar un producto mientras el proveedor revisa, la confirmación es **idempotente** y detecta **cambios concurrentes** por SKU.
 
-Origen: [T3 — Carga masiva](../../carga-masiva.md) (criterios T3-AC01 a T3-AC12). La experiencia de 4 pasos para el proveedor está en [Mis productos](../08-mis-productos/requirements.md).
+Origen: entrega T3 (carga masiva, criterios T3-AC01 a T3-AC12). La experiencia de 4 pasos para el proveedor está en [Mis productos](../08-mis-productos/requirements.md).
 
 ---
 

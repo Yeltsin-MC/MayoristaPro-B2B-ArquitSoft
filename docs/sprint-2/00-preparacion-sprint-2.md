@@ -69,16 +69,16 @@ Referencias de implementación: [flujo comercial](../sprint-1/03-diseno-de-softw
 
 ## Preparación de T4
 
-[Especificación SDD de cotizaciones, pedidos y stock](cotizaciones-pedidos.md), con criterios y pruebas verificables. D2 y D4 aprobadas por el responsable del proyecto. T3 fue incorporada a `main` en `2af3b1f`; T4 se implementa en `sprint-2/cotizaciones-pedidos` desde esa base, incorporando la SDD hasta `4741615` sin duplicar commits. Pedido pendiente, reserva activa y descuento de stock se guardan juntos; pago y liberación automática quedan para T5. La fusión de T4 a `main` sigue pendiente de revisión.
+[Especificación SDD de cotizaciones, pedidos y stock](sdd/04-cotizaciones-pedidos/requirements.md), con criterios y pruebas verificables. D2 y D4 aprobadas por el responsable del proyecto. T3 fue incorporada a `main` en `2af3b1f`; T4 se implementa en `sprint-2/cotizaciones-pedidos` desde esa base, incorporando la SDD hasta `4741615` sin duplicar commits. Pedido pendiente, reserva activa y descuento de stock se guardan juntos; pago y liberación automática quedan para T5. La fusión de T4 a `main` sigue pendiente de revisión.
 
 ### Alcance aprobado de T2
 
 La empresa habilitada puede comprar aunque su proveedor siga pendiente. Publicar exige proveedor verificado, propiedad y permiso de publicación. Un RUC coincidente nunca concede acceso. La interfaz indica «revisado manualmente» y no afirma validación SUNAT. D5 conserva la consulta externa para una entrega posterior por confirmar. La verificación del proveedor corresponde por separado a administración.
 
-Implementación y aceptación: [T2 — Identidad](identidad.md).
+Implementación y aceptación: [T2 — Identidad](sdd/02-identidad/requirements.md).
 
 ### Alcance implementado de T3
 
-[Carga masiva CSV/XLSX](carga-masiva.md): vista previa con errores por fila, lote de hasta 500 filas/5 MiB, confirmación transaccional y repetible, revisiones de SKU y stock existente preservado. Proveedor verificado y permiso de publicación en cada operación. D4, excepciones por peso/volumen y ajustes autorizados de inventario siguen pendientes; se implementan presentaciones contables, precio publicado PEN e indicador de IGV. La rama `sprint-2/redis-catalogo` incorpora caché de servidor para el catálogo público, con TTL, revisión transaccional PostgreSQL, fallback y medición real en CI. Conserva `no-store` para HTTP y recarga Angular tras confirmar. La fusión de Redis queda pendiente de revisión. [SDD y evidencia Redis](redis-catalogo.md).
+[Carga masiva CSV/XLSX](sdd/03-carga-masiva/requirements.md): vista previa con errores por fila, lote de hasta 500 filas/5 MiB, confirmación transaccional y repetible, revisiones de SKU y stock existente preservado. Proveedor verificado y permiso de publicación en cada operación. D4, excepciones por peso/volumen y ajustes autorizados de inventario siguen pendientes; se implementan presentaciones contables, precio publicado PEN e indicador de IGV. La rama `sprint-2/redis-catalogo` incorpora caché de servidor para el catálogo público, con TTL, revisión transaccional PostgreSQL, fallback y medición real en CI. Conserva `no-store` para HTTP y recarga Angular tras confirmar. La fusión de Redis queda pendiente de revisión. [SDD y evidencia Redis](redis-catalogo.md).
 
-**Cierre del incremento para revisión:** controles por rol y recorrido de plantilla Excel comprobados en navegador con el proveedor demo existente; compilación correcta, 19 pruebas HTTP, 5 de navegador aislado y 1 de demo aprobadas. [Evidencia y capturas](evidencias/t3-cierre-demo.md). Fusión a `main` pendiente.
+**Cierre del incremento para revisión:** controles por rol y recorrido de plantilla Excel comprobados en navegador con el proveedor demo existente; compilación correcta, 19 pruebas HTTP, 5 de navegador aislado y 1 de demo aprobadas. Fusión a `main` pendiente.

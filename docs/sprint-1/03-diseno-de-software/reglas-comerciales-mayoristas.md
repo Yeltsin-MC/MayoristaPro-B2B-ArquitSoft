@@ -4,7 +4,7 @@ Diseño propuesto para la implementación. La carga masiva es un requisito oblig
 
 ## 1. Carga del catálogo por bloques
 
-**T3 implementada:** [plantilla, validaciones y aceptación](../../sprint-2/carga-masiva.md). Límites operativos iniciales: 500 filas y 5 MiB; vista previa válida por 30 minutos. La equivalencia de una presentación existente no se cambia por importación, pues alteraría el significado del stock preservado. Se admiten presentaciones contables con precio publicado PEN; excepciones por peso/volumen, rangos y condiciones finales de D4 conservan su estado pendiente. El resto de este documento describe también el alcance objetivo de entregas posteriores.
+**T3 implementada:** [plantilla, validaciones y aceptación](../../sprint-2/sdd/03-carga-masiva/requirements.md). Límites operativos iniciales: 500 filas y 5 MiB; vista previa válida por 30 minutos. La equivalencia de una presentación existente no se cambia por importación, pues alteraría el significado del stock preservado. Se admiten presentaciones contables con precio publicado PEN; excepciones por peso/volumen, rangos y condiciones finales de D4 conservan su estado pendiente. El resto de este documento describe también el alcance objetivo de entregas posteriores.
 
 El proveedor descarga una plantilla CSV o Excel, completa sus productos, carga el archivo y revisa un reporte antes de confirmar la importación. La edición individual queda disponible para correcciones y mantenimiento; no es el único medio de registrar un catálogo.
 
@@ -22,7 +22,7 @@ Al confirmar se comprueba que las condiciones relevantes del SKU no hayan cambia
 
 ## 2. Oferta del proveedor y mínimo del comprador
 
-Para T4, D2 y D4 están aprobadas e implementadas: solicitud a varios proveedores, una oferta aceptada y como máximo un pedido por oferta; desglose PEN con cantidades por presentación, IGV incluido, envío final fijo o cero y plazo antes de aceptar y copia al pedido. La creación del pedido revalida vigencia, condiciones y stock, y reserva en la misma transacción. Si falla por vencimiento, condición incompatible o stock, se informa el motivo y se permite nueva solicitud. La [SDD T4](../../sprint-2/cotizaciones-pedidos.md) documenta aritmética exacta en céntimos, criterios y pruebas; el cálculo tributario adicional sigue fuera de la demo.
+Para T4, D2 y D4 están aprobadas e implementadas: solicitud a varios proveedores, una oferta aceptada y como máximo un pedido por oferta; desglose PEN con cantidades por presentación, IGV incluido, envío final fijo o cero y plazo antes de aceptar y copia al pedido. La creación del pedido revalida vigencia, condiciones y stock, y reserva en la misma transacción. Si falla por vencimiento, condición incompatible o stock, se informa el motivo y se permite nueva solicitud. La [SDD T4](../../sprint-2/sdd/04-cotizaciones-pedidos/requirements.md) documenta aritmética exacta en céntimos, criterios y pruebas; el cálculo tributario adicional sigue fuera de la demo.
 
 La **presentación de venta** determina qué significa una cantidad: unidad, paquete, docena, caja o saco. El stock, precio y cantidad del pedido deben utilizar la misma presentación y conservar su equivalencia en unidades base.
 

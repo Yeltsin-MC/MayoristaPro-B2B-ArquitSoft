@@ -18,7 +18,7 @@ Propuesta API-First. Base `/api/v1`. Las rutas pertenecen a MayoristaPro. El ada
 
 ### auth
 
-Registro y login públicos. Logout acepta Bearer o la cookie de sesión del navegador y revoca la sesión en PostgreSQL. Al vencer la sesión se inicia sesión otra vez. El registro comprueba formato y unicidad de RUC sin asociar usuarios por coincidencia. D1 aprobada: revisión manual del alta e invitaciones de un uso con vencimiento; administración de plataforma separada. Consulta SUNAT pendiente de confirmación. El contrato implementado y sus cuerpos están en [T2](../../sprint-2/identidad.md).
+Registro y login públicos. Logout acepta Bearer o la cookie de sesión del navegador y revoca la sesión en PostgreSQL. Al vencer la sesión se inicia sesión otra vez. El registro comprueba formato y unicidad de RUC sin asociar usuarios por coincidencia. D1 aprobada: revisión manual del alta e invitaciones de un uso con vencimiento; administración de plataforma separada. Consulta SUNAT pendiente de confirmación. El contrato implementado y sus cuerpos están en [T2](../../sprint-2/sdd/02-identidad/requirements.md).
 
 | Método y ruta |
 |---|
@@ -63,7 +63,7 @@ Lectura pública del catálogo publicado desde la página de inicio; escritura s
 
 ### quotations
 
-D2 y D4 aprobadas; [SDD T4, contrato implementado y pruebas](../../sprint-2/cotizaciones-pedidos.md). Una aceptación por solicitud y un pedido por oferta. La respuesta agrega envío, plazo, vigencia e IGV incluido y devuelve desglose/total calculado antes de aceptar. Solicitudes: `GET/POST /quotations` y `GET /quotations/:id`; pedidos: `GET/POST /orders` y `GET /orders/:id`. Directorio autorizado: `GET /trade/providers`; productos propios: `GET /trade/products`. La SDD documenta cuerpos, respuestas, permisos y límites. El envío es un importe final fijo o cero, sin cálculo tributario adicional. La reserva T4 devuelve vencimiento nulo, sin inventar un plazo de pago.
+D2 y D4 aprobadas; [SDD T4, contrato implementado y pruebas](../../sprint-2/sdd/04-cotizaciones-pedidos/requirements.md). Una aceptación por solicitud y un pedido por oferta. La respuesta agrega envío, plazo, vigencia e IGV incluido y devuelve desglose/total calculado antes de aceptar. Solicitudes: `GET/POST /quotations` y `GET /quotations/:id`; pedidos: `GET/POST /orders` y `GET /orders/:id`. Directorio autorizado: `GET /trade/providers`; productos propios: `GET /trade/products`. La SDD documenta cuerpos, respuestas, permisos y límites. El envío es un importe final fijo o cero, sin cálculo tributario adicional. La reserva T4 devuelve vencimiento nulo, sin inventar un plazo de pago.
 
 Comprador propietario y proveedores destinatarios; respuestas según participación.
 
@@ -153,7 +153,7 @@ Administración o proveedor sobre sus propios indicadores.
 
 ### Importación mayorista y cantidades
 
-**Implementado en T3:** [contrato físico, columnas, estados y errores](../../sprint-2/carga-masiva.md). Carga multipart en `file`, plantillas CSV/XLSX en `GET /products/imports/template`, vista previa de 30 minutos y confirmación con JSON `{previewHash}` más `Idempotency-Key`. Las tres operaciones del lote exigen proveedor verificado con permiso `publish`. Campos inválidos conservan un lote `invalid`, sin modificar productos; cambios posteriores del SKU dejan `stale` y exigen cargar/revisar de nuevo. La consulta pública sigue leyendo PostgreSQL y se recarga tras confirmar, sin caché de servidor implementada.
+**Implementado en T3:** [contrato físico, columnas, estados y errores](../../sprint-2/sdd/03-carga-masiva/requirements.md). Carga multipart en `file`, plantillas CSV/XLSX en `GET /products/imports/template`, vista previa de 30 minutos y confirmación con JSON `{previewHash}` más `Idempotency-Key`. Las tres operaciones del lote exigen proveedor verificado con permiso `publish`. Campos inválidos conservan un lote `invalid`, sin modificar productos; cambios posteriores del SKU dejan `stale` y exigen cargar/revisar de nuevo. La consulta pública sigue leyendo PostgreSQL y se recarga tras confirmar, sin caché de servidor implementada.
 
 | Método y ruta propuesta | Acceso y resultado |
 |---|---|

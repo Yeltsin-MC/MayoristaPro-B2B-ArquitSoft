@@ -4,7 +4,7 @@ Verificación local del 12 de noviembre de 2026. Rama `sprint-2/demo-mayorista-t
 
 ## Especificación y criterios de aceptación
 
-Se conservan las reglas de [identidad](../identidad.md), [cotizaciones y reservas](../cotizaciones-pedidos.md) y el [plan de Sprint 2](../00-preparacion-sprint-2.md). Los proveedores necesitan una empresa habilitada, verificación y permiso de publicación. La puntuación compara las ofertas privadas de una misma solicitud y la aceptación sigue siendo una decisión del comprador.
+Se conservan las reglas de [identidad](../sdd/02-identidad/requirements.md), [cotizaciones y reservas](../sdd/04-cotizaciones-pedidos/requirements.md) y el [plan de Sprint 2](../00-preparacion-sprint-2.md). Los proveedores necesitan una empresa habilitada, verificación y permiso de publicación. La puntuación compara las ofertas privadas de una misma solicitud y la aceptación sigue siendo una decisión del comprador.
 
 | Criterio | Comportamiento | Comprobación |
 |---|---|---|

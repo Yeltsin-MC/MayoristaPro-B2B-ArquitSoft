@@ -17,7 +17,7 @@ Es el corazón comercial de MayoristaPro. En el comercio mayorista el precio de 
 
 Al ser un flujo con dinero y stock compartido, las reglas más importantes son de **consistencia**: una sola oferta aceptada por solicitud, un solo pedido por oferta, nada de sobreventa aunque dos compradores compitan, y montos exactos en céntimos.
 
-Origen: [T4 — Cotizaciones y pedidos](../../cotizaciones-pedidos.md) (T4-AC01 a T4-AC11), T5 pagos, decisiones D2, D3 y D4 de la [preparación](../../00-preparacion-sprint-2.md) y las [reglas comerciales mayoristas](../../../sprint-1/03-diseno-de-software/reglas-comerciales-mayoristas.md).
+Origen: entrega T4 (cotizaciones y pedidos, T4-AC01 a T4-AC11), T5 pagos, decisiones D2, D3 y D4 de la [preparación](../../00-preparacion-sprint-2.md) y las [reglas comerciales mayoristas](../../../sprint-1/03-diseno-de-software/reglas-comerciales-mayoristas.md).
 
 ---
 
