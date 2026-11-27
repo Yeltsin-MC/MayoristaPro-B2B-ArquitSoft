@@ -1,0 +1,90 @@
+{
+  "base": "http://localhost:3300",
+  "fecha": "2026-11-26T22:59:57.154Z",
+  "resultados": [
+    {
+      "ruta": "portada",
+      "tamano": "celular-chico",
+      "problemas": []
+    },
+    {
+      "ruta": "lista",
+      "tamano": "celular-chico",
+      "problemas": []
+    },
+    {
+      "ruta": "cuenta",
+      "tamano": "celular-chico",
+      "problemas": [
+        {
+          "tipo": "control-chico",
+          "detalle": "Mostrar contraseña (40px)",
+          "veces": 1
+        }
+      ]
+    },
+    {
+      "ruta": "portada",
+      "tamano": "celular",
+      "problemas": []
+    },
+    {
+      "ruta": "lista",
+      "tamano": "celular",
+      "problemas": []
+    },
+    {
+      "ruta": "cuenta",
+      "tamano": "celular",
+      "problemas": [
+        {
+          "tipo": "control-chico",
+          "detalle": "Mostrar contraseña (40px)",
+          "veces": 1
+        }
+      ]
+    },
+    {
+      "ruta": "portada",
+      "tamano": "tablet",
+      "problemas": []
+    },
+    {
+      "ruta": "lista",
+      "tamano": "tablet",
+      "problemas": []
+    },
+    {
+      "ruta": "cuenta",
+      "tamano": "tablet",
+      "problemas": [
+        {
+          "tipo": "control-chico",
+          "detalle": "Mostrar contraseña (40px)",
+          "veces": 1
+        }
+      ]
+    },
+    {
+      "ruta": "portada",
+      "tamano": "pc",
+      "problemas": []
+    },
+    {
+      "ruta": "lista",
+      "tamano": "pc",
+      "problemas": []
+    },
+    {
+      "ruta": "cuenta",
+      "tamano": "pc",
+      "problemas": [
+        {
+          "tipo": "control-chico",
+          "detalle": "Mostrar contraseña (40px)",
+          "veces": 1
+        }
+      ]
+    }
+  ]
+}

@@ -244,7 +244,7 @@ Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cad
 
 ### 26/11/2026 · CSV de ejemplo ([#46](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/46))
 
-**Qué se hizo:** Archivos de ejemplo en `docs/ejemplos`: uno correcto con 15 productos y otro con errores para la exposición.
+**Qué se hizo:** Archivos de ejemplo de Distribuidora Wari: uno correcto con 15 productos y otro con errores, para probar la carga en la exposición.
 
 **Resultado:** Revisados con la vista previa en local.
 

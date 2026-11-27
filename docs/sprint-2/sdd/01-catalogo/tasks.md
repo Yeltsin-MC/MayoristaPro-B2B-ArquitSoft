@@ -338,7 +338,7 @@ Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cad
 
 **Qué se hizo:** Paleta azul, carrusel, filtros fijos y vista responsive. Ajustes posteriores en [#24](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/24).
 
-**Resultado:** Revisión visual con `npm run revisar:front` de 320 a 1440 px.
+**Resultado:** Revisión visual en celular y computadora, de 320 a 1440 px.
 
 ### 20/11/2026 · Pruebas de carga ([#16](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/16))
 

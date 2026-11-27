@@ -183,7 +183,7 @@ No agrega tablas. Usa:
 | RF-MIS-01.5, 04, 05 | `tests/catalog.browser.cjs`: visibilidad por rol, recorrido Excel y Ocultar/Publicar |
 | RF-MIS-05.4 | `tests/imports.integration.cjs` · «Encabezados mal escritos: el mensaje dice cuál falta y cuál sobra» |
 | Recorrido completo | `tests/demo.browser.cjs` |
-| RF-MIS-06 | `npm run revisar:front` (320 a 1440 px) |
+| RF-MIS-06 | Revisión visual de 320 a 1440 px |
 
 ---
 

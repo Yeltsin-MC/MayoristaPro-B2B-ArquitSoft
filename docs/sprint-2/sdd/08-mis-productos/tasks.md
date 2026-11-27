@@ -154,7 +154,7 @@
 
 ### Tarea 5.3 — Contrato y revisión visual
 
-**Descripción:** Documentar `GET /company/products`, `publish` y `unpublish` en `apps/api/openapi.yaml` (verificado por `tests/openapi.test.cjs`) y revisar de 320 a 1440 px con `npm run revisar:front`.
+**Descripción:** Documentar `GET /company/products`, `publish` y `unpublish` en `apps/api/openapi.yaml` (verificado por `tests/openapi.test.cjs`) y revisar de 320 a 1440 px.
 
 **Estado:** ✓ Completado
 

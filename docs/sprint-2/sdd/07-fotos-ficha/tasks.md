@@ -196,7 +196,7 @@ Bitácora de cómo se construyó el módulo, con la fecha en que se fusionó cad
 
 **Qué se hizo:** Fotos reales para las 15 categorías de «Qué puedes comprar».
 
-**Resultado:** Revisión visual con `npm run revisar:front`.
+**Resultado:** Revisión visual en celular y computadora.
 
 ### 26/11/2026 · Marcas peruanas y modo oscuro ([#49](https://github.com/Yeltsin-MC/MayoristaPro-B2B-ArquitSoft/pull/49))
 

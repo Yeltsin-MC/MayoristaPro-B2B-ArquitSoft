@@ -225,7 +225,7 @@ Publica solo si hay stock para el pedido mínimo.
 | RF-MOD-02 (carga masiva) | `tests/imports.integration.cjs` (publicación con `retired_at IS NULL`) |
 | RF-MOD-05.4 | `tests/catalog-filters.integration.cjs` (opciones solo de empresas visibles) |
 | Contrato | `tests/openapi.test.cjs`: las rutas de administración están documentadas |
-| Interfaz | Revisión con `npm run revisar:front` ([guía](../../../guias/revision-frontend.md)) |
+| Interfaz | Revisión visual de 320 a 1440 px |
 
 ---
 

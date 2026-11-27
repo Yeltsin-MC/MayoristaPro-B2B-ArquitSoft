@@ -28,7 +28,6 @@
     "format": "prettier --write apps/api/src apps/web/src",
     "format:check": "prettier --check apps/api/src apps/web/src",
     "lint": "eslint apps/api/src apps/web/src",
-    "revisar:front": "node scripts/revisar-frontend.cjs",
     "puertos:ver": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/puertos.ps1 ver",
     "puertos:liberar": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/puertos.ps1 liberar"
   },
